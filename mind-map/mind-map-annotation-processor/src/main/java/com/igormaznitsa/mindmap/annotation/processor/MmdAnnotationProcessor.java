@@ -22,6 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -147,19 +148,24 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
           () -> "Unexpectedly annotation class not found for " + annotation.getQualifiedName());
 
       annotatedElements.forEach(element -> {
-        final Annotation annotationInstance = element.getAnnotation(annotationClass);
+        final Annotation[] annotationInstances = element.getAnnotationsByType(annotationClass);
         final UriLine position = findPosition(element);
 
-        if (annotationInstance instanceof MmdFiles) {
-          for (MmdFile mmdFile : ((MmdFiles) annotationInstance).value()) {
-            mmdAnnotationList.add(
-                new MmdAnnotation(element, mmdFile, new File(position.uri).toPath(),
-                    position.line));
-          }
+        if (annotationClass == MmdFiles.class) {
+          Arrays.stream(annotationInstances)
+              .flatMap(x -> Arrays.stream(((MmdFiles) x).value()))
+              .forEach(mmdFile -> {
+                mmdAnnotationList.add(
+                    new MmdAnnotation(element, mmdFile, new File(position.uri).toPath(),
+                        position.line));
+              });
         } else {
-          mmdAnnotationList.add(
-              new MmdAnnotation(element, annotationInstance, new File(position.uri).toPath(),
-                  position.line));
+          Arrays.stream(annotationInstances)
+              .forEach(instance -> {
+                mmdAnnotationList.add(
+                    new MmdAnnotation(element, instance, new File(position.uri).toPath(),
+                        position.line));
+              });
         }
       });
     }
@@ -184,6 +190,7 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
   private UriLine findPosition(final Element element) {
     final TreePath treePath = trees.getPath(element);
     final CompilationUnitTree compilationUnit = treePath.getCompilationUnit();
+
     final long startPosition =
         this.sourcePositions.getStartPosition(compilationUnit, treePath.getLeaf());
     final long lineNumber = compilationUnit.getLineMap().getLineNumber(startPosition);

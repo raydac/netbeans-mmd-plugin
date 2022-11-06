@@ -5,6 +5,8 @@ import static java.util.Collections.unmodifiableList;
 import com.igormaznitsa.mindmap.annotation.processor.MmdAnnotation;
 import com.igormaznitsa.mindmap.annotation.processor.creator.elements.MmdAnnotationFileItem;
 import com.igormaznitsa.mindmap.annotation.processor.creator.elements.MmdAnnotationTopicItem;
+import com.igormaznitsa.mindmap.annotation.processor.creator.exceptions.MmdAnnotationProcessorException;
+import com.igormaznitsa.mindmap.annotation.processor.creator.exceptions.MultipleFileVariantsForTopicException;
 import com.igormaznitsa.mindmap.model.annotations.MmdFile;
 import com.igormaznitsa.mindmap.model.annotations.MmdTopic;
 import java.nio.file.Path;
@@ -15,9 +17,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 import javax.annotation.processing.Messager;
+import javax.lang.model.element.Element;
 import javax.tools.Diagnostic;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 public class MmdFileCreator {
 
@@ -40,14 +46,16 @@ public class MmdFileCreator {
         .filter(x -> x.getAnnotation() instanceof MmdFile)
         .map(MmdAnnotationFileItem::new)
         .forEach(x -> {
-          if (fileMap.containsKey(x.getUid())) {
-            this.builder.getMessager()
-                .printMessage(Diagnostic.Kind.ERROR,
-                    String.format("Found duplicated MMD file definition for UID: %s",
-                        x.getUid()), x.getAnnotation().getElement());
-            error.set(true);
-          } else {
-            fileMap.put(x.getUid(), x);
+          if (x.getAnnotation().getElement().getAnnotationMirrors().size() > 0) {
+            if (fileMap.containsKey(x.getUid())) {
+              this.builder.getMessager()
+                  .printMessage(Diagnostic.Kind.ERROR,
+                      String.format("Found duplicated MMD file definition for UID: %s",
+                          x.getUid()), x.getAnnotation().getElement());
+              error.set(true);
+            } else {
+              fileMap.put(x.getUid(), x);
+            }
           }
         });
 
@@ -59,8 +67,15 @@ public class MmdFileCreator {
         .filter(x -> x.getAnnotation() instanceof MmdTopic)
         .map(MmdAnnotationTopicItem::new)
         .forEach(x -> {
-          if (!processTopic(fileMap, x)) {
+          try {
+            this.processTopic(fileMap, x);
+          } catch (MmdAnnotationProcessorException ex) {
             error.set(true);
+            this.builder.getMessager().printMessage(
+                Diagnostic.Kind.ERROR,
+                ex.getMessage(),
+                ex.getSource().getAnnotation().getElement()
+            );
           }
         });
 
@@ -76,12 +91,13 @@ public class MmdFileCreator {
       this.builder.getMessager().printMessage(Diagnostic.Kind.NOTE,
           String.format("Processing MMD file for ID: %s", e.getUid()));
       try {
-        e.write(
+        final Path filePath = e.write(
             this.builder.getForceFolder(),
             this.builder.isOverwriteAllowed(),
-            this.builder.isPreferRelativePaths(),
-            this.builder.dryStart
+            this.builder.isDryStart()
         );
+        this.builder.getMessager()
+            .printMessage(Diagnostic.Kind.NOTE, "Created MMD file: " + filePath);
       } catch (Exception ex) {
         this.builder.getMessager().printMessage(Diagnostic.Kind.ERROR,
             String.format("Error during MMD file write with uid '%s': %s", e.getUid(),
@@ -90,23 +106,61 @@ public class MmdFileCreator {
     });
   }
 
-  private boolean processTopic(
+  private void processTopic(
       final Map<String, MmdAnnotationFileItem> fileMap,
       final MmdAnnotationTopicItem topic
-  ) {
-    findFileForTopic(fileMap, topic);
-    return true;
+  ) throws MmdAnnotationProcessorException {
+    final MmdAnnotationFileItem targetFile = findTopicTargetFile(fileMap, topic).orElse(null);
+    if (targetFile == null) {
+      throw new MmdAnnotationProcessorException(topic, "Can't find target MMD file for topic");
+    } else {
+      targetFile.addTopic(topic);
+    }
   }
 
-  private Optional<MmdAnnotationFileItem> findFileForTopic(
+  private Optional<MmdAnnotationFileItem> findTopicTargetFile(
       final Map<String, MmdAnnotationFileItem> fileMap,
-      final MmdAnnotationTopicItem topicItem) {
+      final MmdAnnotationTopicItem topicItem) throws MultipleFileVariantsForTopicException {
     if (StringUtils.isBlank(topicItem.getTopicAnnotation().mmdFileUid())) {
-      final String className = topicItem.getAnnotation().getPath().getFileName().toString();
-      System.out.println("CLASS NAME: " + className);
-      return Optional.empty();
+      final Optional<String> fileUid = topicItem.findFileUidAttribute();
+      if (fileUid.isPresent()) {
+        return topicItem.findFileUidAttribute()
+            .stream()
+            .flatMap(x -> fileMap.entrySet()
+                .stream()
+                .filter(y -> y.getValue().getFileAnnotation().uid().equals(x)
+                    || y.getValue().getFileAnnotation().fileName().equals(x))
+            )
+            .map(Map.Entry::getValue)
+            .findFirst();
+      } else {
+        final List<Pair<Element, MmdFile>> directFileMarks = topicItem.findDirectMmdFileMarks();
+
+        final List<MmdAnnotationFileItem> fileItems = directFileMarks.stream()
+            .flatMap(x -> fileMap.entrySet()
+                .stream()
+                .filter(
+                    y -> y.getValue().getFileAnnotation().equals(x.getValue()))
+                .findFirst().stream()
+            )
+            .map(Map.Entry::getValue)
+            .collect(Collectors.toList());
+
+        if (fileItems.size() == 1) {
+          return Optional.of(fileItems.get(0));
+        } else {
+          throw new MultipleFileVariantsForTopicException(topicItem, fileItems);
+        }
+      }
     } else {
-      return Optional.ofNullable(fileMap.get(topicItem.getTopicAnnotation().mmdFileUid()));
+      MmdAnnotationFileItem found = fileMap.get(topicItem.getTopicAnnotation().mmdFileUid());
+      if (found == null) {
+        found = fileMap.values().stream()
+            .filter(x -> FilenameUtils.getName(x.getFileAnnotation().fileName())
+                .equals(topicItem.getTopicAnnotation().mmdFileUid()))
+            .findFirst().orElse(null);
+      }
+      return Optional.ofNullable(found);
     }
   }
 

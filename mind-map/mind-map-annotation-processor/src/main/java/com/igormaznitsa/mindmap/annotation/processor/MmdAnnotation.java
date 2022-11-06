@@ -111,4 +111,11 @@ public class MmdAnnotation {
   public Element getElement() {
     return this.element;
   }
+
+  @Override
+  public String toString() {
+    return "MmdAnnotation{" +
+        "position=" + this.getPath().toString() + ":" + this.getLine() +
+        '}';
+  }
 }

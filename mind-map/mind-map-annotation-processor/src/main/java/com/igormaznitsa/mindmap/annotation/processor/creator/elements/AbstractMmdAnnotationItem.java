@@ -98,11 +98,18 @@ public abstract class AbstractMmdAnnotationItem {
     if (that == null || getClass() != that.getClass()) {
       return false;
     }
-    return Objects.equals(annotation, ((AbstractMmdAnnotationItem) that).annotation);
+    return Objects.equals(this.annotation, ((AbstractMmdAnnotationItem) that).annotation);
   }
 
   @Override
   public int hashCode() {
     return Objects.hash(this.annotation);
+  }
+
+  @Override
+  public String toString() {
+    return "AbstractMmdAnnotationItem{" +
+        "annotation=" + annotation +
+        '}';
   }
 }
