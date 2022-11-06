@@ -12,17 +12,22 @@ import com.igormaznitsa.mindmap.model.annotations.MmdEmoticon;
 import com.igormaznitsa.mindmap.model.annotations.MmdTopic;
 import java.net.URISyntaxException;
 import java.util.Objects;
+import javax.lang.model.element.Element;
 import org.apache.commons.lang3.StringUtils;
 
 public abstract class AbstractMmdAnnotationItem {
   protected final MmdAnnotation annotation;
 
-  protected void fillAttributesWithoutFileAndTopicLinks(final Topic topic,
-                                                        final MmdTopic topicAnnotation) throws
-      URISyntaxException {
+  protected void fillAttributesWithoutFileAndTopicLinks(
+      final Topic topic,
+      final Element element,
+      final MmdTopic topicAnnotation
+  ) throws URISyntaxException {
     topic.clearAttributes();
 
-    topic.setText(topicAnnotation.title());
+    topic.setText(
+        StringUtils.isBlank(topicAnnotation.title()) ? element.getSimpleName().toString() :
+            topicAnnotation.title());
 
     if (StringUtils.isNotBlank(topicAnnotation.note())) {
       topic.setExtra(new ExtraNote(topicAnnotation.note()));

@@ -98,7 +98,11 @@ public class MmdAnnotationFileItem extends AbstractMmdAnnotationItem {
     final MindMap map = new MindMap(true);
     map.putAttribute("showJumps", "true");
 
-    this.fillAttributesWithoutFileAndTopicLinks(map.getRoot(), this.mmdFileAnnotation.rootTopic());
+    this.fillAttributesWithoutFileAndTopicLinks(
+        map.getRoot(),
+        this.annotation.getElement(),
+        this.mmdFileAnnotation.rootTopic()
+    );
     this.doTopicLayout(map);
 
     return map;
