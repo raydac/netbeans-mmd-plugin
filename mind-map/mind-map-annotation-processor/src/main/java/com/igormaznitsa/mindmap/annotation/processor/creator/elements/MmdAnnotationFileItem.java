@@ -98,7 +98,7 @@ public class MmdAnnotationFileItem extends AbstractMmdAnnotationItem {
     final MindMap map = new MindMap(true);
     map.putAttribute("showJumps", "true");
 
-    this.fillAttributesWithoutFileAndTopicLinks(
+    fillAttributesWithoutFileAndTopicLinks(
         map.getRoot(),
         this.annotation.getElement(),
         this.mmdFileAnnotation.rootTopic()
@@ -168,7 +168,8 @@ public class MmdAnnotationFileItem extends AbstractMmdAnnotationItem {
     return current;
   }
 
-  private void doTopicLayout(final MindMap mindMap) throws MmdAnnotationProcessorException {
+  private void doTopicLayout(final MindMap mindMap)
+      throws URISyntaxException, MmdAnnotationProcessorException {
     // auto-layout by close parent topic elements
     this.topics
         .stream()
@@ -206,6 +207,11 @@ public class MmdAnnotationFileItem extends AbstractMmdAnnotationItem {
     // generate topics in mind map
     for (final TopicLayoutItem item : this.topics) {
       requireNonNull(item.findOrCreateTopic(mindMap), "Unexpected null during topic create");
+    }
+
+    // set direction flags on first level topics
+    for (final TopicLayoutItem item : this.topics) {
+      item.processTopicAttributes();
     }
   }
 }

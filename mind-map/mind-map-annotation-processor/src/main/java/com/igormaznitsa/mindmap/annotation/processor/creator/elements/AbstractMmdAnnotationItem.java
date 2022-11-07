@@ -18,13 +18,19 @@ import org.apache.commons.lang3.StringUtils;
 public abstract class AbstractMmdAnnotationItem {
   protected final MmdAnnotation annotation;
 
-  protected void fillAttributesWithoutFileAndTopicLinks(
+  protected static void setTopicDirection(final Topic topic, final Direction direction) {
+    if (direction != Direction.AUTO) {
+      if (direction == Direction.LEFT) {
+        topic.putAttribute(MmdAttribute.LEFT_SIDE.getId(), "true");
+      }
+    }
+  }
+
+  protected static void fillAttributesWithoutFileAndTopicLinks(
       final Topic topic,
       final Element element,
       final MmdTopic topicAnnotation
   ) throws URISyntaxException {
-    topic.clearAttributes();
-
     topic.setText(
         StringUtils.isBlank(topicAnnotation.title()) ? element.getSimpleName().toString() :
             topicAnnotation.title());
@@ -54,12 +60,6 @@ public abstract class AbstractMmdAnnotationItem {
 
     if (topicAnnotation.collapse()) {
       topic.putAttribute(MmdAttribute.COLLAPSED.getId(), "true");
-    }
-
-    if (topicAnnotation.direction() != Direction.AUTO) {
-      if (topicAnnotation.direction() == Direction.LEFT) {
-        topic.putAttribute(MmdAttribute.LEFT_SIDE.getId(), "true");
-      }
     }
 
     if (topicAnnotation.emoticon() != MmdEmoticon.EMPTY) {

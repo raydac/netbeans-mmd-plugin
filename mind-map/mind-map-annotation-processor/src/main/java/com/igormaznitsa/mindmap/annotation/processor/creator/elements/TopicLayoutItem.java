@@ -1,8 +1,13 @@
 package com.igormaznitsa.mindmap.annotation.processor.creator.elements;
 
+import static com.igormaznitsa.mindmap.annotation.processor.creator.elements.AbstractMmdAnnotationItem.fillAttributesWithoutFileAndTopicLinks;
+import static com.igormaznitsa.mindmap.annotation.processor.creator.elements.AbstractMmdAnnotationItem.setTopicDirection;
+
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
+import com.igormaznitsa.mindmap.model.annotations.Direction;
 import com.igormaznitsa.mindmap.model.annotations.MmdTopic;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -134,5 +139,17 @@ final class TopicLayoutItem {
       return Objects.equals(this.annotationItem, ((TopicLayoutItem) that).annotationItem);
     }
     return false;
+  }
+
+  public void processTopicAttributes() throws URISyntaxException {
+    if (this.annotationItem.getTopicAnnotation().direction() == Direction.LEFT) {
+      TopicLayoutItem root = this;
+      while (root.getParent() != null) {
+        root = root.getParent();
+      }
+      setTopicDirection(root.topic, Direction.LEFT);
+    }
+    fillAttributesWithoutFileAndTopicLinks(this.topic, this.annotationItem.annotation.getElement(),
+        this.annotationItem.getTopicAnnotation());
   }
 }
