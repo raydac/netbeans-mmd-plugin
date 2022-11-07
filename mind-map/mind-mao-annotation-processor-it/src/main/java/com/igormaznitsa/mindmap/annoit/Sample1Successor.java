@@ -9,4 +9,13 @@ public class Sample1Successor extends Sample1 {
   public void method2() {
 
   }
+
+  @MmdTopic(jumpTo = "mmdroot", note = "some note")
+  public void method3() {
+    @MmdTopic
+    int varA;
+
+    @MmdTopic
+    int varB;
+  }
 }

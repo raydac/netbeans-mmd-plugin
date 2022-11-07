@@ -1,11 +1,15 @@
 package com.igormaznitsa.mindmap.annotation.processor.creator.elements;
 
+import static com.igormaznitsa.mindmap.annotation.processor.creator.elements.AbstractMmdAnnotationItem.MmdAttribute.COLOR_BORDER;
+import static com.igormaznitsa.mindmap.annotation.processor.creator.elements.AbstractMmdAnnotationItem.MmdAttribute.COLOR_FILL;
+import static com.igormaznitsa.mindmap.annotation.processor.creator.elements.AbstractMmdAnnotationItem.MmdAttribute.COLOR_TEXT;
 import static com.igormaznitsa.mindmap.annotation.processor.creator.elements.AbstractMmdAnnotationItem.fillAttributesWithoutFileAndTopicLinks;
 import static com.igormaznitsa.mindmap.annotation.processor.creator.elements.AbstractMmdAnnotationItem.setTopicDirection;
 
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.annotations.Direction;
+import com.igormaznitsa.mindmap.model.annotations.MmdColor;
 import com.igormaznitsa.mindmap.model.annotations.MmdTopic;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -149,7 +153,41 @@ final class TopicLayoutItem {
       }
       setTopicDirection(root.topic, Direction.LEFT);
     }
-    fillAttributesWithoutFileAndTopicLinks(this.topic, this.annotationItem.annotation.getElement(),
+
+    this.fillAttributesWithParentAwareness(this.topic);
+  }
+
+  private void fillAttributesWithParentAwareness(final Topic topic) throws URISyntaxException {
+    fillAttributesWithoutFileAndTopicLinks(topic, this.annotationItem.annotation.getElement(),
         this.annotationItem.getTopicAnnotation());
+
+    final TopicLayoutItem[] topicPath = this.findPath();
+
+    MmdColor colorText = this.annotationItem.getTopicAnnotation().colorText();
+    MmdColor colorBorder = this.annotationItem.getTopicAnnotation().colorBorder();
+    MmdColor colorFill = this.annotationItem.getTopicAnnotation().colorFill();
+
+    for (int i = topicPath.length - 1; i >= 0; i--) {
+      final TopicLayoutItem next = topicPath[i];
+      if (colorText == MmdColor.DEFAULT) {
+        colorText = next.getAnnotationItem().getTopicAnnotation().colorText();
+      }
+      if (colorFill == MmdColor.DEFAULT) {
+        colorFill = next.getAnnotationItem().getTopicAnnotation().colorFill();
+      }
+      if (colorBorder == MmdColor.DEFAULT) {
+        colorBorder = next.getAnnotationItem().getTopicAnnotation().colorBorder();
+      }
+    }
+
+    if (colorText != MmdColor.DEFAULT) {
+      topic.putAttribute(COLOR_TEXT.getId(), colorText.getHtmlColor());
+    }
+    if (colorFill != MmdColor.DEFAULT) {
+      topic.putAttribute(COLOR_FILL.getId(), colorFill.getHtmlColor());
+    }
+    if (colorBorder != MmdColor.DEFAULT) {
+      topic.putAttribute(COLOR_BORDER.getId(), colorBorder.getHtmlColor());
+    }
   }
 }
