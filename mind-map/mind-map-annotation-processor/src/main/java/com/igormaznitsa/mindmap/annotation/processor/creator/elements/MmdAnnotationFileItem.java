@@ -3,10 +3,13 @@ package com.igormaznitsa.mindmap.annotation.processor.creator.elements;
 import static java.util.Comparator.comparingInt;
 import static java.util.Objects.requireNonNull;
 import static org.apache.commons.io.FilenameUtils.normalizeNoEndSeparator;
+import static org.apache.commons.lang3.StringUtils.isNoneBlank;
 
 import com.igormaznitsa.mindmap.annotation.processor.MmdAnnotation;
 import com.igormaznitsa.mindmap.annotation.processor.creator.exceptions.MmdAnnotationProcessorException;
+import com.igormaznitsa.mindmap.model.ExtraTopic;
 import com.igormaznitsa.mindmap.model.MindMap;
+import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.annotations.MmdFile;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -16,7 +19,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -168,30 +173,11 @@ public class MmdAnnotationFileItem extends AbstractMmdAnnotationItem {
     return current;
   }
 
-  private void doTopicLayout(final MindMap mindMap)
-      throws URISyntaxException, MmdAnnotationProcessorException {
-    // auto-layout by close parent topic elements
-    this.topics
-        .stream()
-        .filter(topic -> !topic.isLinked())
-        .forEach(topic -> {
-          topic.findCloseParentByElements(this.topics).ifPresent(topic::setParent);
-        });
-
-    // processing of topics contain path
-    final List<TopicLayoutItem> pathSorted = this.topics.stream()
-        .filter(x -> x.getAnnotation().path().length > 0)
-        .sorted(comparingInt(o -> o.getAnnotation().path().length))
-        .collect(Collectors.toList());
-
-    for (final TopicLayoutItem item : pathSorted) {
-      item.setParent(ensureTopicPathAndGetLast(item));
-    }
-
-    // check for graph loops
-    for (final TopicLayoutItem item : this.topics) {
+  private static void checkForGraphLoops(final List<TopicLayoutItem> items)
+      throws MmdAnnotationProcessorException {
+    for (final TopicLayoutItem item : items) {
       if (item.getParent() != null) {
-        int counter = this.topics.size();
+        int counter = items.size();
         TopicLayoutItem current = item;
         while (current.getParent() != null) {
           counter--;
@@ -203,6 +189,29 @@ public class MmdAnnotationFileItem extends AbstractMmdAnnotationItem {
         }
       }
     }
+  }
+
+  private void doTopicLayout(final MindMap mindMap)
+      throws URISyntaxException, MmdAnnotationProcessorException {
+    // auto-layout by close parent topic elements
+    this.topics
+        .stream()
+        .filter(topic -> !topic.isLinked())
+        .forEach(topic -> {
+          topic.findCloseParentByElements(this.topics).ifPresent(topic::setParent);
+        });
+
+    // re-layout for topics contain defined paths
+    final List<TopicLayoutItem> pathSorted = this.topics.stream()
+        .filter(x -> x.getAnnotation().path().length > 0)
+        .sorted(comparingInt(o -> o.getAnnotation().path().length))
+        .collect(Collectors.toList());
+
+    for (final TopicLayoutItem item : pathSorted) {
+      item.setParent(ensureTopicPathAndGetLast(item));
+    }
+
+    checkForGraphLoops(this.topics);
 
     // generate topics in mind map
     for (final TopicLayoutItem item : this.topics) {
@@ -212,6 +221,53 @@ public class MmdAnnotationFileItem extends AbstractMmdAnnotationItem {
     // set direction flags on first level topics
     for (final TopicLayoutItem item : this.topics) {
       item.processTopicAttributes();
+    }
+
+    this.fillInternalTopicLinks(mindMap, this.topics);
+  }
+
+  private void fillInternalTopicLinks(final MindMap mindMap, final List<TopicLayoutItem> items)
+      throws MmdAnnotationProcessorException {
+    final Map<String, Topic> uidMarkedTopics = new HashMap<>();
+    for (final Topic topic : mindMap) {
+      final String uid = topic.getAttribute(MmdAttribute.TOPIC_LINK_UID.getId());
+      if (uid != null) {
+        if (uidMarkedTopics.put(uid, topic) != null) {
+          final TopicLayoutItem uidMarkedItem = items.stream()
+              .filter(x -> x.getAnnotation().uid().equals(uid))
+              .findFirst()
+              .orElseThrow(() -> new Error(
+                  "Unexpected situation, can't find child topic for provided UIO: " + uid));
+          throw new MmdAnnotationProcessorException(uidMarkedItem.getAnnotationItem(),
+              "Detected duplicated MMD topic UID '" + uid + '\'');
+        }
+      }
+    }
+
+    if (isNoneBlank(this.mmdFileAnnotation.rootTopic().jumpTo())) {
+      final String targetUid = this.mmdFileAnnotation.rootTopic().jumpTo();
+      if (!targetUid.equals(this.getFileAnnotation().rootTopic().uid())) {
+        final Topic targetTopic = uidMarkedTopics.get(targetUid);
+        if (targetTopic == null) {
+          throw new MmdAnnotationProcessorException(this,
+              "Can't find target topic for UID '" + targetUid + '\'');
+        } else {
+          mindMap.getRoot().setExtra(new ExtraTopic(targetUid));
+        }
+      }
+    }
+    for (final TopicLayoutItem item : items) {
+      final String targetUid = item.getAnnotation().jumpTo();
+      if (isNoneBlank(targetUid)) {
+        if (!item.getAnnotation().uid().equals(targetUid)) {
+          if (uidMarkedTopics.containsKey(targetUid)) {
+            item.findOrCreateTopic(mindMap).setExtra(new ExtraTopic(targetUid));
+          } else {
+            throw new MmdAnnotationProcessorException(item.getAnnotationItem(),
+                "Can't find target topic for UID '" + targetUid + '\'');
+          }
+        }
+      }
     }
   }
 }

@@ -1,23 +1,23 @@
 package com.igormaznitsa.mindmap.annotation.processor.creator.exceptions;
 
-import com.igormaznitsa.mindmap.annotation.processor.creator.elements.MmdAnnotationTopicItem;
+import com.igormaznitsa.mindmap.annotation.processor.creator.elements.AbstractMmdAnnotationItem;
 import java.util.Objects;
 
 public class MmdAnnotationProcessorException extends Exception {
-  private final MmdAnnotationTopicItem source;
+  private final AbstractMmdAnnotationItem source;
 
-  public MmdAnnotationProcessorException(final MmdAnnotationTopicItem annotation,
+  public MmdAnnotationProcessorException(final AbstractMmdAnnotationItem annotation,
                                          final String text) {
     this(annotation, text, null);
   }
 
-  public MmdAnnotationProcessorException(final MmdAnnotationTopicItem source, final String text,
+  public MmdAnnotationProcessorException(final AbstractMmdAnnotationItem source, final String text,
                                          final Throwable cause) {
     super(text, cause);
     this.source = Objects.requireNonNull(source);
   }
 
-  public MmdAnnotationTopicItem getSource() {
+  public AbstractMmdAnnotationItem getSource() {
     return this.source;
   }
 

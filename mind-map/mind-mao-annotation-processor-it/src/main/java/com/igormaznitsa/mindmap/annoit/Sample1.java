@@ -9,7 +9,7 @@ import com.igormaznitsa.mindmap.model.annotations.MmdTopic;
 public class Sample1 {
 
   @MmdTopic(title = "method___1")
-  public void method1(@MmdTopic int a, @MmdTopic int b) {
+  public void method1(@MmdTopic(uid = "aaa") int a, @MmdTopic(jumpTo = "aaa") int b) {
 
   }
 }

@@ -1,6 +1,7 @@
 package com.igormaznitsa.mindmap.annotation.processor.creator.elements;
 
 import static java.util.Objects.requireNonNull;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 import com.igormaznitsa.mindmap.annotation.processor.MmdAnnotation;
 import com.igormaznitsa.mindmap.model.ExtraLink;
@@ -35,12 +36,16 @@ public abstract class AbstractMmdAnnotationItem {
         StringUtils.isBlank(topicAnnotation.title()) ? element.getSimpleName().toString() :
             topicAnnotation.title());
 
-    if (StringUtils.isNotBlank(topicAnnotation.note())) {
+    if (isNotBlank(topicAnnotation.note())) {
       topic.setExtra(new ExtraNote(topicAnnotation.note()));
     }
 
-    if (StringUtils.isNotBlank(topicAnnotation.uri())) {
+    if (isNotBlank(topicAnnotation.uri())) {
       topic.setExtra(new ExtraLink(topicAnnotation.uri()));
+    }
+
+    if (isNotBlank(topicAnnotation.uid())) {
+      topic.putAttribute(MmdAttribute.TOPIC_LINK_UID.getId(), topicAnnotation.uid());
     }
 
     if (topicAnnotation.colorBorder() != MmdColor.DEFAULT) {
