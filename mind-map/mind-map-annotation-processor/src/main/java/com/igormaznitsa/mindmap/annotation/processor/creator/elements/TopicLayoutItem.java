@@ -3,6 +3,9 @@ package com.igormaznitsa.mindmap.annotation.processor.creator.elements;
 import static com.igormaznitsa.mindmap.annotation.processor.creator.elements.AbstractMmdAnnotationItem.MmdAttribute.COLOR_BORDER;
 import static com.igormaznitsa.mindmap.annotation.processor.creator.elements.AbstractMmdAnnotationItem.MmdAttribute.COLOR_FILL;
 import static com.igormaznitsa.mindmap.annotation.processor.creator.elements.AbstractMmdAnnotationItem.MmdAttribute.COLOR_TEXT;
+import static com.igormaznitsa.mindmap.annotation.processor.creator.elements.AbstractMmdAnnotationItem.MmdAttribute.EMOTICON;
+import static com.igormaznitsa.mindmap.annotation.processor.creator.elements.AbstractMmdAnnotationItem.MmdAttribute.LEFT_SIDE;
+import static com.igormaznitsa.mindmap.annotation.processor.creator.elements.AbstractMmdAnnotationItem.MmdAttribute.TOPIC_LINK_UID;
 import static com.igormaznitsa.mindmap.annotation.processor.creator.elements.AbstractMmdAnnotationItem.fillAttributesWithoutFileAndTopicLinks;
 import static com.igormaznitsa.mindmap.annotation.processor.creator.elements.AbstractMmdAnnotationItem.setTopicDirection;
 
@@ -17,6 +20,7 @@ import java.util.Objects;
 import java.util.Optional;
 import javax.lang.model.element.Element;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 
 final class TopicLayoutItem {
   private final MmdAnnotationTopicItem annotationItem;
@@ -41,6 +45,29 @@ final class TopicLayoutItem {
 
   boolean isLinked() {
     return this.parent != null;
+  }
+
+  public String findAnyPossibleUid() {
+    if (this.autoCreated) {
+      return this.forceTitle;
+    } else {
+      if (StringUtils.isBlank(this.annotationItem.getTopicAnnotation().uid())) {
+        final String uid = this.annotationItem.getTopicAnnotation().uid();
+        final String title = this.annotationItem.getTopicAnnotation().title();
+        final String elementName =
+            this.annotationItem.annotation.getElement().getSimpleName().toString();
+
+        if (StringUtils.isNotBlank(uid)) {
+          return uid;
+        }
+        if (StringUtils.isNotBlank(title)) {
+          return uid;
+        }
+        return elementName;
+      } else {
+        return this.annotationItem.getTopicAnnotation().uid();
+      }
+    }
   }
 
   public Optional<TopicLayoutItem> findCloseParentByElements(final List<TopicLayoutItem> items) {
@@ -98,6 +125,9 @@ final class TopicLayoutItem {
       this.topic = new Topic(mindMap,
           parentTopic == null ? mindMap.getRoot() : parentTopic,
           this.findTitle());
+      if (this.autoCreated) {
+        this.topic.setText(this.forceTitle);
+      }
     }
     return this.topic;
   }
@@ -160,6 +190,15 @@ final class TopicLayoutItem {
   private void fillAttributesWithParentAwareness(final Topic topic) throws URISyntaxException {
     fillAttributesWithoutFileAndTopicLinks(topic, this.annotationItem.annotation.getElement(),
         this.annotationItem.getTopicAnnotation());
+
+    if (this.autoCreated) {
+      topic.setText(this.forceTitle);
+      topic.removeAttributes(false,
+          TOPIC_LINK_UID.getId(),
+          EMOTICON.getId(),
+          LEFT_SIDE.getId()
+      );
+    }
 
     final TopicLayoutItem[] topicPath = this.findPath();
 

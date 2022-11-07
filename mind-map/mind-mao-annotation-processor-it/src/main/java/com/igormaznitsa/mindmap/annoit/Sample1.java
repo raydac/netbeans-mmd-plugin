@@ -12,4 +12,9 @@ public class Sample1 {
   public void method1(@MmdTopic(uid = "aaa") int a, @MmdTopic(jumpTo = "aaa") int b) {
 
   }
+
+  @MmdTopic(path = {"methods", "static"})
+  public static void static1() {
+
+  }
 }

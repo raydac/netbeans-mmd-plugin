@@ -123,11 +123,18 @@ public class MmdAnnotationFileItem extends AbstractMmdAnnotationItem {
 
   private Optional<TopicLayoutItem> findForNameOrUid(final TopicLayoutItem preferredParent,
                                                      final String nameOrUid) {
-    final List<TopicLayoutItem> found = this.topics
+    List<TopicLayoutItem> found = this.topics
         .stream()
-        .filter(x -> StringUtils.isNotBlank(x.getAnnotation().uid()) &&
-            nameOrUid.equals(x.getAnnotation().uid()))
+        .filter(x -> StringUtils.isNotBlank(x.getAnnotation().uid())
+            && nameOrUid.equals(x.getAnnotation().uid()))
         .collect(Collectors.toList());
+
+    if (found.isEmpty()) {
+      found = this.topics
+          .stream()
+          .filter(x -> nameOrUid.equals(x.findAnyPossibleUid()))
+          .collect(Collectors.toList());
+    }
 
     if (found.isEmpty()) {
       return Optional.empty();
@@ -144,6 +151,7 @@ public class MmdAnnotationFileItem extends AbstractMmdAnnotationItem {
 
   private TopicLayoutItem ensureTopicPathAndGetLast(final TopicLayoutItem item)
       throws MmdAnnotationProcessorException {
+
     final String[] wholePath = item.getAnnotation().path();
     final String firstPathItemId = wholePath[0];
     TopicLayoutItem first = this.findForNameOrUid(null, firstPathItemId).orElse(null);
@@ -155,7 +163,7 @@ public class MmdAnnotationFileItem extends AbstractMmdAnnotationItem {
     for (int i = 1; i < wholePath.length; i++) {
       TopicLayoutItem found = this.findForNameOrUid(current, wholePath[i]).orElse(null);
       if (found == null) {
-        found = new TopicLayoutItem(item.getAnnotationItem(), firstPathItemId, true);
+        found = new TopicLayoutItem(item.getAnnotationItem(), wholePath[i], true);
         found.setParent(current);
         this.topics.add(found);
       } else {

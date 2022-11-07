@@ -17,4 +17,9 @@ public class Sample1Successor extends Sample1 {
 
     int varB;
   }
+
+  @MmdTopic(path = {"methods", "static"})
+  public static void someStaticInSuccessor() {
+
+  }
 }
