@@ -14,7 +14,6 @@ import java.lang.annotation.Target;
     ElementType.FIELD,
     ElementType.METHOD,
     ElementType.CONSTRUCTOR,
-    ElementType.LOCAL_VARIABLE,
     ElementType.ANNOTATION_TYPE,
     ElementType.PACKAGE,
     ElementType.TYPE_PARAMETER,
