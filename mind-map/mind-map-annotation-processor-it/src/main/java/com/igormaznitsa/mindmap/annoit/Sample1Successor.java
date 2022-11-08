@@ -6,6 +6,11 @@ import com.igormaznitsa.mindmap.model.annotations.MmdTopic;
 
 public class Sample1Successor extends Sample1 {
 
+  @MmdTopic(path = {"methods", "static"})
+  public static void someStaticInSuccessor() {
+
+  }
+
   @MmdTopic(direction = Direction.LEFT)
   public void method2() {
 
@@ -16,10 +21,5 @@ public class Sample1Successor extends Sample1 {
     int varA;
 
     int varB;
-  }
-
-  @MmdTopic(path = {"methods", "static"})
-  public static void someStaticInSuccessor() {
-
   }
 }

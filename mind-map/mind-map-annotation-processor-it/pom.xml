@@ -19,6 +19,12 @@
     <dependencies>
         <dependency>
             <groupId>com.igormaznitsa</groupId>
+            <artifactId>mind-map-annotations</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.igormaznitsa</groupId>
             <artifactId>mind-map-model</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
