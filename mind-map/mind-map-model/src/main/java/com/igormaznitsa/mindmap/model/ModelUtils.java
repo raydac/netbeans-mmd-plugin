@@ -18,8 +18,6 @@ package com.igormaznitsa.mindmap.model;
 
 import static java.util.Locale.ENGLISH;
 
-import com.igormaznitsa.mindmap.model.nio.Path;
-import com.igormaznitsa.mindmap.model.nio.Paths;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -28,6 +26,8 @@ import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;

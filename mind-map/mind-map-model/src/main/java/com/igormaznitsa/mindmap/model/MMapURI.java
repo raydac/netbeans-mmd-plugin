@@ -18,8 +18,6 @@ package com.igormaznitsa.mindmap.model;
 
 import static java.util.Objects.requireNonNull;
 
-import com.igormaznitsa.mindmap.model.nio.Path;
-import com.igormaznitsa.mindmap.model.nio.Paths;
 import java.io.File;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
@@ -27,6 +25,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -113,12 +112,12 @@ public class MMapURI implements Serializable {
       this.parameters.putAll(parameters);
     }
 
-    final Path filePath = Paths.toPath(file);
+    final Path filePath = file.toPath();
 
     if (baseFolder == null) {
       this.uri = ModelUtils.toURI(filePath);
     } else {
-      final Path basePath = Paths.toPath(baseFolder);
+      final Path basePath = baseFolder.toPath();
       if (basePath.isAbsolute()) {
         final Path path = filePath.startsWith(basePath) ? basePath.relativize(filePath) : filePath;
         this.uri = ModelUtils.toURI(path);
