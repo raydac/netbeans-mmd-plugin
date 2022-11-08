@@ -24,8 +24,6 @@ import com.igormaznitsa.meta.common.utils.ArrayUtils;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
-import com.igormaznitsa.mindmap.model.nio.Path;
-import com.igormaznitsa.mindmap.model.nio.Paths;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.SciaRetoStarter;
@@ -35,6 +33,7 @@ import com.igormaznitsa.sciareto.ui.MainFrame;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -248,10 +247,10 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
 
   @Nullable
   public NodeProject findProjectForFile(@Nonnull final File file) {
-    final Path filepath = Paths.toPath(file);
+    final Path filepath = file.toPath();
     for (final NodeFileOrFolder t : this.children) {
-      final File projectFolder = ((NodeProject) t).getFolder();
-      if (filepath.startsWith(Paths.toPath(projectFolder))) {
+      final Path projectFolder = ((NodeProject) t).getFolder().toPath();
+      if (filepath.startsWith(projectFolder)) {
         return (NodeProject) t;
       }
     }

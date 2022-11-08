@@ -21,7 +21,6 @@ package com.igormaznitsa.sciareto.ui.tabs;
 
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
-import com.igormaznitsa.mindmap.model.nio.Paths;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.SciaRetoStarter;
@@ -29,6 +28,7 @@ import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.editors.EditorContentType;
 import com.igormaznitsa.sciareto.ui.tree.NodeProject;
+import java.nio.file.Path;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 import javax.annotation.Nonnull;
@@ -195,8 +195,9 @@ public final class TabTitle extends JPanel {
   public boolean belongFolderOrSame(@Nonnull final File folder) {
     boolean result = false;
     if (this.associatedFile != null) {
+      final Path folderPath = folder.toPath();
       return folder.equals(this.associatedFile) ||
-          Paths.toPath(this.associatedFile).startsWith(Paths.toPath(folder));
+          this.associatedFile.toPath().startsWith(folderPath);
     }
     return result;
   }
