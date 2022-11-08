@@ -100,9 +100,15 @@ public class MmdFileCreator {
         this.builder.getMessager()
             .printMessage(Diagnostic.Kind.NOTE, "Created MMD file: " + filePath);
       } catch (Exception ex) {
-        this.builder.getMessager().printMessage(Diagnostic.Kind.ERROR,
-            String.format("Error during MMD file write with uid '%s': %s", e.getUid(),
-                ex.getMessage()), e.getAnnotation().getElement());
+        if (ex instanceof MmdAnnotationProcessorException) {
+          final MmdAnnotationProcessorException mmdEx = (MmdAnnotationProcessorException) ex;
+          this.builder.getMessager().printMessage(Diagnostic.Kind.ERROR,
+              mmdEx.getMessage(), mmdEx.getSource().getAnnotation().getElement());
+        } else {
+          this.builder.getMessager().printMessage(Diagnostic.Kind.ERROR,
+              String.format("Error during MMD file write with uid '%s': %s", e.getUid(),
+                  ex.getMessage()), e.getAnnotation().getElement());
+        }
       }
     });
   }
