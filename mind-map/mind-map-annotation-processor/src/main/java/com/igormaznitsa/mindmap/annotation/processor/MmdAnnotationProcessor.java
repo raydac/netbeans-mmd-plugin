@@ -171,6 +171,13 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
         NOTE, format("Detected %d annotated items to be used for MMD", mmdAnnotationList.size()));
 
     if (!mmdAnnotationList.isEmpty()) {
+      mmdAnnotationList.sort(
+          (o1, o2) -> o1.getElement()
+              .getSimpleName()
+              .toString()
+              .compareTo(o2.getElement().toString())
+      );
+
       MmdFileCreator.builder()
           .setMessager(this.messager)
           .setTargetFolder(this.optionTargetFolder)
