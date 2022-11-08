@@ -72,43 +72,51 @@ public class MmdAnnotationFileItem extends AbstractMmdAnnotationItem {
   }
 
   public Path write(
-      final Path forceFolder,
+      final Path targetFolder,
+      final Path fileLinkBaseFolder,
       final boolean allowOverwrite,
       final boolean dryStart
   ) throws IOException, MmdAnnotationProcessorException {
+
+    final Path targetFile = this.findTargetPath(targetFolder);
+
     final MindMap map;
     try {
-      map = this.makeMindMap();
+      map = this.makeMindMap(
+          fileLinkBaseFolder == null ? targetFile.getParent() : fileLinkBaseFolder);
     } catch (URISyntaxException ex) {
       throw new IOException("Can't write MMD file for URI syntax error", ex);
     }
 
     final String mapText = map.asString();
 
-    final Path filePath = this.findTargetPath(forceFolder);
-
     if (dryStart) {
       // do nothing
     } else {
-      PathUtils.createParentDirectories(filePath);
-      if (Files.isRegularFile(filePath) && !allowOverwrite) {
-        throw new IOException("MMD file already exists: " + filePath);
+      PathUtils.createParentDirectories(targetFile);
+      if (Files.isRegularFile(targetFile) && !allowOverwrite) {
+        throw new IOException("MMD file already exists: " + targetFile);
       }
-      FileUtils.write(filePath.toFile(), mapText, StandardCharsets.UTF_8);
+      FileUtils.write(targetFile.toFile(), mapText, StandardCharsets.UTF_8);
     }
-    return filePath;
+    return targetFile;
   }
 
-  private MindMap makeMindMap() throws URISyntaxException, MmdAnnotationProcessorException {
+  private MindMap makeMindMap(final Path fileLinkBaseFolder)
+      throws URISyntaxException, MmdAnnotationProcessorException {
     final MindMap map = new MindMap(true);
     map.putAttribute("showJumps", "true");
+    map.putAttribute("generatorId", "com.igormaznitsa:mind-map-annotation-processor:1.6.0");
+    if (fileLinkBaseFolder == null) {
+      map.putAttribute("noBaseFolder", "true");
+    }
 
     fillAttributesWithoutFileAndTopicLinks(
         map.getRoot(),
         this.annotation.getElement(),
         this.mmdFileAnnotation.rootTopic()
     );
-    this.doTopicLayout(map);
+    this.doTopicLayout(fileLinkBaseFolder, map);
 
     return map;
   }
@@ -199,7 +207,7 @@ public class MmdAnnotationFileItem extends AbstractMmdAnnotationItem {
     }
   }
 
-  private void doTopicLayout(final MindMap mindMap)
+  private void doTopicLayout(final Path fileLinkBaseFolder, final MindMap mindMap)
       throws URISyntaxException, MmdAnnotationProcessorException {
     // auto-layout by close parent topic elements
     this.topics
@@ -232,6 +240,22 @@ public class MmdAnnotationFileItem extends AbstractMmdAnnotationItem {
     }
 
     this.fillInternalTopicLinks(mindMap, this.topics);
+    this.fillFileLinksAndAnchors(mindMap, fileLinkBaseFolder, this.topics);
+  }
+
+  private void fillFileLinksAndAnchors(
+      final MindMap mindMap,
+      final Path fileLinkBaseFolder,
+      final List<TopicLayoutItem> items
+  ) throws MmdAnnotationProcessorException {
+    final Path basePath = fileLinkBaseFolder.toAbsolutePath();
+    fillAnchorOrFileLink(mindMap.getRoot(), this, this.mmdFileAnnotation.rootTopic(), basePath);
+    for (final TopicLayoutItem item : items) {
+      if (!item.isAutocreated()) {
+        fillAnchorOrFileLink(item.findOrCreateTopic(mindMap), item.getAnnotationItem(),
+            item.getAnnotation(), basePath);
+      }
+    }
   }
 
   private void fillInternalTopicLinks(final MindMap mindMap, final List<TopicLayoutItem> items)

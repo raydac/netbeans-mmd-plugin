@@ -30,24 +30,26 @@ import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
+import javax.annotation.processing.SupportedOptions;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import org.apache.commons.io.FilenameUtils;
 
+@SupportedOptions({
+    MmdAnnotationProcessor.KEY_MMD_TARGET_FOLDER,
+    MmdAnnotationProcessor.KEY_MMD_FOLDER_CREATE,
+    MmdAnnotationProcessor.KEY_MMD_DRY_START,
+    MmdAnnotationProcessor.KEY_MMD_FILE_OVERWRITE,
+    MmdAnnotationProcessor.KEY_MMD_FILE_LINK_BASE_FOLDER
+})
 public class MmdAnnotationProcessor extends AbstractProcessor {
 
-  public static final String KEY_MMD_FORCE_FOLDER = "mmd.doc.force.folder";
-  public static final String KEY_MMD_DRY_START = "mmd.doc.dry.start";
-  public static final String KEY_MMD_FOLDER_CREATE = "mmd.doc.folder.create";
-  public static final String KEY_MMD_RELATIVE_PATHS = "mmd.doc.path.relative";
-  public static final String KEY_MMD_FILE_OVERWRITE = "mmd.doc.file.overwrite";
-  private static final Set<String> SUPPORTED_OPTIONS =
-      Set.of(
-          KEY_MMD_FORCE_FOLDER,
-          KEY_MMD_FOLDER_CREATE,
-          KEY_MMD_RELATIVE_PATHS,
-          KEY_MMD_FILE_OVERWRITE,
-          KEY_MMD_DRY_START);
+  public static final String KEY_MMD_TARGET_FOLDER = "mmd.target.folder";
+  public static final String KEY_MMD_FILE_LINK_BASE_FOLDER = "mmd.file.link.base.folder";
+  public static final String KEY_MMD_DRY_START = "mmd.dry.start";
+  public static final String KEY_MMD_FOLDER_CREATE = "mmd.folder.create";
+  public static final String KEY_MMD_FILE_OVERWRITE = "mmd.file.overwrite";
   private static final Map<String, Class<? extends Annotation>> ANNOTATIONS =
       Map.of(
           MmdTopic.class.getName(), MmdTopic.class,
@@ -57,8 +59,8 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
   private Trees trees;
   private SourcePositions sourcePositions;
   private Messager messager;
-  private Path optionForceFolder;
-  private boolean optionPreferRelativePaths;
+  private Path optionTargetFolder;
+  private Path optionFileLinkBaseFolder;
   private boolean optionFileOverwrite;
   private boolean optionDryStart;
 
@@ -87,49 +89,44 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
           "MMD processor started in DRY mode");
     }
 
-    if (processingEnv.getOptions().containsKey(KEY_MMD_FORCE_FOLDER)) {
-      this.optionForceFolder = Paths.get(processingEnv.getOptions().get(KEY_MMD_FORCE_FOLDER));
-      if (!(Files.isDirectory(this.optionForceFolder) || this.optionDryStart)) {
+    if (processingEnv.getOptions().containsKey(KEY_MMD_TARGET_FOLDER)) {
+      this.optionTargetFolder = Paths.get(processingEnv.getOptions().get(KEY_MMD_TARGET_FOLDER));
+      if (!(Files.isDirectory(this.optionTargetFolder) || this.optionDryStart)) {
         this.messager.printMessage(WARNING,
-            "Folder for MMD not-exists: " + this.optionForceFolder);
+            "Folder for MMD not-exists: " + this.optionTargetFolder);
         if (Boolean.parseBoolean(
             processingEnv.getOptions().getOrDefault(KEY_MMD_FOLDER_CREATE, "false"))) {
           try {
-            this.optionForceFolder = Files.createDirectories(this.optionForceFolder);
+            this.optionTargetFolder = Files.createDirectories(this.optionTargetFolder);
             this.messager.printMessage(NOTE,
-                "Folder for MMD files successfully created: " + this.optionForceFolder);
+                "Folder for MMD files successfully created: " + this.optionTargetFolder);
           } catch (IOException ex) {
             this.messager.printMessage(ERROR,
-                "Can't create folder to write MMD files: " + this.optionForceFolder);
+                "Can't create folder to write MMD files: " + this.optionTargetFolder);
           }
         } else {
           this.messager.printMessage(ERROR,
               "Can't find folder for MMD files (use " + KEY_MMD_FOLDER_CREATE +
                   " flag to make it): " +
-                  this.optionForceFolder);
+                  this.optionTargetFolder);
         }
       }
-
-      if (this.optionForceFolder != null) {
+      if (this.optionTargetFolder != null) {
         this.messager.printMessage(WARNING,
-            String.format("Forced folder to write MMD files: %s", this.optionForceFolder));
+            String.format("Directly provided target folder to write MMD files: %s",
+                this.optionTargetFolder));
       }
     }
 
-    this.optionPreferRelativePaths = Boolean.parseBoolean(processingEnv.getOptions().getOrDefault(
-        KEY_MMD_RELATIVE_PATHS, "true"));
+    if (processingEnv.getOptions().containsKey(KEY_MMD_FILE_LINK_BASE_FOLDER)) {
+      this.optionFileLinkBaseFolder = Paths.get(FilenameUtils.normalizeNoEndSeparator(
+          processingEnv.getOptions().get(KEY_MMD_FILE_LINK_BASE_FOLDER)));
+      this.messager.printMessage(NOTE,
+          String.format("File link base folder for MMD files: %s", this.optionFileLinkBaseFolder));
+    }
 
     this.optionFileOverwrite = Boolean.parseBoolean(processingEnv.getOptions().getOrDefault(
         KEY_MMD_FILE_OVERWRITE, "true"));
-
-    this.messager.printMessage(NOTE,
-        String.format("Prefer generate relative paths for MMD file links: %s",
-            this.optionPreferRelativePaths));
-  }
-
-  @Override
-  public Set<String> getSupportedOptions() {
-    return SUPPORTED_OPTIONS;
   }
 
   @Override
@@ -176,10 +173,10 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
     if (!mmdAnnotationList.isEmpty()) {
       MmdFileCreator.builder()
           .setMessager(this.messager)
-          .setForceFolder(this.optionForceFolder)
+          .setTargetFolder(this.optionTargetFolder)
           .setDryStart(this.optionDryStart)
           .setOverwriteAllowed(this.optionFileOverwrite)
-          .setPreferRelativePaths(this.optionPreferRelativePaths)
+          .setFileLinkBaseFolder(this.optionFileLinkBaseFolder)
           .setAnnotations(mmdAnnotationList)
           .build().process();
     }

@@ -43,6 +43,10 @@ final class TopicLayoutItem {
     this.autoCreated = autoCreated;
   }
 
+  public boolean isAutocreated() {
+    return this.autoCreated;
+  }
+
   boolean isLinked() {
     return this.parent != null;
   }

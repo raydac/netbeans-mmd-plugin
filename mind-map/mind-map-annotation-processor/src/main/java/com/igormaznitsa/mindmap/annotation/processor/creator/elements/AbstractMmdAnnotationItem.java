@@ -4,20 +4,33 @@ import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 import com.igormaznitsa.mindmap.annotation.processor.MmdAnnotation;
+import com.igormaznitsa.mindmap.annotation.processor.creator.exceptions.MmdAnnotationProcessorException;
+import com.igormaznitsa.mindmap.model.ExtraFile;
 import com.igormaznitsa.mindmap.model.ExtraLink;
 import com.igormaznitsa.mindmap.model.ExtraNote;
+import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.annotations.Direction;
 import com.igormaznitsa.mindmap.model.annotations.MmdColor;
 import com.igormaznitsa.mindmap.model.annotations.MmdEmoticon;
 import com.igormaznitsa.mindmap.model.annotations.MmdTopic;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.util.Objects;
+import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.lang.model.element.Element;
 import org.apache.commons.lang3.StringUtils;
 
 public abstract class AbstractMmdAnnotationItem {
+  private static Pattern PATTERN_FILEPATH_LINE_NUMBER =
+      Pattern.compile("^(.+)(?:\\:([0-9]+))|(.+)$");
   protected final MmdAnnotation annotation;
+
+  public AbstractMmdAnnotationItem(final MmdAnnotation annotation) {
+    this.annotation = requireNonNull(annotation);
+  }
 
   protected static void setTopicDirection(final Topic topic, final Direction direction) {
     if (direction != Direction.AUTO) {
@@ -25,6 +38,49 @@ public abstract class AbstractMmdAnnotationItem {
         topic.putAttribute(MmdAttribute.LEFT_SIDE.getId(), "true");
       }
     }
+  }
+
+  protected static void fillAnchorOrFileLink(
+      final Topic topic,
+      final AbstractMmdAnnotationItem topicItem,
+      final MmdTopic topicAnnotation,
+      final Path baseFolder
+  ) throws MmdAnnotationProcessorException {
+    final Properties properties = new Properties();
+
+    final String filePath;
+    if (StringUtils.isNotBlank(topicAnnotation.file())) {
+      final Matcher matcher = PATTERN_FILEPATH_LINE_NUMBER.matcher(topicAnnotation.file());
+      if (matcher.find()) {
+        if (matcher.group(1) == null) {
+          filePath = matcher.group(3);
+        } else {
+          filePath = matcher.group(1);
+          try {
+            properties.put("line", Long.parseLong(matcher.group(2)));
+          } catch (NumberFormatException ex) {
+            throw new MmdAnnotationProcessorException(topicItem,
+                "Can't process line number in file path: " + topicAnnotation.file());
+          }
+        }
+      } else {
+        throw new MmdAnnotationProcessorException(topicItem,
+            "Can't extract file and line from file path: " + topicAnnotation.file());
+      }
+    } else if (topicAnnotation.anchor()) {
+      filePath = topicItem.getAnnotation().getPath().toString();
+      properties.put("line", Long.toString(topicItem.getAnnotation().getLine()));
+    } else {
+      return;
+    }
+    final MMapURI fileUri;
+    try {
+      fileUri = MMapURI.makeFromFilePath(baseFolder.toFile(), filePath, properties);
+    } catch (Exception ex) {
+      throw new MmdAnnotationProcessorException(topicItem, "Can't create topic file path for error",
+          ex);
+    }
+    topic.setExtra(new ExtraFile(fileUri));
   }
 
   protected static void fillAttributesWithoutFileAndTopicLinks(
@@ -72,30 +128,6 @@ public abstract class AbstractMmdAnnotationItem {
     }
   }
 
-  public enum MmdAttribute {
-    LEFT_SIDE("leftSide"),
-    TOPIC_LINK_UID("topicLinkUID"),
-    EMOTICON("mmd.emoticon"),
-    COLOR_FILL("fillColor"),
-    COLOR_BORDER("borderColor"),
-    COLOR_TEXT("textColor"),
-    COLLAPSED("collapsed");
-
-    private final String id;
-
-    MmdAttribute(final String id) {
-      this.id = id;
-    }
-
-    public String getId() {
-      return this.id;
-    }
-  }
-
-  public AbstractMmdAnnotationItem(final MmdAnnotation annotation) {
-    this.annotation = requireNonNull(annotation);
-  }
-
   public MmdAnnotation getAnnotation() {
     return this.annotation;
   }
@@ -121,5 +153,25 @@ public abstract class AbstractMmdAnnotationItem {
     return "AbstractMmdAnnotationItem{" +
         "annotation=" + annotation +
         '}';
+  }
+
+  public enum MmdAttribute {
+    LEFT_SIDE("leftSide"),
+    TOPIC_LINK_UID("topicLinkUID"),
+    EMOTICON("mmd.emoticon"),
+    COLOR_FILL("fillColor"),
+    COLOR_BORDER("borderColor"),
+    COLOR_TEXT("textColor"),
+    COLLAPSED("collapsed");
+
+    private final String id;
+
+    MmdAttribute(final String id) {
+      this.id = id;
+    }
+
+    public String getId() {
+      return this.id;
+    }
   }
 }

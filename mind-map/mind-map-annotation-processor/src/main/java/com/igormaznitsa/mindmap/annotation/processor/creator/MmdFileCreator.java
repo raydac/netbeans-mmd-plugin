@@ -92,7 +92,8 @@ public class MmdFileCreator {
           String.format("Processing MMD file for ID: %s", e.getUid()));
       try {
         final Path filePath = e.write(
-            this.builder.getForceFolder(),
+            this.builder.getTargetFolder(),
+            this.builder.getFileLinkBaseFolder(),
             this.builder.isOverwriteAllowed(),
             this.builder.isDryStart()
         );
@@ -166,21 +167,21 @@ public class MmdFileCreator {
 
   public static final class Builder {
     private List<MmdAnnotation> annotations;
-    private Path forceFolder;
+    private Path targetFolder;
+    private Path fileLinkBaseFolder;
     private boolean overwriteAllowed = true;
     private boolean dryStart;
-    private boolean preferRelativePaths = true;
     private Messager messager;
 
     private Builder() {
     }
 
-    public Path getForceFolder() {
-      return this.forceFolder;
+    public Path getTargetFolder() {
+      return this.targetFolder;
     }
 
-    public Builder setForceFolder(final Path forceFolder) {
-      this.forceFolder = forceFolder;
+    public Builder setTargetFolder(final Path targetFolder) {
+      this.targetFolder = targetFolder;
       return this;
     }
 
@@ -200,15 +201,6 @@ public class MmdFileCreator {
 
     public Builder setOverwriteAllowed(final boolean overwriteAllowed) {
       this.overwriteAllowed = overwriteAllowed;
-      return this;
-    }
-
-    public boolean isPreferRelativePaths() {
-      return this.preferRelativePaths;
-    }
-
-    public Builder setPreferRelativePaths(final boolean preferRelativePaths) {
-      this.preferRelativePaths = preferRelativePaths;
       return this;
     }
 
@@ -235,6 +227,15 @@ public class MmdFileCreator {
         throw new IllegalStateException("Not all fields set");
       }
       return new MmdFileCreator(this);
+    }
+
+    public Path getFileLinkBaseFolder() {
+      return this.fileLinkBaseFolder;
+    }
+
+    public Builder setFileLinkBaseFolder(final Path value) {
+      this.fileLinkBaseFolder = value;
+      return this;
     }
   }
 }
