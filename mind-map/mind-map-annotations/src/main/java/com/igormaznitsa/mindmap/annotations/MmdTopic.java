@@ -41,7 +41,8 @@ public @interface MmdTopic {
   /**
    * Path to the topic in MMD file
    *
-   * @return array contains path from root, every path item can be a topic UID or just title text if there is no any topic with such UID.
+   * @return array contains path from root, every path item can be a topic UID or just title text if
+   * there is no any topic with such UID.
    * @see #uid()
    */
   String[] path() default {};
@@ -63,7 +64,8 @@ public @interface MmdTopic {
   /**
    * File path to be added into topic.
    *
-   * @return if there is any MMD file with such UID then its path in use else just path added if non-empty.
+   * @return if there is any MMD file with such UID then its path in use else just path added if
+   * non-empty.
    * @see MmdFile#uid()
    */
   String file() default "";

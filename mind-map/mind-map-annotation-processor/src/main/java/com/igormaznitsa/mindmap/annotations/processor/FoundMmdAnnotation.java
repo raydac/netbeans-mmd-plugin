@@ -1,4 +1,4 @@
-package com.igormaznitsa.mindmap.annotation.processor;
+package com.igormaznitsa.mindmap.annotations.processor;
 
 import static java.util.Objects.requireNonNull;
 
@@ -10,7 +10,7 @@ import javax.lang.model.element.Element;
 /**
  * Immutable data object contains found MMD annotation, its path and line number.
  */
-public class MmdAnnotation {
+public class FoundMmdAnnotation {
   /**
    * Found annotation.
    */
@@ -39,12 +39,8 @@ public class MmdAnnotation {
    * @throws NullPointerException     thrown if any argument is null
    * @throws IllegalArgumentException thrown if line is zero or negative one
    */
-  public MmdAnnotation(
-      final Element element,
-      final Annotation annotation,
-      final Path path,
-      final long line
-  ) {
+  public FoundMmdAnnotation(
+      final Element element, final Annotation annotation, final Path path, final long line) {
     this.element = requireNonNull(element);
     this.annotation = requireNonNull(annotation);
     this.path = requireNonNull(path);
@@ -67,8 +63,8 @@ public class MmdAnnotation {
     if (that == this) {
       return true;
     }
-    if (that instanceof MmdAnnotation) {
-      final MmdAnnotation thatInstance = (MmdAnnotation) that;
+    if (that instanceof FoundMmdAnnotation) {
+      final FoundMmdAnnotation thatInstance = (FoundMmdAnnotation) that;
       return this.annotation.equals(thatInstance.annotation)
           && this.line == thatInstance.line
           && this.path.equals(thatInstance.path);
@@ -77,12 +73,14 @@ public class MmdAnnotation {
   }
 
   /**
-   * Get annotation.
+   * Get annotation and automatically cast to type.
    *
+   * @param <A> cast to annotation type
    * @return the annotation, must not be null
    */
-  public Annotation getAnnotation() {
-    return this.annotation;
+  @SuppressWarnings("unchecked")
+  public <A extends Annotation> A asAnnotation() {
+    return (A) this.annotation;
   }
 
   /**
@@ -114,8 +112,6 @@ public class MmdAnnotation {
 
   @Override
   public String toString() {
-    return "MmdAnnotation{" +
-        "position=" + this.getPath().toString() + ":" + this.getLine() +
-        '}';
+    return "MmdAnnotation{" + "position=" + this.getPath().toString() + ":" + this.getLine() + '}';
   }
 }

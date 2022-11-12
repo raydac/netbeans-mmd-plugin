@@ -12,9 +12,7 @@ import java.lang.annotation.Target;
  * @see MmdFile
  */
 @Retention(RetentionPolicy.SOURCE)
-@Target({
-    ElementType.TYPE
-})
+@Target({ElementType.TYPE})
 @Inherited
 public @interface MmdFiles {
   MmdFile[] value() default {};

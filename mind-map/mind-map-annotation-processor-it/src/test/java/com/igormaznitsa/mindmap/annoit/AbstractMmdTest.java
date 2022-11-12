@@ -32,7 +32,7 @@ public abstract class AbstractMmdTest {
     final Path asPath = new File(FilenameUtils.normalizeNoEndSeparator(path)).toPath();
     assertFalse("path must be relative one", asPath.isAbsolute());
     final Path mindMapFile = this.getSrcDir().resolve(asPath);
-    assertTrue("Can't find mind map file", Files.isRegularFile(mindMapFile));
+    assertTrue("Can't find mind map file: "+ mindMapFile, Files.isRegularFile(mindMapFile));
     return new MindMap(new StringReader(readFileToString(mindMapFile.toFile(), UTF_8)));
   }
 }

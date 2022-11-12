@@ -1,4 +1,4 @@
-package com.igormaznitsa.mindmap.annotation.processor.logger;
+package com.igormaznitsa.mindmap.annotations.processor.logger;
 
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerAdapter;

@@ -1,4 +1,4 @@
-package com.igormaznitsa.mindmap.annotation.processor;
+package com.igormaznitsa.mindmap.annotations.processor;
 
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
@@ -6,18 +6,18 @@ import static javax.tools.Diagnostic.Kind.ERROR;
 import static javax.tools.Diagnostic.Kind.NOTE;
 import static javax.tools.Diagnostic.Kind.WARNING;
 
-import com.igormaznitsa.mindmap.annotation.processor.creator.MmdFileCreator;
+import com.igormaznitsa.mindmap.annotations.MmdFileLink;
+import com.igormaznitsa.mindmap.annotations.processor.builder.AnnotationUtils;
+import com.igormaznitsa.mindmap.annotations.processor.builder.AnnotationUtils.UriLine;
+import com.igormaznitsa.mindmap.annotations.processor.builder.MmdFileBuiilder;
 import com.igormaznitsa.mindmap.model.annotations.MmdFile;
 import com.igormaznitsa.mindmap.model.annotations.MmdFiles;
 import com.igormaznitsa.mindmap.model.annotations.MmdTopic;
-import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.util.SourcePositions;
-import com.sun.source.util.TreePath;
 import com.sun.source.util.Trees;
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
-import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -34,6 +34,8 @@ import javax.annotation.processing.SupportedOptions;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 import org.apache.commons.io.FilenameUtils;
 
 @SupportedOptions({
@@ -54,11 +56,13 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
       Map.of(
           MmdTopic.class.getName(), MmdTopic.class,
           MmdFiles.class.getName(), MmdFiles.class,
-          MmdFile.class.getName(), MmdFile.class
-      );
+          MmdFile.class.getName(), MmdFile.class,
+          MmdFileLink.class.getName(), MmdFileLink.class);
   private Trees trees;
   private SourcePositions sourcePositions;
   private Messager messager;
+  private Elements elements;
+  private Types types;
   private Path optionTargetFolder;
   private Path optionFileLinkBaseFolder;
   private boolean optionFileOverwrite;
@@ -80,60 +84,68 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
     this.trees = Trees.instance(processingEnv);
     this.sourcePositions = this.trees.getSourcePositions();
     this.messager = processingEnv.getMessager();
+    this.elements = processingEnv.getElementUtils();
+    this.types = processingEnv.getTypeUtils();
 
-    this.optionDryStart = Boolean.parseBoolean(processingEnv.getOptions().getOrDefault(
-        KEY_MMD_DRY_START, "false"));
+    this.optionDryStart =
+        Boolean.parseBoolean(processingEnv.getOptions().getOrDefault(KEY_MMD_DRY_START, "false"));
 
     if (this.optionDryStart) {
-      this.messager.printMessage(WARNING,
-          "MMD processor started in DRY mode");
+      this.messager.printMessage(WARNING, "MMD processor started in DRY mode");
     }
 
     if (processingEnv.getOptions().containsKey(KEY_MMD_TARGET_FOLDER)) {
       this.optionTargetFolder = Paths.get(processingEnv.getOptions().get(KEY_MMD_TARGET_FOLDER));
       if (!(Files.isDirectory(this.optionTargetFolder) || this.optionDryStart)) {
-        this.messager.printMessage(WARNING,
-            "Folder for MMD not-exists: " + this.optionTargetFolder);
+        this.messager.printMessage(
+            WARNING, "Folder for MMD not-exists: " + this.optionTargetFolder);
         if (Boolean.parseBoolean(
             processingEnv.getOptions().getOrDefault(KEY_MMD_FOLDER_CREATE, "false"))) {
           try {
             this.optionTargetFolder = Files.createDirectories(this.optionTargetFolder);
-            this.messager.printMessage(NOTE,
-                "Folder for MMD files successfully created: " + this.optionTargetFolder);
+            this.messager.printMessage(
+                NOTE, "Folder for MMD files successfully created: " + this.optionTargetFolder);
           } catch (IOException ex) {
-            this.messager.printMessage(ERROR,
-                "Can't create folder to write MMD files: " + this.optionTargetFolder);
+            this.messager.printMessage(
+                ERROR, "Can't create folder to write MMD files: " + this.optionTargetFolder);
           }
         } else {
-          this.messager.printMessage(ERROR,
-              "Can't find folder for MMD files (use " + KEY_MMD_FOLDER_CREATE +
-                  " flag to make it): " +
-                  this.optionTargetFolder);
+          this.messager.printMessage(
+              ERROR,
+              "Can't find folder for MMD files (use "
+                  + KEY_MMD_FOLDER_CREATE
+                  + " flag to make it): "
+                  + this.optionTargetFolder);
         }
       }
       if (this.optionTargetFolder != null) {
-        this.messager.printMessage(WARNING,
-            String.format("Directly provided target folder to write MMD files: %s",
-                this.optionTargetFolder));
+        this.messager.printMessage(
+            WARNING,
+            String.format(
+                "Directly provided target folder to write MMD files: %s", this.optionTargetFolder));
       }
     }
 
     if (processingEnv.getOptions().containsKey(KEY_MMD_FILE_LINK_BASE_FOLDER)) {
-      this.optionFileLinkBaseFolder = Paths.get(FilenameUtils.normalizeNoEndSeparator(
-          processingEnv.getOptions().get(KEY_MMD_FILE_LINK_BASE_FOLDER)));
-      this.messager.printMessage(NOTE,
+      this.optionFileLinkBaseFolder =
+          Paths.get(
+              FilenameUtils.normalizeNoEndSeparator(
+                  processingEnv.getOptions().get(KEY_MMD_FILE_LINK_BASE_FOLDER)));
+      this.messager.printMessage(
+          NOTE,
           String.format("File link base folder for MMD files: %s", this.optionFileLinkBaseFolder));
     }
 
-    this.optionFileOverwrite = Boolean.parseBoolean(processingEnv.getOptions().getOrDefault(
-        KEY_MMD_FILE_OVERWRITE, "true"));
+    this.optionFileOverwrite =
+        Boolean.parseBoolean(
+            processingEnv.getOptions().getOrDefault(KEY_MMD_FILE_OVERWRITE, "true"));
   }
 
   @Override
-  public boolean process(final Set<? extends TypeElement> annotations,
-                         final RoundEnvironment roundEnv) {
+  public boolean process(
+      final Set<? extends TypeElement> annotations, final RoundEnvironment roundEnv) {
 
-    final List<MmdAnnotation> mmdAnnotationList = new ArrayList<>();
+    final List<FoundMmdAnnotation> foundAnnotationList = new ArrayList<>();
 
     for (final TypeElement annotation : annotations) {
       final Set<? extends Element> annotatedElements =
@@ -141,74 +153,62 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
 
       final Class<? extends Annotation> annotationClass =
           ANNOTATIONS.get(annotation.getQualifiedName().toString());
-      requireNonNull(annotationClass,
+      requireNonNull(
+          annotationClass,
           () -> "Unexpectedly annotation class not found for " + annotation.getQualifiedName());
 
-      annotatedElements.forEach(element -> {
-        final Annotation[] annotationInstances = element.getAnnotationsByType(annotationClass);
-        final UriLine position = findPosition(element);
+      annotatedElements.forEach(
+          element -> {
+            final Annotation[] annotationInstances = element.getAnnotationsByType(annotationClass);
+            final UriLine position =
+                AnnotationUtils.findPosition(this.sourcePositions, this.trees, element);
 
-        if (annotationClass == MmdFiles.class) {
-          Arrays.stream(annotationInstances)
-              .flatMap(x -> Arrays.stream(((MmdFiles) x).value()))
-              .forEach(mmdFile -> {
-                mmdAnnotationList.add(
-                    new MmdAnnotation(element, mmdFile, new File(position.uri).toPath(),
-                        position.line));
-              });
-        } else {
-          Arrays.stream(annotationInstances)
-              .forEach(instance -> {
-                mmdAnnotationList.add(
-                    new MmdAnnotation(element, instance, new File(position.uri).toPath(),
-                        position.line));
-              });
-        }
-      });
+            if (annotationClass == MmdFiles.class) {
+              Arrays.stream(annotationInstances)
+                  .map(x -> (MmdFiles) x)
+                  .flatMap(x -> List.of(x).stream())
+                  .forEach(
+                      file -> {
+                        foundAnnotationList.add(
+                            new FoundMmdAnnotation(
+                                element, file, new File(position.getUri()).toPath(),
+                                position.getLine()));
+                      });
+            } else {
+              Arrays.stream(annotationInstances)
+                  .forEach(
+                      instance -> {
+                        foundAnnotationList.add(
+                            new FoundMmdAnnotation(
+                                element, instance, new File(position.getUri()).toPath(),
+                                position.getLine()));
+                      });
+            }
+          });
     }
 
     this.messager.printMessage(
-        NOTE, format("Detected %d annotated items to be used for MMD", mmdAnnotationList.size()));
+        NOTE, format("MMD processor has found %d marked elements", foundAnnotationList.size()));
 
-    if (!mmdAnnotationList.isEmpty()) {
-      mmdAnnotationList.sort(
-          (o1, o2) -> o1.getElement()
-              .getSimpleName()
-              .toString()
-              .compareTo(o2.getElement().toString())
-      );
+    if (!foundAnnotationList.isEmpty()) {
+      foundAnnotationList.sort(
+          (o1, o2) ->
+              o1.getElement().getSimpleName().toString().compareTo(o2.getElement().toString()));
 
-      MmdFileCreator.builder()
+      MmdFileBuiilder.builder()
           .setMessager(this.messager)
+          .setElements(this.elements)
+          .setTypes(this.types)
           .setTargetFolder(this.optionTargetFolder)
           .setDryStart(this.optionDryStart)
           .setOverwriteAllowed(this.optionFileOverwrite)
           .setFileLinkBaseFolder(this.optionFileLinkBaseFolder)
-          .setAnnotations(mmdAnnotationList)
-          .build().process();
+          .setAnnotations(foundAnnotationList)
+          .build()
+          .write();
     }
 
     return true;
   }
 
-  private UriLine findPosition(final Element element) {
-    final TreePath treePath = trees.getPath(element);
-    final CompilationUnitTree compilationUnit = treePath.getCompilationUnit();
-
-    final long startPosition =
-        this.sourcePositions.getStartPosition(compilationUnit, treePath.getLeaf());
-    final long lineNumber = compilationUnit.getLineMap().getLineNumber(startPosition);
-    return new UriLine(compilationUnit.getSourceFile().toUri(), lineNumber);
-  }
-
-  private static final class UriLine {
-    private final URI uri;
-    private final long line;
-
-    UriLine(final URI uri, final long line) {
-      this.uri = requireNonNull(uri);
-      this.line = line;
-    }
-
-  }
 }
