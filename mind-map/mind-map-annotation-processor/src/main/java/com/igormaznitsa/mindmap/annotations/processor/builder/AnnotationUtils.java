@@ -96,7 +96,7 @@ public final class AnnotationUtils {
             final Element e = typeUtils.asElement(x);
             found.addAll(
                 Stream.of(e.getAnnotationsByType(annotationType))
-                    .map(y -> Pair.of(y, e))
+                    .map(annotation -> Pair.of(annotation, e))
                     .collect(Collectors.toList()));
           });
 

@@ -3,6 +3,10 @@ package com.igormaznitsa.mindmap.annotations.processor.builder.elements;
 import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
+import com.igormaznitsa.mindmap.annotations.Direction;
+import com.igormaznitsa.mindmap.annotations.MmdColor;
+import com.igormaznitsa.mindmap.annotations.MmdEmoticon;
+import com.igormaznitsa.mindmap.annotations.MmdTopic;
 import com.igormaznitsa.mindmap.annotations.processor.FoundMmdAnnotation;
 import com.igormaznitsa.mindmap.annotations.processor.builder.exceptions.MmdAnnotationProcessorException;
 import com.igormaznitsa.mindmap.model.ExtraFile;
@@ -10,10 +14,6 @@ import com.igormaznitsa.mindmap.model.ExtraLink;
 import com.igormaznitsa.mindmap.model.ExtraNote;
 import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.Topic;
-import com.igormaznitsa.mindmap.model.annotations.Direction;
-import com.igormaznitsa.mindmap.model.annotations.MmdColor;
-import com.igormaznitsa.mindmap.model.annotations.MmdEmoticon;
-import com.igormaznitsa.mindmap.model.annotations.MmdTopic;
 import java.lang.annotation.Annotation;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -33,6 +33,7 @@ public abstract class AbstractItem {
     this.annotationContainer = requireNonNull(annotationContainer);
   }
 
+  @SuppressWarnings("SameParameterValue")
   protected static void setTopicDirection(final Topic topic, final Direction direction) {
     if (direction != Direction.AUTO) {
       if (direction == Direction.LEFT) {
@@ -128,7 +129,6 @@ public abstract class AbstractItem {
     }
   }
 
-  @SuppressWarnings("unchecked")
   public <A extends Annotation> A asAnnotation() {
     return this.annotationContainer.asAnnotation();
   }
@@ -143,10 +143,6 @@ public abstract class AbstractItem {
 
   public Element getElement() {
     return this.annotationContainer.getElement();
-  }
-
-  public FoundMmdAnnotation getAnnotationContainer() {
-    return this.annotationContainer;
   }
 
   @Override

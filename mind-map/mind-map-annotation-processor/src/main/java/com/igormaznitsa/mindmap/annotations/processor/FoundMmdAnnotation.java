@@ -104,7 +104,7 @@ public class FoundMmdAnnotation {
   /**
    * Get the base annotated element.
    *
-   * @return the ennotated element, must not be null
+   * @return the annotated element, must not be null
    */
   public Element getElement() {
     return this.element;

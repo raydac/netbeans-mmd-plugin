@@ -1,7 +1,7 @@
 package com.igormaznitsa.mindmap.annotations.processor.builder.elements;
 
+import com.igormaznitsa.mindmap.annotations.MmdTopic;
 import com.igormaznitsa.mindmap.annotations.processor.FoundMmdAnnotation;
-import com.igormaznitsa.mindmap.model.annotations.MmdTopic;
 import java.util.Optional;
 import javax.lang.model.element.Element;
 import org.apache.commons.lang3.StringUtils;

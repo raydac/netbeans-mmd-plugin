@@ -1,4 +1,4 @@
-package com.igormaznitsa.mindmap.model.annotations;
+package com.igormaznitsa.mindmap.annotations;
 
 /**
  * Color constants to be used for generated MMD topics.

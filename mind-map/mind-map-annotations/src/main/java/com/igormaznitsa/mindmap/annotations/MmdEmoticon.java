@@ -1,4 +1,4 @@
-package com.igormaznitsa.mindmap.model.annotations;
+package com.igormaznitsa.mindmap.annotations;
 
 /**
  * Set of allowed emoticons for generated MMD topics.

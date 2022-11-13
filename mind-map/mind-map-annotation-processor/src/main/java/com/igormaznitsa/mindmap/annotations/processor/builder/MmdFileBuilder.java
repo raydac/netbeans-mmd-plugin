@@ -4,15 +4,16 @@ import static com.igormaznitsa.mindmap.annotations.processor.builder.AnnotationU
 import static com.igormaznitsa.mindmap.annotations.processor.builder.AnnotationUtils.findFirstWithAncestors;
 import static java.util.Collections.unmodifiableList;
 
+import com.igormaznitsa.mindmap.annotations.MmdFile;
 import com.igormaznitsa.mindmap.annotations.MmdFileLink;
+import com.igormaznitsa.mindmap.annotations.MmdFiles;
+import com.igormaznitsa.mindmap.annotations.MmdTopic;
 import com.igormaznitsa.mindmap.annotations.processor.FoundMmdAnnotation;
 import com.igormaznitsa.mindmap.annotations.processor.builder.elements.FileItem;
 import com.igormaznitsa.mindmap.annotations.processor.builder.elements.TopicItem;
 import com.igormaznitsa.mindmap.annotations.processor.builder.exceptions.MmdAnnotationProcessorException;
 import com.igormaznitsa.mindmap.annotations.processor.builder.exceptions.MmdElementException;
 import com.igormaznitsa.mindmap.annotations.processor.builder.exceptions.MultipleFileVariantsForTopicException;
-import com.igormaznitsa.mindmap.model.annotations.MmdFile;
-import com.igormaznitsa.mindmap.model.annotations.MmdTopic;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -31,11 +32,11 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
-public class MmdFileBuiilder {
+public class MmdFileBuilder {
 
   private final Builder builder;
 
-  private MmdFileBuiilder(final Builder builder) {
+  private MmdFileBuilder(final Builder builder) {
     this.builder = builder;
   }
 
@@ -62,9 +63,9 @@ public class MmdFileBuiilder {
             .map(Pair::getLeft)
             .collect(Collectors.toList());
 
-    final List<com.igormaznitsa.mindmap.model.annotations.MmdFiles> filesAnnotation =
+    final List<MmdFiles> filesAnnotation =
         findFirstWithAncestors(
-            typeElement, com.igormaznitsa.mindmap.model.annotations.MmdFiles.class, types, true)
+            typeElement, MmdFiles.class, types, true)
             .stream()
             .map(Pair::getLeft)
             .collect(Collectors.toList());
@@ -102,7 +103,7 @@ public class MmdFileBuiilder {
   public void write() {
     final Map<String, FileItem> fileMap = new LinkedHashMap<>();
 
-    final AtomicBoolean error = new AtomicBoolean();
+    final AtomicBoolean errorDetected = new AtomicBoolean();
 
     this.builder.annotations.stream()
         .filter(x -> x.asAnnotation() instanceof MmdFile)
@@ -115,18 +116,18 @@ public class MmdFileBuiilder {
                 .printMessage(
                     Diagnostic.Kind.ERROR,
                     String.format(
-                        "Found duplicated MMD file definition (UID: %s) for %s:%d",
+                        "Duplicated MMD file definition (UID: %s), duplication provided at %s:%d",
                         x.getFileUid(),
                         alreadyDefined.getPath(),
                         alreadyDefined.getLine()),
                     x.getElement());
-            error.set(true);
+            errorDetected.set(true);
           } else {
             fileMap.put(x.getFileUid(), x);
           }
         });
 
-    if (error.get()) {
+    if (errorDetected.get()) {
       return;
     }
 
@@ -138,12 +139,12 @@ public class MmdFileBuiilder {
               try {
                 this.processTopic(fileMap, x);
               } catch (MmdElementException ex) {
-                error.set(true);
+                errorDetected.set(true);
                 this.builder
                     .getMessager()
                     .printMessage(Diagnostic.Kind.ERROR, ex.getMessage(), ex.getSource());
               } catch (MmdAnnotationProcessorException ex) {
-                error.set(true);
+                errorDetected.set(true);
                 this.builder
                     .getMessager()
                     .printMessage(
@@ -153,7 +154,7 @@ public class MmdFileBuiilder {
               }
             });
 
-    if (error.get()) {
+    if (errorDetected.get()) {
       return;
     }
 
@@ -295,10 +296,6 @@ public class MmdFileBuiilder {
       return this;
     }
 
-    public List<FoundMmdAnnotation> getAnnotations() {
-      return this.annotations;
-    }
-
     public Builder setAnnotations(final List<FoundMmdAnnotation> annotations) {
       this.annotations = unmodifiableList(new ArrayList<>(annotations));
       return this;
@@ -320,10 +317,6 @@ public class MmdFileBuiilder {
     public Builder setDryStart(final boolean dryStart) {
       this.dryStart = dryStart;
       return this;
-    }
-
-    public Elements getElements() {
-      return this.elements;
     }
 
     public Builder setElements(final Elements elements) {
@@ -350,14 +343,14 @@ public class MmdFileBuiilder {
       return this;
     }
 
-    public MmdFileBuiilder build() {
+    public MmdFileBuilder build() {
       if (this.annotations == null
           || this.messager == null
           || this.elements == null
           || this.types == null) {
         throw new IllegalStateException("Not all fields set");
       }
-      return new MmdFileBuiilder(this);
+      return new MmdFileBuilder(this);
     }
 
     public Path getFileLinkBaseFolder() {

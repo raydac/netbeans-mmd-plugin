@@ -6,13 +6,13 @@ import static javax.tools.Diagnostic.Kind.ERROR;
 import static javax.tools.Diagnostic.Kind.NOTE;
 import static javax.tools.Diagnostic.Kind.WARNING;
 
+import com.igormaznitsa.mindmap.annotations.MmdFile;
 import com.igormaznitsa.mindmap.annotations.MmdFileLink;
+import com.igormaznitsa.mindmap.annotations.MmdFiles;
+import com.igormaznitsa.mindmap.annotations.MmdTopic;
 import com.igormaznitsa.mindmap.annotations.processor.builder.AnnotationUtils;
 import com.igormaznitsa.mindmap.annotations.processor.builder.AnnotationUtils.UriLine;
-import com.igormaznitsa.mindmap.annotations.processor.builder.MmdFileBuiilder;
-import com.igormaznitsa.mindmap.model.annotations.MmdFile;
-import com.igormaznitsa.mindmap.model.annotations.MmdFiles;
-import com.igormaznitsa.mindmap.model.annotations.MmdTopic;
+import com.igormaznitsa.mindmap.annotations.processor.builder.MmdFileBuilder;
 import com.sun.source.util.SourcePositions;
 import com.sun.source.util.Trees;
 import java.io.File;
@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -166,36 +167,40 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
             if (annotationClass == MmdFiles.class) {
               Arrays.stream(annotationInstances)
                   .map(x -> (MmdFiles) x)
-                  .flatMap(x -> List.of(x).stream())
+                  .flatMap(x -> Stream.of(x.value()))
                   .forEach(
-                      file -> {
-                        foundAnnotationList.add(
-                            new FoundMmdAnnotation(
-                                element, file, new File(position.getUri()).toPath(),
-                                position.getLine()));
-                      });
+                      file -> foundAnnotationList.add(
+                          new FoundMmdAnnotation(
+                              element, file, new File(position.getUri()).toPath(),
+                              position.getLine())));
             } else {
               Arrays.stream(annotationInstances)
                   .forEach(
-                      instance -> {
-                        foundAnnotationList.add(
-                            new FoundMmdAnnotation(
-                                element, instance, new File(position.getUri()).toPath(),
-                                position.getLine()));
-                      });
+                      instance -> foundAnnotationList.add(
+                          new FoundMmdAnnotation(
+                              element, instance, new File(position.getUri()).toPath(),
+                              position.getLine())));
             }
           });
     }
 
-    this.messager.printMessage(
-        NOTE, format("MMD processor has found %d marked elements", foundAnnotationList.size()));
 
-    if (!foundAnnotationList.isEmpty()) {
+    if (foundAnnotationList.isEmpty()) {
+      this.messager.printMessage(
+          NOTE,
+          "There is no any found MMD annotation");
+    } else {
+      this.messager.printMessage(
+          NOTE,
+          format(
+              "MMD annotation processor has found %d annotations to process",
+              foundAnnotationList.size()));
+
       foundAnnotationList.sort(
           (o1, o2) ->
               o1.getElement().getSimpleName().toString().compareTo(o2.getElement().toString()));
 
-      MmdFileBuiilder.builder()
+      final MmdFileBuilder fileBuilder = MmdFileBuilder.builder()
           .setMessager(this.messager)
           .setElements(this.elements)
           .setTypes(this.types)
@@ -204,8 +209,10 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
           .setOverwriteAllowed(this.optionFileOverwrite)
           .setFileLinkBaseFolder(this.optionFileLinkBaseFolder)
           .setAnnotations(foundAnnotationList)
-          .build()
-          .write();
+          .build();
+
+
+      fileBuilder.write();
     }
 
     return true;

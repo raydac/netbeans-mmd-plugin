@@ -9,7 +9,7 @@ public class NopLoggerService implements LoggerService {
   private static final Logger INSTANCE = new LoggerAdapter("NOP");
 
   @Override
-  public Logger getLogger(final Class<?> klazz) {
+  public Logger getLogger(final Class<?> loggerClass) {
     return INSTANCE;
   }
 
