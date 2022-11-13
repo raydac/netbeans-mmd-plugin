@@ -22,6 +22,11 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
+/**
+ * Class describes one topic defined through MMD topic annotation.
+ *
+ * @see MmdTopic
+ */
 public class TopicItem extends AbstractItem {
   public TopicItem(final MmdAnnotationWrapper base) {
     super(base);
@@ -74,7 +79,8 @@ public class TopicItem extends AbstractItem {
             .collect(Collectors.toList());
 
     if (filesAnnotation.isEmpty() && fileAnnotation.isEmpty() && fileLinkAnnotation.isEmpty()) {
-      throw new MmdElementException("Can't find any MMD file mark", element);
+      throw new MmdElementException(
+          "Can't find any associated MMD target file mark for MmdTopic annotated element", element);
     } else {
       final List<Pair<Element, MmdFile>> result = new ArrayList<>();
       for (final MmdFile f : fileAnnotation) {

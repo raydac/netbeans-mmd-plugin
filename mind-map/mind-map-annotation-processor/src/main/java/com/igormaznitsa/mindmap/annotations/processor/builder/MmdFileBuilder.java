@@ -11,10 +11,12 @@ import com.igormaznitsa.mindmap.annotations.processor.builder.exceptions.MmdAnno
 import com.igormaznitsa.mindmap.annotations.processor.builder.exceptions.MmdElementException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.processing.Messager;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
@@ -38,11 +40,15 @@ public class MmdFileBuilder {
   public boolean write() {
     final Map<String, FileItem> fileMap = new LinkedHashMap<>();
 
-    if (!fillMapByFiles(fileMap)) {
+    if (!this.fillMapByFiles(fileMap, this.builder.getTargetFolder())) {
       return false;
     }
 
-    if (!processTopics(fileMap)) {
+    if (this.countDuplicatedPaths(fileMap) > 0) {
+      return false;
+    }
+
+    if (!this.processTopics(fileMap)) {
       return false;
     }
 
@@ -78,10 +84,28 @@ public class MmdFileBuilder {
         .noneMatch(error -> error);
   }
 
-  private boolean fillMapByFiles(final Map<String, FileItem> fileMap) {
+  private int countDuplicatedPaths(final Map<String, FileItem> fileItemMap) {
+    final AtomicInteger duplicatedCounter = new AtomicInteger(0);
+    final Map<Path, FileItem> processedPaths = new HashMap<>();
+    fileItemMap.forEach((uid, fileItem) -> {
+      if (processedPaths.containsKey(fileItem.getTargetFile())) {
+        this.builder.getMessager()
+            .printMessage(Diagnostic.Kind.ERROR,
+                "Detected duplicated target file path for MMD file: " + fileItem.getTargetFile(),
+                fileItem.getElement());
+        duplicatedCounter.incrementAndGet();
+      } else {
+        processedPaths.put(fileItem.getTargetFile(), fileItem);
+      }
+    });
+    return duplicatedCounter.get();
+  }
+
+  private boolean fillMapByFiles(final Map<String, FileItem> fileMap,
+                                 final Path forceTargetFolder) {
     return this.builder.annotations.stream()
         .filter(x -> x.asAnnotation() instanceof MmdFile)
-        .map(FileItem::new)
+        .map(wrapper -> new FileItem(wrapper, forceTargetFolder))
         .map(x -> {
           boolean error = false;
           if (fileMap.containsKey(x.getFileUid())) {
@@ -119,7 +143,6 @@ public class MmdFileBuilder {
             final Path filePath =
                 fileItem.write(
                     this.builder.getTypes(),
-                    this.builder.getTargetFolder(),
                     this.builder.getFileLinkBaseFolder(),
                     this.builder.isOverwriteAllowed(),
                     this.builder.isDryStart());

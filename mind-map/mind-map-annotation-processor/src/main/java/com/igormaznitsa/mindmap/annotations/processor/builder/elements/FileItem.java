@@ -32,12 +32,17 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.file.PathUtils;
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * Class describes one MMD file defined through MMD file annotation.
+ *
+ * @see MmdFile
+ */
 public class FileItem extends AbstractItem {
   private final String fileUid;
-
+  private final Path targetFile;
   private final List<InternalLayoutBlock> layoutBlocks = new ArrayList<>();
 
-  public FileItem(final MmdAnnotationWrapper base) {
+  public FileItem(final MmdAnnotationWrapper base, final Path forceTargetFolder) {
     super(base);
     if (!(base.asAnnotation() instanceof MmdFile)) {
       throw new IllegalArgumentException("Expected annotation " + MmdFile.class.getSimpleName());
@@ -48,6 +53,8 @@ public class FileItem extends AbstractItem {
     } else {
       this.fileUid = mmdFile.uid();
     }
+
+    this.targetFile = makeTargetFilePath(base, forceTargetFolder);
   }
 
   private static void assertNoGraphLoops(final List<InternalLayoutBlock> items)
@@ -68,37 +75,40 @@ public class FileItem extends AbstractItem {
     }
   }
 
-  public MmdFile asMmdFileAnnotation() {
-    return this.asAnnotation();
-  }
-
-  private Path getFolder() {
-    return this.getPath().getParent();
-  }
-
-  private Path makeTargetFilePath(final Path forceFolder) {
+  private static Path makeTargetFilePath(final MmdAnnotationWrapper annotationWrapper,
+                                         final Path forceTargetFolder) {
+    final MmdFile mmdFile = annotationWrapper.asAnnotation();
     final String rawFileName;
-    if (StringUtils.isBlank(this.asMmdFileAnnotation().fileName())) {
+    if (StringUtils.isBlank(mmdFile.fileName())) {
       rawFileName =
-          FilenameUtils.removeExtension(this.getPath().getFileName().toString());
+          FilenameUtils.removeExtension(annotationWrapper.getPath().getFileName().toString());
     } else {
-      rawFileName = this.asMmdFileAnnotation().fileName();
+      rawFileName = mmdFile.fileName();
     }
 
     final Path targetFolder =
         Objects.requireNonNullElseGet(
-            forceFolder,
+            forceTargetFolder,
             () ->
                 Paths.get(
                     normalizeNoEndSeparator(
-                        this.asMmdFileAnnotation()
+                        mmdFile
                             .folder()
                             .replace(
                                 MACROS_SRC_CLASS_FOLDER,
                                 normalizeNoEndSeparator(
-                                    this.getFolder().toAbsolutePath().toString())))));
+                                    annotationWrapper.getPath().getParent().toAbsolutePath()
+                                        .toString())))));
 
     return targetFolder.resolve(rawFileName + ".mmd");
+  }
+
+  public Path getTargetFile() {
+    return this.targetFile;
+  }
+
+  public MmdFile asMmdFileAnnotation() {
+    return this.asAnnotation();
   }
 
   public void addChild(final TopicItem topic) {
@@ -107,20 +117,19 @@ public class FileItem extends AbstractItem {
 
   public Path write(
       final Types types,
-      final Path targetFolder,
       final Path fileLinkBaseFolder,
       final boolean allowOverwrite,
       final boolean dryStart)
       throws IOException, MmdAnnotationProcessorException {
 
-    final Path targetFile = this.makeTargetFilePath(targetFolder);
+    final Path targetFile = this.getTargetFile();
 
     final MindMap map;
     try {
       map =
           this.makeMindMap(
               types, fileLinkBaseFolder == null ? targetFile.getParent() : fileLinkBaseFolder);
-    } catch (URISyntaxException ex) {
+    } catch (final URISyntaxException ex) {
       throw new IOException("Can't write MMD file for URI syntax error", ex);
     }
 

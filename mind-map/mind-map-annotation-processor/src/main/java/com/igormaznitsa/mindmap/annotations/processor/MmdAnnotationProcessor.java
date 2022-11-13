@@ -206,7 +206,7 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
     if (foundAnnotationList.isEmpty()) {
       this.messager.printMessage(
           NOTE,
-          "There is no any found MMD annotation");
+          "There is not any found MMD annotation");
     } else {
       this.messager.printMessage(
           NOTE,
@@ -233,7 +233,7 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
       if (fileBuilder.write()) {
         this.messager.printMessage(
             NOTE,
-            "MMD annotation processor work completed successfully");
+            "MMD annotation processor work completed");
       } else {
         this.messager.printMessage(
             ERROR,
