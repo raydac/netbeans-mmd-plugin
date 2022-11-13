@@ -230,7 +230,15 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
           .build();
 
 
-      fileBuilder.write();
+      if (fileBuilder.write()) {
+        this.messager.printMessage(
+            NOTE,
+            "MMD annotation processor work completed successfully");
+      } else {
+        this.messager.printMessage(
+            ERROR,
+            "MMD annotation processor work failed");
+      }
     }
 
     return true;

@@ -15,12 +15,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.processing.Messager;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 
+/**
+ * Main class to process found annotations, sort elements. layout and write as MMD files.
+ */
 public class MmdFileBuilder {
 
   private final Builder builder;
@@ -33,15 +35,55 @@ public class MmdFileBuilder {
     return new Builder();
   }
 
-  public void write() {
+  public boolean write() {
     final Map<String, FileItem> fileMap = new LinkedHashMap<>();
 
-    final AtomicBoolean errorDetected = new AtomicBoolean();
+    if (!fillMapByFiles(fileMap)) {
+      return false;
+    }
 
-    this.builder.annotations.stream()
+    if (!processTopics(fileMap)) {
+      return false;
+    }
+
+    return this.writeAll(fileMap);
+  }
+
+  private boolean processTopics(final Map<String, FileItem> fileMap) {
+    return this.builder.annotations.stream()
+        .filter(x -> x.asAnnotation() instanceof MmdTopic)
+        .map(TopicItem::new)
+        .map(
+            x -> {
+              boolean error = false;
+              try {
+                this.processTopic(fileMap, x);
+              } catch (MmdElementException ex) {
+                error = true;
+                this.builder
+                    .getMessager()
+                    .printMessage(Diagnostic.Kind.ERROR, ex.getMessage(), ex.getSource());
+              } catch (MmdAnnotationProcessorException ex) {
+                error = true;
+                this.builder
+                    .getMessager()
+                    .printMessage(
+                        Diagnostic.Kind.ERROR,
+                        ex.getMessage(),
+                        ex.getSource().getElement());
+              }
+              return error;
+            })
+        .takeWhile(error -> !error)
+        .noneMatch(error -> error);
+  }
+
+  private boolean fillMapByFiles(final Map<String, FileItem> fileMap) {
+    return this.builder.annotations.stream()
         .filter(x -> x.asAnnotation() instanceof MmdFile)
         .map(FileItem::new)
-        .forEach(x -> {
+        .map(x -> {
+          boolean error = false;
           if (fileMap.containsKey(x.getFileUid())) {
             final FileItem alreadyDefined = fileMap.get(x.getFileUid());
             this.builder
@@ -54,57 +96,28 @@ public class MmdFileBuilder {
                         alreadyDefined.getPath(),
                         alreadyDefined.getLine()),
                     x.getElement());
-            errorDetected.set(true);
+            error = true;
           } else {
             fileMap.put(x.getFileUid(), x);
           }
-        });
-
-    if (errorDetected.get()) {
-      return;
-    }
-
-    this.builder.annotations.stream()
-        .filter(x -> x.asAnnotation() instanceof MmdTopic)
-        .map(TopicItem::new)
-        .forEach(
-            x -> {
-              try {
-                this.processTopic(fileMap, x);
-              } catch (MmdElementException ex) {
-                errorDetected.set(true);
-                this.builder
-                    .getMessager()
-                    .printMessage(Diagnostic.Kind.ERROR, ex.getMessage(), ex.getSource());
-              } catch (MmdAnnotationProcessorException ex) {
-                errorDetected.set(true);
-                this.builder
-                    .getMessager()
-                    .printMessage(
-                        Diagnostic.Kind.ERROR,
-                        ex.getMessage(),
-                        ex.getSource().getElement());
-              }
-            });
-
-    if (errorDetected.get()) {
-      return;
-    }
-
-    this.writeAll(fileMap);
+          return error;
+        }).takeWhile(error -> !error)
+        .noneMatch(error -> error);
   }
 
-  private void writeAll(final Map<String, FileItem> fileMap) {
-    fileMap.forEach(
-        (k, e) -> {
+  private boolean writeAll(final Map<String, FileItem> fileMap) {
+    return fileMap.values().stream()
+        .map(fileItem -> {
+          boolean error = false;
           this.builder
               .getMessager()
               .printMessage(
                   Diagnostic.Kind.NOTE,
-                  String.format("Processing MMD file, uid=%s", e.getFileUid()));
+                  String.format("Processing MMD file, uid=%s", fileItem.getFileUid()));
+
           try {
             final Path filePath =
-                e.write(
+                fileItem.write(
                     this.builder.getTypes(),
                     this.builder.getTargetFolder(),
                     this.builder.getFileLinkBaseFolder(),
@@ -119,7 +132,8 @@ public class MmdFileBuilder {
                   .getMessager()
                   .printMessage(Diagnostic.Kind.NOTE, "Saved MMD file: " + filePath);
             }
-          } catch (Exception ex) {
+          } catch (final Exception ex) {
+            error = true;
             if (ex instanceof MmdAnnotationProcessorException) {
               final MmdAnnotationProcessorException mmdEx = (MmdAnnotationProcessorException) ex;
               this.builder
@@ -135,11 +149,14 @@ public class MmdFileBuilder {
                       Diagnostic.Kind.ERROR,
                       String.format(
                           "Error during MMD file write with uid '%s': %s",
-                          e.getFileUid(), ex.getMessage()),
-                      e.getElement());
+                          fileItem.getFileUid(), ex.getMessage()),
+                      fileItem.getElement());
             }
           }
-        });
+          return error;
+        })
+        .takeWhile(error -> !error)
+        .noneMatch(error -> error);
   }
 
   private void processTopic(
