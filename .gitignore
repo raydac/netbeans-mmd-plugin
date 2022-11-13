@@ -45,6 +45,7 @@ buildNumber.properties
 *.iml
 /mind-map/scia-reto-win-launcher/bin
 /mind-map/scia-reto-win-launcher/pkg
+/mind-map/mind-map-annotation-processor-it/**/*.mmd
 /mind-map/idea-mindmap/bin
 mind-map/idea-mindmap/.classpath
 mind-map/idea-mindmap/.project
