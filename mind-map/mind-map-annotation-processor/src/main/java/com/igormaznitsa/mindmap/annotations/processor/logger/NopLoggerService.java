@@ -4,6 +4,9 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerAdapter;
 import com.igormaznitsa.mindmap.model.logger.LoggerService;
 
+/**
+ * NOP logger service to hide messages from mind map model builder.
+ */
 public class NopLoggerService implements LoggerService {
 
   private static final Logger INSTANCE = new LoggerAdapter("NOP");

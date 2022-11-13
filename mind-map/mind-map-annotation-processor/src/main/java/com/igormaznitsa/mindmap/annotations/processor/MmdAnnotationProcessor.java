@@ -39,6 +39,9 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import org.apache.commons.io.FilenameUtils;
 
+/**
+ * Annotation processor to collect MMD annotations and build MMD mind map files for them.
+ */
 @SupportedOptions({
     MmdAnnotationProcessor.KEY_MMD_TARGET_FOLDER,
     MmdAnnotationProcessor.KEY_MMD_FOLDER_CREATE,
@@ -48,10 +51,25 @@ import org.apache.commons.io.FilenameUtils;
 })
 public class MmdAnnotationProcessor extends AbstractProcessor {
 
+  /**
+   * Option to force target folder to place all generated MMD files.
+   */
   public static final String KEY_MMD_TARGET_FOLDER = "mmd.target.folder";
+  /**
+   * Option to provide base folder to build relative file links.
+   */
   public static final String KEY_MMD_FILE_LINK_BASE_FOLDER = "mmd.file.link.base.folder";
+  /**
+   * Option to define dry start flag which disable write of result MMD files but all other operations and notifications will be processed.
+   */
   public static final String KEY_MMD_DRY_START = "mmd.dry.start";
+  /**
+   * Option to allow create required folders during write operations.
+   */
   public static final String KEY_MMD_FOLDER_CREATE = "mmd.folder.create";
+  /**
+   * Option to overwrite result MMD file if already exist
+   */
   public static final String KEY_MMD_FILE_OVERWRITE = "mmd.file.overwrite";
   private static final Map<String, Class<? extends Annotation>> ANNOTATIONS =
       Map.of(
@@ -146,7 +164,7 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
   public boolean process(
       final Set<? extends TypeElement> annotations, final RoundEnvironment roundEnv) {
 
-    final List<FoundMmdAnnotation> foundAnnotationList = new ArrayList<>();
+    final List<MmdAnnotationWrapper> foundAnnotationList = new ArrayList<>();
 
     for (final TypeElement annotation : annotations) {
       final Set<? extends Element> annotatedElements =
@@ -170,14 +188,14 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
                   .flatMap(x -> Stream.of(x.value()))
                   .forEach(
                       file -> foundAnnotationList.add(
-                          new FoundMmdAnnotation(
+                          new MmdAnnotationWrapper(
                               element, file, new File(position.getUri()).toPath(),
                               position.getLine())));
             } else {
               Arrays.stream(annotationInstances)
                   .forEach(
                       instance -> foundAnnotationList.add(
-                          new FoundMmdAnnotation(
+                          new MmdAnnotationWrapper(
                               element, instance, new File(position.getUri()).toPath(),
                               position.getLine())));
             }

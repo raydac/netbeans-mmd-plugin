@@ -7,7 +7,7 @@ import com.igormaznitsa.mindmap.annotations.Direction;
 import com.igormaznitsa.mindmap.annotations.MmdColor;
 import com.igormaznitsa.mindmap.annotations.MmdEmoticon;
 import com.igormaznitsa.mindmap.annotations.MmdTopic;
-import com.igormaznitsa.mindmap.annotations.processor.FoundMmdAnnotation;
+import com.igormaznitsa.mindmap.annotations.processor.MmdAnnotationWrapper;
 import com.igormaznitsa.mindmap.annotations.processor.builder.exceptions.MmdAnnotationProcessorException;
 import com.igormaznitsa.mindmap.model.ExtraFile;
 import com.igormaznitsa.mindmap.model.ExtraLink;
@@ -27,9 +27,9 @@ import org.apache.commons.lang3.StringUtils;
 public abstract class AbstractItem {
   private static final Pattern PATTERN_FILEPATH_LINE_NUMBER =
       Pattern.compile("^(.+)(?:\\:([0-9]+))|(.+)$");
-  protected final FoundMmdAnnotation annotationContainer;
+  protected final MmdAnnotationWrapper annotationContainer;
 
-  public AbstractItem(final FoundMmdAnnotation annotationContainer) {
+  public AbstractItem(final MmdAnnotationWrapper annotationContainer) {
     this.annotationContainer = requireNonNull(annotationContainer);
   }
 

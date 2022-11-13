@@ -7,7 +7,7 @@ import static org.apache.commons.io.FilenameUtils.normalizeNoEndSeparator;
 import static org.apache.commons.lang3.StringUtils.isNoneBlank;
 
 import com.igormaznitsa.mindmap.annotations.MmdFile;
-import com.igormaznitsa.mindmap.annotations.processor.FoundMmdAnnotation;
+import com.igormaznitsa.mindmap.annotations.processor.MmdAnnotationWrapper;
 import com.igormaznitsa.mindmap.annotations.processor.builder.exceptions.MmdAnnotationProcessorException;
 import com.igormaznitsa.mindmap.model.ExtraTopic;
 import com.igormaznitsa.mindmap.model.MindMap;
@@ -37,7 +37,7 @@ public class FileItem extends AbstractItem {
 
   private final List<InternalLayoutBlock> layoutBlocks = new ArrayList<>();
 
-  public FileItem(final FoundMmdAnnotation base) {
+  public FileItem(final MmdAnnotationWrapper base) {
     super(base);
     if (!(base.asAnnotation() instanceof MmdFile)) {
       throw new IllegalArgumentException("Expected annotation " + MmdFile.class.getSimpleName());

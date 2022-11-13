@@ -4,7 +4,7 @@ import static java.util.Collections.unmodifiableList;
 
 import com.igormaznitsa.mindmap.annotations.MmdFile;
 import com.igormaznitsa.mindmap.annotations.MmdTopic;
-import com.igormaznitsa.mindmap.annotations.processor.FoundMmdAnnotation;
+import com.igormaznitsa.mindmap.annotations.processor.MmdAnnotationWrapper;
 import com.igormaznitsa.mindmap.annotations.processor.builder.elements.FileItem;
 import com.igormaznitsa.mindmap.annotations.processor.builder.elements.TopicItem;
 import com.igormaznitsa.mindmap.annotations.processor.builder.exceptions.MmdAnnotationProcessorException;
@@ -156,7 +156,7 @@ public class MmdFileBuilder {
   }
 
   public static final class Builder {
-    private List<FoundMmdAnnotation> annotations;
+    private List<MmdAnnotationWrapper> annotations;
     private Path targetFolder;
     private Path fileLinkBaseFolder;
     private boolean overwriteAllowed = true;
@@ -186,7 +186,7 @@ public class MmdFileBuilder {
       return this;
     }
 
-    public Builder setAnnotations(final List<FoundMmdAnnotation> annotations) {
+    public Builder setAnnotations(final List<MmdAnnotationWrapper> annotations) {
       this.assertNotCompleted();
       this.annotations = unmodifiableList(new ArrayList<>(annotations));
       return this;

@@ -1,6 +1,6 @@
 package com.igormaznitsa.mindmap.annotations.processor.builder.elements;
 
-import static com.igormaznitsa.mindmap.annotations.processor.builder.AnnotationUtils.findAmongEnclosingAndAncestors;
+import static com.igormaznitsa.mindmap.annotations.processor.builder.AnnotationUtils.findFirstAmongEnclosingAndAncestors;
 import static com.igormaznitsa.mindmap.annotations.processor.builder.elements.AbstractItem.MmdAttribute.COLOR_BORDER;
 import static com.igormaznitsa.mindmap.annotations.processor.builder.elements.AbstractItem.MmdAttribute.COLOR_FILL;
 import static com.igormaznitsa.mindmap.annotations.processor.builder.elements.AbstractItem.MmdAttribute.COLOR_TEXT;
@@ -165,7 +165,7 @@ final class InternalLayoutBlock {
   public Optional<InternalLayoutBlock> findParentAmong(Types types,
                                                        List<InternalLayoutBlock> children) {
     final List<Pair<MmdTopic, Element>> found =
-        findAmongEnclosingAndAncestors(this.baseItem.getElement(), MmdTopic.class, types);
+        findFirstAmongEnclosingAndAncestors(this.baseItem.getElement(), MmdTopic.class, types);
     return found.stream()
         .flatMap(x ->
             children.stream()

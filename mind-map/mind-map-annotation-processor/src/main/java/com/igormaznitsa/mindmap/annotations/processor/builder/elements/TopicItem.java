@@ -7,7 +7,7 @@ import com.igormaznitsa.mindmap.annotations.MmdFile;
 import com.igormaznitsa.mindmap.annotations.MmdFileLink;
 import com.igormaznitsa.mindmap.annotations.MmdFiles;
 import com.igormaznitsa.mindmap.annotations.MmdTopic;
-import com.igormaznitsa.mindmap.annotations.processor.FoundMmdAnnotation;
+import com.igormaznitsa.mindmap.annotations.processor.MmdAnnotationWrapper;
 import com.igormaznitsa.mindmap.annotations.processor.builder.exceptions.MmdAnnotationProcessorException;
 import com.igormaznitsa.mindmap.annotations.processor.builder.exceptions.MmdElementException;
 import com.igormaznitsa.mindmap.annotations.processor.builder.exceptions.MultipleFileVariantsForTopicException;
@@ -23,7 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class TopicItem extends AbstractItem {
-  public TopicItem(final FoundMmdAnnotation base) {
+  public TopicItem(final MmdAnnotationWrapper base) {
     super(base);
     if (!(base.asAnnotation() instanceof MmdTopic)) {
       throw new IllegalArgumentException("Expected annotation " + MmdTopic.class.getName());

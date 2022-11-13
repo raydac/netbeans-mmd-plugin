@@ -8,9 +8,9 @@ import java.util.Objects;
 import javax.lang.model.element.Element;
 
 /**
- * Immutable data object contains found MMD annotation, its path and line number.
+ * Immutable data object wrapping found MMD annotation, its path and line number.
  */
-public class FoundMmdAnnotation {
+public class MmdAnnotationWrapper {
   /**
    * Found annotation.
    */
@@ -39,7 +39,7 @@ public class FoundMmdAnnotation {
    * @throws NullPointerException     thrown if any argument is null
    * @throws IllegalArgumentException thrown if line is zero or negative one
    */
-  public FoundMmdAnnotation(
+  public MmdAnnotationWrapper(
       final Element element, final Annotation annotation, final Path path, final long line) {
     this.element = requireNonNull(element);
     this.annotation = requireNonNull(annotation);
@@ -63,8 +63,8 @@ public class FoundMmdAnnotation {
     if (that == this) {
       return true;
     }
-    if (that instanceof FoundMmdAnnotation) {
-      final FoundMmdAnnotation thatInstance = (FoundMmdAnnotation) that;
+    if (that instanceof MmdAnnotationWrapper) {
+      final MmdAnnotationWrapper thatInstance = (MmdAnnotationWrapper) that;
       return this.annotation.equals(thatInstance.annotation)
           && this.line == thatInstance.line
           && this.path.equals(thatInstance.path);
@@ -112,6 +112,7 @@ public class FoundMmdAnnotation {
 
   @Override
   public String toString() {
-    return "MmdAnnotation{" + "position=" + this.getPath().toString() + ":" + this.getLine() + '}';
+    return "MmdAnnotationWrapper{" + "position=" + this.getPath().toString() + ":" +
+        this.getLine() + '}';
   }
 }

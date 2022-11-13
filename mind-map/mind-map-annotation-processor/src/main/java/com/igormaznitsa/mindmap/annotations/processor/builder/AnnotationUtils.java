@@ -20,11 +20,22 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
 import org.apache.commons.lang3.tuple.Pair;
 
+/**
+ * Auxiliary class contains annotation processing utility methods.
+ */
 public final class AnnotationUtils {
 
   private AnnotationUtils() {
   }
 
+  /**
+   * Find source line position for element.
+   *
+   * @param sourcePositions auxiliary utility class, must not be null
+   * @param trees           auxiliary utility class, must not be null
+   * @param element         element which position should be found
+   * @return formed container with URI and line number.
+   */
   public static UriLine findPosition(
       final SourcePositions sourcePositions, final Trees trees, final Element element) {
     final TreePath treePath = trees.getPath(element);
@@ -36,14 +47,32 @@ public final class AnnotationUtils {
     return new UriLine(compilationUnit.getSourceFile().toUri(), lineNumber);
   }
 
-  public static <A extends Annotation> List<Pair<A, Element>> findAmongEnclosingAndAncestors(
-      final Element element, final Class<A> annotationType, final Types typeUtils) {
+  /**
+   * Find first annotations for element, start of list contain annotations found among enclosing elements, tails contains annotations found among ancestors.
+   *
+   * @param element        element to find annotations, can be null
+   * @param annotationType annotation type, must not be null
+   * @param typeUtils      type utils class, must not be null
+   * @param <A>            annotation type
+   * @return list of annotations and elements found by request, must not be null
+   */
+  public static <A extends Annotation> List<Pair<A, Element>> findFirstAmongEnclosingAndAncestors(
+      final Element element,
+      final Class<A> annotationType,
+      final Types typeUtils
+  ) {
     final List<Pair<A, Element>> result = new ArrayList<>();
     result.addAll(findFirstWithEnclosing(element, annotationType, false));
     result.addAll(findFirstWithAncestors(element, annotationType, typeUtils, false));
     return result;
   }
 
+  /**
+   * Find enclosing type for element (i.e. class or interface)
+   *
+   * @param element target element, must not be null
+   * @return found type element or empty otherwise
+   */
   public static Optional<? extends Element> findEnclosingType(final Element element) {
     if (element == null) {
       return Optional.empty();
@@ -59,6 +88,15 @@ public final class AnnotationUtils {
     }
   }
 
+  /**
+   * Find first required annotations among enclosing elements.
+   *
+   * @param element        target element, can be null
+   * @param annotationType annotation to find, must not be null
+   * @param includeElement flag to include target element into search
+   * @param <A>            annotation type
+   * @return list of pairs found annotations, must not be null
+   */
   public static <A extends Annotation> List<Pair<A, Element>> findFirstWithEnclosing(
       final Element element, final Class<A> annotationType, final boolean includeElement) {
     if (element == null) {
@@ -73,12 +111,24 @@ public final class AnnotationUtils {
     }
   }
 
+  /**
+   * Find first required annotations among ancestors.
+   *
+   * @param element        target element, can be null
+   * @param annotationType annotation to find, must not be null
+   * @param includeElement flag to include target element into search
+   * @param <A>            annotation type
+   * @return list of pairs found annotations, must not be null
+   */
   public static <A extends Annotation> List<Pair<A, Element>> findFirstWithAncestors(
       final Element element,
       final Class<A> annotationType,
       final Types typeUtils,
-      final boolean includeElementInSearch) {
-    if (includeElementInSearch) {
+      final boolean includeElement) {
+    if (element == null) {
+      return List.of();
+    }
+    if (includeElement) {
       final A[] found = element.getAnnotationsByType(annotationType);
       if (found.length > 0) {
         return Stream.of(found)
@@ -115,6 +165,9 @@ public final class AnnotationUtils {
     }
   }
 
+  /**
+   * Auxiliary container class to keep information about line and sources.
+   */
   public static final class UriLine {
     private final URI uri;
     private final long line;
