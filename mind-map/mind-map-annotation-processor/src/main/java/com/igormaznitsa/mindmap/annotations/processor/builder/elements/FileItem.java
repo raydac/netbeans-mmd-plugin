@@ -20,10 +20,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.lang.model.util.Types;
@@ -67,12 +69,41 @@ public class FileItem extends AbstractItem {
           counter--;
           if (counter < 0) {
             throw new MmdAnnotationProcessorException(
-                item.getAnnotationItem(), "Detected loop at generated graph for MMD topic path");
+                item.getAnnotationItem(),
+                "Detected loop at graph at MMD topic path: " + makeLoopInfoString(item));
           }
           current = current.getParent();
         }
       }
     }
+  }
+
+  private static String makeLoopInfoString(final InternalLayoutBlock item) {
+    final StringBuilder buffer = new StringBuilder();
+    final Set<InternalLayoutBlock> processed = new HashSet<>();
+    InternalLayoutBlock current = item;
+    while (current.getParent() != null) {
+      if (buffer.length() > 0) {
+        buffer.append("->");
+      }
+      buffer.append(current.asText());
+      if (processed.contains(current)) {
+        buffer.append("->");
+        buffer.append(item.asText());
+        break;
+      } else {
+        processed.add(current);
+      }
+      current = current.getParent();
+    }
+    String bufferContent = buffer.toString();
+    buffer.setLength(0);
+    for (final char c : bufferContent.toCharArray()) {
+      if (!Character.isISOControl(c)) {
+        buffer.append(c);
+      }
+    }
+    return buffer.toString();
   }
 
   private static Path makeTargetFilePath(final MmdAnnotationWrapper annotationWrapper,
