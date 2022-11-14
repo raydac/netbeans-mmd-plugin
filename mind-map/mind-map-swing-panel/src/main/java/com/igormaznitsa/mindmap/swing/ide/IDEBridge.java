@@ -32,6 +32,14 @@ public interface IDEBridge {
   Version getIDEVersion();
 
   /**
+   * Get generator ID for IDE.
+   *
+   * @return generator ID for the IDE, as string, must not be null
+   * @since 1.6.0
+   */
+  String getIDEGeneratorId();
+
+  /**
    * Show notification in IDE.
    *
    * @param title   the title of notification, must not be null, html tags will not be processed.

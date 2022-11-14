@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Igor Maznitsa.
  *
  * This library is free software; you can redistribute it and/or
@@ -16,6 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
+
 package com.igormaznitsa.sciareto.services;
 
 import com.igormaznitsa.commons.version.Version;
@@ -27,15 +28,16 @@ import com.igormaznitsa.mindmap.swing.ide.NotificationType;
 import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.notifications.NotificationManager;
 import com.igormaznitsa.sciareto.ui.platform.PlatformProvider;
-
-import javax.annotation.Nonnull;
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Image;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.Nonnull;
+import javax.imageio.ImageIO;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 
 public class SciaRetoBridge implements IDEBridge {
 
@@ -50,7 +52,14 @@ public class SciaRetoBridge implements IDEBridge {
   }
 
   @Override
-  public void showIDENotification(@Nonnull final String title, @Nonnull final String message, @Nonnull final NotificationType type) {
+  @Nonnull
+  public String getIDEGeneratorId() {
+    return "com.igormaznitsa:scia-reto:" + this.getIDEVersion();
+  }
+
+  @Override
+  public void showIDENotification(@Nonnull final String title, @Nonnull final String message,
+                                  @Nonnull final NotificationType type) {
     final NotificationManager.Type msgtype;
     switch (type) {
       case INFO:
@@ -76,10 +85,12 @@ public class SciaRetoBridge implements IDEBridge {
 
   @Override
   public void notifyRestart() {
-    JOptionPane.showMessageDialog(null, "Work of application will be completed for request! You have to restart it!", "Restart application", JOptionPane.WARNING_MESSAGE);
-    try{
+    JOptionPane.showMessageDialog(null,
+        "Work of application will be completed for request! You have to restart it!",
+        "Restart application", JOptionPane.WARNING_MESSAGE);
+    try {
       PlatformProvider.getPlatform().dispose();
-    }finally{
+    } finally {
       System.exit(0);
     }
   }
@@ -100,7 +111,9 @@ public class SciaRetoBridge implements IDEBridge {
     synchronized (IMAGE_CACHE) {
       image = IMAGE_CACHE.get(path);
       if (image == null) {
-        final InputStream in = klazz.getClassLoader().getResourceAsStream(Assertions.assertNotNull("Icon path must not be null", removeStartSlash(path))); //NOI18N
+        final InputStream in = klazz.getClassLoader().getResourceAsStream(
+            Assertions.assertNotNull("Icon path must not be null",
+                removeStartSlash(path))); //NOI18N
         if (in == null) {
           throw new IllegalArgumentException("Can't find icon resource : " + path); //NOI18N
         }

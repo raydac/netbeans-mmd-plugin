@@ -55,6 +55,12 @@ public class NbIDEBridge implements IDEBridge {
 
   @Override
   @Nonnull
+  public String getIDEGeneratorId() {
+    return "com.igormaznitsa:nb-mind-map:" + this.getIDEVersion();
+  }
+
+  @Override
+  @Nonnull
   public Version getIDEVersion() {
     return this.ideVersion;
   }

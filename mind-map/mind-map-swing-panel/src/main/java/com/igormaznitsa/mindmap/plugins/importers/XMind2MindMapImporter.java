@@ -24,13 +24,14 @@ import com.igormaznitsa.mindmap.model.ExtraNote;
 import com.igormaznitsa.mindmap.model.ExtraTopic;
 import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.MindMap;
+import com.igormaznitsa.mindmap.model.StandardMmdAttributes;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.api.AbstractImporter;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.attributes.images.ImageVisualAttributePlugin;
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
+import com.igormaznitsa.mindmap.swing.ide.IDEBridgeFactory;
 import com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
@@ -476,6 +477,8 @@ public class XMind2MindMapImporter extends AbstractImporter {
 
     if (sheets.isEmpty()) {
       result = new MindMap(true);
+      result.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID, IDEBridgeFactory.findInstance()
+          .getIDEGeneratorId());
       requireNonNull(result.getRoot()).setText("Empty");
     } else {
       result = convertJsonSheet(zipFile, sheets.get(0));
@@ -502,7 +505,9 @@ public class XMind2MindMapImporter extends AbstractImporter {
   private MindMap convertJsonSheet(final ZipFile file,
                                    final JSONObject sheet) {
     final MindMap resultedMap = new MindMap(true);
-    resultedMap.putAttribute(MindMapPanel.ATTR_SHOW_JUMPS, "true");
+    resultedMap.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID, IDEBridgeFactory.findInstance()
+        .getIDEGeneratorId());
+    resultedMap.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_SHOW_JUMPS, "true");
 
     final Topic rootTopic = requireNonNull(resultedMap.getRoot());
     rootTopic.setText("Empty sheet");
@@ -564,6 +569,8 @@ public class XMind2MindMapImporter extends AbstractImporter {
 
     if (xmlSheets.isEmpty()) {
       result = new MindMap(true);
+      result.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID, IDEBridgeFactory.findInstance()
+          .getIDEGeneratorId());
       requireNonNull(result.getRoot()).setText("Empty");
     } else {
       result = convertXmlSheet(style, zipFile, xmlSheets.get(0));
@@ -575,7 +582,9 @@ public class XMind2MindMapImporter extends AbstractImporter {
   private MindMap convertXmlSheet(final XMindStyles styles, final ZipFile file,
                                   final Element sheet) {
     final MindMap resultedMap = new MindMap(true);
-    resultedMap.putAttribute(MindMapPanel.ATTR_SHOW_JUMPS, "true");
+    resultedMap.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID, IDEBridgeFactory.findInstance()
+        .getIDEGeneratorId());
+    resultedMap.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_SHOW_JUMPS, "true");
 
     final Topic rootTopic = requireNonNull(resultedMap.getRoot());
     rootTopic.setText("Empty sheet");

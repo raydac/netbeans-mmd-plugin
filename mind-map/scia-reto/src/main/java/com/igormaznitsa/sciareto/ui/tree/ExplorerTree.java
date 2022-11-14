@@ -18,14 +18,18 @@
  */
 package com.igormaznitsa.sciareto.ui.tree;
 
+import static com.igormaznitsa.sciareto.SciaRetoStarter.IDE_VERSION;
+
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.model.ExtraFile;
 import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.MindMap;
+import com.igormaznitsa.mindmap.model.StandardMmdAttributes;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.swing.ide.IDEBridgeFactory;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
@@ -654,7 +658,9 @@ public final class ExplorerTree extends JScrollPane {
           switch (extension) {
             case "mmd": { //NOI18N
               final MindMap model = new MindMap(true);
-              model.putAttribute("showJumps", "true"); //NOI18N
+              model.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_SHOW_JUMPS, "true"); //NOI18N
+              model.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID, IDEBridgeFactory.findInstance()
+                  .getIDEGeneratorId());
               final Topic root = model.getRoot();
               if (root != null) {
                 root.setText("Root"); //NOI18N

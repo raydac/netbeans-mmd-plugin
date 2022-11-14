@@ -36,6 +36,7 @@ import com.igormaznitsa.mindmap.model.ExtraNote;
 import com.igormaznitsa.mindmap.model.ExtraTopic;
 import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.MindMap;
+import com.igormaznitsa.mindmap.model.StandardMmdAttributes;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.TopicFinder;
 import com.igormaznitsa.mindmap.model.logger.Logger;
@@ -52,6 +53,7 @@ import com.igormaznitsa.mindmap.plugins.tools.ChangeColorPlugin;
 import com.igormaznitsa.mindmap.print.MMDPrint;
 import com.igormaznitsa.mindmap.print.MMDPrintOptions;
 import com.igormaznitsa.mindmap.print.PrintableObject;
+import com.igormaznitsa.mindmap.swing.ide.IDEBridgeFactory;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MMDTopicsTransferable;
 import com.igormaznitsa.mindmap.swing.panel.MindMapListener;
@@ -614,7 +616,10 @@ public final class MMDGraphEditor extends CloneableEditor
           if (text.isEmpty()) {
             LOGGER.warn(
                 "Detected empty text document as mind map, the default mind map will be created");
-            this.mindMapPanel.setModel(new MindMap(true), false);
+            final MindMap map = new MindMap(true);
+            map.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID, IDEBridgeFactory.findInstance()
+                .getIDEGeneratorId());
+            this.mindMapPanel.setModel(map, false);
           } else {
             this.mindMapPanel.setModel(new MindMap(new StringReader(text)), false);
           }
@@ -1299,7 +1304,7 @@ public final class MMDGraphEditor extends CloneableEditor
     return projectFolder == null ? null : FileUtil.toFile(projectFolder);
   }
 
-  protected boolean acceptOrRejectDragging(final DropTargetDragEvent dtde) {
+  boolean acceptOrRejectDragging(final DropTargetDragEvent dtde) {
     final int dropAction = dtde.getDropAction();
 
     boolean result = false;
@@ -1801,21 +1806,18 @@ public final class MMDGraphEditor extends CloneableEditor
   }
 
   private void updateConfigFromPreferences() {
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        if (mindMapPanel.lockIfNotDisposed()) {
-          try {
-            mindMapPanel.refreshConfiguration();
-            mindMapPanel.invalidate();
-            mindMapPanel.revalidate();
-            mindMapPanel.repaint();
-          } finally {
-            mindMapPanel.unlock();
-          }
-        } else {
-          LOGGER.warn("Attempt tp update disposed panel : " + mindMapPanel);
+    SwingUtilities.invokeLater(() -> {
+      if (mindMapPanel.lockIfNotDisposed()) {
+        try {
+          mindMapPanel.refreshConfiguration();
+          mindMapPanel.invalidate();
+          mindMapPanel.revalidate();
+          mindMapPanel.repaint();
+        } finally {
+          mindMapPanel.unlock();
         }
+      } else {
+        LOGGER.warn("Attempt tp update disposed panel : " + mindMapPanel);
       }
     });
   }

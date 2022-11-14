@@ -17,9 +17,11 @@
 package com.igormaznitsa.mindmap.plugins.importers;
 
 import com.igormaznitsa.mindmap.model.MindMap;
+import com.igormaznitsa.mindmap.model.StandardMmdAttributes;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.api.AbstractImporter;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
+import com.igormaznitsa.mindmap.swing.ide.IDEBridgeFactory;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
 import com.igormaznitsa.mindmap.swing.services.IconID;
@@ -52,6 +54,8 @@ public class Text2MindMapImporter extends AbstractImporter {
 
   MindMap makeFromLines(final List<String> lines) {
     final MindMap result = new MindMap(false);
+    result.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID, IDEBridgeFactory.findInstance()
+        .getIDEGeneratorId());
     final Iterator<String> iterator = lines.iterator();
     final List<TopicData> topicStack = new ArrayList<>();
     while (true) {

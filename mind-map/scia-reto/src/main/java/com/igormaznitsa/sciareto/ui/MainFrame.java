@@ -18,15 +18,18 @@
  */
 package com.igormaznitsa.sciareto.ui;
 
+import static com.igormaznitsa.sciareto.SciaRetoStarter.IDE_VERSION;
 import static com.igormaznitsa.sciareto.ui.UiUtils.assertSwingThread;
 
 import com.igormaznitsa.meta.annotation.MayContainNull;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.annotation.ReturnsOriginal;
 import com.igormaznitsa.mindmap.model.MindMap;
+import com.igormaznitsa.mindmap.model.StandardMmdAttributes;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.swing.ide.IDEBridgeFactory;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.SciaRetoStarter;
@@ -1922,7 +1925,9 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
       if (choosenFilter == filerMindMap) {
         final MindMap model = new MindMap(true);
-        model.putAttribute("showJumps", "true"); //NOI18N
+        model.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID, IDEBridgeFactory.findInstance()
+            .getIDEGeneratorId());
+        model.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_SHOW_JUMPS, "true"); //NOI18N
         final Topic root = model.getRoot();
         if (root != null) {
           root.setText("Root"); //NOI18N
@@ -2057,6 +2062,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       } else {
         try {
           final MindMap mindMap = new MindMap(true);
+          mindMap.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID, IDEBridgeFactory.findInstance()
+              .getIDEGeneratorId());
           final String text = mindMap.write(new StringWriter()).toString();
           SystemUtils.saveUTFText(file, text);
           result = file;

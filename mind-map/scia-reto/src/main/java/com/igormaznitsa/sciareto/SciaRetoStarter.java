@@ -50,6 +50,7 @@ import com.igormaznitsa.commons.version.Version;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.model.MindMap;
+import com.igormaznitsa.mindmap.model.StandardMmdAttributes;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
@@ -63,6 +64,7 @@ import com.igormaznitsa.mindmap.plugins.api.MindMapPlugin;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.external.ExternalPlugins;
 import com.igormaznitsa.mindmap.plugins.misc.OptionsPlugin;
+import com.igormaznitsa.mindmap.swing.ide.IDEBridgeFactory;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
@@ -135,7 +137,6 @@ public class SciaRetoStarter {
   public static final Image APP_ICON = UiUtils.loadIcon("logo256x256.png");
   public static final long UPSTART = currentTimeMillis();
   public static final Version IDE_VERSION = new Version("sciareto", new long[] {1L, 6L, 0L}, null);
-  public static final Random RND = new Random();
   public static final String PROPERTY_LOOKANDFEEL = "selected.look.and.feel"; //NOI18N
   public static final String PROPERTY_SCALE_GUI = "general.gui.scale"; //NOI18N
   //NOI18N
@@ -837,10 +838,14 @@ public class SciaRetoStarter {
           });
 
           MindMap map = new MindMap(false);
+          map.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID, IDEBridgeFactory.findInstance()
+              .getIDEGeneratorId());
           panel.setModel(map);
 
           map = fromFormat.doImport(panel.getController().makePluginContext(panel));
           if (map != null) {
+            map.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID, IDEBridgeFactory.findInstance()
+                .getIDEGeneratorId());
             panel.setModel(map);
           } else {
             dialog.msgError(MAIN_FRAME, "Can't import map");

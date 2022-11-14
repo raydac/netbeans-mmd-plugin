@@ -46,7 +46,7 @@ import org.apache.commons.io.IOUtils;
 /**
  * Mind map container. <b>It is not thread safe!</b>
  */
-public class MindMap implements Serializable, Constants, Iterable<Topic>, Cloneable {
+public class MindMap implements StandardMmdAttributes, Serializable, Constants, Iterable<Topic>, Cloneable {
 
   /**
    * Mind map format version
@@ -56,7 +56,6 @@ public class MindMap implements Serializable, Constants, Iterable<Topic>, Clonea
   private static final Pattern PATTERN_ATTRIBUTES = Pattern.compile("^\\s*\\>\\s(.+)$");
   private static final Pattern PATTERN_ATTRIBUTE =
       Pattern.compile("[,]?\\s*([\\S]+?)\\s*=\\s*(\\`+)(.*?)\\2");
-  private static final String GENERATOR_VERSION_NAME = "__version__";
   private final Map<String, String> attributes =
       new TreeMap<>(Comparator.naturalOrder());
   private final transient List<MindMapModelListener> modelListeners =
@@ -136,7 +135,7 @@ public class MindMap implements Serializable, Constants, Iterable<Topic>, Clonea
     }
 
     this.root = rootTopic;
-    this.attributes.put(GENERATOR_VERSION_NAME, FORMAT_VERSION);
+    this.attributes.put(MMD_ATTRIBUTE_VERSION, FORMAT_VERSION);
   }
 
   static boolean fillMapByAttributes(final String line,
@@ -542,7 +541,7 @@ public class MindMap implements Serializable, Constants, Iterable<Topic>, Clonea
    */
   public <T extends Writer> T write(final T writer) throws IOException {
     writer.append("[Scia Reto](https://sciareto.org) mind map").append(NEXT_PARAGRAPH);
-    this.attributes.put(GENERATOR_VERSION_NAME, FORMAT_VERSION);
+    this.attributes.put(MMD_ATTRIBUTE_VERSION, FORMAT_VERSION);
     writer.append("> ").append(MindMap.allAttributesAsString(this.attributes))
         .append(NEXT_LINE);
     writer.append("---").append(NEXT_LINE);

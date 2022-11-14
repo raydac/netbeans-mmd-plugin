@@ -53,6 +53,11 @@ class DefaultIDEBridge implements IDEBridge {
   }
 
   @Override
+  public String getIDEGeneratorId() {
+    return "com.igormaznitsa:scia-reto-default:" + this.getIDEVersion();
+  }
+
+  @Override
   public void showIDENotification(final String title, final String message,
                                   final NotificationType type) {
     final int messageType;
@@ -80,7 +85,9 @@ class DefaultIDEBridge implements IDEBridge {
 
   @Override
   public void notifyRestart() {
-    JOptionPane.showMessageDialog(null, "Work of application will be completed for request! You have to restart it!", "Restart application", JOptionPane.WARNING_MESSAGE);
+    JOptionPane.showMessageDialog(null,
+        "Work of application will be completed for request! You have to restart it!",
+        "Restart application", JOptionPane.WARNING_MESSAGE);
     System.exit(0);
   }
 

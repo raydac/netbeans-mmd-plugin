@@ -59,6 +59,12 @@ public class IdeaIDEBridge implements IDEBridge {
   }
 
   @Override
+  @Nonnull
+  public String getIDEGeneratorId() {
+    return "com.igormaznitsa:idea-mindmap:" + this.getIDEVersion();
+  }
+
+  @Override
   public void showIDENotification(@Nonnull final String title, @Nonnull final String text, @Nonnull final NotificationType type) {
     final com.intellij.notification.NotificationType ideType;
     switch (type) {

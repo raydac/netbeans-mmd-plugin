@@ -26,6 +26,7 @@ import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_F
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_TEXT_COLOR;
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.doesContainOnlyStandardAttributes;
 import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispatchThread;
+import static com.igormaznitsa.sciareto.SciaRetoStarter.IDE_VERSION;
 import static com.igormaznitsa.sciareto.ui.UiUtils.BUNDLE;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
@@ -41,6 +42,7 @@ import com.igormaznitsa.mindmap.model.ExtraNote;
 import com.igormaznitsa.mindmap.model.ExtraTopic;
 import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.MindMap;
+import com.igormaznitsa.mindmap.model.StandardMmdAttributes;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.TopicFinder;
 import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
@@ -51,6 +53,7 @@ import com.igormaznitsa.mindmap.plugins.processors.ExtraJumpPlugin;
 import com.igormaznitsa.mindmap.plugins.processors.ExtraNotePlugin;
 import com.igormaznitsa.mindmap.plugins.processors.ExtraURIPlugin;
 import com.igormaznitsa.mindmap.plugins.tools.ChangeColorPlugin;
+import com.igormaznitsa.mindmap.swing.ide.IDEBridgeFactory;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MMDTopicsTransferable;
 import com.igormaznitsa.mindmap.swing.panel.MindMapListener;
@@ -203,6 +206,8 @@ public final class MMDEditor extends AbstractTextEditor
     final MindMap map;
     if (file.length() == 0L) {
       map = new MindMap(true);
+      map.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID, IDEBridgeFactory.findInstance()
+          .getIDEGeneratorId());
     } else {
       map = new MindMap(new StringReader(FileUtils.readFileToString(file, "UTF-8"))); //NOI18N
     }

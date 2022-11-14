@@ -11,6 +11,7 @@ import com.igormaznitsa.mindmap.annotations.processor.MmdAnnotationWrapper;
 import com.igormaznitsa.mindmap.annotations.processor.builder.exceptions.MmdAnnotationProcessorException;
 import com.igormaznitsa.mindmap.model.ExtraTopic;
 import com.igormaznitsa.mindmap.model.MindMap;
+import com.igormaznitsa.mindmap.model.StandardMmdAttributes;
 import com.igormaznitsa.mindmap.model.Topic;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -172,10 +173,10 @@ public class FileItem extends AbstractItem {
   private MindMap makeMindMap(final Types types, final Path fileLinkBaseFolder)
       throws URISyntaxException, MmdAnnotationProcessorException {
     final MindMap map = new MindMap(true);
-    map.putAttribute("showJumps", "true");
-    map.putAttribute("generatorId", "com.igormaznitsa:mind-map-annotation-processor:1.6.0");
+    map.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_SHOW_JUMPS, "true");
+    map.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID, "com.igormaznitsa:mind-map-annotation-processor:1.6.0");
     if (fileLinkBaseFolder == null) {
-      map.putAttribute("noBaseFolder", "true");
+      map.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_NO_BASE_FOLDER, "true");
     }
 
     fillAttributesWithoutFileAndTopicLinks(

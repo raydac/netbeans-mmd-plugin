@@ -20,7 +20,9 @@ import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.ExtraNote;
 import com.igormaznitsa.mindmap.model.ExtraTopic;
 import com.igormaznitsa.mindmap.model.MindMap;
+import com.igormaznitsa.mindmap.model.StandardMmdAttributes;
 import com.igormaznitsa.mindmap.model.Topic;
+import com.igormaznitsa.mindmap.swing.ide.IDEBridgeFactory;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -56,6 +58,8 @@ public class MMDTopicsTransferable implements Transferable {
     this.topics = new Topic[topics.length];
 
     final MindMap fakeMap = new MindMap(false);
+    fakeMap.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID, IDEBridgeFactory.findInstance()
+        .getIDEGeneratorId());
 
     for (int i = 0; i < topics.length; i++) {
       this.topics[i] = new Topic(fakeMap, topics[i], true);

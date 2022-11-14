@@ -26,6 +26,7 @@ import com.igormaznitsa.mindmap.model.ExtraNote;
 import com.igormaznitsa.mindmap.model.ExtraTopic;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.ModelUtils;
+import com.igormaznitsa.mindmap.model.StandardMmdAttributes;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
@@ -117,7 +118,6 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   private static final int MIN_DISTANCE_FOR_TOPIC_DRAGGING_START = 8;
 
   public static final long serialVersionUID = 2783412123454232L;
-  public static final String ATTR_SHOW_JUMPS = "showJumps";
   private static final Logger LOGGER = LoggerFactory.getLogger(MindMapPanel.class);
   private static final UIComponentFactory UI_COMPO_FACTORY = UIComponentFactoryProvider.findInstance();
   private static final int ALL_SUPPORTED_MODIFIERS = KeyEvent.SHIFT_MASK | KeyEvent.ALT_MASK | KeyEvent.META_MASK | KeyEvent.CTRL_MASK;
@@ -920,7 +920,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   private static void drawTopics(final MMGraphics g, final MindMapPanelConfig cfg,
                                  final MindMap map) {
     if (map != null) {
-      if (Boolean.parseBoolean(map.findAttribute(ATTR_SHOW_JUMPS))) {
+      if (Boolean.parseBoolean(map.findAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_SHOW_JUMPS))) {
         drawJumps(g, map, cfg);
       }
 
@@ -1708,13 +1708,13 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   }
 
   public boolean isShowJumps() {
-    return Boolean.parseBoolean(this.model.findAttribute(ATTR_SHOW_JUMPS));
+    return Boolean.parseBoolean(this.model.findAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_SHOW_JUMPS));
   }
 
   public void setShowJumps(final boolean flag) {
     if (lockIfNotDisposed()) {
       try {
-        this.model.putAttribute(ATTR_SHOW_JUMPS, flag ? "true" : null);
+        this.model.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_SHOW_JUMPS, flag ? "true" : null);
         repaint();
         fireNotificationMindMapChanged(true);
       } finally {

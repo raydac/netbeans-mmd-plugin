@@ -24,9 +24,12 @@ import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispat
 import com.igormaznitsa.ideamindmap.facet.MindMapFacet;
 import com.igormaznitsa.ideamindmap.findtext.FindTextPanel;
 import com.igormaznitsa.ideamindmap.findtext.FindTextScopeProvider;
+import com.igormaznitsa.ideamindmap.utils.IdeaIDEBridge;
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
 import com.igormaznitsa.ideamindmap.utils.SelectIn;
 import com.igormaznitsa.ideamindmap.utils.SwingUtils;
+import com.igormaznitsa.mindmap.model.StandardMmdAttributes;
+import com.igormaznitsa.mindmap.swing.ide.IDEBridgeFactory;
 import com.intellij.openapi.module.Module;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.ide.commons.DnDUtils;
@@ -275,7 +278,10 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
         try {
           if (documentText.isEmpty()) {
             LOGGER.warn("Detected empty text document, default mind-map will be created");
-            mindMapPanel.setModel(new MindMap(true));
+            final MindMap map = new MindMap(true);
+            map.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID, IDEBridgeFactory.findInstance()
+                .getIDEGeneratorId());
+            mindMapPanel.setModel(map);
           } else {
             mindMapPanel.setModel(new MindMap(new StringReader(documentText)));
           }
