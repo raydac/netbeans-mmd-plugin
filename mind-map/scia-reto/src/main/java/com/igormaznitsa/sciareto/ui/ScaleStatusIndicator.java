@@ -24,7 +24,6 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -36,14 +35,14 @@ public class ScaleStatusIndicator extends JLabel {
 
   private final Scalable observableObject;
 
-  public ScaleStatusIndicator(@Nonnull final Scalable observableObject) {
+  public ScaleStatusIndicator(@Nonnull final Scalable observableObject, final boolean darkScheme) {
     super();
     this.observableObject = Assertions.assertNotNull(observableObject);
     this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-    this.setToolTipText("Reset scale");
-    this.setBackground(new Color(0xf7ffc8));
+    this.setToolTipText("Click to reset scale");
+    this.setBackground(darkScheme ? Color.DARK_GRAY.brighter() : new Color(0xf7ffc8));
     this.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
-    this.setForeground(Color.BLACK);
+    this.setForeground(darkScheme ? Color.YELLOW.darker() : Color.BLACK);
     this.setOpaque(false);
 
     this.addMouseListener(new MouseAdapter() {
@@ -53,12 +52,7 @@ public class ScaleStatusIndicator extends JLabel {
       }
     });
 
-    observableObject.addScaleListener(new ActionListener() {
-      @Override
-      public void actionPerformed(@Nonnull final ActionEvent e) {
-        updateTextForScale();
-      }
-    });
+    observableObject.addScaleListener(e -> updateTextForScale());
     updateTextForScale();
   }
 
@@ -88,9 +82,12 @@ public class ScaleStatusIndicator extends JLabel {
   }
 
   private void updateTextForScale() {
-    final float scale = this.observableObject.getScale();
+    String scalePercent = Long.toString(Math.round(this.observableObject.getScale() * 100.0f));
+    if (scalePercent.length() < 3) {
+      scalePercent = "&nbsp;&nbsp;" + scalePercent;
+    }
     this.setText(
-        String.format("<html><b>&nbsp;Scale: %d%%&nbsp;</b></html>", Math.round(scale * 100.0f)));
+        String.format("<html><b>&nbsp;Scale: %s%%&nbsp;</b></html>", scalePercent));
 
     this.repaint();
   }

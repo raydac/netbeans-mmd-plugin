@@ -39,8 +39,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
@@ -67,13 +65,12 @@ import org.apache.commons.io.FilenameUtils;
 
 public final class PictureViewer extends AbstractEditor {
 
+  //NOI18N
   public static final Set<String> SUPPORTED_FORMATS =
-      Collections.unmodifiableSet(new HashSet<String>() {{
-        add("png"); //NOI18N
-        add("jpg"); //NOI18N
-        add("gif"); //NOI18N
-        add("svg"); //NOI18N
-      }});
+      Set.of("png", //NOI18N
+          "jpg", //NOI18N
+          "gif", //NOI18N
+          "svg");
 
 
   public static final FileFilter IMAGE_FILE_FILTER = new FileFilter() {
@@ -106,7 +103,7 @@ public final class PictureViewer extends AbstractEditor {
     super();
     this.title = new TabTitle(context, this, file);
     this.imageViewer = new ScalableImage(this.mindMapPanelConfig);
-    this.scaleLabel = new ScaleStatusIndicator(this.imageViewer);
+    this.scaleLabel = new ScaleStatusIndicator(this.imageViewer, UiUtils.figureOutThatDarkTheme());
 
     this.scrollPane.getVerticalScrollBar().setBlockIncrement(ScalableImage.IMG_BLOCK_INCREMENT);
     this.scrollPane.getVerticalScrollBar().setUnitIncrement(ScalableImage.IMG_UNIT_INCREMENT);
