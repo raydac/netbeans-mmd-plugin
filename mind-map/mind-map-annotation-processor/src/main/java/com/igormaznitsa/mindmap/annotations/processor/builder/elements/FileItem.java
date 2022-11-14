@@ -86,22 +86,15 @@ public class FileItem extends AbstractItem {
       if (buffer.length() > 0) {
         buffer.append("->");
       }
-      buffer.append(current.asText());
+      buffer.append(current.asTextWithoutControl());
       if (processed.contains(current)) {
         buffer.append("->");
-        buffer.append(item.asText());
+        buffer.append(item.asTextWithoutControl());
         break;
       } else {
         processed.add(current);
       }
       current = current.getParent();
-    }
-    String bufferContent = buffer.toString();
-    buffer.setLength(0);
-    for (final char c : bufferContent.toCharArray()) {
-      if (!Character.isISOControl(c)) {
-        buffer.append(c);
-      }
     }
     return buffer.toString();
   }
@@ -248,7 +241,9 @@ public class FileItem extends AbstractItem {
         } else {
           if (!found.getParent().equals(current)) {
             throw new MmdAnnotationProcessorException(
-                found.getAnnotationItem(), "Can't layout topic, may be it belongs to many paths");
+                found.getAnnotationItem(),
+                "MMD processor has found multiple target paths for a topic during linking: " +
+                    current.asTextWithoutControl());
           }
         }
       }
