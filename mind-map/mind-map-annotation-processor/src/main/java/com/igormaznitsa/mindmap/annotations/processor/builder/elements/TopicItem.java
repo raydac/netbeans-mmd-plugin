@@ -40,8 +40,8 @@ public class TopicItem extends AbstractItem {
       return Optional.empty();
     }
     final MmdTopic topicAnnotation = element.getAnnotation(MmdTopic.class);
-    if (topicAnnotation != null && StringUtils.isNotBlank(topicAnnotation.mmdFileUid())) {
-      return Optional.of(topicAnnotation.mmdFileUid());
+    if (topicAnnotation != null && StringUtils.isNotBlank(topicAnnotation.fileUid())) {
+      return Optional.of(topicAnnotation.fileUid());
     } else {
       return findFileUidAmongParentTopics(element.getEnclosingElement());
     }
@@ -108,7 +108,7 @@ public class TopicItem extends AbstractItem {
       final Types types,
       final Map<String, FileItem> fileMap)
       throws MmdElementException, MmdAnnotationProcessorException {
-    if (StringUtils.isBlank(this.asMmdTopicAnnotation().mmdFileUid())) {
+    if (StringUtils.isBlank(this.asMmdTopicAnnotation().fileUid())) {
       final Optional<String> fileUid = this.findFileUidAttribute();
       if (fileUid.isPresent()) {
         return this.findFileUidAttribute().stream()
@@ -146,14 +146,14 @@ public class TopicItem extends AbstractItem {
         }
       }
     } else {
-      FileItem found = fileMap.get(this.asMmdTopicAnnotation().mmdFileUid());
+      FileItem found = fileMap.get(this.asMmdTopicAnnotation().fileUid());
       if (found == null) {
         found =
             fileMap.values().stream()
                 .filter(
                     x ->
                         FilenameUtils.getName(x.asMmdFileAnnotation().fileName())
-                            .equals(this.asMmdTopicAnnotation().mmdFileUid()))
+                            .equals(this.asMmdTopicAnnotation().fileUid()))
                 .findFirst()
                 .orElse(null);
       }

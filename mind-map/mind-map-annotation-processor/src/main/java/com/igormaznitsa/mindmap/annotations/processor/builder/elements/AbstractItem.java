@@ -51,8 +51,8 @@ public abstract class AbstractItem {
     final Properties properties = new Properties();
 
     final String filePath;
-    if (StringUtils.isNotBlank(topicAnnotation.file())) {
-      final Matcher matcher = PATTERN_FILEPATH_LINE_NUMBER.matcher(topicAnnotation.file());
+    if (StringUtils.isNotBlank(topicAnnotation.fileLink())) {
+      final Matcher matcher = PATTERN_FILEPATH_LINE_NUMBER.matcher(topicAnnotation.fileLink());
       if (matcher.find()) {
         if (matcher.group(1) == null) {
           filePath = matcher.group(3);
@@ -62,12 +62,12 @@ public abstract class AbstractItem {
             properties.put("line", Long.valueOf(matcher.group(2)));
           } catch (NumberFormatException ex) {
             throw new MmdAnnotationProcessorException(
-                topicItem, "Can't process line number in file path: " + topicAnnotation.file());
+                topicItem, "Can't process line number in file path: " + topicAnnotation.fileLink());
           }
         }
       } else {
         throw new MmdAnnotationProcessorException(
-            topicItem, "Can't extract file and line from file path: " + topicAnnotation.file());
+            topicItem, "Can't extract file and line from file path: " + topicAnnotation.fileLink());
       }
     } else if (topicAnnotation.anchor()) {
       filePath = topicItem.getPath().toString();

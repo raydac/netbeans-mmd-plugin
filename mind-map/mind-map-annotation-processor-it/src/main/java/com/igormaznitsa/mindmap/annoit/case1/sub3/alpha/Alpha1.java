@@ -9,4 +9,10 @@ public class Alpha1 {
   public void alpha() {
 
   }
+
+  @MmdTopic(fileUid = "gamma", path = {"p1", "p2", "alpha_"})
+  public void path1() {
+
+  }
+
 }

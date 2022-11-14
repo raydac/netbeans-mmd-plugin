@@ -33,10 +33,10 @@ public @interface MmdTopic {
   /**
    * Identifier of MMD file which should be a parent for the topic.
    *
-   * @return MMD file UID or empty one if should select file automatically.
+   * @return MMD file UID or empty one if auto-select allowed.
    * @see MmdFile#uid()
    */
-  String mmdFileUid() default "";
+  String fileUid() default "";
 
   /**
    * Path to the topic in MMD file
@@ -62,19 +62,18 @@ public @interface MmdTopic {
   String title() default "";
 
   /**
-   * File path to be added into topic.
+   * File link path to be added into topic.
    *
-   * @return if there is any MMD file with such UID then its path in use else just path added if
-   * non-empty.
+   * @return file path to be added into topic as file link (can contain line number in format <i>path:line</i>), can be empty if omitted.
    * @see MmdFile#uid()
    */
-  String file() default "";
+  String fileLink() default "";
 
   /**
-   * Add the source file with line position as file link but only if file attribute is empty.
+   * Add the source file with line position as file link but only if file attribute is empty. <b>File link path field has bigger priority.</b>
    *
    * @return true if should autogenerate source file line link, false otherwise
-   * @see #file()
+   * @see #fileLink()
    */
   boolean anchor() default true;
 
