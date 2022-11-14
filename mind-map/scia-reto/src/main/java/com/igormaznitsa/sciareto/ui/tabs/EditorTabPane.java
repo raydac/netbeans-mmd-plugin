@@ -62,6 +62,10 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
     this.context = context;
     this.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 
+    this.putClientProperty("JTabbedPane.tabType", "card");
+    this.putClientProperty("JTabbedPane.hasFullBorder", false);
+    this.putClientProperty("JTabbedPane.showContentSeparator", false);
+
     this.addMouseListener(new MouseAdapter() {
       @Override
       public void mouseReleased(MouseEvent e) {

@@ -82,6 +82,7 @@ import com.igormaznitsa.sciareto.ui.misc.ColorChooserButton;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 import com.igormaznitsa.sciareto.ui.tree.FileTransferable;
 import com.igormaznitsa.sciareto.ui.tree.NodeProject;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -118,6 +119,7 @@ import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.JComponent;
+import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
@@ -130,6 +132,8 @@ public final class MMDEditor extends AbstractTextEditor
     implements PluginContext, MindMapPanelController, MindMapListener, DropTargetListener {
 
   private static final long serialVersionUID = -1011638261448046201L;
+
+  private final JPanel mainPanel;
 
   private final MindMapPanel mindMapPanel;
 
@@ -182,6 +186,7 @@ public final class MMDEditor extends AbstractTextEditor
     this.mindMapPanel.addMindMapListener(this);
 
     this.scrollPane = new JScrollPane(this.mindMapPanel);
+    this.scrollPane.putClientProperty("JScrollPane.smoothScrolling", true);
 
     this.scrollPane.getHorizontalScrollBar().setBlockIncrement(128);
     this.scrollPane.getHorizontalScrollBar().setUnitIncrement(16);
@@ -190,6 +195,9 @@ public final class MMDEditor extends AbstractTextEditor
 
     this.scrollPane.setWheelScrollingEnabled(true);
     this.scrollPane.setAutoscrolls(true);
+
+    this.mainPanel = new JPanel(new BorderLayout(0,0));
+    this.mainPanel.add(this.scrollPane, BorderLayout.CENTER);
 
     final AdjustmentListener listener = new AdjustmentListener() {
       @Override
@@ -483,9 +491,15 @@ public final class MMDEditor extends AbstractTextEditor
   }
 
   @Override
+  public boolean showSearchPane(final @Nonnull JPanel searchPanel) {
+    this.mainPanel.add(searchPanel, BorderLayout.NORTH);
+    return true;
+  }
+
+  @Override
   @Nonnull
   public JComponent getContainerToShow() {
-    return this.scrollPane;
+    return this.mainPanel;
   }
 
   @Override

@@ -25,6 +25,7 @@ public class EditorScrollPanel extends JScrollPane {
 
   public EditorScrollPanel() {
     this(null);
+    this.putClientProperty("JScrollPane.smoothScrolling", true);
   }
 
   public EditorScrollPanel(@Nullable final JComponent view) {
