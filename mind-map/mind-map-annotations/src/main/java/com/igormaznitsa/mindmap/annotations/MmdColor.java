@@ -75,7 +75,23 @@ public enum MmdColor {
   /**
    * Aqua
    */
-  AQUA("#00FFFF");
+  AQUA("#00FFFF"),
+  /**
+   * Orange
+   */
+  ORANGE("#FFA500"),
+  /**
+   * Dark orange
+   */
+  DARK_ORANG("#FF8C00"),
+  /**
+   * Coral
+   */
+  CORAL("#FF7F50"),
+  /**
+   * Tomato
+   */
+  TOMATO("#FF6347");
 
   private final String htmlColor;
 

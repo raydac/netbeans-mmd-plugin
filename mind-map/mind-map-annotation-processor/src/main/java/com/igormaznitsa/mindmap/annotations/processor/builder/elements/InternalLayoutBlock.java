@@ -83,7 +83,7 @@ final class InternalLayoutBlock {
           return uid;
         }
         if (StringUtils.isNotBlank(title)) {
-          return uid;
+          return title;
         }
         return elementName;
       } else {

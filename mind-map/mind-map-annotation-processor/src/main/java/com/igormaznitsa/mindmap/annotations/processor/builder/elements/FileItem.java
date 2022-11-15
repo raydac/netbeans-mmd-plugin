@@ -1,6 +1,7 @@
 package com.igormaznitsa.mindmap.annotations.processor.builder.elements;
 
 import static com.igormaznitsa.mindmap.annotations.MmdFile.MACROS_SRC_CLASS_FOLDER;
+import static com.igormaznitsa.mindmap.annotations.processor.builder.elements.AbstractItem.MmdAttribute.TOPIC_LINK_UID;
 import static java.util.Comparator.comparingInt;
 import static java.util.Objects.requireNonNull;
 import static org.apache.commons.io.FilenameUtils.normalizeNoEndSeparator;
@@ -174,7 +175,8 @@ public class FileItem extends AbstractItem {
       throws URISyntaxException, MmdAnnotationProcessorException {
     final MindMap map = new MindMap(true);
     map.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_SHOW_JUMPS, "true");
-    map.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID, "com.igormaznitsa:mind-map-annotation-processor:1.6.0");
+    map.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID,
+        "com.igormaznitsa:mind-map-annotation-processor:1.6.0");
     if (fileLinkBaseFolder == null) {
       map.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_NO_BASE_FOLDER, "true");
     }
@@ -190,20 +192,20 @@ public class FileItem extends AbstractItem {
     return this.fileUid;
   }
 
-  private Optional<InternalLayoutBlock> findForNameOrUid(
-      final InternalLayoutBlock preferredParent, final String nameOrUid) {
+  private Optional<InternalLayoutBlock> findForUidOrTitle(
+      final InternalLayoutBlock preferredParent, final String id) {
     List<InternalLayoutBlock> found =
         this.layoutBlocks.stream()
             .filter(
                 x ->
                     StringUtils.isNotBlank(x.getAnnotation().uid())
-                        && nameOrUid.equals(x.getAnnotation().uid()))
+                        && id.equals(x.getAnnotation().uid()))
             .collect(Collectors.toList());
 
     if (found.isEmpty()) {
       found =
           this.layoutBlocks.stream()
-              .filter(x -> nameOrUid.equals(x.findAnyPossibleUid()))
+              .filter(x -> id.equals(x.findAnyPossibleUid()))
               .collect(Collectors.toList());
     }
 
@@ -224,14 +226,14 @@ public class FileItem extends AbstractItem {
 
     final String[] wholePath = item.getAnnotation().path();
     final String firstPathItemId = wholePath[0];
-    InternalLayoutBlock first = this.findForNameOrUid(null, firstPathItemId).orElse(null);
+    InternalLayoutBlock first = this.findForUidOrTitle(null, firstPathItemId).orElse(null);
     if (first == null) {
       first = new InternalLayoutBlock(item.getAnnotationItem(), firstPathItemId, true);
       this.layoutBlocks.add(first);
     }
     InternalLayoutBlock current = first;
     for (int i = 1; i < wholePath.length; i++) {
-      InternalLayoutBlock found = this.findForNameOrUid(current, wholePath[i]).orElse(null);
+      InternalLayoutBlock found = this.findForUidOrTitle(current, wholePath[i]).orElse(null);
       if (found == null) {
         found = new InternalLayoutBlock(item.getAnnotationItem(), wholePath[i], true);
         found.setParent(current);
@@ -330,28 +332,48 @@ public class FileItem extends AbstractItem {
       }
     }
 
+    for (final Topic topic : mindMap) {
+      final String title = topic.getText();
+      if (StringUtils.isNotBlank(title)) {
+        if (!uidMarkedTopics.containsKey(title)) {
+          uidMarkedTopics.put(title, topic);
+        }
+      }
+    }
+
     if (isNoneBlank(this.asMmdFileAnnotation().rootTopic().jumpTo())) {
-      final String targetUid = this.asMmdFileAnnotation().rootTopic().jumpTo();
-      if (!targetUid.equals(this.asMmdFileAnnotation().rootTopic().uid())) {
-        final Topic targetTopic = uidMarkedTopics.get(targetUid);
+      final String targetUidOrTitle = this.asMmdFileAnnotation().rootTopic().jumpTo();
+      if (!targetUidOrTitle.equals(this.asMmdFileAnnotation().rootTopic().uid())) {
+        final Topic targetTopic = uidMarkedTopics.get(targetUidOrTitle);
         if (targetTopic == null) {
           throw new MmdAnnotationProcessorException(
-              this, "Can't find target topic for UID '" + targetUid + '\'');
+              this, "Can't find target topic for UID or title: '" + targetUidOrTitle + '\'');
         } else {
-          mindMap.getRoot().setExtra(new ExtraTopic(targetUid));
+          mindMap.getRoot().setExtra(new ExtraTopic(targetUidOrTitle));
         }
       }
     }
     for (final InternalLayoutBlock item : items) {
-      final String targetUid = item.getAnnotation().jumpTo();
+      String targetUid = item.getAnnotation().jumpTo();
       if (isNoneBlank(targetUid)) {
-        if (!item.getAnnotation().uid().equals(targetUid)) {
-          if (uidMarkedTopics.containsKey(targetUid)) {
-            item.findOrCreateTopic(mindMap).setExtra(new ExtraTopic(targetUid));
+        final Topic targetTopic = uidMarkedTopics.get(targetUid);
+        final Topic itemTopic = item.findOrCreateTopic(mindMap);
+        if (targetTopic == null) {
+          throw new MmdAnnotationProcessorException(
+              item.getAnnotationItem(),
+              "Can't find target topic for UID or title: '" + targetUid + '\'');
+        } else if (targetTopic == itemTopic) {
+          throw new MmdAnnotationProcessorException(
+              item.getAnnotationItem(),
+              "Detected self-jump for UID or title: '" + targetUid + '\'');
+        } else {
+          if (targetTopic.getAttribute(TOPIC_LINK_UID.getId()) == null) {
+            targetUid = "auto-" + UUID.randomUUID();
+            targetTopic.putAttribute(TOPIC_LINK_UID.getId(), targetUid);
           } else {
-            throw new MmdAnnotationProcessorException(
-                item.getAnnotationItem(), "Can't find target topic for UID '" + targetUid + '\'');
+            targetUid = targetTopic.getAttribute(TOPIC_LINK_UID.getId());
           }
+          itemTopic.setExtra(new ExtraTopic(targetUid));
         }
       }
     }

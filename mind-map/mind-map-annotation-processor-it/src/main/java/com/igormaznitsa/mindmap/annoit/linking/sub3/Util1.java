@@ -1,4 +1,4 @@
-package com.igormaznitsa.mindmap.annoit.case1.sub3;
+package com.igormaznitsa.mindmap.annoit.linking.sub3;
 
 import com.igormaznitsa.mindmap.annotations.MmdFile;
 
