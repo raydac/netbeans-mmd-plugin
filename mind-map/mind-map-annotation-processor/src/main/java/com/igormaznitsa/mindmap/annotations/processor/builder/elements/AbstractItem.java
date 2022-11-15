@@ -13,6 +13,7 @@ import com.igormaznitsa.mindmap.model.ExtraFile;
 import com.igormaznitsa.mindmap.model.ExtraLink;
 import com.igormaznitsa.mindmap.model.ExtraNote;
 import com.igormaznitsa.mindmap.model.MMapURI;
+import com.igormaznitsa.mindmap.model.StandardTopicAttributes;
 import com.igormaznitsa.mindmap.model.Topic;
 import java.lang.annotation.Annotation;
 import java.net.URISyntaxException;
@@ -166,14 +167,14 @@ public abstract class AbstractItem {
     return "AbstractItem{" + "annotationContainer=" + this.annotationContainer + '}';
   }
 
-  public enum MmdAttribute {
-    LEFT_SIDE("leftSide"),
-    TOPIC_LINK_UID("topicLinkUID"),
-    EMOTICON("mmd.emoticon"),
-    COLOR_FILL("fillColor"),
-    COLOR_BORDER("borderColor"),
-    COLOR_TEXT("textColor"),
-    COLLAPSED("collapsed");
+  public enum MmdAttribute implements StandardTopicAttributes {
+    LEFT_SIDE(MMD_TOPIC_ATTRIBUTE_SIDE_LEFT),
+    TOPIC_LINK_UID(MMD_TOPIC_ATTRIBUTE_LINK_UID),
+    EMOTICON(MMD_TOPIC_ATTRIBUTE_EMOTICON),
+    COLOR_FILL(MMD_TOPIC_ATTRIBUTE_COLOR_FILL),
+    COLOR_BORDER(MMD_TOPIC_ATTRIBUTE_COLOR_BORDER),
+    COLOR_TEXT(MMD_TOPIC_ATTRIBUTE_COLOR_TEXT),
+    COLLAPSED(MMD_TOPIC_ATTRIBUTE_COLLAPSED);
 
     private final String id;
 

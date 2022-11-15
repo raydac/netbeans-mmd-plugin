@@ -16,15 +16,16 @@
 
 package com.igormaznitsa.mindmap.swing.panel;
 
+import com.igormaznitsa.mindmap.model.StandardTopicAttributes;
 import com.igormaznitsa.mindmap.model.Topic;
 import java.util.Map;
 
-public enum StandardTopicAttribute {
-  ATTR_BORDER_COLOR("borderColor"),
-  ATTR_FILL_COLOR("fillColor"),
-  ATTR_TEXT_COLOR("textColor"),
-  ATTR_LEFTSIDE("leftSide"),
-  ATTR_COLLAPSED("collapsed");
+public enum StandardTopicAttribute implements StandardTopicAttributes {
+  ATTR_BORDER_COLOR(MMD_TOPIC_ATTRIBUTE_COLOR_BORDER),
+  ATTR_FILL_COLOR(MMD_TOPIC_ATTRIBUTE_COLOR_FILL),
+  ATTR_TEXT_COLOR(MMD_TOPIC_ATTRIBUTE_COLOR_TEXT),
+  ATTR_LEFTSIDE(MMD_TOPIC_ATTRIBUTE_SIDE_LEFT),
+  ATTR_COLLAPSED(MMD_TOPIC_ATTRIBUTE_COLLAPSED);
 
   private final String textName;
 

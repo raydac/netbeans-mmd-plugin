@@ -6,16 +6,18 @@ import com.igormaznitsa.mindmap.annotations.MmdEmoticon;
 import com.igormaznitsa.mindmap.annotations.MmdFile;
 import com.igormaznitsa.mindmap.annotations.MmdTopic;
 
-@MmdFile(rootTopic = @MmdTopic(
-    uid = "rootTopicUid",
-    title = "Root topic",
-    colorFill = MmdColor.AQUA,
-    colorText = MmdColor.ORANGE,
-    colorBorder = MmdColor.RED,
-    emoticon = MmdEmoticon.ACORN,
-    note = "Some test\nmultiline note\none more line",
-    uri = "https://sciareto.com"
-))
+@MmdFile(
+    fileName = "attributes",
+    rootTopic = @MmdTopic(
+        uid = "rootTopicUid",
+        title = "Root topic",
+        colorFill = MmdColor.AQUA,
+        colorText = MmdColor.ORANGE,
+        colorBorder = MmdColor.RED,
+        emoticon = MmdEmoticon.ACORN,
+        note = "Some test\nmultiline note\none more line",
+        uri = "https://sciareto.com"
+    ))
 public class Root {
 
   @MmdTopic(title = "method one",

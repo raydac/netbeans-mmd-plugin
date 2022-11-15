@@ -1,5 +1,7 @@
 package com.igormaznitsa.mindmap.annotations;
 
+import java.util.NoSuchElementException;
+
 /**
  * Color constants to be used for generated MMD topics.
  *
@@ -101,5 +103,17 @@ public enum MmdColor {
 
   public String getHtmlColor() {
     return this.htmlColor;
+  }
+
+  public static MmdColor findForHtmlColor(final String htmlColor) {
+    if (htmlColor == null || htmlColor.isEmpty()) {
+      return DEFAULT;
+    }
+    for (final MmdColor color : MmdColor.values()) {
+      if (color.htmlColor.equalsIgnoreCase(htmlColor)) {
+        return color;
+      }
+    }
+    throw new NoSuchElementException("There is no color enum value for " + htmlColor);
   }
 }

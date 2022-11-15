@@ -27,8 +27,10 @@ import java.util.regex.Pattern;
  * Extra topic item contains text, the text can be encrypted.
  */
 public class ExtraNote extends Extra<String> {
-  public static final String ATTR_ENCRYPTED = "extras.note.encrypted";
-  public static final String ATTR_PASSWORD_HINT = "extras.note.encrypted.hint";
+  public static final String ATTR_ENCRYPTED =
+      StandardTopicAttributes.MMD_TOPIC_ATTRIBUTE_NOTE_ENCRYPTED;
+  public static final String ATTR_PASSWORD_HINT =
+      StandardTopicAttributes.MMD_TOPIC_ATTRIBUTE_NOTE_ENCRYPTED_PASSWORD_HINT;
   private static final long serialVersionUID = 8612886872756838147L;
   private final String text;
   private final boolean encrypted;
