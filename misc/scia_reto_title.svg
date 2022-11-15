@@ -1244,7 +1244,7 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.43473737"
-     inkscape:cx="986.80268"
+     inkscape:cx="496.8517"
      inkscape:cy="613.01378"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -1811,8 +1811,11 @@
     </g>
     <g
        id="g1717"
-       transform="matrix(1.8302576,0,0,1.8302576,-795.93948,-93.231496)"
-       style="filter:url(#filter1787)">
+       transform="matrix(2.0474304,0,0,2.0474304,-911.24913,-171.88432)"
+       style="filter:url(#filter1787)"
+       inkscape:export-filename="../mind-map/scia-reto/src/main/resources/icons/g1717.png"
+       inkscape:export-xdpi="27.860001"
+       inkscape:export-ydpi="27.860001">
       <path
          id="path926"
          style="opacity:1;fill:#00aad4;fill-opacity:1;stroke:#006680;stroke-width:7.526;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
