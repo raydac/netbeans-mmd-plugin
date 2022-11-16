@@ -35,7 +35,6 @@ import javax.annotation.processing.SupportedOptions;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import org.apache.commons.io.FilenameUtils;
 
@@ -47,6 +46,7 @@ import org.apache.commons.io.FilenameUtils;
     MmdAnnotationProcessor.KEY_MMD_FOLDER_CREATE,
     MmdAnnotationProcessor.KEY_MMD_DRY_START,
     MmdAnnotationProcessor.KEY_MMD_FILE_OVERWRITE,
+    MmdAnnotationProcessor.KEY_MMD_FILE_ROOT_FOLDER,
     MmdAnnotationProcessor.KEY_MMD_FILE_LINK_BASE_FOLDER
 })
 public class MmdAnnotationProcessor extends AbstractProcessor {
@@ -60,11 +60,15 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
    */
   public static final String KEY_MMD_FILE_LINK_BASE_FOLDER = "mmd.file.link.base.folder";
   /**
+   * Option to provide a folder to play role as limit to create new files, if attempt to create a file outbound of the folder then error.
+   */
+  public static final String KEY_MMD_FILE_ROOT_FOLDER = "mmd.file.root.folder";
+  /**
    * Option to define dry start flag which disable write of result MMD files but all other operations and notifications will be processed.
    */
   public static final String KEY_MMD_DRY_START = "mmd.dry.start";
   /**
-   * Option to allow create required folders during write operations.
+   * Option to allow to create required folders during write operations.
    */
   public static final String KEY_MMD_FOLDER_CREATE = "mmd.folder.create";
   /**
@@ -80,10 +84,10 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
   private Trees trees;
   private SourcePositions sourcePositions;
   private Messager messager;
-  private Elements elements;
   private Types types;
   private Path optionTargetFolder;
   private Path optionFileLinkBaseFolder;
+  private Path optionFileRootFolder;
   private boolean optionFileOverwrite;
   private boolean optionDryStart;
 
@@ -103,7 +107,6 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
     this.trees = Trees.instance(processingEnv);
     this.sourcePositions = this.trees.getSourcePositions();
     this.messager = processingEnv.getMessager();
-    this.elements = processingEnv.getElementUtils();
     this.types = processingEnv.getTypeUtils();
 
     this.optionDryStart =
@@ -111,6 +114,19 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
 
     if (this.optionDryStart) {
       this.messager.printMessage(WARNING, "MMD processor started in DRY mode");
+    }
+
+    if (processingEnv.getOptions().containsKey(KEY_MMD_FILE_ROOT_FOLDER)) {
+      final String path = processingEnv.getOptions().get(KEY_MMD_FILE_ROOT_FOLDER);
+      this.optionFileRootFolder =
+          Paths.get(path).normalize().toAbsolutePath();
+      this.messager.printMessage(NOTE,
+          "Provided restricting root folder for new MMD files: " + this.optionFileRootFolder);
+      if (!Files.isDirectory(this.optionFileRootFolder)) {
+        this.messager.printMessage(ERROR,
+            "Can't find root folder for MMD processor: " + this.optionTargetFolder);
+        return;
+      }
     }
 
     if (processingEnv.getOptions().containsKey(KEY_MMD_TARGET_FOLDER)) {
@@ -203,11 +219,7 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
     }
 
 
-    if (foundAnnotationList.isEmpty()) {
-      this.messager.printMessage(
-          NOTE,
-          "There is not any found MMD annotation");
-    } else {
+    if (!foundAnnotationList.isEmpty()) {
       this.messager.printMessage(
           NOTE,
           format(
@@ -220,8 +232,8 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
 
       final MmdFileBuilder fileBuilder = MmdFileBuilder.builder()
           .setMessager(this.messager)
-          .setElements(this.elements)
           .setTypes(this.types)
+          .setFileRootFolder(this.optionFileRootFolder)
           .setTargetFolder(this.optionTargetFolder)
           .setDryStart(this.optionDryStart)
           .setOverwriteAllowed(this.optionFileOverwrite)

@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.processing.Messager;
-import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 
@@ -56,7 +55,7 @@ public class MmdFileBuilder {
   }
 
   private boolean processTopics(final Map<String, FileItem> fileMap) {
-    return this.builder.annotations.stream()
+    return this.builder.getAnnotations().stream()
         .filter(x -> x.asAnnotation() instanceof MmdTopic)
         .map(TopicItem::new)
         .map(
@@ -103,7 +102,7 @@ public class MmdFileBuilder {
 
   private boolean fillMapByFiles(final Map<String, FileItem> fileMap,
                                  final Path forceTargetFolder) {
-    return this.builder.annotations.stream()
+    return this.builder.getAnnotations().stream()
         .filter(x -> x.asAnnotation() instanceof MmdFile)
         .map(wrapper -> new FileItem(wrapper, forceTargetFolder))
         .map(x -> {
@@ -142,6 +141,7 @@ public class MmdFileBuilder {
           try {
             final Path filePath =
                 fileItem.write(
+                    this.builder.getFileRootFolder(),
                     this.builder.getTypes(),
                     this.builder.getFileLinkBaseFolder(),
                     this.builder.isOverwriteAllowed(),
@@ -171,7 +171,7 @@ public class MmdFileBuilder {
                   .printMessage(
                       Diagnostic.Kind.ERROR,
                       String.format(
-                          "Error during MMD file write with uid '%s': %s",
+                          "Error during MMD file write (uid='%s'): %s",
                           fileItem.getFileUid(), ex.getMessage()),
                       fileItem.getElement());
             }
@@ -199,10 +199,10 @@ public class MmdFileBuilder {
     private List<MmdAnnotationWrapper> annotations;
     private Path targetFolder;
     private Path fileLinkBaseFolder;
+    private Path fileRootFolder;
     private boolean overwriteAllowed = true;
     private boolean dryStart;
     private Messager messager;
-    private Elements elements;
     private Types types;
 
     private volatile boolean completed;
@@ -252,10 +252,8 @@ public class MmdFileBuilder {
       return this;
     }
 
-    public Builder setElements(final Elements elements) {
-      this.assertNotCompleted();
-      this.elements = Objects.requireNonNull(elements);
-      return this;
+    public List<MmdAnnotationWrapper> getAnnotations() {
+      return this.annotations;
     }
 
     public Types getTypes() {
@@ -282,7 +280,6 @@ public class MmdFileBuilder {
       this.assertNotCompleted();
       if (this.annotations == null
           || this.messager == null
-          || this.elements == null
           || this.types == null) {
         throw new IllegalStateException("Not all fields set");
       }
@@ -295,7 +292,18 @@ public class MmdFileBuilder {
     }
 
     public Builder setFileLinkBaseFolder(final Path value) {
+      this.assertNotCompleted();
       this.fileLinkBaseFolder = value;
+      return this;
+    }
+
+    public Path getFileRootFolder() {
+      return this.fileRootFolder;
+    }
+
+    public Builder setFileRootFolder(final Path fileRootFolder) {
+      this.assertNotCompleted();
+      this.fileRootFolder = fileRootFolder;
       return this;
     }
   }

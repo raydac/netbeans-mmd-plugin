@@ -142,13 +142,14 @@ public class FileItem extends AbstractItem {
   }
 
   public Path write(
+      final Path rootFolder,
       final Types types,
       final Path fileLinkBaseFolder,
       final boolean allowOverwrite,
       final boolean dryStart)
       throws IOException, MmdAnnotationProcessorException {
 
-    final Path targetFile = this.getTargetFile();
+    final Path targetFile = this.getTargetFile().normalize();
 
     final MindMap map;
     try {
@@ -160,6 +161,10 @@ public class FileItem extends AbstractItem {
     }
 
     final String mapText = map.asString();
+
+    if (rootFolder != null && !targetFile.startsWith(rootFolder)) {
+      throw new IOException("Target file is not bounded by the root folder: " + targetFile);
+    }
 
     if (!dryStart) {
       PathUtils.createParentDirectories(targetFile);
