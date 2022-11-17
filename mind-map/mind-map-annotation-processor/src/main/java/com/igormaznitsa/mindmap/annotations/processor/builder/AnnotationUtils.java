@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
-import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -137,32 +136,23 @@ public final class AnnotationUtils {
       }
     }
 
-    try {
-      final List<Pair<A, Element>> found = new ArrayList<>();
-      final List<? extends TypeMirror> supertypes = typeUtils.directSupertypes(element.asType());
-
-      supertypes.forEach(
-          x -> {
-            final Element e = typeUtils.asElement(x);
-            found.addAll(
-                Stream.of(e.getAnnotationsByType(annotationType))
-                    .map(annotation -> Pair.of(annotation, e))
-                    .collect(Collectors.toList()));
-          });
-
-      if (found.isEmpty()) {
-        for (final TypeMirror m : supertypes) {
-          found.addAll(
-              findFirstWithAncestors(typeUtils.asElement(m), annotationType, typeUtils, true));
-          if (!found.isEmpty()) {
-            break;
+    final List<Element> superElement = findEnclosingType(element)
+        .stream()
+        .flatMap(x -> {
+          try {
+            return typeUtils.directSupertypes(x.asType()).stream();
+          } catch (IllegalArgumentException ex) {
+            return Stream.empty();
           }
-        }
-      }
-      return found;
-    } catch (IllegalArgumentException ex) {
-      return List.of();
-    }
+        })
+        .map(typeUtils::asElement)
+        .collect(Collectors.toList());
+
+    return superElement.stream()
+        .map(x -> findFirstWithAncestors(x, annotationType, typeUtils, true))
+        .filter(x -> !x.isEmpty())
+        .findFirst()
+        .orElse(List.of());
   }
 
   /**
