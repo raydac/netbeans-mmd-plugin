@@ -21,12 +21,16 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
+import com.igormaznitsa.mindmap.plugins.api.parameters.AbstractParameter;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
+import com.igormaznitsa.mindmap.swing.services.DefaultParametersPanelFactory;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.Format;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Set;
 import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
@@ -42,6 +46,10 @@ public abstract class AbstractExporter extends AbstractPopupMenuItem implements 
   protected static final Format TIME_FORMAT = new SimpleDateFormat("HH:mm:ss z");
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractExporter.class);
 
+  public Set<AbstractParameter<?>> makeDefaultParameters() {
+    return Collections.emptySet();
+  }
+
   @Override
   public JMenuItem makeMenuItem(final PluginContext context, final Topic activeTopic) {
     final JMenuItem result =
@@ -55,17 +63,18 @@ public abstract class AbstractExporter extends AbstractPopupMenuItem implements 
         if (theInstance instanceof ExternallyExecutedPlugin) {
           context.processPluginActivation((ExternallyExecutedPlugin) theInstance, activeTopic);
         } else {
-          final JComponent options = makeOptions(context);
+          final Set<AbstractParameter<?>> parameters = this.makeDefaultParameters();
+          final JComponent options = DefaultParametersPanelFactory.getInstance().make(parameters);
           if (options != null && !context.getDialogProvider()
               .msgOkCancel(null, getName(context, activeTopic), options)) {
             return;
           }
           if ((e.getModifiers() & ActionEvent.CTRL_MASK) == 0) {
             LOGGER.info("Export map into file: " + AbstractExporter.this);
-            doExport(context, options, null);
+            doExport(context, parameters, null);
           } else {
             LOGGER.info("Export map into clipboard:" + AbstractExporter.this);
-            doExportToClipboard(context, options);
+            doExportToClipboard(context, parameters);
           }
         }
       } catch (Exception ex) {
@@ -97,26 +106,31 @@ public abstract class AbstractExporter extends AbstractPopupMenuItem implements 
     return false;
   }
 
-  public JComponent makeOptions(final PluginContext context) {
-    return null;
-  }
-
   @Override
   public String getMnemonic() {
     return null;
   }
 
-  public abstract void doExport(final PluginContext context, final JComponent options,
+  /**
+   * Export into output stream.
+   * @param context plugin context, must not be null
+   * @param options set of parameters to be used during export, must not be null
+   * @param out target output stream, must not be null
+   * @throws IOException thrown if any error
+   * @since 1.6.0
+   */
+  public abstract void doExport(final PluginContext context, final Set<AbstractParameter<?>> options,
                                 final OutputStream out) throws IOException;
 
   /**
    * Export data into clipboard.
    *
    * @param context plugin context, must not be null
-   * @param options component containing extra options, can be null
+   * @param options set of parameters to be used during export, must not be null
    * @throws IOException it will be thrown if any error
+   * @since 1.6.0
    */
-  public abstract void doExportToClipboard(final PluginContext context, final JComponent options)
+  public abstract void doExportToClipboard(final PluginContext context, final Set<AbstractParameter<?>> options)
       throws IOException;
 
   public abstract String getName(final PluginContext context, final Topic activeTopic);

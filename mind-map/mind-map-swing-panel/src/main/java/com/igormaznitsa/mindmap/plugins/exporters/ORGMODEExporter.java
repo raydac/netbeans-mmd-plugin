@@ -28,6 +28,7 @@ import com.igormaznitsa.mindmap.model.ModelUtils;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
+import com.igormaznitsa.mindmap.plugins.api.parameters.AbstractParameter;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
@@ -44,8 +45,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.Map;
+import java.util.Set;
 import javax.swing.Icon;
-import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -267,8 +268,7 @@ public class ORGMODEExporter extends AbstractExporter {
   }
 
   private void writeOtherTopicRecursively(final Topic t, final String topicListNumStr,
-                                          final int topicIndex, final State state)
-      throws IOException {
+                                          final int topicIndex, final State state) {
     writeInterTopicLine(state);
     final String prefix;
     if (t.getTopicLevel() >= STARTING_INDEX_FOR_NUMERATION) {
@@ -283,7 +283,7 @@ public class ORGMODEExporter extends AbstractExporter {
     }
   }
 
-  private String makeContent(final MindMapPanel panel) throws IOException {
+  private String makeContent(final MindMapPanel panel) {
     final State state = new State();
 
     final Topic root = panel.getModel().getRoot();
@@ -317,7 +317,7 @@ public class ORGMODEExporter extends AbstractExporter {
   }
 
   @Override
-  public void doExportToClipboard(final PluginContext context, final JComponent options)
+  public void doExportToClipboard(final PluginContext context, final Set<AbstractParameter<?>> options)
       throws IOException {
     final String text = makeContent(context.getPanel());
     SwingUtilities.invokeLater(() -> {
@@ -329,7 +329,7 @@ public class ORGMODEExporter extends AbstractExporter {
   }
 
   @Override
-  public void doExport(final PluginContext context, final JComponent options,
+  public void doExport(final PluginContext context, final Set<AbstractParameter<?>> options,
                        final OutputStream out) throws IOException {
     final String text = makeContent(context.getPanel());
 

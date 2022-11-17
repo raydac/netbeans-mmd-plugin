@@ -28,6 +28,7 @@ import com.igormaznitsa.mindmap.model.ModelUtils;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
+import com.igormaznitsa.mindmap.plugins.api.parameters.AbstractParameter;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
@@ -43,8 +44,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Date;
 import java.util.Map;
+import java.util.Set;
 import javax.swing.Icon;
-import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 import org.apache.commons.io.IOUtils;
 
@@ -72,8 +73,7 @@ public class ASCIIDocExporter extends AbstractExporter {
     return topic.getAttribute(ExtraTopic.TOPIC_UID_ATTR);
   }
 
-  private void writeTopic(final Topic topic, final State state)
-      throws IOException {
+  private void writeTopic(final Topic topic, final State state) {
     final int level = topic.getTopicLevel();
     final String uid = getTopicUid(topic);
 
@@ -147,22 +147,19 @@ public class ASCIIDocExporter extends AbstractExporter {
   }
 
   @Override
-  public void doExportToClipboard(final PluginContext context, final JComponent options)
+  public void doExportToClipboard(final PluginContext context, final Set<AbstractParameter<?>> options)
       throws IOException {
     final String text = makeContent(context.getPanel());
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-        if (clipboard != null) {
-          clipboard.setContents(new StringSelection(text), null);
-        }
+    SwingUtilities.invokeLater(() -> {
+      final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+      if (clipboard != null) {
+        clipboard.setContents(new StringSelection(text), null);
       }
     });
   }
 
   @Override
-  public void doExport(final PluginContext context, final JComponent options,
+  public void doExport(final PluginContext context, final Set<AbstractParameter<?>> options,
                        final OutputStream out) throws IOException {
     final String text = makeContent(context.getPanel());
 

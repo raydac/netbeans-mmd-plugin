@@ -29,6 +29,7 @@ import com.igormaznitsa.mindmap.model.ExtraTopic;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
+import com.igormaznitsa.mindmap.plugins.api.parameters.AbstractParameter;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.Texts;
@@ -48,8 +49,8 @@ import java.io.OutputStream;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import javax.swing.Icon;
-import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -203,7 +204,7 @@ public class FreeMindExporter extends AbstractExporter {
   }
 
   @Override
-  public void doExportToClipboard(final PluginContext context, final JComponent options)
+  public void doExportToClipboard(final PluginContext context, final Set<AbstractParameter<?>> options)
       throws IOException {
     final String text = makeContent(context.getPanel());
 
@@ -216,7 +217,7 @@ public class FreeMindExporter extends AbstractExporter {
   }
 
   @Override
-  public void doExport(final PluginContext context, final JComponent options,
+  public void doExport(final PluginContext context, final Set<AbstractParameter<?>> options,
                        final OutputStream out) throws IOException {
     final String text = makeContent(context.getPanel());
 

@@ -1,7 +1,8 @@
 package com.igormaznitsa.ideamindmap.utils;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.mindmap.plugins.api.HasOptions;
+import com.igormaznitsa.mindmap.plugins.api.parameters.AbstractParameter;
+import com.igormaznitsa.mindmap.swing.services.DefaultParametersPanelFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.JBCheckboxMenuItem;
@@ -14,6 +15,7 @@ import com.intellij.ui.components.JBRadioButton;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.ui.components.JBPasswordField;
+import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.ButtonGroup;
@@ -50,8 +52,8 @@ public class IdeaUIComponentFactory implements UIComponentFactory {
 
   @Nonnull
   @Override
-  public JPanel makePanelWithOptions(@Nonnull HasOptions hasOptions) {
-    return new JOptionablePanel(hasOptions);
+  public JPanel makePanelWithOptions(@Nonnull Set<AbstractParameter<?>> parameters) {
+    return DefaultParametersPanelFactory.getInstance().make(parameters);
   }
 
   @Nonnull
@@ -180,43 +182,4 @@ public class IdeaUIComponentFactory implements UIComponentFactory {
     return new JBPasswordField();
   }
 
-  private static class JOptionablePanel extends JBPanel implements HasOptions {
-
-    private static final long serialVersionUID = 7315573532005732183L;
-    private final HasOptions optionsProcessor;
-
-    private JOptionablePanel(@Nonnull final HasOptions optionsProcessor) {
-      super();
-      this.optionsProcessor = optionsProcessor;
-    }
-
-    @Override
-    public boolean doesSupportKey(@Nonnull final String key) {
-      return this.optionsProcessor.doesSupportKey(key);
-    }
-
-    @Override
-    @Nonnull
-    @MustNotContainNull
-    public String[] getOptionKeys() {
-      return this.optionsProcessor.getOptionKeys();
-    }
-
-    @Override
-    @Nonnull
-    public String getOptionKeyDescription(@Nonnull final String key) {
-      return this.optionsProcessor.getOptionKeyDescription(key);
-    }
-
-    @Override
-    public void setOption(@Nonnull final String key, @Nullable final String value) {
-      this.optionsProcessor.setOption(key, value);
-    }
-
-    @Override
-    @Nullable
-    public String getOption(@Nonnull final String key) {
-      return this.optionsProcessor.getOption(key);
-    }
-  }
 }

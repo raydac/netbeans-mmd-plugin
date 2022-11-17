@@ -16,7 +16,8 @@
 
 package com.igormaznitsa.mindmap.swing.services;
 
-import com.igormaznitsa.mindmap.plugins.api.HasOptions;
+import com.igormaznitsa.mindmap.plugins.api.parameters.AbstractParameter;
+import java.util.Set;
 import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -49,8 +50,8 @@ public class DefaultSwingUIComponentService implements UIComponentFactory {
   }
 
   @Override
-  public JPanel makePanelWithOptions(final HasOptions optionsProcessor) {
-    return new JOptionablePanel(optionsProcessor);
+  public JPanel makePanelWithOptions(final Set<AbstractParameter<?>> parameters) {
+    return DefaultParametersPanelFactory.getInstance().make(parameters);
   }
 
   @Override
@@ -160,39 +161,4 @@ public class DefaultSwingUIComponentService implements UIComponentFactory {
     return new JSlider();
   }
 
-  private static class JOptionablePanel extends JPanel implements HasOptions {
-
-    private static final long serialVersionUID = 7315573577255732183L;
-    private final HasOptions optionsProcessor;
-
-    private JOptionablePanel(final HasOptions optionsProcessor) {
-      super();
-      this.optionsProcessor = optionsProcessor;
-    }
-
-    @Override
-    public boolean doesSupportKey(final String key) {
-      return this.optionsProcessor.doesSupportKey(key);
-    }
-
-    @Override
-    public String[] getOptionKeys() {
-      return this.optionsProcessor.getOptionKeys();
-    }
-
-    @Override
-    public String getOptionKeyDescription(final String key) {
-      return this.optionsProcessor.getOptionKeyDescription(key);
-    }
-
-    @Override
-    public void setOption(final String key, final String value) {
-      this.optionsProcessor.setOption(key, value);
-    }
-
-    @Override
-    public String getOption(final String key) {
-      return this.optionsProcessor.getOption(key);
-    }
-  }
 }

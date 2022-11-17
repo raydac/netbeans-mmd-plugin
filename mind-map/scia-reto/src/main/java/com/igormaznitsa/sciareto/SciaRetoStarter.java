@@ -59,9 +59,9 @@ import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
 import com.igormaznitsa.mindmap.plugins.api.AbstractImporter;
 import com.igormaznitsa.mindmap.plugins.api.ExternallyExecutedPlugin;
 import com.igormaznitsa.mindmap.plugins.api.HasMnemonic;
-import com.igormaznitsa.mindmap.plugins.api.HasOptions;
 import com.igormaznitsa.mindmap.plugins.api.MindMapPlugin;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
+import com.igormaznitsa.mindmap.plugins.api.parameters.AbstractParameter;
 import com.igormaznitsa.mindmap.plugins.external.ExternalPlugins;
 import com.igormaznitsa.mindmap.plugins.misc.OptionsPlugin;
 import com.igormaznitsa.mindmap.swing.ide.IDEBridgeFactory;
@@ -108,7 +108,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -629,261 +629,246 @@ public class SciaRetoStarter {
                                      @Nonnull final MindMapPanelConfig config,
                                      @Nonnull final Properties options) throws Exception {
     final AtomicReference<Exception> error = new AtomicReference<>();
-    SwingUtilities.invokeAndWait(new Runnable() {
-      @Override
-      public void run() {
-        try {
-          final DialogProvider dialog = new DialogProvider() {
-            @Override
-            public void msgError(@Nullable final Component parentComponent,
-                                 @Nonnull final String text) {
-              LOGGER.error(text);
-            }
+    SwingUtilities.invokeAndWait(() -> {
+      try {
+        final DialogProvider dialog = new DialogProvider() {
+          @Override
+          public void msgError(@Nullable final Component parentComponent,
+                               @Nonnull final String text) {
+            LOGGER.error(text);
+          }
 
-            @Override
-            public void msgInfo(@Nullable final Component parentComponent,
-                                @Nonnull final String text) {
-              LOGGER.info(text);
-            }
+          @Override
+          public void msgInfo(@Nullable final Component parentComponent,
+                              @Nonnull final String text) {
+            LOGGER.info(text);
+          }
 
-            @Override
-            public void msgWarn(@Nullable final Component parentComponent,
-                                @Nonnull final String text) {
-              LOGGER.warn(text);
-            }
+          @Override
+          public void msgWarn(@Nullable final Component parentComponent,
+                              @Nonnull final String text) {
+            LOGGER.warn(text);
+          }
 
-            @Override
-            public boolean msgConfirmOkCancel(@Nullable final Component parentComponent,
-                                              @Nonnull final String title,
-                                              @Nonnull final String question) {
-              throw new UnsupportedOperationException("Not supported yet."); //NOI18N
-            }
+          @Override
+          public boolean msgConfirmOkCancel(@Nullable final Component parentComponent,
+                                            @Nonnull final String title,
+                                            @Nonnull final String question) {
+            throw new UnsupportedOperationException("Not supported yet."); //NOI18N
+          }
 
-            @Override
-            public boolean msgOkCancel(@Nullable final Component parentComponent,
-                                       @Nonnull final String title,
-                                       @Nonnull final JComponent component) {
-              throw new UnsupportedOperationException("Not supported yet."); //NOI18N
-            }
+          @Override
+          public boolean msgOkCancel(@Nullable final Component parentComponent,
+                                     @Nonnull final String title,
+                                     @Nonnull final JComponent component) {
+            throw new UnsupportedOperationException("Not supported yet."); //NOI18N
+          }
 
-            @Override
-            public boolean msgConfirmYesNo(@Nullable final Component parentComponent,
-                                           @Nonnull final String title,
-                                           @Nonnull final String question) {
-              throw new UnsupportedOperationException("Not supported yet."); //NOI18N
-            }
+          @Override
+          public boolean msgConfirmYesNo(@Nullable final Component parentComponent,
+                                         @Nonnull final String title,
+                                         @Nonnull final String question) {
+            throw new UnsupportedOperationException("Not supported yet."); //NOI18N
+          }
 
-            @Override
-            public Boolean msgConfirmYesNoCancel(@Nullable final Component parentComponent,
-                                                 @Nonnull final String title,
-                                                 @Nonnull final String question) {
-              throw new UnsupportedOperationException("Not supported yet."); //NOI18N
-            }
+          @Override
+          public Boolean msgConfirmYesNoCancel(@Nullable final Component parentComponent,
+                                               @Nonnull final String title,
+                                               @Nonnull final String question) {
+            throw new UnsupportedOperationException("Not supported yet."); //NOI18N
+          }
 
-            @Override
-            public File msgSaveFileDialog(@Nullable final Component parentComponent,
-                                          @Nullable final PluginContext pluginContext,
-                                          @Nonnull final String id, @Nonnull final String title,
-                                          @Nullable final File defaultFolder,
-                                          final boolean filesOnly, @Nonnull @MustNotContainNull
-                                          final FileFilter[] fileFilter,
-                                          @Nonnull final String approveButtonText) {
-              return to;
-            }
+          @Override
+          public File msgSaveFileDialog(@Nullable final Component parentComponent,
+                                        @Nullable final PluginContext pluginContext,
+                                        @Nonnull final String id, @Nonnull final String title,
+                                        @Nullable final File defaultFolder,
+                                        final boolean filesOnly, @Nonnull @MustNotContainNull
+                                        final FileFilter[] fileFilter,
+                                        @Nonnull final String approveButtonText) {
+            return to;
+          }
 
-            @Override
-            public File msgOpenFileDialog(@Nullable final Component parentComponent,
-                                          @Nullable final PluginContext pluginContext,
-                                          @Nonnull final String id, @Nonnull final String title,
-                                          @Nullable final File defaultFolder,
-                                          final boolean filesOnly, @Nonnull @MustNotContainNull
-                                          final FileFilter[] fileFilter,
-                                          @Nonnull final String approveButtonText) {
-              return from;
-            }
-          };
+          @Override
+          public File msgOpenFileDialog(@Nullable final Component parentComponent,
+                                        @Nullable final PluginContext pluginContext,
+                                        @Nonnull final String id, @Nonnull final String title,
+                                        @Nullable final File defaultFolder,
+                                        final boolean filesOnly, @Nonnull @MustNotContainNull
+                                        final FileFilter[] fileFilter,
+                                        @Nonnull final String approveButtonText) {
+            return from;
+          }
+        };
 
-          final MindMapPanel panel = new MindMapPanel(new MindMapPanelController() {
+        final MindMapPanel panel = new MindMapPanel(new MindMapPanelController() {
 
-            @Override
-            public boolean canTopicBeDeleted(@Nonnull MindMapPanel source, @Nonnull Topic topic) {
-              return true;
-            }
+          @Override
+          public boolean canTopicBeDeleted(@Nonnull MindMapPanel source, @Nonnull Topic topic) {
+            return true;
+          }
 
-            @Nonnull
-            @Override
-            public PluginContext makePluginContext(@Nonnull MindMapPanel source) {
-              return new PluginContext() {
-                @Nonnull
-                @Override
-                public MindMapPanelConfig getPanelConfig() {
-                  return config;
-                }
+          @Nonnull
+          @Override
+          public PluginContext makePluginContext(@Nonnull MindMapPanel source) {
+            return new PluginContext() {
+              @Nonnull
+              @Override
+              public MindMapPanelConfig getPanelConfig() {
+                return config;
+              }
 
-                @Nonnull
-                @Override
-                public MindMapPanel getPanel() {
-                  return source;
-                }
+              @Nonnull
+              @Override
+              public MindMapPanel getPanel() {
+                return source;
+              }
 
-                @Nonnull
-                @Override
-                public DialogProvider getDialogProvider() {
-                  return dialog;
-                }
+              @Nonnull
+              @Override
+              public DialogProvider getDialogProvider() {
+                return dialog;
+              }
 
-                @Nullable
-                @Override
-                public File getMindMapFile() {
-                  return from;
-                }
+              @Nullable
+              @Override
+              public File getMindMapFile() {
+                return from;
+              }
 
-                @Override
-                public void openFile(@Nonnull File file, boolean preferSystemBrowser) {
+              @Override
+              public void openFile(@Nonnull File file, boolean preferSystemBrowser) {
 
-                }
+              }
 
-                @Nullable
-                @Override
-                public File getProjectFolder() {
-                  return new File(".");
-                }
+              @Nullable
+              @Override
+              public File getProjectFolder() {
+                return new File(".");
+              }
 
-                @Nullable
-                @Override
-                public Topic[] getSelectedTopics() {
-                  return new Topic[0];
-                }
+              @Nullable
+              @Override
+              public Topic[] getSelectedTopics() {
+                return new Topic[0];
+              }
 
-                @Override
-                public void processPluginActivation(@Nonnull ExternallyExecutedPlugin plugin,
-                                                    @Nullable Topic activeTopic) {
+              @Override
+              public void processPluginActivation(@Nonnull ExternallyExecutedPlugin plugin,
+                                                  @Nullable Topic activeTopic) {
 
-                }
-              };
-            }
+              }
+            };
+          }
 
-            @Override
-            public boolean isUnfoldCollapsedTopicDropTarget(@Nonnull final MindMapPanel source) {
-              return false;
-            }
+          @Override
+          public boolean isUnfoldCollapsedTopicDropTarget(@Nonnull final MindMapPanel source) {
+            return false;
+          }
 
-            @Override
-            public boolean isCopyColorInfoFromParentToNewChildAllowed(
-                @Nonnull final MindMapPanel source) {
-              return false;
-            }
+          @Override
+          public boolean isCopyColorInfoFromParentToNewChildAllowed(
+              @Nonnull final MindMapPanel source) {
+            return false;
+          }
 
-            @Override
-            public boolean isTrimTopicTextBeforeSet(@Nonnull final MindMapPanel source) {
-              return false;
-            }
+          @Override
+          public boolean isTrimTopicTextBeforeSet(@Nonnull final MindMapPanel source) {
+            return false;
+          }
 
-            @Override
-            public boolean isSelectionAllowed(@Nonnull final MindMapPanel source) {
-              return false;
-            }
+          @Override
+          public boolean isSelectionAllowed(@Nonnull final MindMapPanel source) {
+            return false;
+          }
 
-            @Override
-            public boolean isElementDragAllowed(@Nonnull final MindMapPanel source) {
-              return false;
-            }
+          @Override
+          public boolean isElementDragAllowed(@Nonnull final MindMapPanel source) {
+            return false;
+          }
 
-            @Override
-            public boolean isMouseMoveProcessingAllowed(@Nonnull final MindMapPanel source) {
-              return false;
-            }
+          @Override
+          public boolean isMouseMoveProcessingAllowed(@Nonnull final MindMapPanel source) {
+            return false;
+          }
 
-            @Override
-            public boolean isMouseWheelProcessingAllowed(@Nonnull final MindMapPanel source) {
-              return false;
-            }
+          @Override
+          public boolean isMouseWheelProcessingAllowed(@Nonnull final MindMapPanel source) {
+            return false;
+          }
 
-            @Override
-            public boolean isMouseClickProcessingAllowed(@Nonnull final MindMapPanel source) {
-              return false;
-            }
+          @Override
+          public boolean isMouseClickProcessingAllowed(@Nonnull final MindMapPanel source) {
+            return false;
+          }
 
-            @Override
-            @Nonnull
-            public MindMapPanelConfig provideConfigForMindMapPanel(
-                @Nonnull final MindMapPanel source) {
-              return config;
-            }
+          @Override
+          @Nonnull
+          public MindMapPanelConfig provideConfigForMindMapPanel(
+              @Nonnull final MindMapPanel source) {
+            return config;
+          }
 
-            @Override
-            @Nullable
-            public JPopupMenu makePopUpForMindMapPanel(@Nonnull final MindMapPanel source,
-                                                       @Nonnull final Point point, @Nullable
-                                                       final AbstractElement elementUnderMouse,
-                                                       @Nullable
-                                                       final ElementPart elementPartUnderMouse) {
-              return null;
-            }
+          @Override
+          @Nullable
+          public JPopupMenu makePopUpForMindMapPanel(@Nonnull final MindMapPanel source,
+                                                     @Nonnull final Point point, @Nullable
+                                                     final AbstractElement elementUnderMouse,
+                                                     @Nullable
+                                                     final ElementPart elementPartUnderMouse) {
+            return null;
+          }
 
-            @Override
-            @Nonnull
-            public DialogProvider getDialogProvider(@Nonnull final MindMapPanel source) {
-              return dialog;
-            }
+          @Override
+          @Nonnull
+          public DialogProvider getDialogProvider(@Nonnull final MindMapPanel source) {
+            return dialog;
+          }
 
-            @Override
-            public boolean processDropTopicToAnotherTopic(@Nonnull final MindMapPanel source,
-                                                          @Nonnull final Point dropPoint,
-                                                          @Nonnull final Topic draggedTopic,
-                                                          @Nonnull final Topic destinationTopic) {
-              return false;
-            }
+          @Override
+          public boolean processDropTopicToAnotherTopic(@Nonnull final MindMapPanel source,
+                                                        @Nonnull final Point dropPoint,
+                                                        @Nonnull final Topic draggedTopic,
+                                                        @Nonnull final Topic destinationTopic) {
+            return false;
+          }
 
-          });
+        });
 
-          MindMap map = new MindMap(false);
+        MindMap map = new MindMap(false);
+        map.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID, IDEBridgeFactory.findInstance()
+            .getIDEGeneratorId());
+        panel.setModel(map);
+
+        map = fromFormat.doImport(panel.getController().makePluginContext(panel));
+        if (map != null) {
           map.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID, IDEBridgeFactory.findInstance()
               .getIDEGeneratorId());
           panel.setModel(map);
-
-          map = fromFormat.doImport(panel.getController().makePluginContext(panel));
-          if (map != null) {
-            map.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID, IDEBridgeFactory.findInstance()
-                .getIDEGeneratorId());
-            panel.setModel(map);
-          } else {
-            dialog.msgError(MAIN_FRAME, "Can't import map");
-          }
-
-          final JComponent optionsComponent =
-              toFormat.makeOptions(panel.getController().makePluginContext(panel));
-
-          if (!options.isEmpty()) {
-            if (optionsComponent instanceof HasOptions) {
-              final HasOptions optionable = (HasOptions) optionsComponent;
-              for (final String k : options.stringPropertyNames()) {
-                if (optionable.doesSupportKey(k)) {
-                  optionable.setOption(k, options.getProperty(k));
-                } else {
-                  throw new IllegalArgumentException(
-                      "Exporter " + toFormat.getMnemonic() + " doesn't support option '" + k +
-                          "\', it provides options " +
-                          Arrays.toString(optionable.getOptionKeys())); //NOI18N
-                }
-              }
-            } else {
-              throw new IllegalArgumentException(
-                  "Exporter " + toFormat.getMnemonic() + " doesn't support options"); //NOI18N
-            }
-          }
-
-          final FileOutputStream result = new FileOutputStream(to, false);
-          try {
-            toFormat
-                .doExport(panel.getController().makePluginContext(panel), optionsComponent, result);
-            result.flush();
-          } finally {
-            IOUtils.closeQuietly(result);
-          }
-        } catch (Exception ex) {
-          error.set(ex);
+        } else {
+          dialog.msgError(MAIN_FRAME, "Can't import map");
         }
+
+        final Set<AbstractParameter<?>> exportParameters = toFormat.makeDefaultParameters();
+        if (!exportParameters.isEmpty()) {
+          for(final String k : options.stringPropertyNames()) {
+            final String value = options.getProperty(k,"");
+            exportParameters.stream()
+                .filter(x -> x.getId().equals(k))
+                .forEach(x -> x.fromString(value));
+          }
+        }
+
+        final FileOutputStream result = new FileOutputStream(to, false);
+        try {
+          toFormat
+              .doExport(panel.getController().makePluginContext(panel), exportParameters, result);
+          result.flush();
+        } finally {
+          IOUtils.closeQuietly(result);
+        }
+      } catch (Exception ex) {
+        error.set(ex);
       }
     });
     if (error.get() != null) {
@@ -988,14 +973,14 @@ public class SciaRetoStarter {
   private static final class LocalMMDExporter extends AbstractExporter {
 
     @Override
-    public void doExport(@Nonnull PluginContext context, @Nullable JComponent options,
+    public void doExport(@Nonnull PluginContext context, @Nullable Set<AbstractParameter<?>> options,
                          @Nullable OutputStream out) throws IOException {
       final MindMap map = context.getPanel().getModel();
       IOUtils.write(map.write(new StringWriter()).toString(), out, "UTF-8"); //NOI18N
     }
 
     @Override
-    public void doExportToClipboard(@Nonnull PluginContext context, @Nullable JComponent options)
+    public void doExportToClipboard(@Nonnull PluginContext context, @Nullable Set<AbstractParameter<?>> options)
         throws IOException {
       final MindMap map = context.getPanel().getModel();
       final StringWriter writer = map.write(new StringWriter());

@@ -24,6 +24,7 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
 import com.igormaznitsa.mindmap.plugins.api.ExternallyExecutedPlugin;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
+import com.igormaznitsa.mindmap.plugins.api.parameters.AbstractParameter;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
@@ -31,7 +32,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
-import javax.swing.JComponent;
+import java.util.Set;
 import org.junit.Test;
 
 public abstract class AbstractStandardExporterTest<T extends AbstractExporter> {
@@ -88,14 +89,13 @@ public abstract class AbstractStandardExporterTest<T extends AbstractExporter> {
       }
 
     };
-    
-    
-    exporter.doExport(context, prepareOptions(), buffer);
+
+    exporter.doExport(context, prepareOptions(exporter), buffer);
     return buffer.toByteArray();
   }
 
-  public JComponent prepareOptions() {
-    return null;
+  public Set<AbstractParameter<?>> prepareOptions(final AbstractExporter exporter) {
+    return exporter.makeDefaultParameters();
   }
 
   public abstract T generateExporterInstance();

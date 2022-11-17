@@ -16,7 +16,8 @@
 
 package com.igormaznitsa.mindmap.swing.services;
 
-import com.igormaznitsa.mindmap.plugins.api.HasOptions;
+import com.igormaznitsa.mindmap.plugins.api.parameters.AbstractParameter;
+import java.util.Set;
 import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -44,7 +45,7 @@ import javax.swing.JToolBar;
 public interface UIComponentFactory {
   JPanel makePanel();
 
-  JPanel makePanelWithOptions(HasOptions optionsProcessor);
+  JPanel makePanelWithOptions(Set<AbstractParameter<?>> parameters);
 
   JComboBox<?> makeComboBox();
 
