@@ -2,7 +2,7 @@ package com.igormaznitsa.mindmap.annoit.linking.interfaces;
 
 import com.igormaznitsa.mindmap.annotations.MmdTopic;
 
-@MmdTopic(title = "interface one")
+@MmdTopic
 public interface Interface1 extends RootInterface {
   @MmdTopic
   void method1();
