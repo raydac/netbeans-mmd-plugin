@@ -1,6 +1,6 @@
 package com.igormaznitsa.mindmap.annotations.processor.builder.elements;
 
-import static com.igormaznitsa.mindmap.annotations.processor.builder.AnnotationUtils.findEnclosingType;
+import static com.igormaznitsa.mindmap.annotations.processor.builder.AnnotationUtils.findAllTypeElements;
 import static com.igormaznitsa.mindmap.annotations.processor.builder.AnnotationUtils.findFirstWithAncestors;
 
 import com.igormaznitsa.mindmap.annotations.MmdFile;
@@ -56,52 +56,50 @@ public class TopicItem extends AbstractItem {
       return List.of();
     }
 
-    final Element typeElement = findEnclosingType(element).orElse(null);
-    if (typeElement == null) {
-      throw new MmdElementException("Can't find enclosing type element: " + element, element);
-    }
+    for (final Element typeElement : findAllTypeElements(element)) {
+      final List<MmdFile> fileAnnotation =
+          findFirstWithAncestors(typeElement, MmdFile.class, types, true).stream()
+              .map(Pair::getLeft)
+              .collect(Collectors.toList());
 
-    final List<MmdFile> fileAnnotation =
-        findFirstWithAncestors(typeElement, MmdFile.class, types, true).stream()
-            .map(Pair::getLeft)
-            .collect(Collectors.toList());
+      final List<MmdFiles> filesAnnotation =
+          findFirstWithAncestors(
+              typeElement, MmdFiles.class, types, true)
+              .stream()
+              .map(Pair::getLeft)
+              .collect(Collectors.toList());
 
-    final List<MmdFiles> filesAnnotation =
-        findFirstWithAncestors(
-            typeElement, MmdFiles.class, types, true)
-            .stream()
-            .map(Pair::getLeft)
-            .collect(Collectors.toList());
+      final List<MmdFileLink> fileLinkAnnotation =
+          findFirstWithAncestors(typeElement, MmdFileLink.class, types, true).stream()
+              .map(Pair::getLeft)
+              .collect(Collectors.toList());
 
-    final List<MmdFileLink> fileLinkAnnotation =
-        findFirstWithAncestors(typeElement, MmdFileLink.class, types, true).stream()
-            .map(Pair::getLeft)
-            .collect(Collectors.toList());
-
-    if (filesAnnotation.isEmpty() && fileAnnotation.isEmpty() && fileLinkAnnotation.isEmpty()) {
-      throw new MmdElementException(
-          "Can't find any associated MMD target file mark for MmdTopic annotated element", element);
-    } else {
-      final List<Pair<Element, MmdFile>> result = new ArrayList<>();
-      for (final MmdFile f : fileAnnotation) {
-        result.add(Pair.of(element, f));
-      }
-
-      for (final MmdFileLink link : fileLinkAnnotation) {
-        final String uid = link.uid();
-        if (StringUtils.isBlank(uid)) {
-          throw new MmdElementException("Element has blank file link UID", element);
+      if (!filesAnnotation.isEmpty() || !fileAnnotation.isEmpty() ||
+          !fileLinkAnnotation.isEmpty()) {
+        final List<Pair<Element, MmdFile>> result = new ArrayList<>();
+        for (final MmdFile f : fileAnnotation) {
+          result.add(Pair.of(element, f));
         }
-        if (fileMap.containsKey(uid)) {
-          final FileItem fileItem = fileMap.get(uid);
-          result.add(Pair.of(element, fileItem.asMmdFileAnnotation()));
-        } else {
-          throw new MmdElementException(
-              "Can't find any MMD file element with UID: " + uid, element);
+
+        for (final MmdFileLink link : fileLinkAnnotation) {
+          final String uid = link.uid();
+          if (StringUtils.isBlank(uid)) {
+            throw new MmdElementException("Element has blank file link UID", element);
+          }
+          if (fileMap.containsKey(uid)) {
+            final FileItem fileItem = fileMap.get(uid);
+            result.add(Pair.of(element, fileItem.asMmdFileAnnotation()));
+          } else {
+            throw new MmdElementException(
+                "Can't find any MMD file element with UID: " + uid, element);
+          }
         }
+        return result;
       }
-      return result;
     }
+    throw new MmdElementException(
+        "Can't find any associated MMD target file mark for MmdTopic annotated element",
+        element);
   }
 
   public Optional<FileItem> findTargetFile(

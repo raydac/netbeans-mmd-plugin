@@ -67,6 +67,25 @@ public final class AnnotationUtils {
   }
 
   /**
+   * Find all class or interface elements.
+   *
+   * @param element element which enclosing elements to find, can be null
+   * @return found class and interface elements for element, can't be null
+   */
+  public static List<Element> findAllTypeElements(final Element element) {
+    if (element == null) {
+      return List.of();
+    }
+
+    List<Element> result = new ArrayList<>();
+    if (element.getKind().isInterface() || element.getKind().isClass()) {
+      result.add(element);
+    }
+    result.addAll(findAllTypeElements(element.getEnclosingElement()));
+    return result;
+  }
+
+  /**
    * Find enclosing type for element (i.e. class or interface)
    *
    * @param element target element, must not be null
@@ -136,7 +155,7 @@ public final class AnnotationUtils {
       }
     }
 
-    final List<Element> superElement = findEnclosingType(element)
+    final List<Element> superElements = findAllTypeElements(element)
         .stream()
         .flatMap(x -> {
           try {
@@ -148,7 +167,7 @@ public final class AnnotationUtils {
         .map(typeUtils::asElement)
         .collect(Collectors.toList());
 
-    return superElement.stream()
+    return superElements.stream()
         .map(x -> findFirstWithAncestors(x, annotationType, typeUtils, true))
         .filter(x -> !x.isEmpty())
         .findFirst()
