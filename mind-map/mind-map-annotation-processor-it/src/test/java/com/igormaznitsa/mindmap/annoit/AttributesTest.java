@@ -22,6 +22,7 @@ public class AttributesTest extends AbstractMmdTest implements StandardTopicAttr
     assertTopicEmoticon(map.getRoot(), MmdEmoticon.ACORN);
     assertTopicJumpTo(findForTitle(map, "SubMethod3"), map.getRoot());
     assertTopicJumpTo(findForTitle(map, "method three"), findForTitle(map, "method two"));
+    assertTopicJumpTo(findForTitle(map, "SubMethod2"), map.getRoot());
   }
 
   private Topic findForTitle(final MindMap mindMap, final String title) {

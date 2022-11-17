@@ -43,7 +43,7 @@ public class Root {
 
   }
 
-  @MmdTopic(path = "method one", emoticon = MmdEmoticon.ANDROID, jumpTo = "Root topic")
+  @MmdTopic(path = "method one", colorFill = MmdColor.BLACK, colorText = MmdColor.WHITE, emoticon = MmdEmoticon.ANDROID, jumpTo = "Root topic")
   public void SubMethod2() {
 
   }
