@@ -7,6 +7,7 @@ import com.igormaznitsa.mindmap.plugins.api.parameters.IntegerParameter;
 import com.igormaznitsa.mindmap.plugins.api.parameters.StringParameter;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.util.Comparator;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -46,7 +47,7 @@ public class DefaultParametersPanelFactory extends JPanel {
         .sorted(Comparator.comparing(AbstractParameter::getId))
         .forEach(p -> {
           final JLabel label = uiComponentFactory.makeLabel();
-          label.setText(p.getTitle());
+          label.setText(p.getTitle()+":");
           final JComponent changer;
           if (p instanceof IntegerParameter) {
             final IntegerParameter integerParameter = (IntegerParameter) p;
@@ -108,6 +109,7 @@ public class DefaultParametersPanelFactory extends JPanel {
           changer.setToolTipText(p.getComment());
 
           final GridBagConstraints constraints = new GridBagConstraints();
+          constraints.insets = new Insets(0,4,8,4);
 
           constraints.gridy = layoutY.getAndIncrement();
           constraints.gridx = 0;
