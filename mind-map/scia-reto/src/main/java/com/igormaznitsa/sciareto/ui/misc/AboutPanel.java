@@ -93,6 +93,8 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
     this.thirdParts.add(new ThirdPartLicense("Apache Batik", "https://xmlgraphics.apache.org/batik/", "Apache License, Version 2.0", "https://xmlgraphics.apache.org/batik/license.html"));
     
     this.tableThirdPartLibraries.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    final java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
+
     this.tableThirdPartLibraries.setModel(new TableModel() {
       @Override
       public int getRowCount() {
@@ -108,8 +110,8 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
       @Nonnull
       public String getColumnName(final int columnIndex) {
         switch(columnIndex) {
-          case 0 : return "Library";
-          case 1 : return "License";
+          case 0 : return bundle.getString("AboutPanel.grid.title.component");
+          case 1 : return bundle.getString("AboutPanel.grid.title.license");
           default:return "<unknown>";
         }
       }
@@ -215,7 +217,6 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
   @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-        java.awt.GridBagConstraints gridBagConstraints;
 
         tabbedPaneContent = new javax.swing.JTabbedPane();
         scrollPaneMainInfo = new javax.swing.JScrollPane();
@@ -224,17 +225,17 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
         tableThirdPartLibraries = new javax.swing.JTable();
         labelSplash = new javax.swing.JLabel();
 
-        setLayout(new java.awt.GridBagLayout());
+        setLayout(new java.awt.BorderLayout());
 
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
-        textLabel.setText(bundle.getString("AboutText")); // NOI18N
+        textLabel.setText(bundle.getString("AboutPanel.labelInfo.text")); // NOI18N
         textLabel.setVerticalAlignment(javax.swing.SwingConstants.TOP);
         textLabel.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
         scrollPaneMainInfo.setViewportView(textLabel);
 
         tabbedPaneContent.addTab(bundle.getString("AboutPanel.scrollPaneMainInfo.TabConstraints.tabTitle"), scrollPaneMainInfo); // NOI18N
 
-        scrollPanelThirdPartibs.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createEmptyBorder(8, 8, 8, 8), javax.swing.BorderFactory.createTitledBorder(bundle.getString("AboutPanel.scrollPanelThirdPartibs.border.insideBorder.title")))); // NOI18N
+        scrollPanelThirdPartibs.setBorder(javax.swing.BorderFactory.createEmptyBorder(8, 8, 8, 8));
 
         tableThirdPartLibraries.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -252,17 +253,8 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
 
         tabbedPaneContent.addTab(bundle.getString("AboutPanel.scrollPanelThirdPartibs.TabConstraints.tabTitle"), scrollPanelThirdPartibs); // NOI18N
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        add(tabbedPaneContent, gridBagConstraints);
-
-        labelSplash.setText(bundle.getString("AboutPanel.labelSplash.text")); // NOI18N
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        add(labelSplash, gridBagConstraints);
+        add(tabbedPaneContent, java.awt.BorderLayout.CENTER);
+        add(labelSplash, java.awt.BorderLayout.PAGE_START);
     }// </editor-fold>//GEN-END:initComponents
 
 
