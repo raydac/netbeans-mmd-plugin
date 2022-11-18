@@ -1365,7 +1365,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     }// </editor-fold>//GEN-END:initComponents
 
   private void menuAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuAboutActionPerformed
-    JOptionPane.showMessageDialog(SciaRetoStarter.getApplicationFrame(), new AboutPanel(), "About", JOptionPane.PLAIN_MESSAGE);
+    final JPanel panel = new AboutPanel();
+    JOptionPane.showMessageDialog(SciaRetoStarter.getApplicationFrame(), panel, "About", JOptionPane.PLAIN_MESSAGE);
   }//GEN-LAST:event_menuAboutActionPerformed
 
   private void menuOpenProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuOpenProjectActionPerformed
