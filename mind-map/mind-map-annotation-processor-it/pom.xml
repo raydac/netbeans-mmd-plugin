@@ -92,7 +92,6 @@
                     <compilerArgs>
                         <compilerArg>-J-Djava.awt.headless=true</compilerArg>
                         <compilerArg>-Ammd.file.link.base.folder=${mmd.basedir}</compilerArg>
-                        <compilerArg>-Ammd.file.root.folder=${mmd.basedir}</compilerArg>
                     </compilerArgs>
                     <release>9</release>
                     <source>9</source>

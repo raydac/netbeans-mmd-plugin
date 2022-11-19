@@ -116,19 +116,6 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
       this.messager.printMessage(WARNING, "MMD processor started in DRY mode");
     }
 
-    if (processingEnv.getOptions().containsKey(KEY_MMD_FILE_ROOT_FOLDER)) {
-      final String path = processingEnv.getOptions().get(KEY_MMD_FILE_ROOT_FOLDER);
-      this.optionFileRootFolder =
-          Paths.get(path).normalize().toAbsolutePath();
-      this.messager.printMessage(NOTE,
-          "Provided restricting root folder for new MMD files: " + this.optionFileRootFolder);
-      if (!Files.isDirectory(this.optionFileRootFolder)) {
-        this.messager.printMessage(ERROR,
-            "Can't find root folder for MMD processor: " + this.optionTargetFolder);
-        return;
-      }
-    }
-
     if (processingEnv.getOptions().containsKey(KEY_MMD_TARGET_FOLDER)) {
       this.optionTargetFolder = Paths.get(processingEnv.getOptions().get(KEY_MMD_TARGET_FOLDER));
       if (!(Files.isDirectory(this.optionTargetFolder) || this.optionDryStart)) {
@@ -169,6 +156,24 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
       this.messager.printMessage(
           NOTE,
           String.format("File link base folder for MMD files: %s", this.optionFileLinkBaseFolder));
+    }
+
+    if (processingEnv.getOptions().containsKey(KEY_MMD_FILE_ROOT_FOLDER)) {
+      final String path = processingEnv.getOptions().get(KEY_MMD_FILE_ROOT_FOLDER);
+      this.optionFileRootFolder =
+          Paths.get(path).normalize().toAbsolutePath();
+      this.messager.printMessage(NOTE,
+          "Provided restricting root folder for new MMD files: " + this.optionFileRootFolder);
+      if (!Files.isDirectory(this.optionFileRootFolder)) {
+        this.messager.printMessage(ERROR,
+            "Can't find root folder for MMD processor: " + this.optionTargetFolder);
+        return;
+      }
+    } else if (this.optionFileLinkBaseFolder != null) {
+      this.optionFileRootFolder = this.optionFileLinkBaseFolder;
+      this.messager.printMessage(WARNING,
+          "MMD processor uses the link base folder to restrict generated file paths  (can be changed with " +
+              KEY_MMD_TARGET_FOLDER + " property): " + this.optionFileRootFolder);
     }
 
     this.optionFileOverwrite =
