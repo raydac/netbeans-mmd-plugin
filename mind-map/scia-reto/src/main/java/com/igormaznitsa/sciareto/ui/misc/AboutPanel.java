@@ -156,7 +156,7 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
       }
     });
     
-    this.scrollPanelThirdPartibs.setPreferredSize(new Dimension(100,196));
+    this.scrollPanelThirdParts.setPreferredSize(new Dimension(100,196));
     
     this.tableThirdPartLibraries.addMouseListener(new MouseAdapter() {
       @Override
@@ -232,7 +232,7 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
         labelSplash = new javax.swing.JLabel();
         tabbedPaneContent = new javax.swing.JTabbedPane();
         textLabel = new com.igormaznitsa.sciareto.ui.misc.JHtmlLabel();
-        scrollPanelThirdPartibs = new javax.swing.JScrollPane();
+        scrollPanelThirdParts = new javax.swing.JScrollPane();
         tableThirdPartLibraries = new javax.swing.JTable();
         panelDonate = new javax.swing.JPanel();
         textLabelDonation = new com.igormaznitsa.sciareto.ui.misc.JHtmlLabel();
@@ -257,7 +257,7 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
         textLabel.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
         tabbedPaneContent.addTab(bundle.getString("AboutPanel.textLabel.TabConstraints.tabTitle"), textLabel); // NOI18N
 
-        scrollPanelThirdPartibs.setBorder(javax.swing.BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        scrollPanelThirdParts.setBorder(javax.swing.BorderFactory.createEmptyBorder(8, 8, 8, 8));
 
         tableThirdPartLibraries.setBorder(javax.swing.BorderFactory.createEmptyBorder(8, 8, 8, 8));
         tableThirdPartLibraries.setModel(new javax.swing.table.DefaultTableModel(
@@ -272,9 +272,9 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
             }
         ));
         tableThirdPartLibraries.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        scrollPanelThirdPartibs.setViewportView(tableThirdPartLibraries);
+        scrollPanelThirdParts.setViewportView(tableThirdPartLibraries);
 
-        tabbedPaneContent.addTab(bundle.getString("AboutPanel.scrollPanelThirdPartibs.TabConstraints.tabTitle"), scrollPanelThirdPartibs); // NOI18N
+        tabbedPaneContent.addTab(bundle.getString("AboutPanel.scrollPanelThirdParts.TabConstraints.tabTitle"), scrollPanelThirdParts); // NOI18N
 
         panelDonate.setBorder(javax.swing.BorderFactory.createEmptyBorder(8, 8, 8, 8));
         panelDonate.setLayout(new java.awt.BorderLayout());
@@ -306,7 +306,7 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JLabel labelSplash;
     private javax.swing.JPanel panelDonate;
-    private javax.swing.JScrollPane scrollPanelThirdPartibs;
+    private javax.swing.JScrollPane scrollPanelThirdParts;
     private javax.swing.JTabbedPane tabbedPaneContent;
     private javax.swing.JTable tableThirdPartLibraries;
     private com.igormaznitsa.sciareto.ui.misc.JHtmlLabel textLabel;
