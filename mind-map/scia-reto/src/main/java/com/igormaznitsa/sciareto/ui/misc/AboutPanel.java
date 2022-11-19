@@ -70,12 +70,17 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
     this.tabbedPaneContent.putClientProperty("JTabbedPane.hasFullBorder", false);
     
     final Image loadedSplash = UiUtils.loadIcon("splash.png");
+    int maxWidth = Integer.MAX_VALUE;
     if (loadedSplash != null) {
-      this.labelSplash.setIcon(new ImageIcon(Utils.scaleImage(loadedSplash, 0.75d, 0.75d, 1.0d)));
+      final Image scaled = Utils.scaleImage(loadedSplash, 0.75d, 0.75d, 1.0d);
+      this.labelSplash.setIcon(new ImageIcon(scaled));
+      maxWidth = scaled.getWidth(null)+16;
     }
 
-    this.textLabel.setBorder(BorderFactory.createEmptyBorder(8,8,8,8));
-
+    this.tabbedPaneContent.setMaximumSize(new Dimension(maxWidth, Integer.MAX_VALUE));
+    this.tabbedPaneContent.setMinimumSize(new Dimension(maxWidth, 32));
+    this.tabbedPaneContent.setPreferredSize(new Dimension(maxWidth, 320));
+    
     final String pluginAPIVersion = MindMapPlugin.API.toString();
     final String formatVersion = MindMap.FORMAT_VERSION;
 
@@ -185,6 +190,10 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
     this.textLabel.addLinkListener(this);
     this.textLabel.setShowLinkAddressInTooltip(true);
     
+    this.textLabelDonation.replaceMacroses(props);
+    this.textLabelDonation.addLinkListener(this);
+    this.textLabelDonation.setShowLinkAddressInTooltip(true);
+    
     this.doLayout();
   }
 
@@ -217,26 +226,40 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
   @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
+        jSplitPane1 = new javax.swing.JSplitPane();
+        labelSplash = new javax.swing.JLabel();
         tabbedPaneContent = new javax.swing.JTabbedPane();
-        scrollPaneMainInfo = new javax.swing.JScrollPane();
         textLabel = new com.igormaznitsa.sciareto.ui.misc.JHtmlLabel();
         scrollPanelThirdPartibs = new javax.swing.JScrollPane();
         tableThirdPartLibraries = new javax.swing.JTable();
-        labelSplash = new javax.swing.JLabel();
+        panelDonate = new javax.swing.JPanel();
+        textLabelDonation = new com.igormaznitsa.sciareto.ui.misc.JHtmlLabel();
+        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
 
-        setLayout(new java.awt.BorderLayout());
+        setLayout(new java.awt.GridBagLayout());
 
+        labelSplash.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        labelSplash.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1000.0;
+        gridBagConstraints.weighty = 1000.0;
+        add(labelSplash, gridBagConstraints);
+
+        textLabel.setBorder(javax.swing.BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        textLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
         textLabel.setText(bundle.getString("AboutPanel.labelInfo.text")); // NOI18N
-        textLabel.setVerticalAlignment(javax.swing.SwingConstants.TOP);
         textLabel.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
-        scrollPaneMainInfo.setViewportView(textLabel);
-
-        tabbedPaneContent.addTab(bundle.getString("AboutPanel.scrollPaneMainInfo.TabConstraints.tabTitle"), scrollPaneMainInfo); // NOI18N
+        tabbedPaneContent.addTab(bundle.getString("AboutPanel.textLabel.TabConstraints.tabTitle"), textLabel); // NOI18N
 
         scrollPanelThirdPartibs.setBorder(javax.swing.BorderFactory.createEmptyBorder(8, 8, 8, 8));
 
+        tableThirdPartLibraries.setBorder(javax.swing.BorderFactory.createEmptyBorder(8, 8, 8, 8));
         tableThirdPartLibraries.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -253,17 +276,40 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
 
         tabbedPaneContent.addTab(bundle.getString("AboutPanel.scrollPanelThirdPartibs.TabConstraints.tabTitle"), scrollPanelThirdPartibs); // NOI18N
 
-        add(tabbedPaneContent, java.awt.BorderLayout.CENTER);
-        add(labelSplash, java.awt.BorderLayout.PAGE_START);
+        panelDonate.setBorder(javax.swing.BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        panelDonate.setLayout(new java.awt.BorderLayout());
+
+        textLabelDonation.setText(bundle.getString("AboutPanel.textLabelDonation.text")); // NOI18N
+        textLabelDonation.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        textLabelDonation.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
+        panelDonate.add(textLabelDonation, java.awt.BorderLayout.CENTER);
+
+        tabbedPaneContent.addTab(bundle.getString("AboutPanel.panelDonate.TabConstraints.tabTitle"), panelDonate); // NOI18N
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.insets = new java.awt.Insets(8, 8, 8, 8);
+        add(tabbedPaneContent, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weighty = 999999.0;
+        add(filler1, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.Box.Filler filler1;
+    private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JLabel labelSplash;
-    private javax.swing.JScrollPane scrollPaneMainInfo;
+    private javax.swing.JPanel panelDonate;
     private javax.swing.JScrollPane scrollPanelThirdPartibs;
     private javax.swing.JTabbedPane tabbedPaneContent;
     private javax.swing.JTable tableThirdPartLibraries;
     private com.igormaznitsa.sciareto.ui.misc.JHtmlLabel textLabel;
+    private com.igormaznitsa.sciareto.ui.misc.JHtmlLabel textLabelDonation;
     // End of variables declaration//GEN-END:variables
 }
