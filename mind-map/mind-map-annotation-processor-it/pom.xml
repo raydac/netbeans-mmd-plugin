@@ -57,6 +57,17 @@
             </plugin>
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>${project.basedir}</directory>
+                            <includes>
+                                <include>**/*.mmd</include>
+                            </includes>
+                            <followSymlinks>false</followSymlinks>
+                        </fileset>
+                    </filesets>
+                </configuration>
                 <executions>
                     <execution>
                         <id>remove-all-mindmaps</id>
@@ -64,17 +75,6 @@
                         <goals>
                             <goal>clean</goal>
                         </goals>
-                        <configuration>
-                            <filesets>
-                                <fileset>
-                                    <directory>${project.basedir}</directory>
-                                    <includes>
-                                        <include>**/*.mmd</include>
-                                    </includes>
-                                    <followSymlinks>false</followSymlinks>
-                                </fileset>
-                            </filesets>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>

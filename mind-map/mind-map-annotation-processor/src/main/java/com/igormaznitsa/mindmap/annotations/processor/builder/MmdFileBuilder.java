@@ -187,7 +187,12 @@ public class MmdFileBuilder {
       final TopicItem topic)
       throws MmdElementException, MmdAnnotationProcessorException {
     final FileItem targetFile =
-        topic.findTargetFile(this.builder.getTypes(), fileMap).orElse(null);
+        topic.findTargetFileItem(
+            this.builder.getTypes(),
+            fileMap,
+            (message, element) -> this.builder.getMessager()
+                .printMessage(Diagnostic.Kind.WARNING, message, element)
+        ).orElse(null);
     if (targetFile == null) {
       throw new MmdAnnotationProcessorException(topic, "Can't find target MMD file for topic");
     } else {
@@ -226,12 +231,6 @@ public class MmdFileBuilder {
       return this;
     }
 
-    public Builder setAnnotations(final List<MmdAnnotationWrapper> annotations) {
-      this.assertNotCompleted();
-      this.annotations = unmodifiableList(new ArrayList<>(annotations));
-      return this;
-    }
-
     public boolean isOverwriteAllowed() {
       return this.overwriteAllowed;
     }
@@ -254,6 +253,12 @@ public class MmdFileBuilder {
 
     public List<MmdAnnotationWrapper> getAnnotations() {
       return this.annotations;
+    }
+
+    public Builder setAnnotations(final List<MmdAnnotationWrapper> annotations) {
+      this.assertNotCompleted();
+      this.annotations = unmodifiableList(new ArrayList<>(annotations));
+      return this;
     }
 
     public Types getTypes() {

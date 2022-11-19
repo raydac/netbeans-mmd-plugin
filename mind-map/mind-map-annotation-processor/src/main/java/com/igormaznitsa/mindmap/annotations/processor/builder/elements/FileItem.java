@@ -43,6 +43,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class FileItem extends AbstractItem {
   private final String fileUid;
+  private final String baseFileName;
   private final Path targetFile;
   private final List<InternalLayoutBlock> layoutBlocks = new ArrayList<>();
 
@@ -53,12 +54,23 @@ public class FileItem extends AbstractItem {
     }
     final MmdFile mmdFile = base.asAnnotation();
     if (StringUtils.isBlank(mmdFile.uid())) {
-      this.fileUid = "$auto:" + UUID.randomUUID();
+      this.fileUid = "$auto:::" + UUID.randomUUID();
     } else {
       this.fileUid = mmdFile.uid();
     }
 
     this.targetFile = makeTargetFilePath(base, forceTargetFolder);
+    this.baseFileName = findBaseFileName(base);
+  }
+
+  private static String findBaseFileName(final MmdAnnotationWrapper annotationWrapper) {
+    final MmdFile mmdFile = annotationWrapper.asAnnotation();
+    if (StringUtils.isBlank(mmdFile.fileName())) {
+      return
+          FilenameUtils.removeExtension(annotationWrapper.getPath().getFileName().toString());
+    } else {
+      return mmdFile.fileName();
+    }
   }
 
   private static void assertNoGraphLoops(final List<InternalLayoutBlock> items)
@@ -104,13 +116,7 @@ public class FileItem extends AbstractItem {
   private static Path makeTargetFilePath(final MmdAnnotationWrapper annotationWrapper,
                                          final Path forceTargetFolder) {
     final MmdFile mmdFile = annotationWrapper.asAnnotation();
-    final String rawFileName;
-    if (StringUtils.isBlank(mmdFile.fileName())) {
-      rawFileName =
-          FilenameUtils.removeExtension(annotationWrapper.getPath().getFileName().toString());
-    } else {
-      rawFileName = mmdFile.fileName();
-    }
+    final String baseFileName = findBaseFileName(annotationWrapper);
 
     final Path targetFolder =
         Objects.requireNonNullElseGet(
@@ -126,7 +132,11 @@ public class FileItem extends AbstractItem {
                                     annotationWrapper.getPath().getParent().toAbsolutePath()
                                         .toString())))));
 
-    return targetFolder.resolve(rawFileName + ".mmd");
+    return targetFolder.resolve(baseFileName + ".mmd");
+  }
+
+  public String getBaseName() {
+    return this.baseFileName;
   }
 
   public Path getTargetFile() {
@@ -195,6 +205,26 @@ public class FileItem extends AbstractItem {
 
   public String getFileUid() {
     return this.fileUid;
+  }
+
+  @Override
+  public int hashCode() {
+    return this.fileUid.hashCode();
+  }
+
+  @Override
+  public boolean equals(final Object that) {
+    if (that == null) {
+      return false;
+    }
+    if (that == this) {
+      return true;
+    }
+    if (that instanceof FileItem) {
+      final FileItem thatItem = (FileItem) that;
+      return this.fileUid.equals(thatItem.fileUid);
+    }
+    return false;
   }
 
   private Optional<InternalLayoutBlock> findForUidOrTitle(

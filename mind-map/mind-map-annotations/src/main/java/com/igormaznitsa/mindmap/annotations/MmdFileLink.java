@@ -11,7 +11,17 @@ import java.lang.annotation.Target;
  * @see MmdFile
  */
 @Retention(RetentionPolicy.SOURCE)
-@Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
+@Target({
+    ElementType.TYPE,
+    ElementType.FIELD,
+    ElementType.METHOD,
+    ElementType.CONSTRUCTOR,
+    ElementType.ANNOTATION_TYPE,
+    ElementType.PACKAGE,
+    ElementType.TYPE_PARAMETER,
+    ElementType.PARAMETER,
+    ElementType.TYPE_USE
+})
 public @interface MmdFileLink {
   String uid();
 }
