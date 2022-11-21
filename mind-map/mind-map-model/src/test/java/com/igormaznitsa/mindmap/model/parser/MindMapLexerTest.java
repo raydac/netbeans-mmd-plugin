@@ -13,22 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.igormaznitsa.mindmap.model.parser;
 
-import org.junit.Test;
+package com.igormaznitsa.mindmap.model.parser;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import org.apache.commons.io.IOUtils;
-import com.igormaznitsa.mindmap.model.parser.MindMapLexer.TokenType;
 
+import com.igormaznitsa.mindmap.model.parser.MindMapLexer.TokenType;
 import java.nio.charset.StandardCharsets;
+import org.apache.commons.io.IOUtils;
+import org.junit.Test;
 
 public class MindMapLexerTest {
 
-  private static void assertLexer(final MindMapLexer lexer, final MindMapLexer.TokenType expectedType, final String expectedText, final int expectedTokenStart, final int expectedTokenEnd) {
+  private static void assertLexer(final MindMapLexer lexer,
+                                  final MindMapLexer.TokenType expectedType,
+                                  final String expectedText, final int expectedTokenStart,
+                                  final int expectedTokenEnd) {
     assertEquals(expectedType, lexer.getTokenType());
     assertEquals(expectedText, lexer.getTokenText());
 
@@ -128,7 +131,8 @@ public class MindMapLexerTest {
     lexer.advance();
 
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
-    assertLexer(lexer, MindMapLexer.TokenType.EXTRA_TEXT, "<pre>http://www.google.com</pre>", 7, 39);
+    assertLexer(lexer, MindMapLexer.TokenType.EXTRA_TEXT, "<pre>http://www.google.com</pre>", 7,
+        39);
     lexer.advance();
 
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
@@ -155,13 +159,13 @@ public class MindMapLexerTest {
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
     assertLexer(lexer, MindMapLexer.TokenType.WHITESPACE, "   ", 29, 32);
     lexer.advance();
-    
+
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
-    assertLexer(lexer, MindMapLexer.TokenType.TOPIC_LEVEL, "# ",32,34);
+    assertLexer(lexer, MindMapLexer.TokenType.TOPIC_LEVEL, "# ", 32, 34);
     lexer.advance();
 
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
-    assertLexer(lexer, MindMapLexer.TokenType.TOPIC_TITLE, "Topic\n",34,40);
+    assertLexer(lexer, MindMapLexer.TokenType.TOPIC_TITLE, "Topic\n", 34, 40);
     lexer.advance();
 
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
@@ -171,7 +175,8 @@ public class MindMapLexerTest {
   @Test
   public void testTopicWithAttributeAndText() {
     final MindMapLexer lexer = new MindMapLexer();
-    final String testString = "Header\n--\n# Hello\n> attrs='some'\n- LINK  \n<pre>Hurraa <ugu>\nrabotaet</pre>\nhmm";
+    final String testString =
+        "Header\n--\n# Hello\n> attrs='some'\n- LINK  \n<pre>Hurraa <ugu>\nrabotaet</pre>\nhmm";
     lexer.start(testString, 0, testString.length(), MindMapLexer.TokenType.HEAD_LINE);
     lexer.advance();
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
@@ -182,7 +187,7 @@ public class MindMapLexerTest {
 
     lexer.advance();
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
-    assertLexer(lexer, MindMapLexer.TokenType.TOPIC_LEVEL, "# ",10,12);
+    assertLexer(lexer, MindMapLexer.TokenType.TOPIC_LEVEL, "# ", 10, 12);
 
     lexer.advance();
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
@@ -196,7 +201,8 @@ public class MindMapLexerTest {
     assertLexer(lexer, MindMapLexer.TokenType.EXTRA_TYPE, "- LINK  \n", 33, 42);
     lexer.advance();
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
-    assertLexer(lexer, MindMapLexer.TokenType.EXTRA_TEXT, "<pre>Hurraa <ugu>\nrabotaet</pre>", 42, 74);
+    assertLexer(lexer, MindMapLexer.TokenType.EXTRA_TEXT, "<pre>Hurraa <ugu>\nrabotaet</pre>", 42,
+        74);
     lexer.advance();
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
     assertLexer(lexer, MindMapLexer.TokenType.WHITESPACE, "\n", 74, 75);
@@ -265,7 +271,8 @@ public class MindMapLexerTest {
     lexer.setBufferEndOffset(testString.length());
     lexer.advance();
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
-    assertLexer(lexer, MindMapLexer.TokenType.ATTRIBUTE, "> hello='world'", 10, testString.length());
+    assertLexer(lexer, MindMapLexer.TokenType.ATTRIBUTE, "> hello='world'", 10,
+        testString.length());
     lexer.advance();
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
     assertNull(lexer.getTokenType());
@@ -285,12 +292,12 @@ public class MindMapLexerTest {
 
     lexer.advance();
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
-    assertLexer(lexer, MindMapLexer.TokenType.TOPIC_LEVEL, "# ",10,12);
-    
+    assertLexer(lexer, MindMapLexer.TokenType.TOPIC_LEVEL, "# ", 10, 12);
+
     lexer.advance();
     assertFalse(lexer.getCurrentPosition().isTokenCompleted());
-    assertLexer(lexer, MindMapLexer.TokenType.TOPIC_TITLE, "To",12,14);
-    
+    assertLexer(lexer, MindMapLexer.TokenType.TOPIC_TITLE, "To", 12, 14);
+
     lexer.setBufferEndOffset(testString.length());
     lexer.advance();
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
@@ -314,13 +321,13 @@ public class MindMapLexerTest {
 
     lexer.advance();
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
-    assertLexer(lexer, MindMapLexer.TokenType.TOPIC_LEVEL, "# ",10,12);
+    assertLexer(lexer, MindMapLexer.TokenType.TOPIC_LEVEL, "# ", 10, 12);
 
     lexer.advance();
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
-    assertLexer(lexer, MindMapLexer.TokenType.TOPIC_TITLE, "\\#Topic name", 12, 24);    
+    assertLexer(lexer, MindMapLexer.TokenType.TOPIC_TITLE, "\\#Topic name", 12, 24);
   }
-  
+
   @Test
   public void testTwoPhaseReading_ExtraText() {
     final MindMapLexer lexer = new MindMapLexer();
@@ -338,7 +345,8 @@ public class MindMapLexerTest {
     lexer.setBufferEndOffset(testString.length());
     lexer.advance();
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
-    assertLexer(lexer, MindMapLexer.TokenType.EXTRA_TEXT, "<pre>Hello world</pre>", 10, testString.length());
+    assertLexer(lexer, MindMapLexer.TokenType.EXTRA_TEXT, "<pre>Hello world</pre>", 10,
+        testString.length());
     lexer.advance();
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
     assertNull(lexer.getTokenType());
@@ -361,7 +369,8 @@ public class MindMapLexerTest {
     lexer.setBufferEndOffset(testString.length());
     lexer.advance();
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
-    assertLexer(lexer, MindMapLexer.TokenType.UNKNOWN_LINE, "<pra>Hello world</pre>", 10, testString.length());
+    assertLexer(lexer, MindMapLexer.TokenType.UNKNOWN_LINE, "<pra>Hello world</pre>", 10,
+        testString.length());
     lexer.advance();
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
     assertNull(lexer.getTokenType());
@@ -370,15 +379,16 @@ public class MindMapLexerTest {
   @Test
   public void testTwoPhaseReading_CodeSnippetInTheEnd_NoNextLine() {
     final MindMapLexer lexer = new MindMapLexer();
-    final String testString = "Header\n--\n```Java\nSystem.out.println(\"Hello world\");\nSystem.exit(0);\n```";
-    
+    final String testString =
+        "Header\n--\n```Java\nSystem.out.println(\"Hello world\");\nSystem.exit(0);\n```";
+
     lexer.start(testString, 0, testString.length(), MindMapLexer.TokenType.HEAD_LINE);
     lexer.advance();
-    
+
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
     assertLexer(lexer, MindMapLexer.TokenType.HEAD_LINE, "Header\n", 0, 7);
     lexer.advance();
-    
+
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
     assertLexer(lexer, MindMapLexer.TokenType.HEAD_DELIMITER, "--\n", 7, 10);
     lexer.advance();
@@ -388,7 +398,8 @@ public class MindMapLexerTest {
     lexer.advance();
 
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
-    assertLexer(lexer, MindMapLexer.TokenType.CODE_SNIPPET_BODY, "System.out.println(\"Hello world\");\nSystem.exit(0);\n", 18, 69);
+    assertLexer(lexer, MindMapLexer.TokenType.CODE_SNIPPET_BODY,
+        "System.out.println(\"Hello world\");\nSystem.exit(0);\n", 18, 69);
     lexer.advance();
 
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
@@ -399,15 +410,16 @@ public class MindMapLexerTest {
   @Test
   public void testTwoPhaseReading_CodeSnippetInTheEnd_NextLine() {
     final MindMapLexer lexer = new MindMapLexer();
-    final String testString = "Header\n--\n```Java\nSystem.out.println(\"Hello world\");\nSystem.exit(0);\n```\n";
-    
+    final String testString =
+        "Header\n--\n```Java\nSystem.out.println(\"Hello world\");\nSystem.exit(0);\n```\n";
+
     lexer.start(testString, 0, testString.length(), MindMapLexer.TokenType.HEAD_LINE);
     lexer.advance();
-    
+
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
     assertLexer(lexer, MindMapLexer.TokenType.HEAD_LINE, "Header\n", 0, 7);
     lexer.advance();
-    
+
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
     assertLexer(lexer, MindMapLexer.TokenType.HEAD_DELIMITER, "--\n", 7, 10);
     lexer.advance();
@@ -417,7 +429,8 @@ public class MindMapLexerTest {
     lexer.advance();
 
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
-    assertLexer(lexer, MindMapLexer.TokenType.CODE_SNIPPET_BODY, "System.out.println(\"Hello world\");\nSystem.exit(0);\n", 18, 69);
+    assertLexer(lexer, MindMapLexer.TokenType.CODE_SNIPPET_BODY,
+        "System.out.println(\"Hello world\");\nSystem.exit(0);\n", 18, 69);
     lexer.advance();
 
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
@@ -440,7 +453,7 @@ public class MindMapLexerTest {
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
     assertLexer(lexer, MindMapLexer.TokenType.HEAD_DELIMITER, "--\n", 7, 10);
     lexer.advance();
-    
+
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
     assertLexer(lexer, MindMapLexer.TokenType.CODE_SNIPPET_START, "```Java\n", 10, 18);
     lexer.advance();
@@ -457,19 +470,20 @@ public class MindMapLexerTest {
     assertLexer(lexer, MindMapLexer.TokenType.CODE_SNIPPET_BODY, "System.exit(0);\n", 18, 34);
     lexer.advance();
   }
-  
+
   @Test
   public void testTwoPhaseReading_CodeSnippetInTheEnd_TopicAfterCodeSnipet() {
     final MindMapLexer lexer = new MindMapLexer();
-    final String testString = "Header\n--\n```Java\nSystem.out.println(\"Hello world\");\nSystem.exit(0);\n```\n# Topic\n```Basic\n``` `\n```\n```Empty\n```";
-    
+    final String testString =
+        "Header\n--\n```Java\nSystem.out.println(\"Hello world\");\nSystem.exit(0);\n```\n# Topic\n```Basic\n``` `\n```\n```Empty\n```";
+
     lexer.start(testString, 0, testString.length(), MindMapLexer.TokenType.HEAD_LINE);
     lexer.advance();
-    
+
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
     assertLexer(lexer, MindMapLexer.TokenType.HEAD_LINE, "Header\n", 0, 7);
     lexer.advance();
-    
+
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
     assertLexer(lexer, MindMapLexer.TokenType.HEAD_DELIMITER, "--\n", 7, 10);
     lexer.advance();
@@ -479,7 +493,8 @@ public class MindMapLexerTest {
     lexer.advance();
 
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
-    assertLexer(lexer, MindMapLexer.TokenType.CODE_SNIPPET_BODY, "System.out.println(\"Hello world\");\nSystem.exit(0);\n", 18, 69);
+    assertLexer(lexer, MindMapLexer.TokenType.CODE_SNIPPET_BODY,
+        "System.out.println(\"Hello world\");\nSystem.exit(0);\n", 18, 69);
     lexer.advance();
 
     assertTrue(lexer.getCurrentPosition().isTokenCompleted());
@@ -517,38 +532,70 @@ public class MindMapLexerTest {
   }
 
   @Test
+  public void testEmptyTitleWithoutAnyFollowingEmptyLine() throws Exception {
+    final MindMapLexer lexer = new MindMapLexer();
+    final String text = "MMM\n---\n\n#\n> fillColor=`#FF00FF`";
+
+    lexer.start(text, 0, text.length(), TokenType.HEAD_LINE);
+    lexer.advance();
+
+    assertTrue(lexer.getCurrentPosition().isTokenCompleted());
+    assertLexer(lexer, MindMapLexer.TokenType.HEAD_LINE, "MMM\n", 0, 4);
+    lexer.advance();
+
+    assertTrue(lexer.getCurrentPosition().isTokenCompleted());
+    assertLexer(lexer, MindMapLexer.TokenType.HEAD_DELIMITER, "---\n", 4, 8);
+    lexer.advance();
+
+    assertTrue(lexer.getCurrentPosition().isTokenCompleted());
+    assertLexer(lexer, TokenType.WHITESPACE, "\n", 8, 9);
+    lexer.advance();
+
+    assertTrue(lexer.getCurrentPosition().isTokenCompleted());
+    assertLexer(lexer, TokenType.TOPIC_LEVEL, "#", 9, 10);
+    lexer.advance();
+
+    assertTrue(lexer.getCurrentPosition().isTokenCompleted());
+    assertLexer(lexer, TokenType.TOPIC_TITLE, "\n", 10, 11);
+    lexer.advance();
+
+  }
+
+  @Test
   public void testTextSplittingForLostOrDuplicatedTokens() throws Exception {
-    final String etalon = IOUtils.toString(MindMapLexerTest.class.getResourceAsStream("cancer_risk.mmd"), StandardCharsets.UTF_8);
-    
+    final String etalon =
+        IOUtils.toString(MindMapLexerTest.class.getResourceAsStream("cancer_risk.mmd"),
+            StandardCharsets.UTF_8);
+
     final StringBuilder accum1 = new StringBuilder();
     final StringBuilder accum2 = new StringBuilder();
     final StringBuilder accum3 = new StringBuilder();
-    
+
     final MindMapLexer lexer = new MindMapLexer();
     lexer.start(etalon, 0, etalon.length(), MindMapLexer.TokenType.HEAD_LINE);
     lexer.advance();
-    
+
     int prevEnd = 0;
-    
-    while(true){
+
+    while (true) {
       final TokenType type = lexer.getTokenType();
-      if (type == null){
+      if (type == null) {
         break;
-      } 
-      
+      }
+
       assertEquals(prevEnd, lexer.getTokenStartOffset());
       prevEnd = lexer.getTokenEndOffset();
 //      assertNotEquals("Unknown line : "+lexer.getTokenText(),TokenType.UNKNOWN_LINE, type);
-      
+
       accum1.append(etalon, lexer.getTokenStartOffset(), lexer.getTokenEndOffset());
       accum2.append(lexer.getTokenText());
       accum3.append(lexer.getTokenSequence());
       lexer.advance();
     }
-    
-    assertEquals(etalon,accum1.toString());
-    assertEquals(etalon,accum2.toString());
-    assertEquals(etalon,accum3.toString());
+
+    assertEquals(etalon, accum1.toString());
+    assertEquals(etalon, accum2.toString());
+    assertEquals(etalon, accum3.toString());
   }
-  
+
 }

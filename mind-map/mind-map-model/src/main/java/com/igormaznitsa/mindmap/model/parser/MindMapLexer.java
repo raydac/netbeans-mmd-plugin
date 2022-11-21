@@ -223,7 +223,7 @@ public final class MindMapLexer {
             final char ch = readChar();
             if (ch == '#') {
               continue;
-            } else if (!Character.isWhitespace(ch)) {
+            } else if (!Character.isWhitespace(ch) || ch == '\n') {
               back();
             }
             tokenHasBeenCompleted = true;
