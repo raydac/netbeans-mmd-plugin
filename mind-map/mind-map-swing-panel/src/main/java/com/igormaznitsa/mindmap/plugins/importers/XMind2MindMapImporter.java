@@ -25,6 +25,7 @@ import com.igormaznitsa.mindmap.model.ExtraTopic;
 import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.StandardMmdAttributes;
+import com.igormaznitsa.mindmap.model.StandardTopicAttributes;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
@@ -358,7 +359,8 @@ public class XMind2MindMapImporter extends AbstractImporter {
           borderLineColor);
     }
     if (textAlign != null) {
-      topicToProcess.putAttribute("align", convertTextAlign(textAlign));
+      topicToProcess.putAttribute(StandardTopicAttributes.MMD_TOPIC_ATTRIBUTE_TITLE_ALIGN,
+          convertTextAlign(textAlign));
     }
 
 
@@ -750,7 +752,7 @@ public class XMind2MindMapImporter extends AbstractImporter {
             Utils.color2html(this.border, false));
       }
       if (this.textAlign != null) {
-        topic.putAttribute("align", this.textAlign);
+        topic.putAttribute(StandardTopicAttributes.MMD_TOPIC_ATTRIBUTE_TITLE_ALIGN, this.textAlign);
       }
     }
 

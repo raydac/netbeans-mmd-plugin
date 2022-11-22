@@ -16,6 +16,7 @@
 
 package com.igormaznitsa.mindmap.plugins.processors;
 
+import com.igormaznitsa.mindmap.model.StandardTopicAttributes;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.api.AbstractPopupMenuItem;
@@ -83,7 +84,8 @@ public class TextAlignMenuPlugin extends AbstractPopupMenuItem {
   private void setAlignValue(final MindMapPanel panel, final Topic[] topics,
                              final TextAlign align) {
     for (final Topic t : topics) {
-      t.putAttribute("align", align.name().toLowerCase(Locale.ENGLISH));
+      t.putAttribute(StandardTopicAttributes.MMD_TOPIC_ATTRIBUTE_TITLE_ALIGN,
+          align.name().toLowerCase(Locale.ENGLISH));
     }
     panel.doNotifyModelChanged(true);
   }
@@ -92,7 +94,8 @@ public class TextAlignMenuPlugin extends AbstractPopupMenuItem {
     TextAlign result = null;
 
     for (final Topic t : topics) {
-      final TextAlign topicAlign = TextAlign.findForName(t.getAttribute("align"));
+      final TextAlign topicAlign = TextAlign.findForName(
+          t.getAttribute(StandardTopicAttributes.MMD_TOPIC_ATTRIBUTE_TITLE_ALIGN));
       if (result == null) {
         result = topicAlign;
       } else if (result != topicAlign) {

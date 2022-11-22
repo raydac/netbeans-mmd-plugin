@@ -21,6 +21,7 @@ import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_F
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_TEXT_COLOR;
 import static java.util.Objects.requireNonNull;
 
+import com.igormaznitsa.mindmap.model.StandardTopicAttributes;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
@@ -62,8 +63,10 @@ public abstract class AbstractElement {
   public AbstractElement(final Topic model) {
     this.model = model;
     this.textBlock =
-        new TextBlock(this.model.getText(), TextAlign.findForName(model.getAttribute("align")));
-    this.textBlock.setTextAlign(TextAlign.findForName(model.getAttribute("align")));
+        new TextBlock(this.model.getText(), TextAlign.findForName(model.getAttribute(
+            StandardTopicAttributes.MMD_TOPIC_ATTRIBUTE_TITLE_ALIGN)));
+    this.textBlock.setTextAlign(TextAlign.findForName(
+        model.getAttribute(StandardTopicAttributes.MMD_TOPIC_ATTRIBUTE_TITLE_ALIGN)));
     this.extrasIconBlock = new IconBlock(model);
     this.visualAttributeImageBlock = new VisualAttributeImageBlock(model);
     updateColorAttributeFromModel();
@@ -100,7 +103,8 @@ public abstract class AbstractElement {
 
   public void setTextAlign(final TextAlign textAlign) {
     this.textBlock.setTextAlign(textAlign);
-    this.model.putAttribute("align", this.textBlock.getTextAlign().name());
+    this.model.putAttribute(StandardTopicAttributes.MMD_TOPIC_ATTRIBUTE_TITLE_ALIGN,
+        this.textBlock.getTextAlign().name());
   }
 
   public void updateElementBounds(final MMGraphics gfx, final MindMapPanelConfig cfg) {

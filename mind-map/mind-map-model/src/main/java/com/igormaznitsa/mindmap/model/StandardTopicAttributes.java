@@ -46,4 +46,9 @@ public interface StandardTopicAttributes {
    */
   String MMD_TOPIC_ATTRIBUTE_NOTE_ENCRYPTED_PASSWORD_HINT = "extras.note.encrypted.hint";
 
+  /**
+   * Type of text align in topic title. Supported left, center and right.
+   */
+  String MMD_TOPIC_ATTRIBUTE_TITLE_ALIGN = "align";
+
 }
