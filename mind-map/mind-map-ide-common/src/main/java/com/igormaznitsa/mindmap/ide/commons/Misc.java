@@ -26,8 +26,8 @@ import java.util.regex.Pattern;
  */
 public final class Misc {
 
-  public static final String FILELINK_ATTR_OPEN_IN_SYSTEM = "useSystem"; //NOI18N
-  public static final String FILELINK_ATTR_LINE = "line"; //NOI18N
+  public static final String FILELINK_ATTR_OPEN_IN_SYSTEM = "useSystem";
+  public static final String FILELINK_ATTR_LINE = "line";
   /**
    * Session key to keep last selected folder for added file into mind map node.
    * Object is File.
@@ -53,9 +53,9 @@ public final class Misc {
     final StringBuilder result = new StringBuilder();
 
     for (final char c : text.toCharArray()) {
-      result.append("\\u"); //NOI18N
+      result.append("\\u");
       final String code = Integer.toHexString(c).toUpperCase(Locale.ENGLISH);
-      result.append("0000", 0, 4 - code.length()).append(code); //NOI18N
+      result.append("0000", 0, 4 - code.length()).append(code);
     }
 
     return Pattern.compile(result.toString(), patternFlags);
