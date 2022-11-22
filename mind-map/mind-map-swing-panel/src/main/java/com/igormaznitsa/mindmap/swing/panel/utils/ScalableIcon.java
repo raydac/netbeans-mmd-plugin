@@ -21,27 +21,26 @@ import static java.util.Objects.requireNonNull;
 import java.awt.Image;
 import java.io.InputStream;
 import javax.imageio.ImageIO;
-import org.apache.commons.io.IOUtils;
 
 public final class ScalableIcon {
 
-  public static final ScalableIcon FILE = new ScalableIcon("extra_file.png"); //NOI18N
-  public static final ScalableIcon FILE_WARN = new ScalableIcon("extra_file_warn.png"); //NOI18N
-  public static final ScalableIcon FILE_MMD = new ScalableIcon("extra_mmd.png"); //NOI18N
-  public static final ScalableIcon FILE_MMD_WARN = new ScalableIcon("extra_mmd_warn.png"); //NOI18N
-  public static final ScalableIcon FILE_PLANTUML = new ScalableIcon("extra_plantuml.png"); //NOI18N
-  public static final ScalableIcon FILE_PLANTUML_WARN = new ScalableIcon("extra_plantuml_warn.png"); //NOI18N
-  public static final ScalableIcon TOPIC = new ScalableIcon("extra_topic.png"); //NOI18N
-  public static final ScalableIcon TEXT = new ScalableIcon("extra_note.png"); //NOI18N
-  public static final ScalableIcon LINK = new ScalableIcon("extra_uri.png"); //NOI18N
-  public static final ScalableIcon LINK_EMAIL = new ScalableIcon("extra_email.png"); //NOI18N
+  public static final ScalableIcon FILE = new ScalableIcon("extra_file.png");
+  public static final ScalableIcon FILE_WARN = new ScalableIcon("extra_file_warn.png");
+  public static final ScalableIcon FILE_MMD = new ScalableIcon("extra_mmd.png");
+  public static final ScalableIcon FILE_MMD_WARN = new ScalableIcon("extra_mmd_warn.png");
+  public static final ScalableIcon FILE_PLANTUML = new ScalableIcon("extra_plantuml.png");
+  public static final ScalableIcon FILE_PLANTUML_WARN = new ScalableIcon("extra_plantuml_warn.png");
+  public static final ScalableIcon TOPIC = new ScalableIcon("extra_topic.png");
+  public static final ScalableIcon TEXT = new ScalableIcon("extra_note.png");
+  public static final ScalableIcon LINK = new ScalableIcon("extra_uri.png");
+  public static final ScalableIcon LINK_EMAIL = new ScalableIcon("extra_email.png");
 
   public static final int BASE_WIDTH = 16;
   public static final int BASE_HEIGHT = 16;
   private final Image baseImage;
   private final float baseScaleX;
   private final float baseScaleY;
-  private double currentScaleFactor = -1.0d;
+  private volatile double scale = -1.0d;
   private Image scaledCachedImage;
 
   public ScalableIcon(final Image image) {
@@ -55,29 +54,27 @@ public final class ScalableIcon {
   }
 
   public static Image loadStandardImage(final String name) {
-    final InputStream in = ScalableIcon.class.getClassLoader()
-        .getResourceAsStream("com/igormaznitsa/mindmap/swing/panel/icons/" + name); //NOI18N
-    try {
-      return ImageIO.read(in);
+    try (final InputStream in = ScalableIcon.class.getClassLoader()
+        .getResourceAsStream("com/igormaznitsa/mindmap/swing/panel/icons/" + name)) {
+      return ImageIO.read(requireNonNull(in));
     } catch (Exception ex) {
-      throw new Error("Can't load resource image " + name, ex); //NOI18N
-    } finally {
-      IOUtils.closeQuietly(in);
+      throw new IllegalStateException("Can't load resource image " + name, ex);
     }
   }
 
-  public synchronized double getScaleFactor() {
-    return this.currentScaleFactor;
+  public double getScale() {
+    return this.scale;
   }
 
-  public synchronized Image getImage(final double scale) {
-    if (Double.compare(this.currentScaleFactor, scale) != 0) {
+  public Image getImage(final double scale) {
+    if (Double.compare(this.scale, scale) != 0) {
       this.scaledCachedImage = null;
     }
 
     if (this.scaledCachedImage == null) {
-      this.scaledCachedImage = Utils.scaleImage(this.baseImage, this.baseScaleX, this.baseScaleY, scale);
-      this.currentScaleFactor = scale;
+      this.scaledCachedImage =
+          Utils.scaleImage(this.baseImage, this.baseScaleX, this.baseScaleY, scale);
+      this.scale = scale;
     }
     return this.scaledCachedImage;
   }

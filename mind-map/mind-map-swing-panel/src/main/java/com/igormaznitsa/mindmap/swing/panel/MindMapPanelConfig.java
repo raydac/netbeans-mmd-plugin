@@ -419,7 +419,7 @@ public final class MindMapPanelConfig implements Serializable {
                              final boolean makeNotification) {
     if (src != null) {
       for (final Field f : MindMapPanelConfig.class.getDeclaredFields()) {
-        if (f.getName().equals("listeners")) { //NOI18N
+        if (f.getName().equals("listeners")) {
           if (copyListeners) {
             this.listeners.clear();
             for (final WeakReference<MindMapConfigListener> weakContainer : src.listeners) {
@@ -433,7 +433,7 @@ public final class MindMapPanelConfig implements Serializable {
           try {
             f.set(this, f.get(src));
           } catch (Exception ex) {
-            throw new Error("Unexpected state during cloning field " + f, ex); //NOI18N
+            throw new Error("Unexpected state during cloning field " + f, ex);
           }
         }
       }

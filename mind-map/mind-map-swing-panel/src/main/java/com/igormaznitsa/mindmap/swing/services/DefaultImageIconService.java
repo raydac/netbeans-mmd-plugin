@@ -74,11 +74,11 @@ public class DefaultImageIconService implements ImageIconService {
 
   private static Icon loadIcon(final String name) {
     final InputStream in = ScalableIcon.class.getClassLoader()
-        .getResourceAsStream("com/igormaznitsa/mindmap/swing/panel/icons/" + name); //NOI18N
+        .getResourceAsStream("com/igormaznitsa/mindmap/swing/panel/icons/" + name);
     try {
       return new ImageIcon(ImageIO.read(in));
     } catch (IOException ex) {
-      throw new Error("Can't load icon " + name, ex); //NOI18N
+      throw new Error("Can't load icon " + name, ex);
     } finally {
       IOUtils.closeQuietly(in);
     }

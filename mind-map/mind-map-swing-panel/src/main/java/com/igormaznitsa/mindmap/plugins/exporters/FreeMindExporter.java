@@ -70,7 +70,7 @@ public class FreeMindExporter extends AbstractExporter {
 
   private static String makeUID(final Topic t) {
     final int[] path = t.getPositionPath();
-    final StringBuilder buffer = new StringBuilder("mmlink");//NOI18N
+    final StringBuilder buffer = new StringBuilder("mmlink");
     for (final int i : path) {
       buffer.append('A' + i);
     }
@@ -78,7 +78,7 @@ public class FreeMindExporter extends AbstractExporter {
   }
 
   private static String escapeXML(final String text) {
-    return escapeXml10(text).replace("\n", "&#10;"); //NOI18N
+    return escapeXml10(text).replace("\n", "&#10;");
   }
 
   private void writeTopicRecursively(final Topic topic,
@@ -88,27 +88,27 @@ public class FreeMindExporter extends AbstractExporter {
 
 //    final Color edge = cfg.getConnectorColor();
     String position = topic.getTopicLevel() == 1 ?
-        (AbstractCollapsableElement.isLeftSidedTopic(topic) ? "left" : "right") : ""; //NOI18N
+        (AbstractCollapsableElement.isLeftSidedTopic(topic) ? "left" : "right") : "";
 
     state.append(mainShiftStr)
-        .append("<node CREATED=\"") //NOI18N
-        .append(System.currentTimeMillis()) //NOI18N
-        .append("\" MODIFIED=\"") //NOI18N
-        .append(System.currentTimeMillis()) //NOI18N
-        .append("\" COLOR=\"") //NOI18N
+        .append("<node CREATED=\"")
+        .append(System.currentTimeMillis())
+        .append("\" MODIFIED=\"")
+        .append(System.currentTimeMillis())
+        .append("\" COLOR=\"")
         .append(
-            requireNonNull(Utils.color2html(MindMapUtils.getTextColor(cfg, topic), false))) //NOI18N
-        .append("\" BACKGROUND_COLOR=\"") //NOI18N
+            requireNonNull(Utils.color2html(MindMapUtils.getTextColor(cfg, topic), false)))
+        .append("\" BACKGROUND_COLOR=\"")
         .append(requireNonNull(
-            Utils.color2html(MindMapUtils.getBackgroundColor(cfg, topic), false))) //NOI18N
-        .append("\" ") //NOI18N
-        .append(position.isEmpty() ? " " : String.format("POSITION=\"%s\"", position)) //NOI18N
-        .append(" ID=\"") //NOI18N
-        .append(makeUID(topic)) //NOI18N
-        .append("\" ") //NOI18N
-        .append("TEXT=\"") //NOI18N
+            Utils.color2html(MindMapUtils.getBackgroundColor(cfg, topic), false)))
+        .append("\" ")
+        .append(position.isEmpty() ? " " : String.format("POSITION=\"%s\"", position))
+        .append(" ID=\"")
+        .append(makeUID(topic))
+        .append("\" ")
+        .append("TEXT=\"")
         .append(escapeXML(topic.getText()))
-        .append("\" "); //NOI18N
+        .append("\" ");
 
     final ExtraFile file = (ExtraFile) this.findExtra(topic, Extra.ExtraType.FILE);
     final ExtraLink link = (ExtraLink) this.findExtra(topic, Extra.ExtraType.LINK);
@@ -120,7 +120,7 @@ public class FreeMindExporter extends AbstractExporter {
 
     // make some prioritization for only attribute
     if (transition != null) {
-      thelink = '#' + makeUID(requireNonNull(topic.getMap().findTopicForLink(transition)));//NOI18N
+      thelink = '#' + makeUID(requireNonNull(topic.getMap().findTopicForLink(transition)));
       if (file != null) {
         extrasToSaveInText.add(file);
       }
@@ -135,70 +135,74 @@ public class FreeMindExporter extends AbstractExporter {
     } else if (link != null) {
       thelink = link.getValue().toString();
     } else {
-      thelink = "";//NOI18N
+      thelink = "";
     }
 
     if (!thelink.isEmpty()) {
-      state.append(" LINK=\"").append(escapeXML(thelink)).append("\"");//NOI18N
+      state.append(" LINK=\"").append(escapeXML(thelink)).append("\"");
     }
-    state.append(">").nextLine();//NOI18N
+    state.append(">").nextLine();
 
     shift++;
-    final String childShift = generateString(' ', shift);//NOI18N
+    final String childShift = generateString(' ', shift);
 
-    state.append(childShift).append("<edge WIDTH=\"thin\"/>"); //NOI18N
+    state.append(childShift).append("<edge WIDTH=\"thin\"/>");
 
     final ExtraNote note = (ExtraNote) topic.getExtras().get(Extra.ExtraType.NOTE);
 
     final StringBuilder htmlTextForNode = new StringBuilder();
     if (!extrasToSaveInText.isEmpty()) {
-      htmlTextForNode.append("<ul>"); //NOI18N
+      htmlTextForNode.append("<ul>");
       for (final Extra<?> e : extrasToSaveInText) {
-        htmlTextForNode.append("<li>"); //NOI18N
+        htmlTextForNode.append("<li>");
         if (e instanceof ExtraLinkable) {
           final String linkAsText = ((ExtraLinkable) e).getAsURI().asString(true, e.getType() != Extra.ExtraType.FILE);
-          htmlTextForNode.append("<b>").append(StringEscapeUtils.escapeHtml3(e.getType().name())).append(": </b>").append("<a href=\"").append(linkAsText).append("\">").append(linkAsText).append("</a>"); //NOI18N
+          htmlTextForNode.append("<b>").append(StringEscapeUtils.escapeHtml3(e.getType().name()))
+              .append(": </b>").append("<a href=\"").append(linkAsText).append("\">")
+              .append(linkAsText).append("</a>");
         } else {
-          htmlTextForNode.append("<b>").append(StringEscapeUtils.escapeHtml3(e.getType().name())).append(": </b>").append(StringEscapeUtils.escapeHtml3(e.getAsString())); //NOI18N
+          htmlTextForNode.append("<b>").append(StringEscapeUtils.escapeHtml3(e.getType().name()))
+              .append(": </b>").append(StringEscapeUtils.escapeHtml3(e.getAsString()));
         }
-        htmlTextForNode.append("</li>"); //NOI18N
+        htmlTextForNode.append("</li>");
       }
-      htmlTextForNode.append("</ul>"); //NOI18N
+      htmlTextForNode.append("</ul>");
     }
 
     if (note != null) {
-      htmlTextForNode.append("<p><pre>").append(StringEscapeUtils.escapeHtml3(note.getValue())).append("</pre></p>"); //NOI18N
+      htmlTextForNode.append("<p><pre>").append(StringEscapeUtils.escapeHtml3(note.getValue()))
+          .append("</pre></p>");
     }
 
     if (htmlTextForNode.length() > 0) {
       state.append(childShift).append("<richcontent TYPE=\"NOTE\">")
           .append("<html><head></head><body>" + htmlTextForNode + "</body></html>")
-          .append("</richcontent>").nextLine();//NOI18N //NOI18N
+          .append("</richcontent>").nextLine();
     }
 
     for (final Topic ch : topic.getChildren()) {
       writeTopicRecursively(ch, cfg, shift, state);
     }
 
-    state.append(mainShiftStr).append("</node>").nextLine();//NOI18N
+    state.append(mainShiftStr).append("</node>").nextLine();
   }
 
   private String makeContent(final MindMapPanel panel) {
     final State state = new State();
-    state.append("<map version=\"1.0.1\">").nextLine();//NOI18N
+    state.append("<map version=\"1.0.1\">").nextLine();
 
     state.append("<!--").nextLine()
         .append("Generated by NB Mind Map Plugin (https://github.com/raydac/netbeans-mmd-plugin)")
-        .nextLine();//NOI18N
+        .nextLine();
     state.append(new Timestamp(new java.util.Date().getTime()).toString()).nextLine().append("-->")
-        .nextLine();//NOI18N
+        .nextLine();
 
     final Topic root = panel.getModel().getRoot();
     if (root != null) {
       writeTopicRecursively(root, panel.getConfiguration(), 1, state);
     }
 
-    state.append("</map>");//NOI18N
+    state.append("</map>");
 
     return state.toString();
   }
@@ -233,8 +237,9 @@ public class FreeMindExporter extends AbstractExporter {
           ".mm",
           MmdI18n.getInstance().findBundle().getString("FreeMindExporter.filterDescription"),
           MmdI18n.getInstance().findBundle().getString("FreeMindExporter.approveButtonText"));
-      fileToSaveMap = MindMapUtils.checkFileAndExtension(context.getPanel(), fileToSaveMap, ".mm");//NOI18N
-      theOut = fileToSaveMap == null ? null : new BufferedOutputStream(new FileOutputStream(fileToSaveMap, false));
+      fileToSaveMap = MindMapUtils.checkFileAndExtension(context.getPanel(), fileToSaveMap, ".mm");
+      theOut = fileToSaveMap == null ? null :
+          new BufferedOutputStream(new FileOutputStream(fileToSaveMap, false));
     }
     if (theOut != null) {
       try {
@@ -247,7 +252,7 @@ public class FreeMindExporter extends AbstractExporter {
     }
 
     if (fileToSaveMap != null) {
-      FileUtils.writeStringToFile(fileToSaveMap, text, "UTF-8");//NOI18N
+      FileUtils.writeStringToFile(fileToSaveMap, text, "UTF-8");
     }
   }
 
@@ -278,7 +283,7 @@ public class FreeMindExporter extends AbstractExporter {
 
   private static class State {
 
-    private static final String NEXT_LINE = "\r\n";//NOI18N
+    private static final String NEXT_LINE = "\r\n";
     private final StringBuilder buffer = new StringBuilder(16384);
 
     public State append(final char ch) {

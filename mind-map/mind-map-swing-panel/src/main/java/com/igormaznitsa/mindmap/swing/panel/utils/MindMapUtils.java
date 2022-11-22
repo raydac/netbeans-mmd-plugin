@@ -125,7 +125,7 @@ public final class MindMapUtils {
   }
 
   public static boolean isCollapsed(final Topic topic) {
-    return "true".equalsIgnoreCase(topic.getAttribute(ATTR_COLLAPSED.getText()));//NOI18N
+    return "true".equalsIgnoreCase(topic.getAttribute(ATTR_COLLAPSED.getText()));
   }
 
   public static boolean foldOrUnfoldChildren(final Topic topic, final boolean fold,
@@ -141,7 +141,7 @@ public final class MindMapUtils {
   }
 
   public static boolean setCollapsed(final Topic topic, final boolean fold) {
-    return topic.putAttribute(ATTR_COLLAPSED.getText(), fold ? "true" : null);//NOI18N
+    return topic.putAttribute(ATTR_COLLAPSED.getText(), fold ? "true" : null);
   }
 
   public static void removeCollapseAttributeFromTopicsWithoutChildren(final MindMap map) {
@@ -253,11 +253,11 @@ public final class MindMapUtils {
         title,
         defaultFolder,
         true,
-        new FileFilter[] {new FileFilter() { //NOI18N
+        new FileFilter[] {new FileFilter() {
           @Override
           public boolean accept(final File f) {
             return f.isDirectory() || (f.isFile() &&
-                f.getName().toLowerCase(Locale.ENGLISH).endsWith(lcExtension)); //NOI18N
+                f.getName().toLowerCase(Locale.ENGLISH).endsWith(lcExtension));
           }
 
           @Override
@@ -287,7 +287,7 @@ public final class MindMapUtils {
           @Override
           public boolean accept(final File f) {
             return f.isDirectory() || (f.isFile() &&
-                f.getName().toLowerCase(Locale.ENGLISH).endsWith(lcExtension)); //NOI18N
+                f.getName().toLowerCase(Locale.ENGLISH).endsWith(lcExtension));
           }
 
           @Override

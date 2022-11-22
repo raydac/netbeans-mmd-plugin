@@ -56,7 +56,7 @@ public final class TextBlock implements Cloneable {
   }
 
   public void updateText(final String text) {
-    this.text = text == null ? "" : text; //NOI18N
+    this.text = text == null ? "" : text;
     invalidate();
   }
 
@@ -130,7 +130,7 @@ public final class TextBlock implements Cloneable {
           }
           break;
           default:
-            throw new Error("unexpected situation #283794"); //NOI18N
+            throw new Error("unexpected situation #283794");
         }
 
         gfx.drawString(l.line, (int) Math.round(drawX), (int) Math.round(posy), color);

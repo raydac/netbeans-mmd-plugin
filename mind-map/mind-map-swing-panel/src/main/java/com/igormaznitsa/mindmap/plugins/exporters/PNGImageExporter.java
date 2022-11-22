@@ -127,7 +127,7 @@ public final class PNGImageExporter extends AbstractExporter {
     }
 
     final ByteArrayOutputStream buff = new ByteArrayOutputStream(128000);
-    ImageIO.write(image, "png", buff);//NOI18N
+    ImageIO.write(image, "png", buff);
 
     final byte[] imageData = buff.toByteArray();
 
@@ -144,7 +144,7 @@ public final class PNGImageExporter extends AbstractExporter {
           MmdI18n.getInstance().findBundle().getString("PNGImageExporter.filterDescription"),
           MmdI18n.getInstance().findBundle().getString("PNGImageExporter.approveButtonText"));
       fileToSaveMap =
-          MindMapUtils.checkFileAndExtension(context.getPanel(), fileToSaveMap, ".png");//NOI18N
+          MindMapUtils.checkFileAndExtension(context.getPanel(), fileToSaveMap, ".png");
       theOut = fileToSaveMap == null ? null :
           new BufferedOutputStream(new FileOutputStream(fileToSaveMap, false));
     }

@@ -85,7 +85,6 @@ import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -93,9 +92,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.ResourceBundle;
 import java.util.UUID;
-import java.util.WeakHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -204,7 +201,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
           try {
             if (config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_TEXT_NEXT_LINE, e)) {
               e.consume();
-              textEditor.insert("\n", textEditor.getCaretPosition()); //NOI18N
+              textEditor.insert("\n", textEditor.getCaretPosition());
             } else if (e.getKeyChar() == KeyEvent.VK_ENTER &&
                 (e.getModifiers() & ALL_SUPPORTED_MODIFIERS) == 0) {
               e.consume();
@@ -1385,7 +1382,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   private String makeHtmlTooltipForExtra(final Extra<?> extra) {
     final StringBuilder builder = new StringBuilder();
 
-    builder.append("<html>"); //NOI18N
+    builder.append("<html>");
 
     switch (extra.getType()) {
       case FILE: {
@@ -1420,12 +1417,12 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
       }
       break;
       default: {
-        builder.append("<b>Unknown</b>"); //NOI18N
+        builder.append("<b>Unknown</b>");
       }
       break;
     }
 
-    builder.append("</html>"); //NOI18N
+    builder.append("</html>");
 
     return builder.toString();
   }
@@ -1521,7 +1518,8 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
           }
         } else {
           dragged.getModel().moveToNewParent(destination.getModel());
-          if (destination instanceof AbstractCollapsableElement && destination.isCollapsed() && (controller == null || controller.isUnfoldCollapsedTopicDropTarget(this))) { //NOI18N
+          if (destination instanceof AbstractCollapsableElement && destination.isCollapsed() &&
+              (controller == null || controller.isUnfoldCollapsedTopicDropTarget(this))) {
             ((AbstractCollapsableElement) destination).setCollapse(false);
           }
           if (dropPoint.getY() < destination.getBounds().getY()) {
@@ -1718,7 +1716,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
 
           removeAllSelection();
 
-          final Topic newTopic = makeNewTopic(parent, baseTopic, ""); //NOI18N
+          final Topic newTopic = makeNewTopic(parent, baseTopic, "");
 
           if (this.controller.isCopyColorInfoFromParentToNewChildAllowed(this) && !parent.isRoot()) {
             MindMapUtils.copyColorAttributes(parent, newTopic);
@@ -2984,197 +2982,4 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
     }
   }
 
-//  public static void main(@MustNotContainNull @Nonnull final String... args) {
-//    final javax.swing.JFrame frame = new javax.swing.JFrame("Test");
-//    frame.setSize(new Dimension(400,400));
-//
-//    final MindMapPanelConfig config = new MindMapPanelConfig();
-//
-//    frame.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
-//
-//    final DialogProvider dialog = new DialogProvider() {
-//      @Override
-//      public void msgError(@Nullable final java.awt.Component parentComponent, @Nonnull final String text) {
-//        LOGGER.error(text);
-//      }
-//
-//      @Override
-//      public void msgInfo(@Nullable final java.awt.Component parentComponent, @Nonnull final String text) {
-//        LOGGER.info(text);
-//      }
-//
-//      @Override
-//      public void msgWarn(@Nullable final java.awt.Component parentComponent, @Nonnull final String text) {
-//        LOGGER.warn(text);
-//      }
-//
-//      @Override
-//      public boolean msgConfirmOkCancel(@Nullable final java.awt.Component parentComponent, @Nonnull final String title, @Nonnull final String question) {
-//        throw new UnsupportedOperationException("Not supported yet."); //NOI18N
-//      }
-//
-//      @Override
-//      public boolean msgOkCancel(@Nullable final java.awt.Component parentComponent, @Nonnull final String title, @Nonnull final javax.swing.JComponent component) {
-//        throw new UnsupportedOperationException("Not supported yet."); //NOI18N
-//      }
-//
-//      @Override
-//      public boolean msgConfirmYesNo(@Nullable final java.awt.Component parentComponent, @Nonnull final String title, @Nonnull final String question) {
-//        throw new UnsupportedOperationException("Not supported yet."); //NOI18N
-//      }
-//
-//      @Override
-//      @Nonnull
-//      public Boolean msgConfirmYesNoCancel(@Nullable final java.awt.Component parentComponent, @Nonnull final String title, @Nonnull final String question) {
-//        throw new UnsupportedOperationException("Not supported yet."); //NOI18N
-//      }
-//
-//      @Override
-//      @Nullable
-//      public java.io.File msgSaveFileDialog(@Nullable final java.awt.Component parentComponent, @Nonnull final String id, @Nonnull final String title, @Nullable final java.io.File defaultFolder, final boolean filesOnly, @Nonnull final javax.swing.filechooser.FileFilter fileFilter, @Nonnull final String approveButtonText) {
-//        return null;
-//      }
-//
-//      @Override
-//      @Nullable
-//      public java.io.File msgOpenFileDialog(@Nullable final java.awt.Component parentComponent, @Nonnull final String id, @Nonnull final String title, @Nullable final java.io.File defaultFolder, final boolean filesOnly, @Nonnull final javax.swing.filechooser.FileFilter fileFilter, @Nonnull final String approveButtonText) {
-//        return null;
-//      }
-//
-//    };
-//
-//    final MindMapPanel panel = new MindMapPanel(new MindMapPanelController() {
-//      @Override
-//      public boolean isTrimTopicTextBeforeSet(@Nonnull MindMapPanel source) {
-//        return false;
-//      }
-//
-//      @Override
-//      public boolean isUnfoldCollapsedTopicDropTarget(@Nonnull final MindMapPanel source) {
-//        return true;
-//      }
-//
-//      @Override
-//      public boolean isCopyColorInfoFromParentToNewChildAllowed(@Nonnull final MindMapPanel source) {
-//        return true;
-//      }
-//
-//      @Override
-//      public boolean isSelectionAllowed(@Nonnull final MindMapPanel source) {
-//        return true;
-//      }
-//
-//      @Override
-//      public boolean isElementDragAllowed(@Nonnull final MindMapPanel source) {
-//        return true;
-//      }
-//
-//      @Override
-//      public boolean isMouseMoveProcessingAllowed(@Nonnull final MindMapPanel source) {
-//        return true;
-//      }
-//
-//      @Override
-//      public boolean isMouseWheelProcessingAllowed(@Nonnull final MindMapPanel source) {
-//        return true;
-//      }
-//
-//      @Override
-//      public boolean isMouseClickProcessingAllowed(@Nonnull final MindMapPanel source) {
-//        return true;
-//      }
-//
-//      @Override
-//      @Nonnull
-//      public MindMapPanelConfig provideConfigForMindMapPanel(@Nonnull final MindMapPanel source) {
-//        return config;
-//      }
-//
-//      @Override
-//      @Nullable
-//      public JPopupMenu makePopUpForMindMapPanel(@Nonnull final MindMapPanel source, @Nonnull final Point point, @Nullable final AbstractElement elementUnderMouse, @Nullable final ElementPart elementPartUnderMouse) {
-//        return null;
-//      }
-//
-//      @Override
-//      @Nonnull
-//      public DialogProvider getDialogProvider(@Nonnull final MindMapPanel source) {
-//        return dialog;
-//      }
-//
-//      @Override
-//      public boolean processDropTopicToAnotherTopic(@Nonnull final MindMapPanel source, @Nonnull final Point dropPoint, @Nonnull final Topic draggedTopic, @Nonnull final Topic destinationTopic) {
-//        return false;
-//      }
-//
-//    });
-//
-//
-//    final javax.swing.JScrollPane spanel = new javax.swing.JScrollPane(panel);
-//
-//    panel.setModel(new MindMap(null, true));
-//
-//    panel.addMindMapListener(new MindMapListener() {
-//        @Override
-//        public void onMindMapModelChanged(@Nonnull MindMapPanel source) {
-//        }
-//
-//        @Override
-//        public void onComponentElementsLayout(@Nonnull MindMapPanel source, @Nonnull Graphics2D g) {
-//        }
-//
-//        @Override
-//        public void onMindMapModelRealigned(@Nonnull MindMapPanel source, @Nonnull Dimension coveredAreaSize) {
-//        }
-//
-//        @Override
-//        public void onEnsureVisibilityOfTopic(@Nonnull MindMapPanel source, @Nonnull Topic topic) {
-//        }
-//
-//        @Override
-//        public void onTopicCollapsatorClick(@Nonnull MindMapPanel source, @Nonnull Topic topic, final boolean beforeAction) {
-//        }
-//
-//        @Override
-//        public void onScaledByMouse(@Nonnull final MindMapPanel source, @Nonnull final Point mousePoint, final double oldScale, final double newScale, final boolean beforeAction) {
-//            if (!beforeAction && Double.compare(oldScale, newScale) != 0) {
-//                final JViewport viewport = spanel.getViewport();
-//
-//                final Point viewPos = viewport.getViewPosition();
-//                final int dx = mousePoint.x - viewPos.x;
-//                final int dy = mousePoint.y - viewPos.y;
-//
-//                final double scaleRelation = newScale / oldScale;
-//
-//                final int newMouseX = (int) (Math.round(mousePoint.x * scaleRelation));
-//                final int newMouseY = (int) (Math.round(mousePoint.y * scaleRelation));
-//
-//                viewport.setViewPosition(new Point(Math.max(0, newMouseX - dx), Math.max(0, newMouseY - dy)));
-//            }
-//            spanel.repaint();
-//        }
-//
-//        @Override
-//        public void onClickOnExtra(@Nonnull MindMapPanel source, int modifiers, int clicks, @Nonnull Topic topic, @Nonnull Extra<?> extra) {
-//        }
-//
-//        @Override
-//        public void onChangedSelection(@Nonnull MindMapPanel source, @Nonnull @MustNotContainNull Topic[] currentSelectedTopics) {
-//        }
-//
-//        @Override
-//        public boolean allowedRemovingOfTopics(@Nonnull MindMapPanel source, @Nonnull @MustNotContainNull Topic[] topics) {
-//            return true;
-//        }
-//
-//        @Override
-//        public void onNonConsumedKeyEvent(@Nonnull MindMapPanel source, @Nonnull KeyEvent event, @Nonnull KeyEventType type) {
-//        }
-//    });
-//
-//    frame.setContentPane(spanel);
-//
-//    frame.setVisible(true);
-//
-//  }
 }

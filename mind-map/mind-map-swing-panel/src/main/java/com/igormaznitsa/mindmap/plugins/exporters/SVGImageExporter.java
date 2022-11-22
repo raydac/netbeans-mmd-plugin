@@ -249,7 +249,7 @@ public class SVGImageExporter extends AbstractExporter {
           ".svg", MmdI18n.getInstance().findBundle().getString("SvgExporter.filterDescription"),
           MmdI18n.getInstance().findBundle().getString("SvgExporter.approveButtonText"));
       fileToSaveMap =
-          MindMapUtils.checkFileAndExtension(context.getPanel(), fileToSaveMap, ".svg");//NOI18N
+          MindMapUtils.checkFileAndExtension(context.getPanel(), fileToSaveMap, ".svg");
       theOut = fileToSaveMap == null ? null :
           new BufferedOutputStream(new FileOutputStream(fileToSaveMap, false));
     }

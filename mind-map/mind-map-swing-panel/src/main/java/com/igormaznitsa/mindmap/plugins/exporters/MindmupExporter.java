@@ -71,12 +71,12 @@ public class MindmupExporter extends AbstractExporter {
     if (file != null) {
       final String uri = file.getValue().asString(true, false);
       result.append("FILE: <a href=\"").append(uri).append("\">").append(uri)
-          .append("</a><br>"); //NOI18N
+          .append("</a><br>");
     }
     if (link != null) {
       final String uri = link.getValue().asString(true, true);
       result.append("LINK: <a href=\"").append(uri).append("\">").append(uri)
-          .append("</a><br>"); //NOI18N
+          .append("</a><br>");
     }
     return result.toString();
   }
@@ -264,7 +264,7 @@ public class MindmupExporter extends AbstractExporter {
           MmdI18n.getInstance().findBundle().getString("MindmupExporter.filterDescription"),
           MmdI18n.getInstance().findBundle().getString("MindmupExporter.approveButtonText"));
       fileToSaveMap =
-          MindMapUtils.checkFileAndExtension(context.getPanel(), fileToSaveMap, ".mup");//NOI18N
+          MindMapUtils.checkFileAndExtension(context.getPanel(), fileToSaveMap, ".mup");
       theOut = fileToSaveMap == null ? null :
           new BufferedOutputStream(new FileOutputStream(fileToSaveMap, false));
     }

@@ -102,7 +102,7 @@ public class IconBlock {
             ico = ScalableIcon.TOPIC;
             break;
           default:
-            throw new Error("Unexpected extras"); //NOI18N
+            throw new Error("Unexpected extras");
         }
         if (scaledIconWidth >= 1.0d) {
           gfx.drawImage(ico.getImage(this.scale), (int) Math.round(offsetX), offsetY);

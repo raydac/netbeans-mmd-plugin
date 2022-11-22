@@ -55,7 +55,7 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
     public boolean accept(final File f) {
       final String text = f.getName().toLowerCase(Locale.ENGLISH);
       return f.isDirectory() || text.endsWith(".png") || text.endsWith(".jpg") ||
-          text.endsWith(".gif"); //NOI18N
+          text.endsWith(".gif");
     }
 
     @Override
@@ -73,21 +73,26 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
 
     final JMenuItem result;
     if (hasAttribute) {
-      result = UI_COMPO_FACTORY.makeMenuItem(MmdI18n.getInstance().findBundle().getString("Images.Plugin.MenuTitle.Remove"),
-          ICON);//NOI18N
-      result.setToolTipText(MmdI18n.getInstance().findBundle().getString("Images.Plugin.MenuTitle.Remove.Tooltip"));//NOI18N
+      result = UI_COMPO_FACTORY.makeMenuItem(
+          MmdI18n.getInstance().findBundle().getString("Images.Plugin.MenuTitle.Remove"),
+          ICON);
+      result.setToolTipText(
+          MmdI18n.getInstance().findBundle().getString("Images.Plugin.MenuTitle.Remove.Tooltip"));
       result.addActionListener(e -> {
         if (context.getDialogProvider()
-            .msgConfirmYesNo(null, MmdI18n.getInstance().findBundle().getString("Images.Plugin.Remove.Dialog.Title"),
-                MmdI18n.getInstance().findBundle().getString("Images.Plugin.Remove.Dialog.Text"))) {//NOI18N
+            .msgConfirmYesNo(null,
+                MmdI18n.getInstance().findBundle().getString("Images.Plugin.Remove.Dialog.Title"),
+                MmdI18n.getInstance().findBundle().getString("Images.Plugin.Remove.Dialog.Text"))) {
           setAttribute(context, activeTopic, null, null, null);
           ImageVisualAttributePlugin.clearCachedImages();
           context.getPanel().doNotifyModelChanged(true);
         }
       });
     } else {
-      result = UI_COMPO_FACTORY.makeMenuItem(MmdI18n.getInstance().findBundle().getString("Images.Plugin.MenuTitle.Add"), ICON);//NOI18N
-      result.setToolTipText(MmdI18n.getInstance().findBundle().getString("Images.Plugin.MenuTitle.Add.Tooltip"));//NOI18N
+      result = UI_COMPO_FACTORY.makeMenuItem(
+          MmdI18n.getInstance().findBundle().getString("Images.Plugin.MenuTitle.Add"), ICON);
+      result.setToolTipText(
+          MmdI18n.getInstance().findBundle().getString("Images.Plugin.MenuTitle.Add.Tooltip"));
 
       result.addActionListener(e -> {
 
@@ -112,11 +117,13 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
                 setAttribute(context, activeTopic, rescaledImageAsBase64, filePath, null);
                 context.getPanel().doNotifyModelChanged(true);
               } catch (final IllegalArgumentException ex) {
-                context.getDialogProvider().msgError(null, MmdI18n.getInstance().findBundle().getString("Images.Plugin.Error"));
-                LOGGER.error("Can't import from clipboard image", ex); //NOI18N
+                context.getDialogProvider().msgError(null,
+                    MmdI18n.getInstance().findBundle().getString("Images.Plugin.Error"));
+                LOGGER.error("Can't import from clipboard image", ex);
               } catch (final Exception ex) {
-                context.getDialogProvider().msgError(null, MmdI18n.getInstance().findBundle().getString("Images.Plugin.Error"));
-                LOGGER.error("Unexpected error during image import from clipboard", ex); //NOI18N
+                context.getDialogProvider().msgError(null,
+                    MmdI18n.getInstance().findBundle().getString("Images.Plugin.Error"));
+                LOGGER.error("Unexpected error during image import from clipboard", ex);
               }
               loadFromFile = false;
             }
@@ -132,7 +139,8 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
                   MmdI18n.getInstance().findBundle().getString("Images.Plugin.Load.DialogTitle"),
                   PATH_STORE.find(context, context.getPanel().getUuid().toString()), true,
                   new FileFilter[] {IMAGE_FILE_FILTER},
-                  MmdI18n.getInstance().findBundle().getString("Images.Plugin.Load.Dialog.Button.Open"))); //NOI18N
+                  MmdI18n.getInstance().findBundle()
+                      .getString("Images.Plugin.Load.Dialog.Button.Open")));
           if (selected != null) {
             try {
               final String rescaledImageAsBase64 =
@@ -152,12 +160,14 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
               setAttribute(context, activeTopic, rescaledImageAsBase64, filePath, fileName);
               context.getPanel().doNotifyModelChanged(true);
             } catch (final IllegalArgumentException ex) {
-              context.getDialogProvider().msgError(null, MmdI18n.getInstance().findBundle().getString("Images.Plugin.Error"));
-              LOGGER.warn("Can't load image file : " + selected); //NOI18N
+              context.getDialogProvider().msgError(null,
+                  MmdI18n.getInstance().findBundle().getString("Images.Plugin.Error"));
+              LOGGER.warn("Can't load image file : " + selected);
             } catch (final Exception ex) {
-              context.getDialogProvider().msgError(null, MmdI18n.getInstance().findBundle().getString("Images.Plugin.Error"));
+              context.getDialogProvider().msgError(null,
+                  MmdI18n.getInstance().findBundle().getString("Images.Plugin.Error"));
               LOGGER.error("Unexpected error during loading of image file : " + selected,
-                  ex); //NOI18N
+                  ex);
             }
           }
         }

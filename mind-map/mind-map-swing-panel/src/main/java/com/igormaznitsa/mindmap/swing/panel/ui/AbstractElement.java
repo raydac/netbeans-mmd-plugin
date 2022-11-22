@@ -63,7 +63,7 @@ public abstract class AbstractElement {
     this.model = model;
     this.textBlock =
         new TextBlock(this.model.getText(), TextAlign.findForName(model.getAttribute("align")));
-    this.textBlock.setTextAlign(TextAlign.findForName(model.getAttribute("align"))); //NOI18N
+    this.textBlock.setTextAlign(TextAlign.findForName(model.getAttribute("align")));
     this.extrasIconBlock = new IconBlock(model);
     this.visualAttributeImageBlock = new VisualAttributeImageBlock(model);
     updateColorAttributeFromModel();
@@ -100,7 +100,7 @@ public abstract class AbstractElement {
 
   public void setTextAlign(final TextAlign textAlign) {
     this.textBlock.setTextAlign(textAlign);
-    this.model.putAttribute("align", this.textBlock.getTextAlign().name()); //NOI18N
+    this.model.putAttribute("align", this.textBlock.getTextAlign().name());
   }
 
   public void updateElementBounds(final MMGraphics gfx, final MindMapPanelConfig cfg) {

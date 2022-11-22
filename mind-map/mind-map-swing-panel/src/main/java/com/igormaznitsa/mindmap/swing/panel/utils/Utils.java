@@ -68,7 +68,6 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 import java.util.Locale;
-import java.util.ResourceBundle;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
@@ -112,7 +111,6 @@ public final class Utils {
       UIComponentFactoryProvider.findInstance();
   public static final ImageIconService ICON_SERVICE = ImageIconServiceProvider.findInstance();
   public static final String PROPERTY_MAX_EMBEDDED_IMAGE_SIDE_SIZE = "mmap.max.image.side.size";
-      //NOI18N
   public static final boolean LTR_LANGUAGE =
       ComponentOrientation.getOrientation(new Locale(System.getProperty("user.language")))
           .isLeftToRight();
@@ -309,11 +307,11 @@ public final class Utils {
     try {
       final String defined = System.getProperty(PROPERTY_MAX_EMBEDDED_IMAGE_SIDE_SIZE);
       if (defined != null) {
-        LOGGER.info("Detected redefined max size for embedded image side : " + defined); //NOI18N
+        LOGGER.info("Detected redefined max size for embedded image side : " + defined);
         result = Math.max(8, Integer.parseInt(defined.trim()));
       }
     } catch (NumberFormatException ex) {
-      LOGGER.error("Error during image size decoding : ", ex); //NOI18N
+      LOGGER.error("Error during image size decoding : ", ex);
     }
     return result;
   }
@@ -351,7 +349,7 @@ public final class Utils {
       throws IOException {
     final Image image = ImageIO.read(file);
     if (image == null) {
-      throw new IllegalArgumentException("Can't load image file : " + file); //NOI18N
+      throw new IllegalArgumentException("Can't load image file : " + file);
     }
     return rescaleImageAndEncodeAsBase64(image, maxSize);
   }
@@ -561,12 +559,12 @@ public final class Utils {
   }
 
   public static String getFirstLine(final String text) {
-    return text.replace("\r", "").split("\\n")[0]; //NOI18N
+    return text.replace("\r", "").split("\\n")[0];
   }
 
   public static String makeShortTextVersion(String text, final int maxLength) {
     if (text.length() > maxLength) {
-      text = text.substring(0, maxLength) + "..."; //NOI18N
+      text = text.substring(0, maxLength) + "...";
     }
     return text;
   }
