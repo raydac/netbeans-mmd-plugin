@@ -1015,7 +1015,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         setLocationByPlatform(true);
 
         menuFile.setMnemonic('f');
-        menuFile.setText("File");
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
+        menuFile.setText(bundle.getString("mainMenu.itemFile")); // NOI18N
         menuFile.addMenuListener(new javax.swing.event.MenuListener() {
             public void menuCanceled(javax.swing.event.MenuEvent evt) {
                 menuFileMenuCanceled(evt);
@@ -1030,7 +1031,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
         menuNewProject.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/box_closed.png"))); // NOI18N
         menuNewProject.setMnemonic('w');
-        menuNewProject.setText("New Project");
+        menuNewProject.setText(bundle.getString("mainMenu.itemFile.itemNewProject")); // NOI18N
         menuNewProject.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuNewProjectActionPerformed(evt);
@@ -1039,7 +1040,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         menuFile.add(menuNewProject);
 
         menuNewFile.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/document16.png"))); // NOI18N
-        menuNewFile.setText("New File");
+        menuNewFile.setText(bundle.getString("mainMenu.itemFile.itemNewFile")); // NOI18N
         menuNewFile.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuNewFileActionPerformed(evt);
@@ -1050,7 +1051,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
         menuOpenProject.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/open_folder.png"))); // NOI18N
         menuOpenProject.setMnemonic('e');
-        menuOpenProject.setText("Open Project");
+        menuOpenProject.setText(bundle.getString("mainMenu.itemFile.itemOpenProject")); // NOI18N
         menuOpenProject.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuOpenProjectActionPerformed(evt);
@@ -1059,11 +1060,11 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         menuFile.add(menuOpenProject);
 
         menuOpenRecentProject.setMnemonic('j');
-        menuOpenRecentProject.setText("Open Recent Project");
+        menuOpenRecentProject.setText(bundle.getString("mainMenu.itemFile.itemOpenRecentProject")); // NOI18N
         menuFile.add(menuOpenRecentProject);
 
         menuOpenFile.setMnemonic('o');
-        menuOpenFile.setText("Open File");
+        menuOpenFile.setText(bundle.getString("mainMenu.itemFile.itemOpenFile")); // NOI18N
         menuOpenFile.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuOpenFileActionPerformed(evt);
@@ -1072,13 +1073,13 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         menuFile.add(menuOpenFile);
 
         menuOpenRecentFile.setMnemonic('f');
-        menuOpenRecentFile.setText("Open Recent File");
+        menuOpenRecentFile.setText(bundle.getString("mainMenu.itemFile.itemOpenRecentFile")); // NOI18N
         menuFile.add(menuOpenRecentFile);
         menuFile.add(jSeparator3);
 
         menuSave.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/diskette.png"))); // NOI18N
         menuSave.setMnemonic('s');
-        menuSave.setText("Save");
+        menuSave.setText(bundle.getString("mainMenu.itemFile.itemSave")); // NOI18N
         menuSave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuSaveActionPerformed(evt);
@@ -1088,7 +1089,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
         menuSaveAs.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/file_save_as.png"))); // NOI18N
         menuSaveAs.setMnemonic('v');
-        menuSaveAs.setText("Save As");
+        menuSaveAs.setText(bundle.getString("mainMenu.itemFile.itemSaveAs")); // NOI18N
         menuSaveAs.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuSaveAsActionPerformed(evt);
@@ -1098,7 +1099,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
         menuSaveAll.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/disk_multiple.png"))); // NOI18N
         menuSaveAll.setMnemonic('a');
-        menuSaveAll.setText("Save All");
+        menuSaveAll.setText(bundle.getString("mainMenu.itemFile.itemSaveAll")); // NOI18N
         menuSaveAll.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuSaveAllActionPerformed(evt);
@@ -1109,7 +1110,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
         menuExit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/door_in.png"))); // NOI18N
         menuExit.setMnemonic('x');
-        menuExit.setText("Exit");
+        menuExit.setText(bundle.getString("mainMenu.itemFile.itemExit")); // NOI18N
         menuExit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuExitActionPerformed(evt);
@@ -1120,7 +1121,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         mainMenu.add(menuFile);
 
         menuEdit.setMnemonic('e');
-        menuEdit.setText("Edit");
+        menuEdit.setText(bundle.getString("mainMenu.itemEdit")); // NOI18N
         menuEdit.addMenuListener(new javax.swing.event.MenuListener() {
             public void menuCanceled(javax.swing.event.MenuEvent evt) {
                 menuEditMenuCanceled(evt);
@@ -1135,7 +1136,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
         menuEditShowTreeContextMenu.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/tree_list16.png"))); // NOI18N
         menuEditShowTreeContextMenu.setMnemonic('t');
-        menuEditShowTreeContextMenu.setText("Show Tree context menu");
+        menuEditShowTreeContextMenu.setText(bundle.getString("mainMenu.itemEdit.itemShowTreeContextMenu")); // NOI18N
         menuEditShowTreeContextMenu.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuEditShowTreeContextMenuActionPerformed(evt);
@@ -1156,7 +1157,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
         menuRedo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/redo.png"))); // NOI18N
         menuRedo.setMnemonic('r');
-        menuRedo.setText("Redo");
+        menuRedo.setText(bundle.getString("mainMenu.itemEdit.itemRedo")); // NOI18N
         menuRedo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuRedoActionPerformed(evt);
@@ -1167,7 +1168,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
         menuEditCut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/cut16.png"))); // NOI18N
         menuEditCut.setMnemonic('t');
-        menuEditCut.setText("Cut");
+        menuEditCut.setText(bundle.getString("mainMenu.itemEdit.itemCut")); // NOI18N
         menuEditCut.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuEditCutActionPerformed(evt);
@@ -1177,7 +1178,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
         menuEditCopy.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/page_copy16.png"))); // NOI18N
         menuEditCopy.setMnemonic('y');
-        menuEditCopy.setText("Copy"); // NOI18N
+        menuEditCopy.setText(bundle.getString("mainMenu.itemEdit.itemCopy")); // NOI18N
         menuEditCopy.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuEditCopyActionPerformed(evt);
@@ -1187,7 +1188,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
         menuEditPaste.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/paste_plain16.png"))); // NOI18N
         menuEditPaste.setMnemonic('p');
-        menuEditPaste.setText("Paste"); // NOI18N
+        menuEditPaste.setText(bundle.getString("mainMenu.itemEdit.itemPaste")); // NOI18N
         menuEditPaste.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuEditPasteActionPerformed(evt);
@@ -1198,7 +1199,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
         menuFindText.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/find16.png"))); // NOI18N
         menuFindText.setMnemonic('n');
-        menuFindText.setText("Find text");
+        menuFindText.setText(bundle.getString("mainMenu.itemEdit.itemFindText")); // NOI18N
         menuFindText.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuFindTextActionPerformed(evt);
@@ -1209,7 +1210,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
         menuPreferences.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/setting_tools.png"))); // NOI18N
         menuPreferences.setMnemonic('e');
-        menuPreferences.setText("Preferences");
+        menuPreferences.setText(bundle.getString("mainMenu.itemEdit.itemPreferences")); // NOI18N
         menuPreferences.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuPreferencesActionPerformed(evt);
@@ -1220,7 +1221,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         mainMenu.add(menuEdit);
 
         menuView.setMnemonic('v');
-        menuView.setText("View");
+        menuView.setText(bundle.getString("mainMenu.itemView")); // NOI18N
         menuView.addMenuListener(new javax.swing.event.MenuListener() {
             public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
@@ -1232,11 +1233,11 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         });
 
         menuViewUIScale.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/scale_image.png"))); // NOI18N
-        menuViewUIScale.setText("UI scale");
+        menuViewUIScale.setText(bundle.getString("mainMenu.itemView.itemUiScale")); // NOI18N
         menuView.add(menuViewUIScale);
 
         menuFullScreen.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/monitor.png"))); // NOI18N
-        menuFullScreen.setText("Full screen");
+        menuFullScreen.setText(bundle.getString("mainMenu.itemView.itemFullScreen")); // NOI18N
         menuFullScreen.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuFullScreenActionPerformed(evt);
@@ -1245,14 +1246,14 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         menuView.add(menuFullScreen);
 
         menuLookAndFeel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/application.png"))); // NOI18N
-        menuLookAndFeel.setText("Look and Feel");
+        menuLookAndFeel.setText(bundle.getString("mainMenu.itemView.itemLookAndFeel")); // NOI18N
         menuView.add(menuLookAndFeel);
 
         menuViewZoom.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/zoom.png"))); // NOI18N
-        menuViewZoom.setText("Zoom");
+        menuViewZoom.setText(bundle.getString("mainMenu.itemView.itemZoom")); // NOI18N
 
         menuViewZoomIn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/zoom_in.png"))); // NOI18N
-        menuViewZoomIn.setText("In");
+        menuViewZoomIn.setText(bundle.getString("mainMenu.itemView.itemZoom.itemIn")); // NOI18N
         menuViewZoomIn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuViewZoomInActionPerformed(evt);
@@ -1261,7 +1262,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         menuViewZoom.add(menuViewZoomIn);
 
         menuViewZoomOut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/zoom_out.png"))); // NOI18N
-        menuViewZoomOut.setText("Out");
+        menuViewZoomOut.setText(bundle.getString("mainMenu.itemView.itemZoom.itemOut")); // NOI18N
         menuViewZoomOut.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuViewZoomOutActionPerformed(evt);
@@ -1270,7 +1271,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         menuViewZoom.add(menuViewZoomOut);
 
         menuViewZoomReset.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/zoom_actual.png"))); // NOI18N
-        menuViewZoomReset.setText("Reset");
+        menuViewZoomReset.setText(bundle.getString("mainMenu.itemView.itemZoom.itemReset")); // NOI18N
         menuViewZoomReset.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuViewZoomResetActionPerformed(evt);
@@ -1283,7 +1284,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         mainMenu.add(menuView);
 
         menuNavigate.setMnemonic('n');
-        menuNavigate.setText("Navigate");
+        menuNavigate.setText(bundle.getString("mainMenu.itemNavigate")); // NOI18N
         menuNavigate.addMenuListener(new javax.swing.event.MenuListener() {
             public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
@@ -1296,7 +1297,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
         menuGoToFile.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/rocket.png"))); // NOI18N
         menuGoToFile.setMnemonic('f');
-        menuGoToFile.setText("Go to File");
+        menuGoToFile.setText(bundle.getString("mainMenu.itemNavigate.itemGoToFile")); // NOI18N
         menuGoToFile.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuGoToFileActionPerformed(evt);
@@ -1305,7 +1306,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         menuNavigate.add(menuGoToFile);
 
         menuNavigateLinksGraph.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/graph16.png"))); // NOI18N
-        menuNavigateLinksGraph.setText("Build File links graph");
+        menuNavigateLinksGraph.setText(bundle.getString("mainMenu.itemNavigate.itemBuildFileLinksGraph")); // NOI18N
         menuNavigateLinksGraph.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuNavigateLinksGraphActionPerformed(evt);
@@ -1316,10 +1317,10 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         mainMenu.add(menuNavigate);
 
         menuHelp.setMnemonic('h');
-        menuHelp.setText("Help");
+        menuHelp.setText(bundle.getString("mainMenu.itemHelp")); // NOI18N
 
         menuHelpHelp.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/help.png"))); // NOI18N
-        menuHelpHelp.setText("Help");
+        menuHelpHelp.setText(bundle.getString("mainMenu.itemHelp.itemHelp")); // NOI18N
         menuHelpHelp.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuHelpHelpActionPerformed(evt);
@@ -1328,7 +1329,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         menuHelp.add(menuHelpHelp);
 
         menuHelpPLantUmpManual.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/factory.png"))); // NOI18N
-        menuHelpPLantUmpManual.setText("PlantUML manual");
+        menuHelpPLantUmpManual.setText(bundle.getString("mainMenu.itemHelp.itemPlatUMLManual")); // NOI18N
         menuHelpPLantUmpManual.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuHelpPLantUmpManualActionPerformed(evt);
@@ -1338,7 +1339,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
         menuAbout.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/information.png"))); // NOI18N
         menuAbout.setMnemonic('a');
-        menuAbout.setText("About");
+        menuAbout.setText(bundle.getString("mainMenu.itemHelp.itemAbout")); // NOI18N
         menuAbout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuAboutActionPerformed(evt);
@@ -1349,7 +1350,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
         menuMakeDonation.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/coins_in_hand16.png"))); // NOI18N
         menuMakeDonation.setMnemonic('m');
-        menuMakeDonation.setText("Make donation");
+        menuMakeDonation.setText(bundle.getString("mainMenu.itemHelp.itemMakeDonation")); // NOI18N
         menuMakeDonation.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuMakeDonationActionPerformed(evt);
@@ -2089,7 +2090,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         .collect(Collectors.toList());
   }
 
-  // Variables declaration - do not modify//GEN-BEGIN:variables
+    // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JPopupMenu.Separator jSeparator3;

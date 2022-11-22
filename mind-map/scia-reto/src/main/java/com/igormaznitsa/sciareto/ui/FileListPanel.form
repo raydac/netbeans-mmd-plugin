@@ -41,8 +41,6 @@
               </Table>
             </Property>
             <Property name="fillsViewportHeight" type="boolean" value="true"/>
-            <Property name="showHorizontalLines" type="boolean" value="false"/>
-            <Property name="showVerticalLines" type="boolean" value="false"/>
           </Properties>
         </Component>
       </SubComponents>
@@ -58,7 +56,9 @@
     </Container>
     <Component class="com.igormaznitsa.sciareto.ui.misc.JHtmlLabel" name="jHtmlLabel1">
       <Properties>
-        <Property name="text" type="java.lang.String" value="&lt;html&gt;The Files contain links affected by the operation. You can uncheck them to prevent changes.&lt;/html&gt;" noResource="true"/>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="panelFileList.htmlLabelHeader" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+        </Property>
       </Properties>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">

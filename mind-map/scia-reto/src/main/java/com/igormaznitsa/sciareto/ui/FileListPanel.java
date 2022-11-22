@@ -97,9 +97,11 @@ public class FileListPanel extends javax.swing.JPanel implements TableModel {
   @Override
   @Nonnull
   public String getColumnName(final int columnIndex) {
+    final java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
+  
     switch(columnIndex){
-      case 0 : return "..."; //NOI18N
-      case 1 : return "File";
+      case 0 : return bundle.getString("panelFileList.tableColumn.Selected"); //NOI18N
+      case 1 : return bundle.getString("panelFileList.tableColumn.File");
       default : throw new Error("Unexpected index"); //NOI18N
     }
   }
@@ -154,46 +156,45 @@ public class FileListPanel extends javax.swing.JPanel implements TableModel {
    * Editor.
    */
   @SuppressWarnings("unchecked")
-  // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-  private void initComponents() {
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
 
-    jScrollPane2 = new javax.swing.JScrollPane();
-    tableFiles = new javax.swing.JTable();
-    jPanel1 = new javax.swing.JPanel();
-    jHtmlLabel1 = new com.igormaznitsa.sciareto.ui.misc.JHtmlLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        tableFiles = new javax.swing.JTable();
+        jPanel1 = new javax.swing.JPanel();
+        jHtmlLabel1 = new com.igormaznitsa.sciareto.ui.misc.JHtmlLabel();
 
-    setLayout(new java.awt.BorderLayout(0, 8));
+        setLayout(new java.awt.BorderLayout(0, 8));
 
-    tableFiles.setModel(new javax.swing.table.DefaultTableModel(
-      new Object [][] {
-        {null, null, null, null},
-        {null, null, null, null},
-        {null, null, null, null},
-        {null, null, null, null}
-      },
-      new String [] {
-        "Title 1", "Title 2", "Title 3", "Title 4"
-      }
-    ));
-    tableFiles.setFillsViewportHeight(true);
-    tableFiles.setShowHorizontalLines(false);
-    tableFiles.setShowVerticalLines(false);
-    jScrollPane2.setViewportView(tableFiles);
+        tableFiles.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        tableFiles.setFillsViewportHeight(true);
+        jScrollPane2.setViewportView(tableFiles);
 
-    add(jScrollPane2, java.awt.BorderLayout.CENTER);
+        add(jScrollPane2, java.awt.BorderLayout.CENTER);
 
-    jPanel1.setLayout(new java.awt.GridBagLayout());
-    add(jPanel1, java.awt.BorderLayout.NORTH);
+        jPanel1.setLayout(new java.awt.GridBagLayout());
+        add(jPanel1, java.awt.BorderLayout.NORTH);
 
-    jHtmlLabel1.setText("<html>The Files contain links affected by the operation. You can uncheck them to prevent changes.</html>"); // NOI18N
-    add(jHtmlLabel1, java.awt.BorderLayout.NORTH);
-  }// </editor-fold>//GEN-END:initComponents
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
+        jHtmlLabel1.setText(bundle.getString("panelFileList.htmlLabelHeader")); // NOI18N
+        add(jHtmlLabel1, java.awt.BorderLayout.NORTH);
+    }// </editor-fold>//GEN-END:initComponents
 
 
-  // Variables declaration - do not modify//GEN-BEGIN:variables
-  private com.igormaznitsa.sciareto.ui.misc.JHtmlLabel jHtmlLabel1;
-  private javax.swing.JPanel jPanel1;
-  private javax.swing.JScrollPane jScrollPane2;
-  private javax.swing.JTable tableFiles;
-  // End of variables declaration//GEN-END:variables
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private com.igormaznitsa.sciareto.ui.misc.JHtmlLabel jHtmlLabel1;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTable tableFiles;
+    // End of variables declaration//GEN-END:variables
 }

@@ -424,14 +424,15 @@ public final class FindFilesForTextPanel extends javax.swing.JPanel {
 
         jPanel1.setLayout(new java.awt.BorderLayout());
 
-        jLabel1.setText("Text to search: ");
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
+        jLabel1.setText(bundle.getString("panelFindFilesForText.labelTextToSearch")); // NOI18N
         jPanel1.add(jLabel1, java.awt.BorderLayout.WEST);
 
         fieldText.setToolTipText("Press 'Enter' or the 'Find' button for search");
         jPanel1.add(fieldText, java.awt.BorderLayout.CENTER);
 
         buttonFind.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/find16.png"))); // NOI18N
-        buttonFind.setText("Find");
+        buttonFind.setText(bundle.getString("panelFindFilesForText.buttonFind")); // NOI18N
         buttonFind.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonFindActionPerformed(evt);
@@ -447,7 +448,7 @@ public final class FindFilesForTextPanel extends javax.swing.JPanel {
         gridBagConstraints.weightx = 1000.0;
         jPanel3.add(filler1, gridBagConstraints);
 
-        labelCharset.setText("Charset: ");
+        labelCharset.setText(bundle.getString("panelFindFilesForText.labelCharset")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -457,7 +458,7 @@ public final class FindFilesForTextPanel extends javax.swing.JPanel {
         gridBagConstraints.gridy = 0;
         jPanel3.add(comboCharsets, gridBagConstraints);
 
-        labelLocale.setText("Locale:");
+        labelLocale.setText(bundle.getString("panelFindFilesForText.labelLocale")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 0;
@@ -469,7 +470,7 @@ public final class FindFilesForTextPanel extends javax.swing.JPanel {
         gridBagConstraints.weighty = 100.0;
         jPanel3.add(comboLocale, gridBagConstraints);
 
-        checkboxFindInFilenames.setText("Find in file names");
+        checkboxFindInFilenames.setText(bundle.getString("panelFindFilesForText.checkboxFindInFileNames")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 4;
         gridBagConstraints.gridy = 0;
