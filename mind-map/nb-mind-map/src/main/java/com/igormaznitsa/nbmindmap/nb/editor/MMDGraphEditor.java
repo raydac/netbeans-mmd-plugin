@@ -53,6 +53,7 @@ import com.igormaznitsa.mindmap.plugins.tools.ChangeColorPlugin;
 import com.igormaznitsa.mindmap.print.MMDPrint;
 import com.igormaznitsa.mindmap.print.MMDPrintOptions;
 import com.igormaznitsa.mindmap.print.PrintableObject;
+import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.ide.IDEBridgeFactory;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MMDTopicsTransferable;
@@ -1562,7 +1563,7 @@ public final class MMDGraphEditor extends CloneableEditor
               new PasswordPanel("", note.getHint() == null ? "" : note.getHint(), false);
           if (DialogProviderManager.getInstance().getDialogProvider()
               .msgOkCancel(this,
-                  Utils.BUNDLE.getString("PasswordPanel.dialogPassword.enter.title"),
+                  MmdI18n.getInstance().findBundle().getString("PasswordPanel.dialogPassword.enter.title"),
                   passwordPanel)) {
             final StringBuilder decrypted = new StringBuilder();
             final String pass = new String(passwordPanel.getPassword()).trim();

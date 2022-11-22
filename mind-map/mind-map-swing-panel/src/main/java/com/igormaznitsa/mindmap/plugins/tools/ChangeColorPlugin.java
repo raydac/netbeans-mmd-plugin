@@ -21,7 +21,7 @@ import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.api.AbstractPopupMenuItem;
 import com.igormaznitsa.mindmap.plugins.api.ExternallyExecutedPlugin;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
-import com.igormaznitsa.mindmap.swing.panel.Texts;
+import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 import javax.swing.Icon;
@@ -40,8 +40,8 @@ public class ChangeColorPlugin extends AbstractPopupMenuItem implements External
   public JMenuItem makeMenuItem(final PluginContext context, final Topic topic) {
     JMenuItem result = UI_COMPO_FACTORY.makeMenuItem(
         context.getSelectedTopics() != null && context.getSelectedTopics().length > 0
-            ? Texts.getString("MMDGraphEditor.makePopUp.miColorsForSelected") :
-            Texts.getString("MMDGraphEditor.makePopUp.miColorsForTopic"), ICO);
+            ? MmdI18n.getInstance().findBundle().getString("MMDGraphEditor.makePopUp.miColorsForSelected") :
+            MmdI18n.getInstance().findBundle().getString("MMDGraphEditor.makePopUp.miColorsForTopic"), ICO);
 
     result.addActionListener(e -> context.processPluginActivation(ChangeColorPlugin.this, topic));
     return result;

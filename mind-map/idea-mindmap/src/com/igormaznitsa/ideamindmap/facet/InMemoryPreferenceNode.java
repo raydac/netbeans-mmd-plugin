@@ -31,7 +31,7 @@ import java.util.prefs.PreferenceChangeListener;
 import java.util.prefs.Preferences;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 
 public class InMemoryPreferenceNode extends Preferences {
 

@@ -11,7 +11,7 @@
     <artifactId>mind-map-swing-panel</artifactId>
     <packaging>jar</packaging>
 
-    <name>NB Mind Map swing panel</name>
+    <name>Scia Reto mind map swing panel</name>
     <description>Swing based panel to show and interact with mind map</description>
 
     <profiles>

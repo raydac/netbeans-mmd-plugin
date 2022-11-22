@@ -16,13 +16,13 @@
 
 package com.igormaznitsa.mindmap.print;
 
+import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ResourceBundle;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
@@ -44,8 +44,6 @@ public final class MMDPrintOptionsPanel extends JPanel {
 
   private static final long serialVersionUID = 4095304247486153265L;
 
-  private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("com/igormaznitsa/mindmap/swing/panel/Bundle");
-
   private final MMDPrintOptions options;
 
   private final JRadioButton radioZoomTo = UIComponentFactoryProvider.findInstance().makeRadioButton();
@@ -60,10 +58,10 @@ public final class MMDPrintOptionsPanel extends JPanel {
     super(new GridBagLayout());
     this.options = new MMDPrintOptions(options);
 
-    this.radioZoomTo.setText(BUNDLE.getString("MMDPrintOptionsPanel.ZoomTo"));
-    this.radioFitWidthTo.setText(BUNDLE.getString("MMDPrintOptionsPanel.FitWithTo"));
-    this.radioFitHeightTo.setText(BUNDLE.getString("MMDPrintOptionsPanel.FitHeightTo"));
-    this.radioFitToPage.setText(BUNDLE.getString("MMDPrintOptionsPanel.FitToPage"));
+    this.radioZoomTo.setText(MmdI18n.getInstance().findBundle().getString("MMDPrintOptionsPanel.ZoomTo"));
+    this.radioFitWidthTo.setText(MmdI18n.getInstance().findBundle().getString("MMDPrintOptionsPanel.FitWithTo"));
+    this.radioFitHeightTo.setText(MmdI18n.getInstance().findBundle().getString("MMDPrintOptionsPanel.FitHeightTo"));
+    this.radioFitToPage.setText(MmdI18n.getInstance().findBundle().getString("MMDPrintOptionsPanel.FitToPage"));
 
     this.spinnerFitHeight.setModel(new SpinnerNumberModel(1, 1, 100, 1));
     this.spinnerFitWidth.setModel(new SpinnerNumberModel(1, 1, 100, 1));
@@ -81,7 +79,7 @@ public final class MMDPrintOptionsPanel extends JPanel {
     gbc.gridx = 0;
     gbc.gridy = 0;
     final JLabel titleLabel = UIComponentFactoryProvider.findInstance().makeLabel();
-    titleLabel.setText(BUNDLE.getString("MMDPrintOptionsPanel.ZoomSectionTitle") + ' ');
+    titleLabel.setText(MmdI18n.getInstance().findBundle().getString("MMDPrintOptionsPanel.ZoomSectionTitle") + ' ');
     this.add(titleLabel, gbc);
     gbc.gridx = 1;
     gbc.weightx = 1000;
@@ -156,7 +154,7 @@ public final class MMDPrintOptionsPanel extends JPanel {
     result.add(this.spinnerFitWidth, gbc);
     gbc.gridx = 5;
     final JLabel page1 = UIComponentFactoryProvider.findInstance().makeLabel();
-    page1.setText(' ' + BUNDLE.getString("MMDPrintOptionsPanel.Page_s"));
+    page1.setText(' ' + MmdI18n.getInstance().findBundle().getString("MMDPrintOptionsPanel.Page_s"));
     result.add(page1, gbc);
 
     gbc.gridx = 3;
@@ -168,7 +166,7 @@ public final class MMDPrintOptionsPanel extends JPanel {
     result.add(this.spinnerFitHeight, gbc);
     gbc.gridx = 5;
     final JLabel page2 = UIComponentFactoryProvider.findInstance().makeLabel();
-    page2.setText(' ' + BUNDLE.getString("MMDPrintOptionsPanel.Page_s"));
+    page2.setText(' ' + MmdI18n.getInstance().findBundle().getString("MMDPrintOptionsPanel.Page_s"));
     result.add(page2, gbc);
 
     this.comboZoom.setSelectedIndex(Math.max(0, Math.min(this.comboZoom.getModel().getSize() - 1, (int) Math.round(this.options.getScale() * 100 / 25) - 1)));

@@ -30,9 +30,9 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.api.parameters.AbstractParameter;
+import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
-import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
@@ -228,11 +228,11 @@ public class FreeMindExporter extends AbstractExporter {
           context.getPanel(),
           context,
           this.getClass().getName(),
-          Texts.getString("FreeMindExporter.saveDialogTitle"),
+          MmdI18n.getInstance().findBundle().getString("FreeMindExporter.saveDialogTitle"),
           null,
           ".mm",
-          Texts.getString("FreeMindExporter.filterDescription"),
-          Texts.getString("FreeMindExporter.approveButtonText"));
+          MmdI18n.getInstance().findBundle().getString("FreeMindExporter.filterDescription"),
+          MmdI18n.getInstance().findBundle().getString("FreeMindExporter.approveButtonText"));
       fileToSaveMap = MindMapUtils.checkFileAndExtension(context.getPanel(), fileToSaveMap, ".mm");//NOI18N
       theOut = fileToSaveMap == null ? null : new BufferedOutputStream(new FileOutputStream(fileToSaveMap, false));
     }
@@ -258,12 +258,12 @@ public class FreeMindExporter extends AbstractExporter {
 
   @Override
   public String getName(final PluginContext context, final Topic actionTopic) {
-    return Texts.getString("FreeMindExporter.exporterName");
+    return MmdI18n.getInstance().findBundle().getString("FreeMindExporter.exporterName");
   }
 
   @Override
   public String getReference(final PluginContext context, final Topic actionTopic) {
-    return Texts.getString("FreeMindExporter.exporterReference");
+    return MmdI18n.getInstance().findBundle().getString("FreeMindExporter.exporterReference");
   }
 
   @Override

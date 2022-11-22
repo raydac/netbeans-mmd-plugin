@@ -30,9 +30,9 @@ import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.api.parameters.AbstractParameter;
+import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
-import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
@@ -258,11 +258,11 @@ public class MindmupExporter extends AbstractExporter {
           context.getPanel(),
           context,
           this.getClass().getName(),
-          Texts.getString("MindmupExporter.saveDialogTitle"),
+          MmdI18n.getInstance().findBundle().getString("MindmupExporter.saveDialogTitle"),
           null,
           ".mup",
-          Texts.getString("MindmupExporter.filterDescription"),
-          Texts.getString("MindmupExporter.approveButtonText"));
+          MmdI18n.getInstance().findBundle().getString("MindmupExporter.filterDescription"),
+          MmdI18n.getInstance().findBundle().getString("MindmupExporter.approveButtonText"));
       fileToSaveMap =
           MindMapUtils.checkFileAndExtension(context.getPanel(), fileToSaveMap, ".mup");//NOI18N
       theOut = fileToSaveMap == null ? null :
@@ -281,12 +281,12 @@ public class MindmupExporter extends AbstractExporter {
 
   @Override
   public String getName(final PluginContext context, final Topic actionTopic) {
-    return Texts.getString("MindmupExporter.exporterName");
+    return MmdI18n.getInstance().findBundle().getString("MindmupExporter.exporterName");
   }
 
   @Override
   public String getReference(final PluginContext context, final Topic actionTopic) {
-    return Texts.getString("MindmupExporter.exporterReference");
+    return MmdI18n.getInstance().findBundle().getString("MindmupExporter.exporterReference");
   }
 
   @Override

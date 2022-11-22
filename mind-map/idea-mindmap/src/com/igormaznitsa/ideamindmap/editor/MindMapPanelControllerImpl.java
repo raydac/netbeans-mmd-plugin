@@ -75,6 +75,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
+import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 
 public class MindMapPanelControllerImpl implements MindMapPanelController, MindMapConfigListener, PluginContext {
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("i18n/Bundle");
@@ -238,10 +239,10 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
     final MMapURI result;
     if (link == null) {
       // create new
-      result = IdeaUtils.editURI(this.editor, String.format(BUNDLE.getString("MMDGraphEditor.editLinkForTopic.dlgAddURITitle"), Utils.makeShortTextVersion(topic.getText(), 16)), null);
+      result = IdeaUtils.editURI(this.editor, String.format(MmdI18n.getInstance().findBundle().getString("MMDGraphEditor.editLinkForTopic.dlgAddURITitle"), Utils.makeShortTextVersion(topic.getText(), 16)), null);
     } else {
       // edit
-      result = IdeaUtils.editURI(this.editor, String.format(BUNDLE.getString("MMDGraphEditor.editLinkForTopic.dlgEditURITitle"), Utils.makeShortTextVersion(topic.getText(), 16)), link.getValue());
+      result = IdeaUtils.editURI(this.editor, String.format(MmdI18n.getInstance().findBundle().getString("MMDGraphEditor.editLinkForTopic.dlgEditURITitle"), Utils.makeShortTextVersion(topic.getText(), 16)), link.getValue());
     }
     if (result != null) {
       boolean changed = false;
@@ -458,7 +459,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
           final PasswordPanel passwordPanel
               = new PasswordPanel("", note.getHint() == null ? "" : note.getHint(), false);
           if (this.dialogProvider.msgOkCancel(this.getPanel(),
-              Utils.BUNDLE.getString("PasswordPanel.dialogPassword.enter.title"),
+              MmdI18n.getInstance().findBundle().getString("PasswordPanel.dialogPassword.enter.title"),
               passwordPanel)) {
             final StringBuilder decrypted = new StringBuilder();
             final String pass = new String(passwordPanel.getPassword()).trim();

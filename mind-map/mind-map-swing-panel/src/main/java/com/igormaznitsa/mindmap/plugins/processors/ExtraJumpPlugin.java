@@ -22,7 +22,7 @@ import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.api.AbstractFocusedTopicPlugin;
 import com.igormaznitsa.mindmap.plugins.api.ExternallyExecutedPlugin;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
-import com.igormaznitsa.mindmap.swing.panel.Texts;
+import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 import javax.swing.Icon;
@@ -38,7 +38,7 @@ public class ExtraJumpPlugin extends AbstractFocusedTopicPlugin implements Exter
   }
 
   @Override
-  protected Icon getIcon(final PluginContext contextl, final Topic activeTopic) {
+  protected Icon getIcon(final PluginContext context, final Topic activeTopic) {
     return ICO;
   }
 
@@ -48,8 +48,8 @@ public class ExtraJumpPlugin extends AbstractFocusedTopicPlugin implements Exter
       return "...";
     }
     return activeTopic.getExtras().containsKey(Extra.ExtraType.TOPIC) ?
-        Texts.getString("MMDGraphEditor.makePopUp.miEditTransition") :
-        Texts.getString("MMDGraphEditor.makePopUp.miAddTransition");
+        MmdI18n.getInstance().findBundle().getString("MMDGraphEditor.makePopUp.miEditTransition") :
+        MmdI18n.getInstance().findBundle().getString("MMDGraphEditor.makePopUp.miAddTransition");
   }
 
 

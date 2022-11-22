@@ -21,7 +21,7 @@ import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.api.AbstractPopupMenuItem;
 import com.igormaznitsa.mindmap.plugins.api.ExternallyExecutedPlugin;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
-import com.igormaznitsa.mindmap.swing.panel.Texts;
+import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 import javax.swing.Icon;
@@ -33,7 +33,7 @@ public class OptionsPlugin extends AbstractPopupMenuItem implements ExternallyEx
   @Override
   public JMenuItem makeMenuItem(final PluginContext context, final Topic topic) {
     final JMenuItem result =
-        UI_COMPO_FACTORY.makeMenuItem(Texts.getString("MMDGraphEditor.makePopUp.miOptions"), ICO);
+        UI_COMPO_FACTORY.makeMenuItem(MmdI18n.getInstance().findBundle().getString("MMDGraphEditor.makePopUp.miOptions"), ICO);
     result.addActionListener(e -> context.processPluginActivation(OptionsPlugin.this, topic));
     return result;
   }

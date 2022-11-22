@@ -31,9 +31,9 @@ import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.api.AbstractImporter;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.attributes.images.ImageVisualAttributePlugin;
+import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.ide.IDEBridgeFactory;
 import com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute;
-import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
@@ -278,16 +278,16 @@ public class XMind2MindMapImporter extends AbstractImporter {
                                    final Map<String, XMindStyle> theme,
                                    final MindMap map,
                                    final Topic parent,
-                                   final Topic pregeneratedOne,
+                                   final Topic preGeneratedOne,
                                    final JSONObject topicElement,
                                    final Map<String, Topic> idTopicMap,
                                    final Map<String, String> linksBetweenTopics) {
     final Topic topicToProcess;
 
-    if (pregeneratedOne == null) {
+    if (preGeneratedOne == null) {
       topicToProcess = requireNonNull(parent).makeChild("", null);
     } else {
-      topicToProcess = pregeneratedOne;
+      topicToProcess = preGeneratedOne;
     }
 
     topicToProcess.setText(topicElement.has("title") ? topicElement.getString("title") : "");
@@ -426,8 +426,8 @@ public class XMind2MindMapImporter extends AbstractImporter {
   @Override
   public MindMap doImport(final PluginContext context) throws Exception {
     final File file = this.selectFileForExtension(context,
-        Texts.getString("MMDImporters.XMind2MindMap.openDialogTitle"), null, "xmind",
-        "XMind files (.XMIND)", Texts.getString("MMDImporters.ApproveImport"));
+        MmdI18n.getInstance().findBundle().getString("MMDImporters.XMind2MindMap.openDialogTitle"), null, "xmind",
+        "XMind files (.XMIND)", MmdI18n.getInstance().findBundle().getString("MMDImporters.ApproveImport"));
 
     if (file == null) {
       return null;
@@ -630,12 +630,12 @@ public class XMind2MindMapImporter extends AbstractImporter {
 
   @Override
   public String getName(final PluginContext context) {
-    return Texts.getString("MMDImporters.XMind2MindMap.Name");
+    return MmdI18n.getInstance().findBundle().getString("MMDImporters.XMind2MindMap.Name");
   }
 
   @Override
   public String getReference(final PluginContext context) {
-    return Texts.getString("MMDImporters.XMind2MindMap.Reference");
+    return MmdI18n.getInstance().findBundle().getString("MMDImporters.XMind2MindMap.Reference");
   }
 
   @Override

@@ -29,8 +29,8 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.api.parameters.AbstractParameter;
+import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
-import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
@@ -170,11 +170,11 @@ public class ASCIIDocExporter extends AbstractExporter {
           context.getPanel(),
           context,
           this.getClass().getName(),
-          Texts.getString("ASCIIDOCExporter.saveDialogTitle"),
+          MmdI18n.getInstance().findBundle().getString("ASCIIDOCExporter.saveDialogTitle"),
           null,
           ".asciidoc",
-          Texts.getString("ASCIIDOCExporter.filterDescription"),
-          Texts.getString("ASCIIDOCExporter.approveButtonText"));
+          MmdI18n.getInstance().findBundle().getString("ASCIIDOCExporter.filterDescription"),
+          MmdI18n.getInstance().findBundle().getString("ASCIIDOCExporter.approveButtonText"));
       fileToSaveMap = MindMapUtils.checkFileAndExtension(context.getPanel(), fileToSaveMap, ".asciidoc");//NOI18N
       theOut = fileToSaveMap == null ? null : new BufferedOutputStream(new FileOutputStream(fileToSaveMap, false));
     }
@@ -196,12 +196,12 @@ public class ASCIIDocExporter extends AbstractExporter {
 
   @Override
   public String getName(final PluginContext context, final Topic actionTopic) {
-    return Texts.getString("ASCIIDOCExporter.exporterName");
+    return MmdI18n.getInstance().findBundle().getString("ASCIIDOCExporter.exporterName");
   }
 
   @Override
   public String getReference(final PluginContext context, final Topic actionTopic) {
-    return Texts.getString("ASCIIDOCExporter.exporterReference");
+    return MmdI18n.getInstance().findBundle().getString("ASCIIDOCExporter.exporterReference");
   }
 
   @Override

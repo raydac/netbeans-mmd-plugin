@@ -22,7 +22,7 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.api.AbstractFocusedTopicPlugin;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
-import com.igormaznitsa.mindmap.swing.panel.Texts;
+import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 import javax.swing.Icon;
@@ -49,8 +49,8 @@ public class RemoveTopicPlugin extends AbstractFocusedTopicPlugin {
   @Override
   protected String getName(final PluginContext context, final Topic activeTopic) {
     return context.getSelectedTopics().length > 0 ?
-        Texts.getString("MMDGraphEditor.makePopUp.miRemoveSelectedTopics") :
-        Texts.getString("MMDGraphEditor.makePopUp.miRemoveTheTopic");
+        MmdI18n.getInstance().findBundle().getString("MMDGraphEditor.makePopUp.miRemoveSelectedTopics") :
+        MmdI18n.getInstance().findBundle().getString("MMDGraphEditor.makePopUp.miRemoveTheTopic");
   }
 
   @Override

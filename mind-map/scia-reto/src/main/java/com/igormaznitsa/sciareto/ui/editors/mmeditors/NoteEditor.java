@@ -22,6 +22,7 @@ package com.igormaznitsa.sciareto.ui.editors.mmeditors;
 import com.igormaznitsa.mindmap.ide.commons.SwingUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.panel.ui.PasswordPanel;
 import com.igormaznitsa.mindmap.swing.panel.utils.Focuser;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
@@ -616,7 +617,7 @@ public final class NoteEditor extends JPanel {
     if (src.isSelected()) {
       final PasswordPanel passwordPanel = new PasswordPanel();
       if (DialogProviderManager.getInstance().getDialogProvider()
-          .msgOkCancel(this, Utils.BUNDLE.getString("PasswordPanel.dialogPassword.set.title"), passwordPanel)) {
+          .msgOkCancel(this, MmdI18n.getInstance().findBundle().getString("PasswordPanel.dialogPassword.set.title"), passwordPanel)) {
         this.password = new String(passwordPanel.getPassword()).trim();
         this.hint = passwordPanel.getHint();
         if (this.password.isEmpty()) {

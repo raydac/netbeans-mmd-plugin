@@ -78,7 +78,7 @@ import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.velocity.exception.MethodInvocationException;
 
 public final class IdeaUtils {
@@ -517,7 +517,7 @@ public final class IdeaUtils {
     SwingUtils.safeSwing(() -> {
       final JBPopupFactory factory = JBPopupFactory.getInstance();
       final BalloonBuilder builder =
-          factory.createHtmlTextBalloonBuilder(StringEscapeUtils.escapeHtml(text), type, null);
+          factory.createHtmlTextBalloonBuilder(StringEscapeUtils.escapeHtml3(text), type, null);
       final Balloon balloon = builder.createBalloon();
       balloon.setAnimationEnabled(true);
       final Component frame = WindowManager.getInstance().findVisibleFrame();

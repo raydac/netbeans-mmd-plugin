@@ -29,8 +29,8 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.api.parameters.AbstractParameter;
+import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
-import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.mindmap.swing.services.IconID;
@@ -86,7 +86,7 @@ public class ORGMODEExporter extends AbstractExporter {
   private static void printTextBlock(final State state, final String prefix, final String text) {
     final String[] lines = ModelUtils.breakToLines(text);
     for (final String s : lines) {
-      state.append(prefix).append(": ").append(s).nextLine();//NOI18N
+      state.append(prefix).append(": ").append(s).nextLine();
     }
   }
 
@@ -136,28 +136,28 @@ public class ORGMODEExporter extends AbstractExporter {
     result.append(' ');
     switch (calendar.get(Calendar.DAY_OF_WEEK)) {
       case Calendar.MONDAY:
-        result.append("Mon");//NOI18N
+        result.append("Mon");
         break;
       case Calendar.TUESDAY:
-        result.append("Tue");//NOI18N
+        result.append("Tue");
         break;
       case Calendar.WEDNESDAY:
-        result.append("Wed");//NOI18N
+        result.append("Wed");
         break;
       case Calendar.THURSDAY:
-        result.append("Thu");//NOI18N
+        result.append("Thu");
         break;
       case Calendar.FRIDAY:
-        result.append("Fri");//NOI18N
+        result.append("Fri");
         break;
       case Calendar.SATURDAY:
-        result.append("Sat");//NOI18N
+        result.append("Sat");
         break;
       case Calendar.SUNDAY:
-        result.append("Sun");//NOI18N
+        result.append("Sun");
         break;
       default:
-        throw new Error("Unexpected week day");//NOI18N
+        throw new Error("Unexpected week day");
     }
     result.append(' ');
 
@@ -172,22 +172,22 @@ public class ORGMODEExporter extends AbstractExporter {
                           final State state) {
     final int level = topic.getTopicLevel();
 
-    String prefix = "";//NOI18N
+    String prefix = "";
 
     if (level < STARTING_INDEX_FOR_NUMERATION) {
-      final String headerPrefix = generateString('*', topic.getTopicLevel() + 1);//NOI18N
+      final String headerPrefix = generateString('*', topic.getTopicLevel() + 1);
       state.append(headerPrefix).append(' ').append(escapeStr(topic.getText(), true)).nextLine();
     } else {
-      final String headerPrefix = generateString('*', STARTING_INDEX_FOR_NUMERATION + 1);//NOI18N
+      final String headerPrefix = generateString('*', STARTING_INDEX_FOR_NUMERATION + 1);
       state.append(prefix).append(headerPrefix).append(' ').append(listPosition).append(' ')
           .append(escapeStr(topic.getText(), true)).nextLine();
     }
 
     final String topicUid = getTopicUid(topic);
     if (topicUid != null) {
-      state.append(":PROPERTIES:").nextLine();//NOI18N
-      state.append(":CUSTOM_ID: sec:").append(topicUid).nextLine();//NOI18N
-      state.append(":END:").nextLine();//NOI18N
+      state.append(":PROPERTIES:").nextLine();
+      state.append(":CUSTOM_ID: sec:").append(topicUid).nextLine();
+      state.append(":END:").nextLine();
     }
 
     final ExtraFile file = (ExtraFile) this.findExtra(topic, Extra.ExtraType.FILE);
@@ -200,13 +200,13 @@ public class ORGMODEExporter extends AbstractExporter {
     if (jump != null) {
       final Topic linkedTopic = topic.getMap().findTopicForLink(jump);
       if (linkedTopic != null) {
-        state.append(prefix).append("RELATED TO: ")//NOI18N
-            .append("[[#sec:")//NOI18N
+        state.append(prefix).append("RELATED TO: ")
+            .append("[[#sec:")
             .append(requireNonNull(getTopicUid(linkedTopic)))
-            .append("][")//NOI18N
+            .append("][")
             .append(escapeStr(makeLineFromString(linkedTopic.getText()), true))
-            .append("]]")//NOI18N
-            .append("  \\\\")//NOI18N
+            .append("]]")
+            .append("  \\\\")
             .nextLine();
         extrasPrinted = true;
       }
@@ -214,21 +214,21 @@ public class ORGMODEExporter extends AbstractExporter {
 
     if (file != null) {
       final MMapURI fileURI = file.getValue();
-      state.append(prefix).append("FILE: [[");//NOI18N
+      state.append(prefix).append("FILE: [[");
       if (fileURI.isAbsolute()) {
         state.append(fileURI.asURI().toASCIIString());
       } else {
-        state.append("file://./").append(fileURI.asURI().toASCIIString());//NOI18N
+        state.append("file://./").append(fileURI.asURI().toASCIIString());
       }
-      state.append("]] \\\\").nextLine();//NOI18N
+      state.append("]] \\\\").nextLine();
       extrasPrinted = true;
     }
 
     if (link != null) {
       final String ascurl = link.getValue().asString(true, true);
-      state.append(prefix).append("URL: [[")//NOI18N
+      state.append(prefix).append("URL: [[")
           .append(ascurl)
-          .append("]] \\\\")//NOI18N
+          .append("]] \\\\")
           .nextLine();
       extrasPrinted = true;
     }
@@ -272,9 +272,9 @@ public class ORGMODEExporter extends AbstractExporter {
     writeInterTopicLine(state);
     final String prefix;
     if (t.getTopicLevel() >= STARTING_INDEX_FOR_NUMERATION) {
-      prefix = topicListNumStr + (topicIndex + 1) + '.';//NOI18N
+      prefix = topicListNumStr + (topicIndex + 1) + '.';
     } else {
-      prefix = "";//NOI18N
+      prefix = "";
     }
     writeTopic(t, prefix, state);
     int index = 0;
@@ -289,26 +289,26 @@ public class ORGMODEExporter extends AbstractExporter {
     final Topic root = panel.getModel().getRoot();
 
     state.append("#+TITLE: ").append(escapeStr(root == null ? "" : root.getText(), true))
-        .nextLine();//NOI18N
+        .nextLine();
     state.append("#+AUTHOR: ").append(escapeStr(System.getProperty("user.name"), true))
-        .nextLine();//NOI18N
-    state.append("#+DATE: ").append(formatTimestamp(System.currentTimeMillis())).nextLine();//NOI18N
+        .nextLine();
+    state.append("#+DATE: ").append(formatTimestamp(System.currentTimeMillis())).nextLine();
     state.append("#+CREATOR: ")
         .append("Generated by [[https://github.com/raydac/netbeans-mmd-plugin][NB Mind Map Plugin]")
-        .nextLine();//NOI18N
+        .nextLine();
 
     state.nextLine();
 
     if (root != null) {
-      writeTopic(root, "", state);//NOI18N
+      writeTopic(root, "", state);
 
       final Topic[] children = Utils.getLeftToRightOrderedChildrens(root);
       for (final Topic t : children) {
         writeInterTopicLine(state);
-        writeTopic(t, "", state);//NOI18N
+        writeTopic(t, "", state);
         int indexChild = 0;
         for (final Topic tt : t.getChildren()) {
-          writeOtherTopicRecursively(tt, "", indexChild++, state);//NOI18N
+          writeOtherTopicRecursively(tt, "", indexChild++, state);
         }
       }
     }
@@ -340,19 +340,19 @@ public class ORGMODEExporter extends AbstractExporter {
           context.getPanel(),
           context,
           this.getClass().getName(),
-          Texts.getString("ORGMODEExporter.saveDialogTitle"),
+          MmdI18n.getInstance().findBundle().getString("ORGMODEExporter.saveDialogTitle"),
           null,
           ".org",
-          Texts.getString("ORGMODEExporter.filterDescription"),
-          Texts.getString("ORGMODEExporter.approveButtonText"));//NOI18N
+          MmdI18n.getInstance().findBundle().getString("ORGMODEExporter.filterDescription"),
+          MmdI18n.getInstance().findBundle().getString("ORGMODEExporter.approveButtonText"));
       fileToSaveMap =
-          MindMapUtils.checkFileAndExtension(context.getPanel(), fileToSaveMap, ".org");//NOI18N
+          MindMapUtils.checkFileAndExtension(context.getPanel(), fileToSaveMap, ".org");
       theOut = fileToSaveMap == null ? null :
           new BufferedOutputStream(new FileOutputStream(fileToSaveMap, false));
     }
     if (theOut != null) {
       try {
-        IOUtils.write(text, theOut, "UTF-8");//NOI18N
+        IOUtils.write(text, theOut, "UTF-8");
       } finally {
         if (fileToSaveMap != null) {
           IOUtils.closeQuietly(theOut);
@@ -363,12 +363,12 @@ public class ORGMODEExporter extends AbstractExporter {
 
   @Override
   public String getName(final PluginContext context, final Topic actionTopic) {
-    return Texts.getString("ORGMODEExporter.exporterName");
+    return MmdI18n.getInstance().findBundle().getString("ORGMODEExporter.exporterName");
   }
 
   @Override
   public String getReference(final PluginContext context, Topic actionTopic) {
-    return Texts.getString("ORGMODEExporter.exporterReference");
+    return MmdI18n.getInstance().findBundle().getString("ORGMODEExporter.exporterReference");
   }
 
   @Override
@@ -383,7 +383,7 @@ public class ORGMODEExporter extends AbstractExporter {
 
   private static final class State {
 
-    private static final String NEXT_LINE = System.getProperty("line.separator", "\n");//NOI18N
+    private static final String NEXT_LINE = System.getProperty("line.separator", "\n");
     private final StringBuilder buffer = new StringBuilder(16384);
 
     public State append(final char ch) {

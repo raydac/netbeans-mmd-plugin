@@ -16,7 +16,7 @@
 
 package com.igormaznitsa.mindmap.swing.colorpicker;
 
-import com.igormaznitsa.mindmap.swing.panel.Texts;
+import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import java.awt.Color;
@@ -118,7 +118,7 @@ public final class ColorChooser {
     final JPanel samplePanel = componentFactory.makePanel();
 
     samplePanel.setLayout(new GridLayout(2, 2));
-    samplePanel.setBorder(BorderFactory.createTitledBorder(Texts.getString("ColorChooser.Text.Example")));
+    samplePanel.setBorder(BorderFactory.createTitledBorder(MmdI18n.getInstance().findBundle().getString("ColorChooser.Text.Example")));
 
     samplePanel.add(this.sampleDarkFill);
     samplePanel.add(this.sampleLightText);
@@ -145,21 +145,21 @@ public final class ColorChooser {
     buttonTuneColor.setBorderPainted(false);
     buttonTuneColor.setContentAreaFilled(false);
     buttonTuneColor.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-    buttonTuneColor.setToolTipText(Texts.getString("ColorChooser.ButtonColorWheel.Tooltip"));
+    buttonTuneColor.setToolTipText(MmdI18n.getInstance().findBundle().getString("ColorChooser.ButtonColorWheel.Tooltip"));
     buttonTuneColor.addActionListener(event -> {
       Color choosedColor;
       try {
         choosedColor =
             (Color) JColorChooser.class.getMethod("showDialog", Component.class, String.class,
                     Color.class, boolean.class)
-                .invoke(null, panel, Texts.getString("ColorChooser.ChooseColorDialogTitle"),
+                .invoke(null, panel, MmdI18n.getInstance().findBundle().getString("ColorChooser.ChooseColorDialogTitle"),
                     sampleDarkFill.getBackground(), false);
       } catch (Exception ex) {
         try {
           choosedColor =
               (Color) JColorChooser.class.getMethod("showDialog", Component.class, String.class,
                       Color.class)
-                  .invoke(null, panel, Texts.getString("ColorChooser.ChooseColorDialogTitle"),
+                  .invoke(null, panel, MmdI18n.getInstance().findBundle().getString("ColorChooser.ChooseColorDialogTitle"),
                       sampleDarkFill.getBackground());
         } catch (Exception exx) {
           choosedColor = null;

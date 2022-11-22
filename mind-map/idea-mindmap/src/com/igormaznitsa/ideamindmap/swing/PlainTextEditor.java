@@ -56,6 +56,7 @@ import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 import org.apache.commons.io.FileUtils;
+import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 
 public class PlainTextEditor extends JPanel {
   private static final long serialVersionUID = -125160747070513137L;
@@ -90,7 +91,7 @@ public class PlainTextEditor extends JPanel {
 
   public PlainTextEditor(final Project project, final NoteEditorData data) {
     super(new BorderLayout());
-    
+
     this.dialogProvider = new MindMapDialogProvider(project);
     
     this.password = data.getPassword();
@@ -108,7 +109,7 @@ public class PlainTextEditor extends JPanel {
     buttonImport.addActionListener(e -> {
       final File home = new File(System.getProperty("user.home")); //NOI18N
 
-      final File toOpen = IdeaUtils.chooseFile(theInstance, true, Utils.BUNDLE.getString("PlainTextEditor.buttonLoadActionPerformed.title"), home, TEXT_FILE_FILTER);
+      final File toOpen = IdeaUtils.chooseFile(theInstance, true, MmdI18n.getInstance().findBundle().getString("PlainTextEditor.buttonLoadActionPerformed.title"), home, TEXT_FILE_FILTER);
 
       if (toOpen != null) {
         try {
@@ -165,7 +166,7 @@ public class PlainTextEditor extends JPanel {
         final JToggleButton src = (JToggleButton) e.getSource();
         if (src.isSelected()) {
             final PasswordPanel passwordPanel = new PasswordPanel();
-            if (dialogProvider.msgOkCancel(PlainTextEditor.this, Utils.BUNDLE.getString("PasswordPanel.dialogPassword.set.title"), passwordPanel)) {
+            if (dialogProvider.msgOkCancel(PlainTextEditor.this, MmdI18n.getInstance().findBundle().getString("PasswordPanel.dialogPassword.set.title"), passwordPanel)) {
                 password = new String(passwordPanel.getPassword()).trim();
                 hint = passwordPanel.getHint();
                 if (password.isEmpty()) {

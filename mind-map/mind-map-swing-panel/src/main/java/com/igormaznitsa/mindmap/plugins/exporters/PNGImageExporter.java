@@ -23,9 +23,9 @@ import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.api.parameters.AbstractParameter;
 import com.igormaznitsa.mindmap.plugins.api.parameters.BooleanParameter;
+import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
-import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.panel.utils.ImageSelection;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.RenderQuality;
@@ -64,11 +64,11 @@ public final class PNGImageExporter extends AbstractExporter {
   @Override
   public Set<AbstractParameter<?>> makeDefaultParameters() {
     return new HashSet<AbstractParameter<?>>() {{
-      add(new BooleanParameter(KEY_PARAMETER_UNFOLD_ALL, Texts.getString("PNGImageExporter.optionUnfoldAll"),
-          Texts.getString("PNGImageExporter.optionUnfoldAll.comment"),
+      add(new BooleanParameter(KEY_PARAMETER_UNFOLD_ALL, MmdI18n.getInstance().findBundle().getString("PNGImageExporter.optionUnfoldAll"),
+          MmdI18n.getInstance().findBundle().getString("PNGImageExporter.optionUnfoldAll.comment"),
           true));
       add(new BooleanParameter(KEY_PARAMETER_DRAW_BACKGROUND,
-          Texts.getString("PNGImageExporter.optionDrawBackground"), Texts.getString("PNGImageExporter.optionDrawBackground.comment"),
+          MmdI18n.getInstance().findBundle().getString("PNGImageExporter.optionDrawBackground"), MmdI18n.getInstance().findBundle().getString("PNGImageExporter.optionDrawBackground.comment"),
           true));
     }};
   }
@@ -119,7 +119,7 @@ public final class PNGImageExporter extends AbstractExporter {
       if (out == null) {
         LOGGER.error("Can't render map as image");
         context.getDialogProvider()
-            .msgError(null, Texts.getString("PNGImageExporter.msgErrorDuringRendering"));
+            .msgError(null, MmdI18n.getInstance().findBundle().getString("PNGImageExporter.msgErrorDuringRendering"));
         return;
       } else {
         throw new IOException("Can't render image");
@@ -138,11 +138,11 @@ public final class PNGImageExporter extends AbstractExporter {
           context.getPanel(),
           context,
           this.getClass().getName(),
-          Texts.getString("PNGImageExporter.saveDialogTitle"),
+          MmdI18n.getInstance().findBundle().getString("PNGImageExporter.saveDialogTitle"),
           null,
           ".png",
-          Texts.getString("PNGImageExporter.filterDescription"),
-          Texts.getString("PNGImageExporter.approveButtonText"));
+          MmdI18n.getInstance().findBundle().getString("PNGImageExporter.filterDescription"),
+          MmdI18n.getInstance().findBundle().getString("PNGImageExporter.approveButtonText"));
       fileToSaveMap =
           MindMapUtils.checkFileAndExtension(context.getPanel(), fileToSaveMap, ".png");//NOI18N
       theOut = fileToSaveMap == null ? null :
@@ -166,12 +166,12 @@ public final class PNGImageExporter extends AbstractExporter {
 
   @Override
   public String getName(final PluginContext context, Topic actionTopic) {
-    return Texts.getString("PNGImageExporter.exporterName");
+    return MmdI18n.getInstance().findBundle().getString("PNGImageExporter.exporterName");
   }
 
   @Override
   public String getReference(final PluginContext context, Topic actionTopic) {
-    return Texts.getString("PNGImageExporter.exporterReference");
+    return MmdI18n.getInstance().findBundle().getString("PNGImageExporter.exporterReference");
   }
 
   @Override

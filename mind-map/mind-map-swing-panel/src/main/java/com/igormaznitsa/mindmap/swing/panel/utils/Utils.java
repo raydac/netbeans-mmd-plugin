@@ -23,6 +23,7 @@ import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.api.PopUpMenuItemPlugin;
+import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
@@ -106,9 +107,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public final class Utils {
-
-  public static final ResourceBundle BUNDLE =
-      java.util.ResourceBundle.getBundle("com/igormaznitsa/mindmap/swing/panel/Bundle");
 
   public static final UIComponentFactory UI_COMPO_FACTORY =
       UIComponentFactoryProvider.findInstance();
@@ -901,11 +899,11 @@ public final class Utils {
             topicUnderMouse, pluginMenuItems));
 
     final JMenu exportMenu =
-        UI_COMPO_FACTORY.makeMenu(BUNDLE.getString("MMDExporters.SubmenuName"));
+        UI_COMPO_FACTORY.makeMenu(MmdI18n.getInstance().findBundle().getString("MMDExporters.SubmenuName"));
     exportMenu.setIcon(ICON_SERVICE.getIconForId(IconID.POPUP_EXPORT));
 
     final JMenu importMenu =
-        UI_COMPO_FACTORY.makeMenu(BUNDLE.getString("MMDImporters.SubmenuName"));
+        UI_COMPO_FACTORY.makeMenu(MmdI18n.getInstance().findBundle().getString("MMDImporters.SubmenuName"));
     importMenu.setIcon(ICON_SERVICE.getIconForId(IconID.POPUP_IMPORT));
 
     putAllItemsAsSection(result, importMenu,
@@ -984,8 +982,8 @@ public final class Utils {
         } else {
           if (doClose.test(dialog)) {
             close = dialogProvider
-                .msgConfirmOkCancel(dialog, BUNDLE.getString("Utils.confirmActionTitle"),
-                    BUNDLE.getString("Utils.closeForContentChange"));
+                .msgConfirmOkCancel(dialog, MmdI18n.getInstance().findBundle().getString("Utils.confirmActionTitle"),
+                    MmdI18n.getInstance().findBundle().getString("Utils.closeForContentChange"));
           } else {
             close = true;
           }

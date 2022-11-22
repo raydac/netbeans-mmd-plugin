@@ -21,8 +21,8 @@ import com.igormaznitsa.mindmap.model.StandardMmdAttributes;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.api.AbstractImporter;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
+import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.ide.IDEBridgeFactory;
-import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
@@ -42,8 +42,8 @@ public class Text2MindMapImporter extends AbstractImporter {
   @Override
   public MindMap doImport(final PluginContext context) throws Exception {
     final File file = this.selectFileForExtension(context,
-        Texts.getString("MMDImporters.Text2MindMap.openDialogTitle"), null, "txt",
-        "text files (.TXT)", Texts.getString("MMDImporters.ApproveImport"));
+        MmdI18n.getInstance().findBundle().getString("MMDImporters.Text2MindMap.openDialogTitle"), null, "txt",
+        "text files (.TXT)", MmdI18n.getInstance().findBundle().getString("MMDImporters.ApproveImport"));
     MindMap result = null;
     if (file != null) {
       final List<String> lines = FileUtils.readLines(file, "UTF-8");
@@ -156,12 +156,12 @@ public class Text2MindMapImporter extends AbstractImporter {
 
   @Override
   public String getName(final PluginContext context) {
-    return Texts.getString("MMDImporters.Text2MindMap.Name");
+    return MmdI18n.getInstance().findBundle().getString("MMDImporters.Text2MindMap.Name");
   }
 
   @Override
   public String getReference(final PluginContext context) {
-    return Texts.getString("MMDImporters.Text2MindMap.Reference");
+    return MmdI18n.getInstance().findBundle().getString("MMDImporters.Text2MindMap.Reference");
   }
 
   @Override

@@ -18,7 +18,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.util.IconLoader;
 import javax.annotation.Nonnull;
 import javax.swing.Icon;
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.jetbrains.annotations.Nullable;
 
 public class IdeaIDEBridge implements IDEBridge {
@@ -92,7 +92,7 @@ public class IdeaIDEBridge implements IDEBridge {
 
     ApplicationManager.getApplication().invokeLater(() -> {
       final long timestamp = System.currentTimeMillis();
-      final Notification notification = new Notification(MMD_GROUP.getDisplayId(), StringEscapeUtils.escapeHtml(title), StringEscapeUtils.escapeHtml(text), ideType) {
+      final Notification notification = new Notification(MMD_GROUP.getDisplayId(), StringEscapeUtils.escapeHtml3(title), StringEscapeUtils.escapeHtml3(text), ideType) {
         @Nullable
         @Override
         public Icon getIcon() {

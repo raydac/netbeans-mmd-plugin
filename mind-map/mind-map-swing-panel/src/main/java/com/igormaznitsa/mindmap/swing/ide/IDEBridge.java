@@ -17,6 +17,7 @@
 package com.igormaznitsa.mindmap.swing.ide;
 
 import com.igormaznitsa.commons.version.Version;
+import java.util.Locale;
 import javax.swing.Icon;
 
 /**
@@ -30,6 +31,15 @@ public interface IDEBridge {
    * @since 1.2.0
    */
   Version getIDEVersion();
+
+  /**
+   * Get locale for IDE.
+   * @return should return currently selected locale for IDE, must not be null.
+   * @since 1.6.0
+   */
+  default Locale getIDELocale(){
+    return Locale.getDefault();
+  }
 
   /**
    * Get generator ID for IDE.

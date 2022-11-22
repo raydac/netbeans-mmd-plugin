@@ -18,6 +18,7 @@ package com.igormaznitsa.mindmap.print;
 
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.HasPreferredFocusComponent;
 import com.igormaznitsa.mindmap.swing.services.IconID;
@@ -40,7 +41,6 @@ import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ResourceBundle;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -53,7 +53,6 @@ import javax.swing.JToolBar;
 
 public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent {
 
-  protected static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("com/igormaznitsa/mindmap/swing/panel/Bundle");
   static final Color BORDER_COLOR = Color.GRAY;
   static final Stroke BORDER_STYLE = new BasicStroke(1f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 1f, new float[] {1f, 3f}, 0f);
   private static final Icon ICO_PRINTER = ImageIconServiceProvider.findInstance().getIconForId(IconID.ICON_PRINTER);
@@ -99,7 +98,7 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
     toolBar.setFloatable(false);
 
     final JButton buttonPrint = UI_COMPO_FACTORY.makeButton();
-    buttonPrint.setText(BUNDLE.getString("MMDPrintPanel.PrintPages"));
+    buttonPrint.setText(MmdI18n.getInstance().findBundle().getString("MMDPrintPanel.PrintPages"));
     buttonPrint.setIcon(ICO_PRINTER);
 
     buttonPrint.addActionListener(new ActionListener() {
@@ -152,7 +151,7 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
         });
 
         if (printerJob.printDialog()) {
-          theAdaptor.startBackgroundTask(theInstance, BUNDLE.getString("MMDPrintPanel.JobTitle"),
+          theAdaptor.startBackgroundTask(theInstance, MmdI18n.getInstance().findBundle().getString("MMDPrintPanel.JobTitle"),
               () -> {
                 try {
                   LOGGER.info("Start print job");
@@ -169,7 +168,7 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
     toolBar.add(buttonPrint);
 
     final JButton buttonPageSetup = UI_COMPO_FACTORY.makeButton();
-    buttonPageSetup.setText(BUNDLE.getString("MMDPrintPanel.PageSetup"));
+    buttonPageSetup.setText(MmdI18n.getInstance().findBundle().getString("MMDPrintPanel.PageSetup"));
     buttonPageSetup.setIcon(ICO_PAGE);
     buttonPageSetup.addActionListener(e -> {
       pageFormat = printerJob.pageDialog(pageFormat);
@@ -181,11 +180,11 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
     toolBar.add(buttonPageSetup);
 
     final JButton buttonPrintOptions = UI_COMPO_FACTORY.makeButton();
-    buttonPrintOptions.setText(BUNDLE.getString("MMDPrintPanel.PrintOptions"));
+    buttonPrintOptions.setText(MmdI18n.getInstance().findBundle().getString("MMDPrintPanel.PrintOptions"));
     buttonPrintOptions.setIcon(ICO_OPTIONS);
     buttonPrintOptions.addActionListener(e -> {
       final MMDPrintOptionsPanel panel = new MMDPrintOptionsPanel(options);
-      if (dialogProvider.msgOkCancel(theInstance, BUNDLE.getString("MMDPrintOptionsPanel.Title"),
+      if (dialogProvider.msgOkCancel(theInstance, MmdI18n.getInstance().findBundle().getString("MMDPrintOptionsPanel.Title"),
           panel)) {
         options = panel.getOptions();
         splitToPagesForCurrentFormat();
@@ -226,14 +225,14 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
 
     this.checkBoxDrawBorder = UI_COMPO_FACTORY.makeCheckBox();
     this.checkBoxDrawBorder.setSelected(true);
-    this.checkBoxDrawBorder.setText(BUNDLE.getString("MMDPrintPanel.DrawBorder"));
+    this.checkBoxDrawBorder.setText(MmdI18n.getInstance().findBundle().getString("MMDPrintPanel.DrawBorder"));
     this.checkBoxDrawBorder.addActionListener(e -> scrollPane.repaint());
     toolBar.add(this.checkBoxDrawBorder);
 
     this.checkBoxDrawAsImage = UI_COMPO_FACTORY.makeCheckBox();
     this.checkBoxDrawAsImage.setSelected(this.options.isDrawAsImage() || printableObject.isImage());
     this.checkBoxDrawAsImage.setEnabled(!printableObject.isImage());
-    this.checkBoxDrawAsImage.setText(BUNDLE.getString("MMDPrintPanel.DrawAsImage"));
+    this.checkBoxDrawAsImage.setText(MmdI18n.getInstance().findBundle().getString("MMDPrintPanel.DrawAsImage"));
     this.checkBoxDrawAsImage.addActionListener(e -> {
       options.setDrawAsImage(checkBoxDrawAsImage.isSelected());
       splitToPagesForCurrentFormat();

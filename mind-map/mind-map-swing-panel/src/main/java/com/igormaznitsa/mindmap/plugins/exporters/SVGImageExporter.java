@@ -28,8 +28,8 @@ import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.api.parameters.AbstractParameter;
 import com.igormaznitsa.mindmap.plugins.api.parameters.BooleanParameter;
+import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
-import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.StrokeType;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
@@ -147,12 +147,12 @@ public class SVGImageExporter extends AbstractExporter {
   public Set<AbstractParameter<?>> makeDefaultParameters() {
     return new HashSet<AbstractParameter<?>>() {{
       add(new BooleanParameter(KEY_PARAMETER_UNFOLD_ALL,
-          Texts.getString("SvgExporter.optionUnfoldAll"),
-          Texts.getString("SvgExporter.optionUnfoldAll.comment"),
+          MmdI18n.getInstance().findBundle().getString("SvgExporter.optionUnfoldAll"),
+          MmdI18n.getInstance().findBundle().getString("SvgExporter.optionUnfoldAll.comment"),
           true));
       add(new BooleanParameter(KEY_PARAMETER_DRAW_BACKGROUND,
-          Texts.getString("SvgExporter.optionDrawBackground"),
-          Texts.getString("SvgExporter.optionDrawBackground.comment"),
+          MmdI18n.getInstance().findBundle().getString("SvgExporter.optionDrawBackground"),
+          MmdI18n.getInstance().findBundle().getString("SvgExporter.optionDrawBackground.comment"),
           true));
     }};
   }
@@ -245,9 +245,9 @@ public class SVGImageExporter extends AbstractExporter {
           context.getPanel(),
           context,
           this.getClass().getName(),
-          Texts.getString("SvgExporter.saveDialogTitle"), null,
-          ".svg", Texts.getString("SvgExporter.filterDescription"),
-          Texts.getString("SvgExporter.approveButtonText"));
+          MmdI18n.getInstance().findBundle().getString("SvgExporter.saveDialogTitle"), null,
+          ".svg", MmdI18n.getInstance().findBundle().getString("SvgExporter.filterDescription"),
+          MmdI18n.getInstance().findBundle().getString("SvgExporter.approveButtonText"));
       fileToSaveMap =
           MindMapUtils.checkFileAndExtension(context.getPanel(), fileToSaveMap, ".svg");//NOI18N
       theOut = fileToSaveMap == null ? null :
@@ -273,12 +273,12 @@ public class SVGImageExporter extends AbstractExporter {
 
   @Override
   public String getName(final PluginContext context, final Topic actionTopic) {
-    return Texts.getString("SvgExporter.exporterName");
+    return MmdI18n.getInstance().findBundle().getString("SvgExporter.exporterName");
   }
 
   @Override
   public String getReference(final PluginContext context, final Topic actionTopic) {
-    return Texts.getString("SvgExporter.exporterReference");
+    return MmdI18n.getInstance().findBundle().getString("SvgExporter.exporterReference");
   }
 
   @Override

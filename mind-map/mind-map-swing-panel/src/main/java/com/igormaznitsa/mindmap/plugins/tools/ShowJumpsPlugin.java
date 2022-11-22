@@ -20,7 +20,7 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.api.AbstractPopupMenuItem;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
-import com.igormaznitsa.mindmap.swing.panel.Texts;
+import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 import javax.swing.Icon;
@@ -34,7 +34,7 @@ public class ShowJumpsPlugin extends AbstractPopupMenuItem {
   @Override
   public JMenuItem makeMenuItem(final PluginContext context, final Topic topic) {
     JMenuItem result = UI_COMPO_FACTORY.makeCheckboxMenuItem(
-        Texts.getString("MMDGraphEditor.makePopUp.miShowJumps"), ICO,
+        MmdI18n.getInstance().findBundle().getString("MMDGraphEditor.makePopUp.miShowJumps"), ICO,
         context.getPanel().isShowJumps());
     result.addActionListener(
         e -> context.getPanel().setShowJumps(((JCheckBoxMenuItem) e.getSource()).isSelected()));

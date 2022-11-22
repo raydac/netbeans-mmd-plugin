@@ -4,7 +4,7 @@ import com.igormaznitsa.mindmap.model.ModelUtils;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import javax.annotation.Nonnull;
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 
 public class PsiTopic extends ASTWrapperPsiElement implements MMPsiElement {
 
@@ -15,7 +15,7 @@ public class PsiTopic extends ASTWrapperPsiElement implements MMPsiElement {
     super(node);
     final String text = node.getText();
     this.level = ModelUtils.countPrefixChars('#', text);
-    this.unescapedText = StringEscapeUtils.unescapeHtml(text.substring(level).trim());
+    this.unescapedText = StringEscapeUtils.unescapeHtml3(text.substring(level).trim());
   }
 
   @Override

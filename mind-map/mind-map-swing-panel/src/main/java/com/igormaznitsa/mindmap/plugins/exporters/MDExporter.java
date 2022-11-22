@@ -29,8 +29,8 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.api.parameters.AbstractParameter;
+import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
-import com.igormaznitsa.mindmap.swing.panel.Texts;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.mindmap.swing.services.IconID;
@@ -255,11 +255,11 @@ public class MDExporter extends AbstractExporter {
           context.getPanel(),
           context,
           this.getClass().getName(),
-          Texts.getString("MDExporter.saveDialogTitle"),
+          MmdI18n.getInstance().findBundle().getString("MDExporter.saveDialogTitle"),
           null,
           ".MD",
-          Texts.getString("MDExporter.filterDescription"),
-          Texts.getString("MDExporter.approveButtonText"));
+          MmdI18n.getInstance().findBundle().getString("MDExporter.filterDescription"),
+          MmdI18n.getInstance().findBundle().getString("MDExporter.approveButtonText"));
       fileToSaveMap = MindMapUtils.checkFileAndExtension(context.getPanel(), fileToSaveMap, ".MD");//NOI18N
       theOut = fileToSaveMap == null ? null : new BufferedOutputStream(new FileOutputStream(fileToSaveMap, false));
     }
@@ -281,12 +281,12 @@ public class MDExporter extends AbstractExporter {
 
   @Override
   public String getName(final PluginContext context, final Topic actionTopic) {
-    return Texts.getString("MDExporter.exporterName");
+    return MmdI18n.getInstance().findBundle().getString("MDExporter.exporterName");
   }
 
   @Override
   public String getReference(final PluginContext context, final Topic actionTopic) {
-    return Texts.getString("MDExporter.exporterReference");
+    return MmdI18n.getInstance().findBundle().getString("MDExporter.exporterReference");
   }
 
   @Override

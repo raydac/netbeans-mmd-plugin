@@ -22,7 +22,7 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.api.parameters.AbstractParameter;
-import com.igormaznitsa.mindmap.swing.panel.Texts;
+import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.services.DefaultParametersPanelFactory;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
@@ -78,9 +78,9 @@ public abstract class AbstractExporter extends AbstractPopupMenuItem implements 
           }
         }
       } catch (Exception ex) {
-        LOGGER.error("Error during map export", ex); //NOI18N
+        LOGGER.error("Error during map export", ex);
         context.getDialogProvider()
-            .msgError(null, Texts.getString("MMDGraphEditor.makePopUp.errMsgCantExport"));
+            .msgError(null, MmdI18n.getInstance().findBundle().getString("MMDGraphEditor.makePopUp.errMsgCantExport"));
       }
     });
     return result;

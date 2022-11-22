@@ -5,6 +5,7 @@ import static javax.swing.BorderFactory.createCompoundBorder;
 import static javax.swing.BorderFactory.createEmptyBorder;
 import static javax.swing.BorderFactory.createLineBorder;
 
+import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.panel.utils.Focuser;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
@@ -64,8 +65,8 @@ public final class PasswordPanel extends JPanel {
 
     JLabel label = uifactory.makeLabel();
     label.setHorizontalAlignment(SwingConstants.RIGHT);
-    label.setText(Utils.BUNDLE.getString("PasswordPanel.labelPassword.text"));
-    label.setToolTipText(Utils.BUNDLE.getString("PasswordPanel.labelPassword.tooltip"));
+    label.setText(MmdI18n.getInstance().findBundle().getString("PasswordPanel.labelPassword.text"));
+    label.setToolTipText(MmdI18n.getInstance().findBundle().getString("PasswordPanel.labelPassword.tooltip"));
     this.add(label, gbc);
 
     gbc.gridx = 1;
@@ -78,8 +79,8 @@ public final class PasswordPanel extends JPanel {
 
     label = uifactory.makeLabel();
     label.setHorizontalAlignment(SwingConstants.RIGHT);
-    label.setText(Utils.BUNDLE.getString("PasswordPanel.labelHint.text"));
-    label.setToolTipText(Utils.BUNDLE.getString("PasswordPanel.labelHint.tooltip"));
+    label.setText(MmdI18n.getInstance().findBundle().getString("PasswordPanel.labelHint.text"));
+    label.setToolTipText(MmdI18n.getInstance().findBundle().getString("PasswordPanel.labelHint.tooltip"));
     this.add(label, gbc);
 
     gbc.gridx = 1;
@@ -91,9 +92,9 @@ public final class PasswordPanel extends JPanel {
     gbc.anchor = GridBagConstraints.EAST;
     gbc.fill = GridBagConstraints.NONE;
     final JCheckBox showPasswordCheckbox = uifactory.makeCheckBox();
-    showPasswordCheckbox.setText(Utils.BUNDLE.getString("PasswordPanel.checkboxShowPassword.text"));
+    showPasswordCheckbox.setText(MmdI18n.getInstance().findBundle().getString("PasswordPanel.checkboxShowPassword.text"));
     showPasswordCheckbox
-        .setToolTipText(Utils.BUNDLE.getString("PasswordPanel.checkboxShowPassword.tooltip"));
+        .setToolTipText(MmdI18n.getInstance().findBundle().getString("PasswordPanel.checkboxShowPassword.tooltip"));
     this.add(showPasswordCheckbox, gbc);
 
     showPasswordCheckbox.addActionListener(e -> {

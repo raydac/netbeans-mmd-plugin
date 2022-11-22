@@ -25,9 +25,9 @@ import static javax.swing.SwingUtilities.windowForComponent;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
+import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
-import com.igormaznitsa.mindmap.swing.panel.Texts;
 import java.awt.Color;
 import java.io.File;
 import java.util.ArrayList;
@@ -304,20 +304,21 @@ public final class MindMapUtils {
     }
     if (file.isDirectory()) {
       panel.getController().getDialogProvider(panel).msgError(null,
-          String.format(Texts.getString("AbstractMindMapExporter.msgErrorItIsDirectory"),
+          String.format(MmdI18n.getInstance().findBundle().getString("AbstractMindMapExporter.msgErrorItIsDirectory"),
               file.getAbsolutePath()));
       return null;
     }
     if (file.isFile()) {
       if (!panel.getController().getDialogProvider(panel)
-          .msgConfirmOkCancel(null, Texts.getString("AbstractMindMapExporter.titleSaveAs"),
+          .msgConfirmOkCancel(null, MmdI18n.getInstance().findBundle().getString("AbstractMindMapExporter.titleSaveAs"),
               String.format(
-                  Texts.getString("AbstractMindMapExporter.msgAlreadyExistsWantToReplace"),
+                  MmdI18n.getInstance().findBundle().getString("AbstractMindMapExporter.msgAlreadyExistsWantToReplace"),
                   file.getAbsolutePath()))) {
         return null;
       }
     } else if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(dottedExtension.toLowerCase(Locale.ENGLISH))) {
-      if (panel.getController().getDialogProvider(panel).msgConfirmYesNo(null, Texts.getString("AbstractMindMapExporter.msgTitleAddExtension"), String.format(Texts.getString("AbstractMindMapExporter.msgAddExtensionQuestion"), dottedExtension))) {
+      if (panel.getController().getDialogProvider(panel).msgConfirmYesNo(null, MmdI18n.getInstance().findBundle().getString("AbstractMindMapExporter.msgTitleAddExtension"), String.format(
+          MmdI18n.getInstance().findBundle().getString("AbstractMindMapExporter.msgAddExtensionQuestion"), dottedExtension))) {
         return new File(file.getParent(), file.getName() + dottedExtension);
       }
     }

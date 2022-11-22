@@ -25,7 +25,7 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.api.parameters.AbstractParameter;
-import com.igormaznitsa.mindmap.swing.panel.Texts;
+import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.mindmap.swing.services.IconID;
@@ -243,11 +243,11 @@ public class TextExporter extends AbstractExporter {
           context.getPanel(),
           context,
           this.getClass().getName(),
-          Texts.getString("TextExporter.saveDialogTitle"),
+          MmdI18n.getInstance().findBundle().getString("TextExporter.saveDialogTitle"),
           null,
           ".txt",
-          Texts.getString("TextExporter.filterDescription"),
-          Texts.getString("TextExporter.approveButtonText"));
+          MmdI18n.getInstance().findBundle().getString("TextExporter.filterDescription"),
+          MmdI18n.getInstance().findBundle().getString("TextExporter.approveButtonText"));
       fileToSaveMap = MindMapUtils.checkFileAndExtension(context.getPanel(), fileToSaveMap, ".txt");//NOI18N
       theOut = fileToSaveMap == null ? null : new BufferedOutputStream(new FileOutputStream(fileToSaveMap, false));
     }
@@ -269,12 +269,12 @@ public class TextExporter extends AbstractExporter {
 
   @Override
   public String getName(final PluginContext context, final Topic actionTopic) {
-    return Texts.getString("TextExporter.exporterName");
+    return MmdI18n.getInstance().findBundle().getString("TextExporter.exporterName");
   }
 
   @Override
   public String getReference(final PluginContext context, final Topic actionTopic) {
-    return Texts.getString("TextExporter.exporterReference");
+    return MmdI18n.getInstance().findBundle().getString("TextExporter.exporterReference");
   }
 
   @Override

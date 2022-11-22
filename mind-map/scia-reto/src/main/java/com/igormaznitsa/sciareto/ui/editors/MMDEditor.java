@@ -53,6 +53,7 @@ import com.igormaznitsa.mindmap.plugins.processors.ExtraJumpPlugin;
 import com.igormaznitsa.mindmap.plugins.processors.ExtraNotePlugin;
 import com.igormaznitsa.mindmap.plugins.processors.ExtraURIPlugin;
 import com.igormaznitsa.mindmap.plugins.tools.ChangeColorPlugin;
+import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.ide.IDEBridgeFactory;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MMDTopicsTransferable;
@@ -1036,7 +1037,7 @@ public final class MMDEditor extends AbstractTextEditor
               new PasswordPanel("", note.getHint() == null ? "" : note.getHint(), false);
           if (DialogProviderManager.getInstance().getDialogProvider()
               .msgOkCancel(SciaRetoStarter.getApplicationFrame(),
-                  Utils.BUNDLE.getString("PasswordPanel.dialogPassword.enter.title"),
+                  MmdI18n.getInstance().findBundle().getString("PasswordPanel.dialogPassword.enter.title"),
                   passwordPanel)) {
             final StringBuilder decrypted = new StringBuilder();
             final String pass = new String(passwordPanel.getPassword()).trim();
