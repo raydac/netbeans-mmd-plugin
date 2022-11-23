@@ -19,7 +19,9 @@
   <SubComponents>
     <Component class="com.igormaznitsa.sciareto.ui.misc.ColorChooserButton" name="colorChooserBorder">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Border color" noResource="true"/>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="panelColorAttribute.buttonBorderColor" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+        </Property>
         <Property name="horizontalAlignment" type="int" value="2"/>
       </Properties>
       <Constraints>
@@ -30,7 +32,9 @@
     </Component>
     <Component class="com.igormaznitsa.sciareto.ui.misc.ColorChooserButton" name="colorChooserFill">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Fill color" noResource="true"/>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="panelColorAttribute.buttonFillColor" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+        </Property>
         <Property name="horizontalAlignment" type="int" value="2"/>
       </Properties>
       <Constraints>
@@ -41,7 +45,9 @@
     </Component>
     <Component class="com.igormaznitsa.sciareto.ui.misc.ColorChooserButton" name="colorChooserText">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Text color" noResource="true"/>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="panelColorAttribute.buttonTextColor" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+        </Property>
         <Property name="horizontalAlignment" type="int" value="2"/>
       </Properties>
       <Constraints>
@@ -54,6 +60,9 @@
       <Properties>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
           <Image iconType="3" name="/icons/cross16.png"/>
+        </Property>
+        <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="panelColorAttribute.buttonResetValue" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
       <Events>
@@ -70,6 +79,9 @@
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
           <Image iconType="3" name="/icons/cross16.png"/>
         </Property>
+        <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="panelColorAttribute.buttonResetValue" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+        </Property>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonResetFillActionPerformed"/>
@@ -84,6 +96,9 @@
       <Properties>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
           <Image iconType="3" name="/icons/cross16.png"/>
+        </Property>
+        <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="panelColorAttribute.buttonResetValue" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
       <Events>

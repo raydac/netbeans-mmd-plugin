@@ -35,11 +35,18 @@ public class ScaleStatusIndicator extends JLabel {
 
   private final Scalable observableObject;
 
+  private final java.util.ResourceBundle bundle =
+      java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
+
+  private final String textTemplate;
+     
+  
   public ScaleStatusIndicator(@Nonnull final Scalable observableObject, final boolean darkScheme) {
     super();
     this.observableObject = Assertions.assertNotNull(observableObject);
     this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-    this.setToolTipText("Click to reset scale");
+    this.setToolTipText(bundle.getString("scaleIndicator.tooltip"));
+    this.textTemplate = bundle.getString("scaleIndicator.text");
     this.setBackground(darkScheme ? Color.DARK_GRAY.brighter() : new Color(0xf7ffc8));
     this.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
     this.setForeground(darkScheme ? Color.YELLOW.darker() : Color.BLACK);
@@ -83,11 +90,11 @@ public class ScaleStatusIndicator extends JLabel {
 
   private void updateTextForScale() {
     String scalePercent = Long.toString(Math.round(this.observableObject.getScale() * 100.0f));
-    if (scalePercent.length() < 3) {
+    if (scalePercent.length() < 3 && this.textTemplate.startsWith("<html>")) {
       scalePercent = "&nbsp;&nbsp;" + scalePercent;
     }
     this.setText(
-        String.format("<html><b>&nbsp;Scale: %s%%&nbsp;</b></html>", scalePercent));
+        String.format(this.textTemplate, scalePercent));
 
     this.repaint();
   }

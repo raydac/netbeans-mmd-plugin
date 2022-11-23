@@ -286,69 +286,70 @@ public class FindUsagesPanel extends javax.swing.JPanel {
    * Editor.
    */
   @SuppressWarnings("unchecked")
-  // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-  private void initComponents() {
-    java.awt.GridBagConstraints gridBagConstraints;
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
-    jLabel1 = new javax.swing.JLabel();
-    textFieldSearchPath = new javax.swing.JTextField();
-    jScrollPane1 = new javax.swing.JScrollPane();
-    listOfFoundElements = new javax.swing.JList<>();
-    jPanel1 = new javax.swing.JPanel();
-    progressBarSearch = new javax.swing.JProgressBar();
+        jLabel1 = new javax.swing.JLabel();
+        textFieldSearchPath = new javax.swing.JTextField();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        listOfFoundElements = new javax.swing.JList<>();
+        jPanel1 = new javax.swing.JPanel();
+        progressBarSearch = new javax.swing.JProgressBar();
 
-    setLayout(new java.awt.GridBagLayout());
+        setLayout(new java.awt.GridBagLayout());
 
-    jLabel1.setText("Search usage of :");
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 0;
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-    add(jLabel1, gridBagConstraints);
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
+        jLabel1.setText(bundle.getString("panelFindUsages.labelSearchUsageOf")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        add(jLabel1, gridBagConstraints);
 
-    textFieldSearchPath.setEditable(false);
-    textFieldSearchPath.setText("jTextField1");
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 0;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.ipadx = 236;
-    gridBagConstraints.weightx = 1000.0;
-    add(textFieldSearchPath, gridBagConstraints);
+        textFieldSearchPath.setEditable(false);
+        textFieldSearchPath.setText("jTextField1");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipadx = 236;
+        gridBagConstraints.weightx = 1000.0;
+        add(textFieldSearchPath, gridBagConstraints);
 
-    listOfFoundElements.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-    jScrollPane1.setViewportView(listOfFoundElements);
+        listOfFoundElements.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jScrollPane1.setViewportView(listOfFoundElements);
 
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 2;
-    gridBagConstraints.gridwidth = 2;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-    gridBagConstraints.ipadx = 354;
-    gridBagConstraints.ipady = 229;
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-    gridBagConstraints.weightx = 1.0;
-    gridBagConstraints.weighty = 1000.0;
-    add(jScrollPane1, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.ipadx = 354;
+        gridBagConstraints.ipady = 229;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1000.0;
+        add(jScrollPane1, gridBagConstraints);
 
-    jPanel1.setLayout(new java.awt.BorderLayout());
-    jPanel1.add(progressBarSearch, java.awt.BorderLayout.CENTER);
+        jPanel1.setLayout(new java.awt.BorderLayout());
+        jPanel1.add(progressBarSearch, java.awt.BorderLayout.CENTER);
 
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 1;
-    gridBagConstraints.gridwidth = 2;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-    add(jPanel1, gridBagConstraints);
-  }// </editor-fold>//GEN-END:initComponents
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        add(jPanel1, gridBagConstraints);
+    }// </editor-fold>//GEN-END:initComponents
 
 
-  // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JLabel jLabel1;
-  private javax.swing.JPanel jPanel1;
-  private javax.swing.JScrollPane jScrollPane1;
-  private javax.swing.JList<NodeFileOrFolder> listOfFoundElements;
-  private javax.swing.JProgressBar progressBarSearch;
-  private javax.swing.JTextField textFieldSearchPath;
-  // End of variables declaration//GEN-END:variables
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JList<NodeFileOrFolder> listOfFoundElements;
+    private javax.swing.JProgressBar progressBarSearch;
+    private javax.swing.JTextField textFieldSearchPath;
+    // End of variables declaration//GEN-END:variables
 }

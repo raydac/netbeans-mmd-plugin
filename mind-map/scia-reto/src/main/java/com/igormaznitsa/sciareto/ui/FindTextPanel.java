@@ -180,160 +180,161 @@ public final class FindTextPanel extends javax.swing.JPanel implements FindTextS
    * Editor.
    */
   @SuppressWarnings("unchecked")
-  // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-  private void initComponents() {
-    java.awt.GridBagConstraints gridBagConstraints;
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
-    labelTitle = new javax.swing.JLabel();
-    textFieldSearchText = new javax.swing.JTextField();
-    buttonPrev = new javax.swing.JButton();
-    buttonNext = new javax.swing.JButton();
-    labelClose = new javax.swing.JLabel();
-    filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
-    toggleButtonCaseSensitive = new javax.swing.JToggleButton();
-    panelButtonsForMap = new javax.swing.JPanel();
-    toggleButtonTopicText = new javax.swing.JToggleButton();
-    toggleButtonNote = new javax.swing.JToggleButton();
-    toggleButtonFile = new javax.swing.JToggleButton();
-    toggleButtonURI = new javax.swing.JToggleButton();
+        labelTitle = new javax.swing.JLabel();
+        textFieldSearchText = new javax.swing.JTextField();
+        buttonPrev = new javax.swing.JButton();
+        buttonNext = new javax.swing.JButton();
+        labelClose = new javax.swing.JLabel();
+        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
+        toggleButtonCaseSensitive = new javax.swing.JToggleButton();
+        panelButtonsForMap = new javax.swing.JPanel();
+        toggleButtonTopicText = new javax.swing.JToggleButton();
+        toggleButtonNote = new javax.swing.JToggleButton();
+        toggleButtonFile = new javax.swing.JToggleButton();
+        toggleButtonURI = new javax.swing.JToggleButton();
 
-    setLayout(new java.awt.GridBagLayout());
+        setLayout(new java.awt.GridBagLayout());
 
-    labelTitle.setText("Find:");
-    labelTitle.setFocusable(false);
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-    gridBagConstraints.weightx = 10.0;
-    gridBagConstraints.insets = new java.awt.Insets(0, 16, 0, 8);
-    add(labelTitle, gridBagConstraints);
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
+        labelTitle.setText(bundle.getString("panelFindText.labelFind")); // NOI18N
+        labelTitle.setFocusable(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 10.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 16, 0, 8);
+        add(labelTitle, gridBagConstraints);
 
-    textFieldSearchText.setFocusTraversalPolicyProvider(true);
-    textFieldSearchText.addKeyListener(new java.awt.event.KeyAdapter() {
-      public void keyPressed(java.awt.event.KeyEvent evt) {
-        textFieldSearchTextKeyPressed(evt);
-      }
-    });
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 0;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-    gridBagConstraints.weightx = 1.0;
-    gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 16);
-    add(textFieldSearchText, gridBagConstraints);
+        textFieldSearchText.setFocusTraversalPolicyProvider(true);
+        textFieldSearchText.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                textFieldSearchTextKeyPressed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 16);
+        add(textFieldSearchText, gridBagConstraints);
 
-    buttonPrev.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/resultset_previous.png"))); // NOI18N
-    buttonPrev.setToolTipText("Find previous (SHFT+ENTER)");
-    buttonPrev.setFocusable(false);
-    buttonPrev.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        buttonPrevActionPerformed(evt);
-      }
-    });
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-    gridBagConstraints.weightx = 10.0;
-    add(buttonPrev, gridBagConstraints);
+        buttonPrev.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/resultset_previous.png"))); // NOI18N
+        buttonPrev.setToolTipText(bundle.getString("panelFindText.tooltipFindPrevious")); // NOI18N
+        buttonPrev.setFocusable(false);
+        buttonPrev.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonPrevActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 10.0;
+        add(buttonPrev, gridBagConstraints);
 
-    buttonNext.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/resultset_next.png"))); // NOI18N
-    buttonNext.setToolTipText("Find next (ENTER)");
-    buttonNext.setFocusable(false);
-    buttonNext.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        buttonNextActionPerformed(evt);
-      }
-    });
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-    gridBagConstraints.weightx = 10.0;
-    gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 16);
-    add(buttonNext, gridBagConstraints);
+        buttonNext.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/resultset_next.png"))); // NOI18N
+        buttonNext.setToolTipText(bundle.getString("panelFindText.tooltipFindNext")); // NOI18N
+        buttonNext.setFocusable(false);
+        buttonNext.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonNextActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 10.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 16);
+        add(buttonNext, gridBagConstraints);
 
-    labelClose.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-    labelClose.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/nimbusCloseFrame.png"))); // NOI18N
-    labelClose.setToolTipText("Close search form (ESC)");
-    labelClose.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-    labelClose.setFocusable(false);
-    labelClose.addMouseListener(new java.awt.event.MouseAdapter() {
-      public void mouseClicked(java.awt.event.MouseEvent evt) {
-        labelCloseMouseClicked(evt);
-      }
-    });
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 7;
-    gridBagConstraints.gridy = 0;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-    gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 8);
-    add(labelClose, gridBagConstraints);
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 6;
-    gridBagConstraints.gridy = 0;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.weightx = 100000.0;
-    add(filler1, gridBagConstraints);
+        labelClose.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        labelClose.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/nimbusCloseFrame.png"))); // NOI18N
+        labelClose.setToolTipText(bundle.getString("panelFindText.tooltipClose")); // NOI18N
+        labelClose.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        labelClose.setFocusable(false);
+        labelClose.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                labelCloseMouseClicked(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 7;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 8);
+        add(labelClose, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 6;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 100000.0;
+        add(filler1, gridBagConstraints);
 
-    toggleButtonCaseSensitive.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/find/case16.png"))); // NOI18N
-    toggleButtonCaseSensitive.setToolTipText("Case sensitive mode");
-    toggleButtonCaseSensitive.setFocusable(false);
-    toggleButtonCaseSensitive.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        toggleButtonCaseSensitiveActionPerformed(evt);
-      }
-    });
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 4;
-    gridBagConstraints.gridy = 0;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-    gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 8);
-    add(toggleButtonCaseSensitive, gridBagConstraints);
+        toggleButtonCaseSensitive.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/find/case16.png"))); // NOI18N
+        toggleButtonCaseSensitive.setToolTipText(bundle.getString("panelFindText.tooltipCaseSensetiveMode")); // NOI18N
+        toggleButtonCaseSensitive.setFocusable(false);
+        toggleButtonCaseSensitive.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                toggleButtonCaseSensitiveActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 4;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 8);
+        add(toggleButtonCaseSensitive, gridBagConstraints);
 
-    panelButtonsForMap.setLayout(new java.awt.GridBagLayout());
+        panelButtonsForMap.setLayout(new java.awt.GridBagLayout());
 
-    toggleButtonTopicText.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/find/text16.png"))); // NOI18N
-    toggleButtonTopicText.setToolTipText("Find in topic title");
-    toggleButtonTopicText.setFocusable(false);
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 0;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-    gridBagConstraints.weightx = 1.0;
-    panelButtonsForMap.add(toggleButtonTopicText, gridBagConstraints);
+        toggleButtonTopicText.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/find/text16.png"))); // NOI18N
+        toggleButtonTopicText.setToolTipText(bundle.getString("panelFindText.tooltipFindInTitle")); // NOI18N
+        toggleButtonTopicText.setFocusable(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        panelButtonsForMap.add(toggleButtonTopicText, gridBagConstraints);
 
-    toggleButtonNote.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/find/note16.png"))); // NOI18N
-    toggleButtonNote.setToolTipText("Find in topic notes");
-    toggleButtonNote.setFocusable(false);
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 0;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-    gridBagConstraints.weightx = 1.0;
-    panelButtonsForMap.add(toggleButtonNote, gridBagConstraints);
+        toggleButtonNote.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/find/note16.png"))); // NOI18N
+        toggleButtonNote.setToolTipText(bundle.getString("panelFindText.tooltipFindInNotes")); // NOI18N
+        toggleButtonNote.setFocusable(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        panelButtonsForMap.add(toggleButtonNote, gridBagConstraints);
 
-    toggleButtonFile.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/find/disk16.png"))); // NOI18N
-    toggleButtonFile.setToolTipText("Find in file links");
-    toggleButtonFile.setFocusable(false);
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 2;
-    gridBagConstraints.gridy = 0;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-    gridBagConstraints.weightx = 1.0;
-    panelButtonsForMap.add(toggleButtonFile, gridBagConstraints);
+        toggleButtonFile.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/find/disk16.png"))); // NOI18N
+        toggleButtonFile.setToolTipText(bundle.getString("panelFindText.tooltipFindInFileLinks")); // NOI18N
+        toggleButtonFile.setFocusable(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        panelButtonsForMap.add(toggleButtonFile, gridBagConstraints);
 
-    toggleButtonURI.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/find/url16.png"))); // NOI18N
-    toggleButtonURI.setToolTipText("Find in URI links");
-    toggleButtonURI.setFocusable(false);
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 3;
-    gridBagConstraints.gridy = 0;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-    gridBagConstraints.weightx = 1.0;
-    panelButtonsForMap.add(toggleButtonURI, gridBagConstraints);
+        toggleButtonURI.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/find/url16.png"))); // NOI18N
+        toggleButtonURI.setToolTipText(bundle.getString("panelFindText.tooltipFindInUrl")); // NOI18N
+        toggleButtonURI.setFocusable(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        panelButtonsForMap.add(toggleButtonURI, gridBagConstraints);
 
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 5;
-    gridBagConstraints.gridy = 0;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-    add(panelButtonsForMap, gridBagConstraints);
-  }// </editor-fold>//GEN-END:initComponents
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 5;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        add(panelButtonsForMap, gridBagConstraints);
+    }// </editor-fold>//GEN-END:initComponents
 
   private void textFieldSearchTextKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textFieldSearchTextKeyPressed
     switch(evt.getKeyCode()){
@@ -384,18 +385,18 @@ public final class FindTextPanel extends javax.swing.JPanel implements FindTextS
 
   
 
-  // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JButton buttonNext;
-  private javax.swing.JButton buttonPrev;
-  private javax.swing.Box.Filler filler1;
-  private javax.swing.JLabel labelClose;
-  private javax.swing.JLabel labelTitle;
-  private javax.swing.JPanel panelButtonsForMap;
-  private javax.swing.JTextField textFieldSearchText;
-  private javax.swing.JToggleButton toggleButtonCaseSensitive;
-  private javax.swing.JToggleButton toggleButtonFile;
-  private javax.swing.JToggleButton toggleButtonNote;
-  private javax.swing.JToggleButton toggleButtonTopicText;
-  private javax.swing.JToggleButton toggleButtonURI;
-  // End of variables declaration//GEN-END:variables
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton buttonNext;
+    private javax.swing.JButton buttonPrev;
+    private javax.swing.Box.Filler filler1;
+    private javax.swing.JLabel labelClose;
+    private javax.swing.JLabel labelTitle;
+    private javax.swing.JPanel panelButtonsForMap;
+    private javax.swing.JTextField textFieldSearchText;
+    private javax.swing.JToggleButton toggleButtonCaseSensitive;
+    private javax.swing.JToggleButton toggleButtonFile;
+    private javax.swing.JToggleButton toggleButtonNote;
+    private javax.swing.JToggleButton toggleButtonTopicText;
+    private javax.swing.JToggleButton toggleButtonURI;
+    // End of variables declaration//GEN-END:variables
 }

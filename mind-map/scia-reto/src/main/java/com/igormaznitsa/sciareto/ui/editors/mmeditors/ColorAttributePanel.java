@@ -74,85 +74,89 @@ public final class ColorAttributePanel extends javax.swing.JPanel {
    * Editor.
    */
   @SuppressWarnings("unchecked")
-  // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-  private void initComponents() {
-    java.awt.GridBagConstraints gridBagConstraints;
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
-    colorChooserBorder = new com.igormaznitsa.sciareto.ui.misc.ColorChooserButton();
-    colorChooserFill = new com.igormaznitsa.sciareto.ui.misc.ColorChooserButton();
-    colorChooserText = new com.igormaznitsa.sciareto.ui.misc.ColorChooserButton();
-    buttonResetBorder = new javax.swing.JButton();
-    buttonResetFill = new javax.swing.JButton();
-    buttonResetText = new javax.swing.JButton();
+        colorChooserBorder = new com.igormaznitsa.sciareto.ui.misc.ColorChooserButton();
+        colorChooserFill = new com.igormaznitsa.sciareto.ui.misc.ColorChooserButton();
+        colorChooserText = new com.igormaznitsa.sciareto.ui.misc.ColorChooserButton();
+        buttonResetBorder = new javax.swing.JButton();
+        buttonResetFill = new javax.swing.JButton();
+        buttonResetText = new javax.swing.JButton();
 
-    setLayout(new java.awt.GridBagLayout());
+        setLayout(new java.awt.GridBagLayout());
 
-    colorChooserBorder.setText("Border color"); // NOI18N
-    colorChooserBorder.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 0;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.ipadx = 64;
-    gridBagConstraints.insets = new java.awt.Insets(8, 16, 8, 16);
-    add(colorChooserBorder, gridBagConstraints);
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
+        colorChooserBorder.setText(bundle.getString("panelColorAttribute.buttonBorderColor")); // NOI18N
+        colorChooserBorder.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipadx = 64;
+        gridBagConstraints.insets = new java.awt.Insets(8, 16, 8, 16);
+        add(colorChooserBorder, gridBagConstraints);
 
-    colorChooserFill.setText("Fill color"); // NOI18N
-    colorChooserFill.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 1;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.ipadx = 64;
-    gridBagConstraints.insets = new java.awt.Insets(0, 16, 8, 16);
-    add(colorChooserFill, gridBagConstraints);
+        colorChooserFill.setText(bundle.getString("panelColorAttribute.buttonFillColor")); // NOI18N
+        colorChooserFill.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipadx = 64;
+        gridBagConstraints.insets = new java.awt.Insets(0, 16, 8, 16);
+        add(colorChooserFill, gridBagConstraints);
 
-    colorChooserText.setText("Text color"); // NOI18N
-    colorChooserText.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 2;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.ipadx = 64;
-    gridBagConstraints.insets = new java.awt.Insets(0, 16, 8, 16);
-    add(colorChooserText, gridBagConstraints);
+        colorChooserText.setText(bundle.getString("panelColorAttribute.buttonTextColor")); // NOI18N
+        colorChooserText.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipadx = 64;
+        gridBagConstraints.insets = new java.awt.Insets(0, 16, 8, 16);
+        add(colorChooserText, gridBagConstraints);
 
-    buttonResetBorder.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/cross16.png"))); // NOI18N
-    buttonResetBorder.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        buttonResetBorderActionPerformed(evt);
-      }
-    });
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 0;
-    gridBagConstraints.insets = new java.awt.Insets(8, 0, 8, 0);
-    add(buttonResetBorder, gridBagConstraints);
+        buttonResetBorder.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/cross16.png"))); // NOI18N
+        buttonResetBorder.setToolTipText(bundle.getString("panelColorAttribute.buttonResetValue")); // NOI18N
+        buttonResetBorder.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonResetBorderActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(8, 0, 8, 0);
+        add(buttonResetBorder, gridBagConstraints);
 
-    buttonResetFill.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/cross16.png"))); // NOI18N
-    buttonResetFill.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        buttonResetFillActionPerformed(evt);
-      }
-    });
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 1;
-    gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-    add(buttonResetFill, gridBagConstraints);
+        buttonResetFill.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/cross16.png"))); // NOI18N
+        buttonResetFill.setToolTipText(bundle.getString("panelColorAttribute.buttonResetValue")); // NOI18N
+        buttonResetFill.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonResetFillActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+        add(buttonResetFill, gridBagConstraints);
 
-    buttonResetText.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/cross16.png"))); // NOI18N
-    buttonResetText.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        buttonResetTextActionPerformed(evt);
-      }
-    });
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 1;
-    gridBagConstraints.gridy = 2;
-    gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-    add(buttonResetText, gridBagConstraints);
-  }// </editor-fold>//GEN-END:initComponents
+        buttonResetText.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/cross16.png"))); // NOI18N
+        buttonResetText.setToolTipText(bundle.getString("panelColorAttribute.buttonResetValue")); // NOI18N
+        buttonResetText.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonResetTextActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+        add(buttonResetText, gridBagConstraints);
+    }// </editor-fold>//GEN-END:initComponents
 
   private void buttonResetBorderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonResetBorderActionPerformed
     this.colorChooserBorder.setValue(null);
@@ -167,12 +171,12 @@ public final class ColorAttributePanel extends javax.swing.JPanel {
   }//GEN-LAST:event_buttonResetTextActionPerformed
 
 
-  // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JButton buttonResetBorder;
-  private javax.swing.JButton buttonResetFill;
-  private javax.swing.JButton buttonResetText;
-  private com.igormaznitsa.sciareto.ui.misc.ColorChooserButton colorChooserBorder;
-  private com.igormaznitsa.sciareto.ui.misc.ColorChooserButton colorChooserFill;
-  private com.igormaznitsa.sciareto.ui.misc.ColorChooserButton colorChooserText;
-  // End of variables declaration//GEN-END:variables
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton buttonResetBorder;
+    private javax.swing.JButton buttonResetFill;
+    private javax.swing.JButton buttonResetText;
+    private com.igormaznitsa.sciareto.ui.misc.ColorChooserButton colorChooserBorder;
+    private com.igormaznitsa.sciareto.ui.misc.ColorChooserButton colorChooserFill;
+    private com.igormaznitsa.sciareto.ui.misc.ColorChooserButton colorChooserText;
+    // End of variables declaration//GEN-END:variables
 }
