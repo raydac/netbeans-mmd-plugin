@@ -167,59 +167,60 @@ public class GoToFilePanel extends javax.swing.JPanel implements Comparator<Node
    * Editor.
    */
   @SuppressWarnings("unchecked")
-  // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-  private void initComponents() {
-    java.awt.GridBagConstraints gridBagConstraints;
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
-    labelFilenameMask = new javax.swing.JLabel();
-    textFieldMask = new javax.swing.JTextField();
-    jScrollPane1 = new javax.swing.JScrollPane();
-    listFoundFiles = new javax.swing.JList<>();
+        labelFilenameMask = new javax.swing.JLabel();
+        textFieldMask = new javax.swing.JTextField();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        listFoundFiles = new javax.swing.JList<>();
 
-    setLayout(new java.awt.GridBagLayout());
+        setLayout(new java.awt.GridBagLayout());
 
-    labelFilenameMask.setText("File Name prefix (wildcards: ? and *)");
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 0;
-    gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-    gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-    add(labelFilenameMask, gridBagConstraints);
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
+        labelFilenameMask.setText(bundle.getString("panelGoToFilePanel.labelFileName")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+        add(labelFilenameMask, gridBagConstraints);
 
-    textFieldMask.addKeyListener(new java.awt.event.KeyAdapter() {
-      public void keyPressed(java.awt.event.KeyEvent evt) {
-        textFieldMaskKeyPressed(evt);
-      }
-    });
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 1;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-    gridBagConstraints.weightx = 1000.0;
-    gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-    add(textFieldMask, gridBagConstraints);
+        textFieldMask.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                textFieldMaskKeyPressed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1000.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+        add(textFieldMask, gridBagConstraints);
 
-    listFoundFiles.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-    listFoundFiles.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-      public void mouseMoved(java.awt.event.MouseEvent evt) {
-        listFoundFilesMouseMoved(evt);
-      }
-    });
-    listFoundFiles.addMouseListener(new java.awt.event.MouseAdapter() {
-      public void mouseClicked(java.awt.event.MouseEvent evt) {
-        listFoundFilesMouseClicked(evt);
-      }
-    });
-    jScrollPane1.setViewportView(listFoundFiles);
+        listFoundFiles.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        listFoundFiles.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                listFoundFilesMouseMoved(evt);
+            }
+        });
+        listFoundFiles.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                listFoundFilesMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(listFoundFiles);
 
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 2;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-    gridBagConstraints.weightx = 1000.0;
-    gridBagConstraints.weighty = 1000.0;
-    add(jScrollPane1, gridBagConstraints);
-  }// </editor-fold>//GEN-END:initComponents
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1000.0;
+        gridBagConstraints.weighty = 1000.0;
+        add(jScrollPane1, gridBagConstraints);
+    }// </editor-fold>//GEN-END:initComponents
 
   private void listFoundFilesMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listFoundFilesMouseMoved
     final ListModel model = this.listFoundFiles.getModel();
@@ -275,10 +276,10 @@ public class GoToFilePanel extends javax.swing.JPanel implements Comparator<Node
   }//GEN-LAST:event_listFoundFilesMouseClicked
 
 
-  // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JScrollPane jScrollPane1;
-  private javax.swing.JLabel labelFilenameMask;
-  private javax.swing.JList<NodeFileOrFolder> listFoundFiles;
-  private javax.swing.JTextField textFieldMask;
-  // End of variables declaration//GEN-END:variables
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel labelFilenameMask;
+    private javax.swing.JList<NodeFileOrFolder> listFoundFiles;
+    private javax.swing.JTextField textFieldMask;
+    // End of variables declaration//GEN-END:variables
 }
