@@ -57,6 +57,9 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
 
   private final List<ActionListener> maxMinEditorListeners = new CopyOnWriteArrayList<>();
 
+  private final java.util.ResourceBundle bundle =
+      java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
+
   public EditorTabPane(@Nonnull final Context context) {
     super(JTabbedPane.TOP);
     this.context = context;
@@ -183,7 +186,7 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
       result = new JPopupMenu();
 
       if (title.isChanged()) {
-        final JMenuItem saveItem = new JMenuItem("Save");
+        final JMenuItem saveItem = new JMenuItem(this.bundle.getString("panelEditorTab.menuItemSave"));
         saveItem.addActionListener(new ActionListener() {
           @Override
           public void actionPerformed(@Nonnull final ActionEvent e) {
@@ -193,7 +196,7 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
               LOGGER.error("Can't save file", ex); //NOI18N
               DialogProviderManager.getInstance().getDialogProvider()
                   .msgError(SciaRetoStarter.getApplicationFrame(),
-                      "Can't save document, may be it is read-only! See log!");
+                      bundle.getString("panelEditorTab.errorCantSaveDocument"));
             }
           }
         });
@@ -201,7 +204,7 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
       }
 
       if (title.getProvider().isSaveable()) {
-        final JMenuItem saveAsItem = new JMenuItem("Save As..");
+        final JMenuItem saveAsItem = new JMenuItem(this.bundle.getString("panelEditorTab.menuItemSaveAs"));
         saveAsItem.addActionListener(new ActionListener() {
           @Override
           public void actionPerformed(@Nonnull final ActionEvent e) {
@@ -211,7 +214,7 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
               LOGGER.error("Can't save file", ex); //NOI18N
               DialogProviderManager.getInstance().getDialogProvider()
                   .msgError(SciaRetoStarter.getApplicationFrame(),
-                      "Can't save document, may be it is read-only! See log!");
+                      bundle.getString("panelEditorTab.errorCantSaveDocument"));
             }
           }
         });
@@ -219,13 +222,13 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
       }
       result.add(new JSeparator());
 
-      final JMenuItem closeItem = new JMenuItem("Close");
+      final JMenuItem closeItem = new JMenuItem(bundle.getString("panelEditorTab.menuItemClose"));
       closeItem.addActionListener((@Nonnull final ActionEvent e) -> {
         title.doSafeClose();
       });
       result.add(closeItem);
 
-      final JMenuItem closeOthers = new JMenuItem("Close Others");
+      final JMenuItem closeOthers = new JMenuItem(this.bundle.getString("panelEditorTab.menuItemCloseOthers"));
       closeOthers.addActionListener((@Nonnull ActionEvent e) -> {
         final List<TabTitle> list = new ArrayList<>();
         for (final TabTitle t : theInstance) {
@@ -237,7 +240,7 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
       });
       result.add(closeOthers);
 
-      final JMenuItem closeAll = new JMenuItem("Close All");
+      final JMenuItem closeAll = new JMenuItem(this.bundle.getString("panelEditorTab.menuItemCloseAll"));
       closeAll.addActionListener((@Nonnull ActionEvent e) -> {
         final List<TabTitle> list = new ArrayList<>();
         for (final TabTitle t : theInstance) {
@@ -249,13 +252,13 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
 
       result.add(new JSeparator());
 
-      final JMenuItem showInTree = new JMenuItem("Select in Tree");
+      final JMenuItem showInTree = new JMenuItem(this.bundle.getString("panelEditorTab.menuItemSelectInTree"));
       showInTree.addActionListener((ActionEvent e) -> {
         context.focusInTree(title);
       });
       result.add(showInTree);
 
-      final JMenuItem openInSystem = new JMenuItem("Open in System");
+      final JMenuItem openInSystem = new JMenuItem(this.bundle.getString("panelEditorTab.menuItemOpenInSystem"));
       openInSystem.addActionListener((ActionEvent e) -> {
         final File file = title.getAssociatedFile();
         if (file != null && file.exists()) {
@@ -275,7 +278,8 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
     if (!foundUnsaved
         || DialogProviderManager.getInstance().getDialogProvider()
         .msgConfirmOkCancel(SciaRetoStarter.getApplicationFrame(),
-            "Detected unsaved", "Detected unsaved documents! Close anyway?")) {
+            this.bundle.getString("panelEditorTab.errorTitleDetectedUnsaved"),
+            this.bundle.getString("panelEditorTab.errorDetectedUnsaved"))) {
       this.context.closeTab(titles);
     }
   }
