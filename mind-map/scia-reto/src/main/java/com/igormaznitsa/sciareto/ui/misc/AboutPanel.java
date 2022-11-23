@@ -228,7 +228,6 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
-        jSplitPane1 = new javax.swing.JSplitPane();
         labelSplash = new javax.swing.JLabel();
         tabbedPaneContent = new javax.swing.JTabbedPane();
         textLabel = new com.igormaznitsa.sciareto.ui.misc.JHtmlLabel();
@@ -303,7 +302,6 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.Box.Filler filler1;
-    private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JLabel labelSplash;
     private javax.swing.JPanel panelDonate;
     private javax.swing.JScrollPane scrollPanelThirdParts;
