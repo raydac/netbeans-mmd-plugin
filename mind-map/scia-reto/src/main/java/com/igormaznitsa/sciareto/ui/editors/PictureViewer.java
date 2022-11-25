@@ -73,7 +73,7 @@ public final class PictureViewer extends AbstractEditor {
           "svg");
 
 
-  public static final FileFilter IMAGE_FILE_FILTER = new FileFilter() {
+  private final FileFilter fileFilterImage = new FileFilter() {
     @Override
     public boolean accept(@Nonnull final File f) {
       if (f.isDirectory()) {
@@ -86,7 +86,7 @@ public final class PictureViewer extends AbstractEditor {
     @Override
     @Nonnull
     public String getDescription() {
-      return "Image file (*.png,*.jpg,*.gif,*.svg)";
+      return bundle.getString("editorAbstractPlUml.fileFilter.image.description");
     }
   };
   private final TabTitle title;
@@ -128,7 +128,8 @@ public final class PictureViewer extends AbstractEditor {
     });
 
     final JButton buttonClipboardImage = new JButton(loadMenuIcon("clipboard_image"));
-    buttonClipboardImage.setToolTipText("Copy image to clipboard");
+    buttonClipboardImage.setToolTipText(
+        this.bundle.getString("editorPictureViewer.buttonClipboardImage.tooltip"));
 
     buttonClipboardImage.addActionListener(e -> {
       final BufferedImage image = imageViewer.getImage();
@@ -217,7 +218,7 @@ public final class PictureViewer extends AbstractEditor {
   @Override
   @Nonnull
   public FileFilter getFileFilter() {
-    return IMAGE_FILE_FILTER;
+    return fileFilterImage;
   }
 
   @Override
@@ -238,7 +239,8 @@ public final class PictureViewer extends AbstractEditor {
     this.image = loaded;
 
     this.imageInfoLabel.setText(String
-        .format("<html><b>&nbsp;Width=%d px,&nbsp;Height=%d px</b></html>",
+        .format(
+            this.bundle.getString("editorPictureViewer.buttonClipboardImage.imageInfoLabel"),
             this.image.getWidth(null), this.image.getHeight(null)));
 
     this.imageViewer.setImage(this.image, true);

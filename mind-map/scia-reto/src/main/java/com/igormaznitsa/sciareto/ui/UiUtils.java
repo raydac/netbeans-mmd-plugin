@@ -20,6 +20,7 @@
 package com.igormaznitsa.sciareto.ui;
 
 import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.html2color;
+import static java.util.ResourceBundle.getBundle;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.Assertions;
@@ -28,6 +29,7 @@ import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.swing.ide.IDEBridgeFactory;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
@@ -81,40 +83,10 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import org.apache.commons.lang3.SystemUtils;
-import reactor.core.Disposable;
-import reactor.core.scheduler.Scheduler;
 
 public final class UiUtils {
 
-  public static final ResourceBundle BUNDLE =
-      java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle");
   public static final MMapURI EMPTY_URI;
-  public static final Scheduler SWING_SCHEDULER = new Scheduler() {
-    private final Disposable nullDisposable = () -> {
-    };
-
-    private final Worker worker = new Worker() {
-      @Override
-      public Disposable schedule(@Nonnull final Runnable task) {
-        SwingUtilities.invokeLater(task);
-        return nullDisposable;
-      }
-
-      @Override
-      public void dispose() {
-      }
-    };
-
-    @Override
-    public Disposable schedule(@Nonnull final Runnable task) {
-      return this.createWorker().schedule(task);
-    }
-
-    @Override
-    public Scheduler.Worker createWorker() {
-      return this.worker;
-    }
-  };
   private static final Logger LOGGER = LoggerFactory.getLogger(UiUtils.class);
 
   static {
@@ -123,6 +95,11 @@ public final class UiUtils {
     } catch (URISyntaxException ex) {
       throw new Error("Unexpected exception", ex); //NOI18N
     }
+  }
+
+  public static ResourceBundle findTextBundle() {
+    return getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle", IDEBridgeFactory.findInstance()
+        .getIDELocale());
   }
 
   private UiUtils() {
@@ -165,7 +142,7 @@ public final class UiUtils {
     if (result != null && !result.matches("\\s*[1-5](?:\\.5)?\\s*")) {
       result = null;
     }
-    return result == null ? result : result.trim();
+    return result == null ? null : result.trim();
   }
 
   public static void saveUiScaleFactor(@Nullable final String scaleFactor) {
@@ -383,7 +360,7 @@ public final class UiUtils {
       } catch (URISyntaxException ex) {
         DialogProviderManager.getInstance().getDialogProvider()
             .msgError(SciaRetoStarter.getApplicationFrame(),
-                String.format(BUNDLE.getString("NbUtils.errMsgIllegalURI"), text));
+                String.format(findTextBundle().getString("NbUtils.errMsgIllegalURI"), text));
         return null;
       }
     } else {
@@ -430,7 +407,7 @@ public final class UiUtils {
         DialogProviderManager.getInstance().getDialogProvider()
             .msgError(SciaRetoStarter.getApplicationFrame(),
                 String.format(
-                    BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"),
+                    findTextBundle().getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"),
                     result.getFilePathWithLine().getPath()));
         result = null;
       }

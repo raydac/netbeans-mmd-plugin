@@ -24,12 +24,11 @@ import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
+import java.nio.file.Files;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -43,13 +42,21 @@ import javax.annotation.Nullable;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
-public class TextFileBackuper {
+public class TextFileBackup {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(TextFileBackuper.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TextFileBackup.class);
 
-  private static final BackupContent END_WORK = new BackupContent(new File("/some/non-existing/fake/file"), null);
+  private static final BackupContent END_WORK =
+      new BackupContent(new File("/some/non-existing/fake/file"), null);
+  private static final AtomicReference<TextFileBackup> instance = new AtomicReference<>();
+  private final BlockingQueue<BackupContent> contentQueue = new ArrayBlockingQueue<>(32);
 
-  private static void writeLong(final long value, @Nonnull final OutputStream out) throws IOException {
+  private TextFileBackup() {
+
+  }
+
+  private static void writeLong(final long value, @Nonnull final OutputStream out)
+      throws IOException {
     final byte[] splitted = new byte[8];
     long acc = value;
     for (int i = 0; i < 8; i++) {
@@ -57,77 +64,6 @@ public class TextFileBackuper {
       acc >>>= 8;
     }
     IOUtils.write(splitted, out);
-  }
-
-  public static class Restored {
-    private final long timestamp;
-    private final long crc32;
-    private final int packedSize;
-    private final int unpackedSize;
-    private final byte[] content;
-
-    private static long readLong(@Nonnull final InputStream in) throws IOException {
-      final byte[] splitted = new byte[8];
-      IOUtils.readFully(in, splitted);
-      long acc = 0L;
-      for (int i = 0; i < 8; i++) {
-        acc >>>= 8;
-        acc |= ((long) splitted[i]) << 56;
-      }
-      return acc;
-    }
-
-    public Restored(@Nonnull final File file) throws IOException {
-      try (final InputStream inStream = new BufferedInputStream(new FileInputStream(file))) {
-        this.timestamp = readLong(inStream);
-        this.crc32 = readLong(inStream);
-        this.unpackedSize = (int) readLong(inStream);
-        this.packedSize = (int) readLong(inStream);
-        this.content = new byte[unpackedSize];
-        try (final InflaterInputStream zipIn = new InflaterInputStream(inStream)) {
-          IOUtils.readFully(zipIn, this.content);
-        }
-        final CRC32 calcCrc32 = new CRC32();
-        calcCrc32.update(content);
-        if (crc32 != calcCrc32.getValue()) {
-          throw new IOException("CRC32 error");
-        }
-      }
-    }
-
-    public int getPackedSize() {
-      return this.packedSize;
-    }
-
-    public int getUnpackedSize() {
-      return this.unpackedSize;
-    }
-
-    public long getTimestamp() {
-      return this.timestamp;
-    }
-
-    public long getCrc32() {
-      return this.crc32;
-    }
-
-    public byte[] asByteArray() {
-      return this.content;
-    }
-
-    @Nonnull
-    public TextFile asTextFile() {
-      return new TextFile(new File("backup"), true, this.content);
-    }
-    
-    @Nonnull
-    public String asText() {
-      return new String(this.content, 0, this.content.length, StandardCharsets.UTF_8);
-    }
-  }
-
-  public void finish() {
-    this.add(END_WORK);
   }
 
   @Nullable
@@ -143,6 +79,27 @@ public class TextFileBackuper {
       return backup1;
     }
     return null;
+  }
+
+  @Nonnull
+  public static String makeBackupFileName(@Nonnull final File orig, final int index) {
+    final String name = orig.getName();
+    return String.format(".%s.%d.abk", name, index);
+  }
+
+  @Nonnull
+  public static TextFileBackup getInstance() {
+    if (instance.get() == null) {
+      final TextFileBackup newInstance = new TextFileBackup();
+      if (instance.compareAndSet(null, newInstance)) {
+        newInstance.start();
+      }
+    }
+    return instance.get();
+  }
+
+  public void finish() {
+    this.add(END_WORK);
   }
 
   @Nonnull
@@ -174,34 +131,10 @@ public class TextFileBackuper {
     }
   }
 
-  public static class BackupContent {
-
-    private final File originalFile;
-    private final String content;
-
-    public BackupContent(@Nonnull final File file, @Nullable final String content) {
-      this.originalFile = file;
-      this.content = content;
-    }
-  }
-
-  private static final AtomicReference<TextFileBackuper> instance = new AtomicReference<>();
-  private final BlockingQueue<BackupContent> contentQueue = new ArrayBlockingQueue<>(32);
-
-  private TextFileBackuper() {
-
-  }
-
   private void start() {
     final Thread thread = new Thread(this::run, "edit-text-content-backuper");
     thread.setDaemon(false);
     thread.start();
-  }
-
-  @Nonnull
-  public static String makeBackupFileName(@Nonnull final File orig, final int index) {
-    final String name = orig.getName();
-    return String.format(".%s.%d.abk", name, index);
   }
 
   private void removeBackup(@Nonnull final File file) {
@@ -269,14 +202,81 @@ public class TextFileBackuper {
     }
   }
 
-  @Nonnull
-  public static TextFileBackuper getInstance() {
-    if (instance.get() == null) {
-      final TextFileBackuper newInstance = new TextFileBackuper();
-      if (instance.compareAndSet(null, newInstance)) {
-        newInstance.start();
+  public static class Restored {
+    private final long timestamp;
+    private final long crc32;
+    private final int packedSize;
+    private final int unpackedSize;
+    private final byte[] content;
+
+    public Restored(@Nonnull final File file) throws IOException {
+      try (final InputStream inStream = new BufferedInputStream(Files.newInputStream(file.toPath()))) {
+        this.timestamp = readLong(inStream);
+        this.crc32 = readLong(inStream);
+        this.unpackedSize = (int) readLong(inStream);
+        this.packedSize = (int) readLong(inStream);
+        this.content = new byte[unpackedSize];
+        try (final InflaterInputStream zipIn = new InflaterInputStream(inStream)) {
+          IOUtils.readFully(zipIn, this.content);
+        }
+        final CRC32 calcCrc32 = new CRC32();
+        calcCrc32.update(content);
+        if (crc32 != calcCrc32.getValue()) {
+          throw new IOException("CRC32 error");
+        }
       }
     }
-    return instance.get();
+
+    private static long readLong(@Nonnull final InputStream in) throws IOException {
+      final byte[] splitted = new byte[8];
+      IOUtils.readFully(in, splitted);
+      long acc = 0L;
+      for (int i = 0; i < 8; i++) {
+        acc >>>= 8;
+        acc |= ((long) splitted[i]) << 56;
+      }
+      return acc;
+    }
+
+    public int getPackedSize() {
+      return this.packedSize;
+    }
+
+    public int getUnpackedSize() {
+      return this.unpackedSize;
+    }
+
+    public long getTimestamp() {
+      return this.timestamp;
+    }
+
+    public long getCrc32() {
+      return this.crc32;
+    }
+
+    public byte[] asByteArray() {
+      return this.content;
+    }
+
+    @Nonnull
+    public TextFile asTextFile() {
+      return new TextFile(new File("backup"), true, this.content);
+    }
+
+    @Nonnull
+    public String asText() {
+      return new String(this.content, 0, this.content.length, StandardCharsets.UTF_8);
+    }
+  }
+
+  public static class BackupContent {
+
+    private final File originalFile;
+    private final String content;
+
+    public BackupContent(@Nonnull final File file, @Nullable final String content) {
+      this.originalFile = file;
+      this.content = content;
+    }
   }
 }

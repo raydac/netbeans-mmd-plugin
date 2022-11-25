@@ -16,16 +16,16 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
+
 package com.igormaznitsa.sciareto.ui.editors;
+
+import static com.igormaznitsa.sciareto.ui.UiUtils.findTextBundle;
 
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import java.awt.GridBagConstraints;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 import javax.annotation.Nonnull;
@@ -36,34 +36,48 @@ import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
 
 public final class PlantUmlTextEditor extends AbstractPlUmlEditor {
 
-  public static final Set<String> SUPPORTED_EXTENSIONS = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList("pu", "puml", "plantuml")));
-  private static final String MIME = "text/plantuml";
+  public static final Set<String> SUPPORTED_EXTENSIONS =
+      Set.of("pu", "puml", "plantuml");
   public static final String NEW_TEMPLATE = "@startuml\n"
-          + "Alice->Alice: This is a signal to self.\\nIt also demonstrates\\nmultiline \\ntext\n"
-          + "@enduml";
+      + "Alice->Alice: This is a signal to self.\\nIt also demonstrates\\nmultiline \\ntext\n"
+      + "@enduml";
+  private static final String MIME = "text/plantuml";
 
-  public static final FileFilter SRC_FILE_FILTER = new FileFilter() {
+  private final FileFilter sourceFileFilter = makeFileFilter();
 
-    @Override
-    public boolean accept(@Nonnull final File f) {
-      if (f.isDirectory()) {
-        return true;
+  public PlantUmlTextEditor(@Nonnull final Context context, @Nonnull File file) throws IOException {
+    super(context, file);
+  }
+
+  public static FileFilter makeFileFilter() {
+    return new FileFilter() {
+
+      @Override
+      public boolean accept(@Nonnull final File f) {
+        if (f.isDirectory()) {
+          return true;
+        }
+        return SUPPORTED_EXTENSIONS.contains(
+            FilenameUtils.getExtension(f.getName()).toLowerCase(Locale.ENGLISH));
       }
-      return SUPPORTED_EXTENSIONS.contains(FilenameUtils.getExtension(f.getName()).toLowerCase(Locale.ENGLISH));
-    }
 
-    @Override
-    @Nonnull
-    public String getDescription() {
-      return "PlantUML files (*.puml, *.pu, *.plantuml)";
-    }
-  };
+      @Override
+      @Nonnull
+      public String getDescription() {
+        return findTextBundle().getString("editorAbstractPlUml.fileFilter.puml.description");
+      }
+    };
+  }
 
   @Override
-  protected void addComponentsToLeftPart(@Nonnull final JPanel menuPanel, @Nonnull final GridBagConstraints constraints) {
-    menuPanel.add(makeLinkLabel("PlantUML", () -> UiUtils.openLocalResourceInDesktop("help/PlantUML_Language_Reference_Guide_en.pdf"), "Open PlantUL manual", ICON_INFO), constraints);
-    menuPanel.add(makeLinkLabel("AsciiMath", "http://asciimath.org/", "Open AsciiMath manual", ICON_INFO), constraints);
-//    this.menu.add(makeLinkLabel("LatexMath", "https://en.wikibooks.org/wiki/LaTeX/Mathematics", "Open LatexMath manual", ICON_INFO), gbdata);
+  protected void addComponentsToLeftPart(@Nonnull final JPanel menuPanel,
+                                         @Nonnull final GridBagConstraints constraints) {
+    menuPanel.add(makeLinkLabel(bundle.getString("editorPlantUml.buttonPlantUmlManual.title"),
+        () -> UiUtils.openLocalResourceInDesktop("help/PlantUML_Language_Reference_Guide_en.pdf"),
+        bundle.getString("editorPlantUml.buttonPlantUmlManual.tooltip"), ICON_INFO), constraints);
+    menuPanel.add(makeLinkLabel(bundle.getString("editorPlantUml.buttonAsciiMathManual.title"),
+        "http://asciimath.org/", bundle.getString("editorPlantUml.buttonAsciiMathManual.tooltip"),
+        ICON_INFO), constraints);
   }
 
   @Override
@@ -77,10 +91,6 @@ public final class PlantUmlTextEditor extends AbstractPlUmlEditor {
     return MIME;
   }
 
-  public PlantUmlTextEditor(@Nonnull final Context context, @Nonnull File file) throws IOException {
-    super(context, file);
-  }
-
   @Nonnull
   @Override
   public String getDefaultExtension() {
@@ -90,7 +100,7 @@ public final class PlantUmlTextEditor extends AbstractPlUmlEditor {
   @Override
   @Nonnull
   public FileFilter getFileFilter() {
-    return SRC_FILE_FILTER;
+    return sourceFileFilter;
   }
 
 }

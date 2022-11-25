@@ -18,7 +18,6 @@
  */
 package com.igormaznitsa.sciareto.ui;
 
-import static com.igormaznitsa.sciareto.SciaRetoStarter.IDE_VERSION;
 import static com.igormaznitsa.sciareto.ui.UiUtils.assertSwingThread;
 
 import com.igormaznitsa.meta.annotation.MayContainNull;
@@ -47,7 +46,7 @@ import com.igormaznitsa.sciareto.ui.editors.MMDEditor;
 import com.igormaznitsa.sciareto.ui.editors.PictureViewer;
 import com.igormaznitsa.sciareto.ui.editors.PlantUmlTextEditor;
 import com.igormaznitsa.sciareto.ui.editors.SourceTextEditor;
-import com.igormaznitsa.sciareto.ui.editors.TextFileBackuper;
+import com.igormaznitsa.sciareto.ui.editors.TextFileBackup;
 import com.igormaznitsa.sciareto.ui.misc.AboutPanel;
 import com.igormaznitsa.sciareto.ui.misc.DonateButton;
 import com.igormaznitsa.sciareto.ui.misc.FileLinkGraphPanel;
@@ -218,7 +217,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
             try {
               dispose();
             } finally {
-              TextFileBackuper.getInstance().finish();
+              TextFileBackup.getInstance().finish();
             }
           }
         }
@@ -1545,10 +1544,10 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     final File file = DialogProviderManager.getInstance()
             .getDialogProvider()
             .msgOpenFileDialog(null, null, "open-file", "Open file", null, true, new FileFilter[]{
-      MMDEditor.MMD_FILE_FILTER,
-      PlantUmlTextEditor.SRC_FILE_FILTER,
-      KsTplTextEditor.SRC_FILE_FILTER,
-      SourceTextEditor.SRC_FILE_FILTER
+      MMDEditor.makeFileFilter(),
+      PlantUmlTextEditor.makeFileFilter(),
+      KsTplTextEditor.makeFileFilter(),
+      SourceTextEditor.makeFileFilter()
     }, "Open");
     if (file != null) {
       if (openFileAsTab(file, -1)) {
@@ -2047,7 +2046,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   public File createMindMapFile(@Nullable final File folder) {
     final JFileChooser chooser = new JFileChooser(folder);
     chooser.setDialogTitle("Create new Mind Map");
-    chooser.setFileFilter(MMDEditor.MMD_FILE_FILTER);
+    chooser.setFileFilter(MMDEditor.makeFileFilter());
     chooser.setMultiSelectionEnabled(false);
     chooser.setApproveButtonText("Create");
 

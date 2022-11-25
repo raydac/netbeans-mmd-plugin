@@ -19,11 +19,13 @@
 
 package com.igormaznitsa.sciareto.ui.editors;
 
+import static com.igormaznitsa.sciareto.ui.UiUtils.findTextBundle;
 import static com.igormaznitsa.sciareto.ui.UiUtils.loadIcon;
 import static java.lang.String.format;
 import static net.sourceforge.plantuml.StringUtils.unicode;
 
 import com.igormaznitsa.sciareto.Context;
+import com.igormaznitsa.sciareto.ui.UiUtils;
 import java.awt.GridBagConstraints;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
@@ -58,23 +60,7 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
       + "Sub-topologies:\n"
       + "Sub-topology: 0\n"
       + "	Source:  KSTREAM-SOURCE-0000000000 (topics: [conversation-meta])\n";
-  public static final FileFilter SRC_FILE_FILTER = new FileFilter() {
-
-    @Override
-    public boolean accept(@Nonnull final File f) {
-      if (f.isDirectory()) {
-        return true;
-      }
-      return SUPPORTED_EXTENSIONS
-          .contains(FilenameUtils.getExtension(f.getName()).toLowerCase(Locale.ENGLISH));
-    }
-
-    @Override
-    @Nonnull
-    public String getDescription() {
-      return "KStreams topology files (*.kstpl)";
-    }
-  };
+  public final FileFilter sourceFileFilter = makeFileFilter();
   private static final String MIME = "text/kstpl";
   private static final String PROPERTY_ORTHOGONAL = "edge.ortho";
   private static final String PROPERTY_TOPICS_GROUP = "group.topics";
@@ -105,6 +91,26 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
     return text.replace("-", "-\\n")
         .replace(" ", "\\n")
         .replace("_", "_\\n");
+  }
+
+  public static FileFilter makeFileFilter() {
+    return new FileFilter() {
+
+      @Override
+      public boolean accept(@Nonnull final File f) {
+        if (f.isDirectory()) {
+          return true;
+        }
+        return SUPPORTED_EXTENSIONS
+            .contains(FilenameUtils.getExtension(f.getName()).toLowerCase(Locale.ENGLISH));
+      }
+
+      @Override
+      @Nonnull
+      public String getDescription() {
+        return findTextBundle().getString("editorAbstractPlUml.fileFilter.kstpl.description");
+      }
+    };
   }
 
   @Override
@@ -485,7 +491,7 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
   @Override
   @Nonnull
   public FileFilter getFileFilter() {
-    return SRC_FILE_FILTER;
+    return sourceFileFilter;
   }
 
   private enum PartitioningFlag {

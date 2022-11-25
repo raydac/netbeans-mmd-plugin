@@ -19,6 +19,8 @@
 
 package com.igormaznitsa.sciareto.ui.editors.mmeditors;
 
+import static com.igormaznitsa.sciareto.ui.UiUtils.findTextBundle;
+
 import com.igormaznitsa.mindmap.ide.commons.SwingUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
@@ -359,7 +361,7 @@ public final class NoteEditor extends JPanel {
       ActionEvent evt) {
     final File toOpen = DialogProviderManager.getInstance().getDialogProvider()
         .msgOpenFileDialog(null, null, "note-editor",
-            UiUtils.BUNDLE.getString("PlainTextEditor.buttonLoadActionPerformed.title"), null, true,
+            findTextBundle().getString("PlainTextEditor.buttonLoadActionPerformed.title"), null, true,
             new FileFilter[] {TEXT_FILE_FILTER}, "Open"); //NOI18N
     if (toOpen != null) {
       try {
@@ -368,7 +370,7 @@ public final class NoteEditor extends JPanel {
       } catch (Exception ex) {
         LOGGER.error("Error during text file loading", ex); //NOI18N
         DialogProviderManager.getInstance().getDialogProvider().msgError(SciaRetoStarter.getApplicationFrame(),
-            UiUtils.BUNDLE.getString("PlainTextEditor.buttonLoadActionPerformed.msgError"));
+            findTextBundle().getString("PlainTextEditor.buttonLoadActionPerformed.msgError"));
       }
     }
 
@@ -597,7 +599,7 @@ public final class NoteEditor extends JPanel {
   private void buttonExportActionPerformed(ActionEvent evt) {
     final File toSave = DialogProviderManager.getInstance().getDialogProvider()
         .msgSaveFileDialog(null, null,"note-editor",
-            UiUtils.BUNDLE.getString("PlainTextEditor.buttonSaveActionPerformed.saveTitle"), null,
+            findTextBundle().getString("PlainTextEditor.buttonSaveActionPerformed.saveTitle"), null,
             true, new FileFilter[] {TEXT_FILE_FILTER}, "Save"); //NOI18N
     if (toSave != null) {
       try {
@@ -606,7 +608,7 @@ public final class NoteEditor extends JPanel {
       } catch (final Exception ex) {
         LOGGER.error("Error during text file saving", ex); //NOI18N
         DialogProviderManager.getInstance().getDialogProvider().msgError(SciaRetoStarter.getApplicationFrame(),
-            UiUtils.BUNDLE.getString("PlainTextEditor.buttonSaveActionPerformed.msgError"));
+            findTextBundle().getString("PlainTextEditor.buttonSaveActionPerformed.msgError"));
       }
     }
   }

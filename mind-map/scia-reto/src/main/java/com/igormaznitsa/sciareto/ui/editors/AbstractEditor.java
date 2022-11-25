@@ -16,7 +16,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
+
 package com.igormaznitsa.sciareto.ui.editors;
+
+import static com.igormaznitsa.sciareto.ui.UiUtils.findTextBundle;
 
 import com.igormaznitsa.meta.common.interfaces.Disposable;
 import com.igormaznitsa.mindmap.model.logger.Logger;
@@ -28,28 +31,26 @@ import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.preferences.SpecificKeys;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.tabs.TabProvider;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.ResourceBundle;
+import java.util.concurrent.atomic.AtomicBoolean;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileFilter;
 
 public abstract class AbstractEditor implements TabProvider, Disposable {
 
-  protected final ResourceBundle bundle =
-      ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
-
-  private final AtomicBoolean disposeFlag = new AtomicBoolean();
   private static final Map<String, ImageIcon> ICON_CACHE = new HashMap<>();
-
+  protected final ResourceBundle bundle = findTextBundle();
   protected final Logger logger;
-
+  private final AtomicBoolean disposeFlag = new AtomicBoolean();
   protected MindMapPanelConfig mindMapPanelConfig;
 
   public AbstractEditor() {
@@ -58,16 +59,29 @@ public abstract class AbstractEditor implements TabProvider, Disposable {
     this.mindMapPanelConfig = loadMindMapConfigFromPreferences();
   }
 
-  @Override
-  public void focusToEditor(int line) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-  }
-
   @Nonnull
   protected static MindMapPanelConfig loadMindMapConfigFromPreferences() {
     final MindMapPanelConfig config = new MindMapPanelConfig();
     config.loadFrom(PreferencesManager.getInstance().getPreferences());
     return config;
+  }
+
+  @Nonnull
+  protected static synchronized ImageIcon loadMenuIcon(@Nonnull final String name) {
+    if (ICON_CACHE.containsKey(name)) {
+      return ICON_CACHE.get(name);
+    } else {
+      final ImageIcon loaded =
+          new javax.swing.ImageIcon(ClassLoader.getSystemResource("menu_icons/" + name + ".png"));
+      ICON_CACHE.put(name, loaded);
+      return loaded;
+    }
+  }
+
+  @Override
+  public void focusToEditor(int line) {
+    throw new UnsupportedOperationException(
+        "Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
 
   @Override
@@ -102,15 +116,19 @@ public abstract class AbstractEditor implements TabProvider, Disposable {
     final File file = this.getTabTitle().getAssociatedFile();
     File fileToSave = dialogProvider.msgSaveFileDialog(SciaRetoStarter.getApplicationFrame(),
         null,
-        "save-as", "Save as", file, true, new FileFilter[]{getFileFilter()}, "Save");
+        "save-as", "Save as", file, true, new FileFilter[] {getFileFilter()}, "Save");
     if (fileToSave != null) {
       if (!fileToSave.getName().contains(".")) {
-        final Boolean result = dialogProvider.msgConfirmYesNoCancel(SciaRetoStarter.getApplicationFrame(), "Add extension", String.format("Add file extenstion '%s'?", this.getDefaultExtension()));
+        final Boolean result =
+            dialogProvider.msgConfirmYesNoCancel(SciaRetoStarter.getApplicationFrame(),
+                "Add extension",
+                String.format("Add file extenstion '%s'?", this.getDefaultExtension()));
         if (result == null) {
           return false;
         }
         if (result) {
-          fileToSave = new File(fileToSave.getParentFile(), fileToSave.getName() + '.' + this.getDefaultExtension());
+          fileToSave = new File(fileToSave.getParentFile(),
+              fileToSave.getName() + '.' + this.getDefaultExtension());
         }
       }
       this.getTabTitle().setAssociatedFile(fileToSave);
@@ -122,32 +140,30 @@ public abstract class AbstractEditor implements TabProvider, Disposable {
   }
 
   protected boolean isOverwriteAllowed(@Nullable final TextFile textFile) throws IOException {
-    boolean result = true;
-    if (textFile != null
-            && !textFile.hasSameContent(textFile.getFile())
-            && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(
-                    SciaRetoStarter.getApplicationFrame(),
-                    "Detected file change",
-                    String.format("File '%s' has been changed externally, overwrite?", textFile.getFile().getName()))) {
-      result = false;
-    }
-    return result;
+    return textFile == null
+        || textFile.hasSameContent(textFile.getFile())
+        || DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(
+        SciaRetoStarter.getApplicationFrame(),
+        findTextBundle().getString("editorAbstract.msgConfirmOverwrite.title"),
+        String.format(findTextBundle().getString("editorAbstract.msgConfirmOverwrite.text"),
+            textFile.getFile().getName()));
   }
-  
+
   protected void onSelectedSaveDocumentAs(@Nonnull final File selectedFile) {
-    
+
   }
-  
+
   protected boolean isAutoBackupAllowed() {
     final PreferencesManager manager = PreferencesManager.getInstance();
-    return manager.getFlag(manager.getPreferences(), SpecificKeys.PROPERTY_BACKUP_LAST_EDIT_BEFORE_SAVE, false);
+    return manager.getFlag(manager.getPreferences(),
+        SpecificKeys.PROPERTY_BACKUP_LAST_EDIT_BEFORE_SAVE, false);
   }
 
   public void deleteBackup() {
     if (this.isEditable() && !this.isDisposed()) {
       final File associatedFile = this.getTabTitle().getAssociatedFile();
       if (isAutoBackupAllowed() && associatedFile != null) {
-        TextFileBackuper.getInstance().add(new TextFileBackuper.BackupContent(associatedFile, null));
+        TextFileBackup.getInstance().add(new TextFileBackup.BackupContent(associatedFile, null));
       }
     }
   }
@@ -157,7 +173,7 @@ public abstract class AbstractEditor implements TabProvider, Disposable {
       if (text != null) {
         final File associatedFile = this.getTabTitle().getAssociatedFile();
         if (isAutoBackupAllowed() && associatedFile != null) {
-          TextFileBackuper.getInstance().add(new TextFileBackuper.BackupContent(associatedFile, text));
+          TextFileBackup.getInstance().add(new TextFileBackup.BackupContent(associatedFile, text));
         }
       }
     }
@@ -185,7 +201,7 @@ public abstract class AbstractEditor implements TabProvider, Disposable {
       if (this.isEditable()) {
         final File associatedFile = this.getTabTitle().getAssociatedFile();
         if (associatedFile != null) {
-          TextFileBackuper.getInstance().add(new TextFileBackuper.BackupContent(associatedFile, null));
+          TextFileBackup.getInstance().add(new TextFileBackup.BackupContent(associatedFile, null));
         }
       }
       try {
@@ -213,21 +229,24 @@ public abstract class AbstractEditor implements TabProvider, Disposable {
       throw new Error("Must be called only from Swing UI thread");
     }
 
-    final File backupFile = TextFileBackuper.findBackupForFile(file);
+    final File backupFile = TextFileBackup.findBackupForFile(file);
     if (backupFile == null) {
       return null;
     }
 
     SciaRetoStarter.disposeSplash();
 
-    if (DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo(this.getContainerToShow(), "Restore from backup?",
+    if (DialogProviderManager.getInstance().getDialogProvider()
+        .msgConfirmYesNo(this.getContainerToShow(), "Restore from backup?",
             String.format("Detected backup '%s', restore content?", backupFile.getName()))) {
       try {
-        final TextFile result = new TextFileBackuper.Restored(backupFile).asTextFile();
-        DialogProviderManager.getInstance().getDialogProvider().msgWarn(this.getContainerToShow(), "Restored from backup file: " + backupFile.getName());
+        final TextFile result = new TextFileBackup.Restored(backupFile).asTextFile();
+        DialogProviderManager.getInstance().getDialogProvider().msgWarn(this.getContainerToShow(),
+            "Restored from backup file: " + backupFile.getName());
         return result;
       } catch (IOException ex) {
-        DialogProviderManager.getInstance().getDialogProvider().msgError(this.getContainerToShow(), "Can't restore backup file for error: " + ex.getMessage());
+        DialogProviderManager.getInstance().getDialogProvider().msgError(this.getContainerToShow(),
+            "Can't restore backup file for error: " + ex.getMessage());
         return null;
       }
     } else {
@@ -238,16 +257,5 @@ public abstract class AbstractEditor implements TabProvider, Disposable {
   @Override
   public boolean showSearchPane(@Nonnull final JPanel searchPanel) {
     return false;
-  }
-
-  @Nonnull
-  protected static synchronized ImageIcon loadMenuIcon(@Nonnull final String name) {
-    if (ICON_CACHE.containsKey(name)) {
-      return ICON_CACHE.get(name);
-    } else {
-      final ImageIcon loaded = new javax.swing.ImageIcon(ClassLoader.getSystemResource("menu_icons/" + name + ".png"));
-      ICON_CACHE.put(name, loaded);
-      return loaded;
-    }
   }
 }

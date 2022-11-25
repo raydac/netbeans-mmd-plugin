@@ -21,9 +21,6 @@ package com.igormaznitsa.sciareto.ui.editors;
 import com.igormaznitsa.sciareto.Context;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 import javax.annotation.Nonnull;
@@ -33,11 +30,11 @@ import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
 
 public class DotScriptEditor extends AbstractDotEditor {
   
-  public static final Set<String> SUPPORTED_EXTENSIONS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList("gv","dot")));
+  public static final Set<String> SUPPORTED_EXTENSIONS = Set.of("gv", "dot");
   public static final String MIME = "text/vnd.graphviz";
   public static final String NEW_TEMPLATE = "digraph graphname {\na -> b -> c;\nb -> d;\n}";
 
-  public static final FileFilter SRC_FILE_FILTER = new FileFilter() {
+  private final FileFilter sourceFileFilter = new FileFilter() {
 
     @Override
     public boolean accept(@Nonnull final File f) {
@@ -50,7 +47,7 @@ public class DotScriptEditor extends AbstractDotEditor {
     @Override
     @Nonnull
     public String getDescription() {
-      return "DOT script files (*.gv,*.dot)";
+      return bundle.getString("editorAbstractPlUml.fileFilter.dot.description");
     }
   };
 
@@ -88,7 +85,7 @@ public class DotScriptEditor extends AbstractDotEditor {
   @Override
   @Nonnull
   public FileFilter getFileFilter() {
-    return SRC_FILE_FILTER;
+    return sourceFileFilter;
   }
   
 }

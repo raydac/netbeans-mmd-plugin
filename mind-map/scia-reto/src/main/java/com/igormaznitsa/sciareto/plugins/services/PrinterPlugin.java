@@ -19,6 +19,8 @@
 
 package com.igormaznitsa.sciareto.plugins.services;
 
+import static com.igormaznitsa.sciareto.ui.UiUtils.findTextBundle;
+
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
@@ -35,8 +37,6 @@ import javax.annotation.Nullable;
 import javax.swing.*;
 import java.awt.*;
 
-import static com.igormaznitsa.sciareto.ui.UiUtils.BUNDLE;
-
 public class PrinterPlugin extends AbstractPopupMenuItem implements MMDPrintPanel.Adaptor {
 
   private static final Image ICON_PRINTER = UiUtils.loadIcon("printer.png"); //NOI18N
@@ -48,7 +48,7 @@ public class PrinterPlugin extends AbstractPopupMenuItem implements MMDPrintPane
   public JMenuItem makeMenuItem(@Nonnull PluginContext context, @Nullable Topic activeTopic) {
     final MMDPrintPanel.Adaptor adaptor = this;
 
-    final JMenuItem printAction = UI_COMPO_FACTORY.makeMenuItem(BUNDLE.getString("MMDGraphEditor.makePopUp.miPrintPreview"), new ImageIcon(ICON_PRINTER));
+    final JMenuItem printAction = UI_COMPO_FACTORY.makeMenuItem(findTextBundle().getString("MMDGraphEditor.makePopUp.miPrintPreview"), new ImageIcon(ICON_PRINTER));
     printAction.addActionListener(e -> {
       SciaRetoStarter.getApplicationFrame().endFullScreenIfActive();
       final MMDPrintPanel panel = new MMDPrintPanel(context.getDialogProvider(), adaptor, PrintableObject.newBuild().mmdpanel(context.getPanel()).build());

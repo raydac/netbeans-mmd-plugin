@@ -16,7 +16,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
+
 package com.igormaznitsa.sciareto.ui.editors;
+
+import static com.igormaznitsa.sciareto.ui.UiUtils.findTextBundle;
+import static java.util.Arrays.asList;
 
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
@@ -26,177 +30,128 @@ import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.FindTextScopeProvider;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
+import java.awt.BorderLayout;
+import java.awt.Cursor;
+import java.awt.FlowLayout;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.event.ItemEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.Box;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.filechooser.FileFilter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rtextarea.RTextScrollPane;
 import org.fife.ui.rtextarea.RUndoManager;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.*;
-import javax.swing.event.CaretEvent;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.event.HyperlinkEvent;
-import javax.swing.filechooser.FileFilter;
-import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
-import java.awt.event.*;
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public final class SourceTextEditor extends AbstractTextEditor {
 
-  private final ScalableRsyntaxTextArea editor;
-  private final TabTitle title;
-
-  private boolean ignoreChange;
-
-  private final RUndoManager undoManager;
-
-  private final JPanel mainPanel;
-
-  private static final Map<String, List<String>> SRC_EXTENSIONS = new HashMap<String, List<String>>();
-  private static final Map<String, String> MAP_EXTENSION2TYPE = new HashMap<String, String>();
-
-  private String originalText = "";
-
   public static final Set<String> SUPPORTED_EXTENSIONS;
-
-  private final JLabel labelWordWrap;
-
-  private enum Wrap {
-    NO_WRAP(" No wrap "),
-    LINE_WRAP("Line wrap");
-
-    private final String text;
-
-    Wrap(@Nonnull final String text) {
-      this.text = text;
-    }
-
-    @Nonnull
-    String getText() {
-      return this.text;
-    }
-  }
-
-  private Wrap currentWrap = Wrap.NO_WRAP;
-
-  public static final class FormatType implements Comparable<FormatType> {
-
-    private final String type;
-    private final String name;
-
-    private FormatType(@Nonnull final String type) {
-      this.type = type;
-      final int index = type.indexOf('/');
-      this.name = index < 0 ? type : type.substring(index + 1).toUpperCase(Locale.ENGLISH);
-    }
-
-    @Nonnull
-    public String getType() {
-      return this.type;
-    }
-
-    @Nonnull
-    @Override
-    public String toString() {
-      return this.name;
-    }
-
-    @Override
-    public int hashCode() {
-      return this.type.hashCode();
-    }
-
-    @Override
-    public boolean equals(@Nullable final Object that) {
-      if (that instanceof FormatType) {
-        return this.type.equals(((FormatType) that).type);
-      }
-      return false;
-    }
-
-    @Override
-    public int compareTo(@Nonnull final FormatType that) {
-      return this.type.compareTo(that.type);
-    }
-  }
-
-  private static final List<FormatType> SUPPORTED_FORMATS = new ArrayList<>();
+  private static final Map<String, List<String>> SRC_EXTENSIONS =
+      new HashMap<>();
+  private static final Map<String, String> MAP_EXTENSION2TYPE = new HashMap<>();
+  private static final List<FormatType> SUPPORTED_FORMATS;
 
   static {
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_GO, Arrays.asList("go")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_ACTIONSCRIPT, Arrays.asList("as")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_ASSEMBLER_X86, Arrays.asList("asm")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_BBCODE, Arrays.asList("bbcode")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_C, Arrays.asList("c", "h")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_CLOJURE, Arrays.asList("clj", "cljs", "cljc", "edn")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS, Arrays.asList("cc", "cpp", "cxx", "c++", "hpp")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_CSHARP, Arrays.asList("cs")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_CSS, Arrays.asList("css")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_D, Arrays.asList("d", "dd")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_DART, Arrays.asList("dart")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_DELPHI, Arrays.asList("pas")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_DOCKERFILE, Arrays.asList("*dockerfile")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_DTD, Arrays.asList("dtd")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_FORTRAN, Arrays.asList("f", "for", "f90", "f95")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_GROOVY, Arrays.asList("groovy")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_HOSTS, Arrays.asList("*hosts", "*hosts.txt")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_HTML, Arrays.asList("htm", "html")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_HTACCESS, Arrays.asList("htaccess")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_INI, Arrays.asList("ini")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_JAVA, Arrays.asList("java")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT, Arrays.asList("js")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_JSON, Arrays.asList("json")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_JSP, Arrays.asList("jsp")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_KOTLIN, Arrays.asList("kt","kts")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_LATEX, Arrays.asList("tex")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_LESS, Arrays.asList("less")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_LISP, Arrays.asList("lisp", "lsp")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_LUA, Arrays.asList("lua")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_MAKEFILE, Arrays.asList("makefile")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_MXML, Arrays.asList("mxml")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_NSIS, Arrays.asList("nsi")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_PERL, Arrays.asList("pl")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_PHP, Arrays.asList("php")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_PROPERTIES_FILE, Arrays.asList("properties")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_PYTHON, Arrays.asList("py")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_RUBY, Arrays.asList("rb")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_SAS, Arrays.asList("sas")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_SCALA, Arrays.asList("scala", "sc")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_SQL, Arrays.asList("sql")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_TCL, Arrays.asList("tcl")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_TYPESCRIPT, Arrays.asList("ts")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_UNIX_SHELL, Arrays.asList("sh")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_VISUAL_BASIC, Arrays.asList("vb")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_WINDOWS_BATCH, Arrays.asList("bat", "cmd")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_XML, Arrays.asList("xml")); //NOI18N
-    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_YAML, Arrays.asList("yaml", "yml")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_GO, List.of("go")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_ACTIONSCRIPT, List.of("as")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_ASSEMBLER_X86, List.of("asm")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_BBCODE, List.of("bbcode")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_C, asList("c", "h")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_CLOJURE,
+        asList("clj", "cljs", "cljc", "edn")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS,
+        asList("cc", "cpp", "cxx", "c++", "hpp")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_CSHARP, List.of("cs")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_CSS, List.of("css")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_D, asList("d", "dd")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_DART, List.of("dart")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_DELPHI, List.of("pas")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_DOCKERFILE,
+        List.of("*dockerfile")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_DTD, List.of("dtd")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_FORTRAN,
+        asList("f", "for", "f90", "f95")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_GROOVY, List.of("groovy")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_HOSTS,
+        asList("*hosts", "*hosts.txt")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_HTML, asList("htm", "html")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_HTACCESS, List.of("htaccess")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_INI, List.of("ini")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_JAVA, List.of("java")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT, List.of("js")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_JSON, List.of("json")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_JSP, List.of("jsp")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_KOTLIN, asList("kt", "kts")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_LATEX, List.of("tex")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_LESS, List.of("less")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_LISP, asList("lisp", "lsp")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_LUA, List.of("lua")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_MAKEFILE, List.of("makefile")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_MXML, List.of("mxml")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_NSIS, List.of("nsi")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_PERL, List.of("pl")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_PHP, List.of("php")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_PROPERTIES_FILE,
+        List.of("properties")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_PYTHON, List.of("py")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_RUBY, List.of("rb")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_SAS, List.of("sas")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_SCALA, asList("scala", "sc")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_SQL, List.of("sql")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_TCL, List.of("tcl")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_TYPESCRIPT, List.of("ts")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_UNIX_SHELL, List.of("sh")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_VISUAL_BASIC, List.of("vb")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_WINDOWS_BATCH,
+        asList("bat", "cmd")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_XML, List.of("xml")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_YAML, asList("yaml", "yml")); //NOI18N
 
     final Set<String> allEtensinsions = new HashSet<>();
 
-    SRC_EXTENSIONS.entrySet().forEach((e) -> {
-      final String type = e.getKey();
+    SUPPORTED_FORMATS = new ArrayList<>();
+
+    SRC_EXTENSIONS.forEach((type, value) -> {
       SUPPORTED_FORMATS.add(new FormatType(type));
-      e.getValue().stream().map((s) -> {
+      value.stream().peek((s) -> {
         if (MAP_EXTENSION2TYPE.put(s, type) != null) {
           throw new Error("Detected duplicated extension : " + s); //NOI18N
         }
-        return s;
-      }).forEachOrdered((s) -> {
-        allEtensinsions.add(s);
-      });
+      }).forEachOrdered(allEtensinsions::add);
     });
     SUPPORTED_EXTENSIONS = Collections.unmodifiableSet(allEtensinsions);
 
@@ -204,57 +159,18 @@ public final class SourceTextEditor extends AbstractTextEditor {
     SUPPORTED_FORMATS.add(0, new FormatType(SyntaxConstants.SYNTAX_STYLE_NONE));
   }
 
-  public static final FileFilter SRC_FILE_FILTER = new FileFilter() {
+  private final ScalableRsyntaxTextArea editor;
+  private final TabTitle title;
+  private final RUndoManager undoManager;
+  private final JPanel mainPanel;
+  private final JLabel labelWordWrap;
+  private final FileFilter fileFilter = makeFileFilter();
+  private boolean ignoreChange;
+  private String originalText = "";
+  private Wrap currentWrap;
 
-    @Override
-    public boolean accept(@Nonnull final File f) {
-      if (f.isDirectory()) {
-        return true;
-      }
-      return MAP_EXTENSION2TYPE.containsKey(FilenameUtils.getExtension(f.getName()).toLowerCase(Locale.ENGLISH));
-    }
-
-    @Override
-    @Nonnull
-    public String getDescription() {
-      return "Source text files";
-    }
-  };
-
-  private void updateWrapState() {
-    this.labelWordWrap.setText(this.currentWrap.getText());
-    this.labelWordWrap.revalidate();
-    this.labelWordWrap.repaint();
-
-    switch (this.currentWrap) {
-      case NO_WRAP: {
-        this.editor.setLineWrap(false);
-        this.editor.setWrapStyleWord(false);
-      }
-      break;
-      case LINE_WRAP: {
-        this.editor.setLineWrap(true);
-        this.editor.setWrapStyleWord(true);
-      }
-      break;
-    }
-    this.editor.revalidate();
-    this.editor.repaint();
-  }
-
-  @Override
-  @Nonnull
-  public FileFilter getFileFilter() {
-    return SRC_FILE_FILTER;
-  }
-
-  @Nullable
-  @Override
-  protected String getContentAsText() {
-    return this.editor.getText();
-  }
-
-  public SourceTextEditor(@Nonnull final Context context, @Nonnull File file, final int line, final boolean noSyntax) throws IOException {
+  public SourceTextEditor(@Nonnull final Context context, @Nonnull File file, final int line,
+                          final boolean noSyntax) throws IOException {
     super();
     this.editor = new ScalableRsyntaxTextArea(this.mindMapPanelConfig);
     this.editor.setPopupMenu(null);
@@ -268,7 +184,8 @@ public final class SourceTextEditor extends AbstractTextEditor {
     }
     syntaxType = found;
 
-    this.editor.setSyntaxEditingStyle(noSyntax || syntaxType == null ? SyntaxConstants.SYNTAX_STYLE_NONE : syntaxType);
+    this.editor.setSyntaxEditingStyle(
+        noSyntax || syntaxType == null ? SyntaxConstants.SYNTAX_STYLE_NONE : syntaxType);
     this.editor.setAntiAliasingEnabled(true);
     this.editor.setBracketMatchingEnabled(true);
     this.editor.setCodeFoldingEnabled(true);
@@ -299,7 +216,9 @@ public final class SourceTextEditor extends AbstractTextEditor {
     this.mainPanel.add(scrollPane, BorderLayout.CENTER);
 
     final JPanel status = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-    final JComboBox<FormatType> formatTypeCombo = new JComboBox(new DefaultComboBoxModel(SUPPORTED_FORMATS.toArray()));
+    final JComboBox<FormatType> formatTypeCombo =
+        new JComboBox<>(new DefaultComboBoxModel<>(
+            SUPPORTED_FORMATS.toArray(new FormatType[0])));
     formatTypeCombo.setSelectedItem(new FormatType(this.editor.getSyntaxEditingStyle()));
 
     formatTypeCombo.addItemListener(item -> {
@@ -312,9 +231,8 @@ public final class SourceTextEditor extends AbstractTextEditor {
 
     final JLabel labelCursor = new JLabel("");
 
-    this.editor.addCaretListener((CaretEvent e) -> {
-      labelCursor.setText(String.format("%d:%d", this.editor.getCaretLineNumber() + 1, this.editor.getCaretOffsetFromLineStart() + 1));
-    });
+    this.editor.addCaretListener((CaretEvent e) -> labelCursor.setText(String.format("%d:%d", this.editor.getCaretLineNumber() + 1,
+        this.editor.getCaretOffsetFromLineStart() + 1)));
 
     this.labelWordWrap = new JLabel();
     this.currentWrap = Wrap.NO_WRAP;
@@ -394,18 +312,72 @@ public final class SourceTextEditor extends AbstractTextEditor {
 
     this.editor.getDocument().addUndoableEditListener(this.undoManager);
 
-    Arrays.stream(this.editor.getCaretListeners()).forEach(listener -> listener.caretUpdate(new CaretEvent(this.editor) {
+    Arrays.stream(this.editor.getCaretListeners())
+        .forEach(listener -> listener.caretUpdate(new CaretEvent(this.editor) {
+          @Override
+          public int getDot() {
+            return editor.getCaretPosition();
+          }
+
+          @Override
+          public int getMark() {
+            return editor.getCaretPosition();
+          }
+        }));
+    gotoLine(line);
+  }
+
+  public static FileFilter makeFileFilter() {
+    return new FileFilter() {
+
       @Override
-      public int getDot() {
-        return editor.getCaretPosition();
+      public boolean accept(@Nonnull final File f) {
+        if (f.isDirectory()) {
+          return true;
+        }
+        return MAP_EXTENSION2TYPE.containsKey(
+            FilenameUtils.getExtension(f.getName()).toLowerCase(Locale.ENGLISH));
       }
 
       @Override
-      public int getMark() {
-        return editor.getCaretPosition();
+      @Nonnull
+      public String getDescription() {
+        return findTextBundle().getString("editorAbstractPlUml.fileFilter.source.description");
       }
-    }));
-    gotoLine(line);
+    };
+  }
+
+  private void updateWrapState() {
+    this.labelWordWrap.setText(this.currentWrap.getText());
+    this.labelWordWrap.revalidate();
+    this.labelWordWrap.repaint();
+
+    switch (this.currentWrap) {
+      case NO_WRAP: {
+        this.editor.setLineWrap(false);
+        this.editor.setWrapStyleWord(false);
+      }
+      break;
+      case LINE_WRAP: {
+        this.editor.setLineWrap(true);
+        this.editor.setWrapStyleWord(true);
+      }
+      break;
+    }
+    this.editor.revalidate();
+    this.editor.repaint();
+  }
+
+  @Override
+  @Nonnull
+  public FileFilter getFileFilter() {
+    return fileFilter;
+  }
+
+  @Nullable
+  @Override
+  protected String getContentAsText() {
+    return this.editor.getText();
   }
 
   @Nonnull
@@ -428,7 +400,7 @@ public final class SourceTextEditor extends AbstractTextEditor {
   public void doZoomIn() {
     this.editor.doZoomIn();
   }
-  
+
   private void gotoLine(final int line) {
     if (line > 0) {
       try {
@@ -441,12 +413,9 @@ public final class SourceTextEditor extends AbstractTextEditor {
 
   @Override
   public void focusToEditor(final int line) {
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        gotoLine(line);
-        editor.requestFocusInWindow();
-      }
+    SwingUtilities.invokeLater(() -> {
+      gotoLine(line);
+      editor.requestFocusInWindow();
     });
   }
 
@@ -532,7 +501,8 @@ public final class SourceTextEditor extends AbstractTextEditor {
         File file = this.title.getAssociatedFile();
         if (file == null) {
           file = dialogProvider
-                  .msgSaveFileDialog(SciaRetoStarter.getApplicationFrame(), null,"sources-editor", "Save sources", null, true, new FileFilter[]{getFileFilter()}, "Save");
+              .msgSaveFileDialog(SciaRetoStarter.getApplicationFrame(), null, "sources-editor",
+                  "Save sources", null, true, new FileFilter[] {getFileFilter()}, "Save");
           if (file == null) {
             return result;
           }
@@ -602,7 +572,8 @@ public final class SourceTextEditor extends AbstractTextEditor {
       int lastFound = -1;
       int lastFoundEnd = -1;
 
-      int maxPos = this.editor.getCaret().getMark() == this.editor.getCaret().getDot() ? this.editor.getCaretPosition() : this.editor.getSelectionStart();
+      int maxPos = this.editor.getCaret().getMark() == this.editor.getCaret().getDot() ?
+          this.editor.getCaretPosition() : this.editor.getSelectionStart();
 
       for (int i = 0; i < 2; i++) {
         while (matcher.find()) {
@@ -630,12 +601,14 @@ public final class SourceTextEditor extends AbstractTextEditor {
   }
 
   @Override
-  public boolean findNext(@Nonnull final Pattern pattern, @Nonnull final FindTextScopeProvider provider) {
+  public boolean findNext(@Nonnull final Pattern pattern,
+                          @Nonnull final FindTextScopeProvider provider) {
     return searchSubstring(pattern, true);
   }
 
   @Override
-  public boolean findPrev(@Nonnull final Pattern pattern, @Nonnull final FindTextScopeProvider provider) {
+  public boolean findPrev(@Nonnull final Pattern pattern,
+                          @Nonnull final FindTextScopeProvider provider) {
     return searchSubstring(pattern, false);
   }
 
@@ -712,6 +685,63 @@ public final class SourceTextEditor extends AbstractTextEditor {
   public boolean isPasteAllowed() {
     final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
     return Utils.isDataFlavorAvailable(clipboard, DataFlavor.stringFlavor);
+  }
+
+  private enum Wrap {
+    NO_WRAP(" No wrap "),
+    LINE_WRAP("Line wrap");
+
+    private final String text;
+
+    Wrap(@Nonnull final String text) {
+      this.text = text;
+    }
+
+    @Nonnull
+    String getText() {
+      return this.text;
+    }
+  }
+
+  public static final class FormatType implements Comparable<FormatType> {
+
+    private final String type;
+    private final String name;
+
+    private FormatType(@Nonnull final String type) {
+      this.type = type;
+      final int index = type.indexOf('/');
+      this.name = index < 0 ? type : type.substring(index + 1).toUpperCase(Locale.ENGLISH);
+    }
+
+    @Nonnull
+    public String getType() {
+      return this.type;
+    }
+
+    @Nonnull
+    @Override
+    public String toString() {
+      return this.name;
+    }
+
+    @Override
+    public int hashCode() {
+      return this.type.hashCode();
+    }
+
+    @Override
+    public boolean equals(@Nullable final Object that) {
+      if (that instanceof FormatType) {
+        return this.type.equals(((FormatType) that).type);
+      }
+      return false;
+    }
+
+    @Override
+    public int compareTo(@Nonnull final FormatType that) {
+      return this.type.compareTo(that.type);
+    }
   }
 
 }

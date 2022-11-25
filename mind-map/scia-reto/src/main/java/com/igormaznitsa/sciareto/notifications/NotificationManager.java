@@ -20,12 +20,12 @@ package com.igormaznitsa.sciareto.notifications;
 
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.SciaRetoStarter;
-import org.apache.commons.lang3.StringEscapeUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.*;
 import java.awt.*;
+import org.apache.commons.text.StringEscapeUtils;
 
 public class NotificationManager {
 

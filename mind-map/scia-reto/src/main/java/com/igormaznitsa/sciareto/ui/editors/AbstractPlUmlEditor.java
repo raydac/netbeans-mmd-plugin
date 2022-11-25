@@ -19,7 +19,7 @@
 
 package com.igormaznitsa.sciareto.ui.editors;
 
-import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml3;
+import static org.apache.commons.text.StringEscapeUtils.escapeHtml3;
 
 import com.igormaznitsa.meta.annotation.UiThread;
 import com.igormaznitsa.meta.common.utils.Assertions;
