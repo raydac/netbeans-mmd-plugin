@@ -18,18 +18,16 @@
  */
 package com.igormaznitsa.sciareto.notifications;
 
+import static com.igormaznitsa.sciareto.ui.UiUtils.findTextBundle;
+
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.ui.misc.DonateButton;
 import com.igormaznitsa.sciareto.ui.misc.JHtmlLabel;
-
-import javax.annotation.Nonnull;
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.prefs.Preferences;
+import javax.swing.Timer;
 
 public class MessagesService {
 
@@ -41,12 +39,7 @@ public class MessagesService {
   }
 
   public void execute() {
-    final Thread thread = new Thread(new Runnable() {
-      @Override
-      public void run() {
-        doAction();
-      }
-    }, "SR_MessageService"); //NOI18N
+    final Thread thread = new Thread(this::doAction, "SR_MessageService"); //NOI18N
     thread.setDaemon(true);
     thread.start();
   }
@@ -56,21 +49,15 @@ public class MessagesService {
     if (!prefs.getBoolean(PROPERTY_OFFER_TO_DONATE_WAS_SHOWN, false)) {
       final long totalUpstartTime = prefs.getLong(SciaRetoStarter.PROPERTY_TOTAL_UPSTART, 0L);
       if (totalUpstartTime >= (1000L * 3600L * 24L)) {
-        final Timer timer = new Timer(60000,new ActionListener() {
-          @Override
-          public void actionPerformed(@Nonnull final ActionEvent e) {
-            final String text = "<html>You have been using the application for long time!<br>If you like it then you could support us and <a href=\"#\">make a donation</a>!</html>";
-            final JHtmlLabel label = new JHtmlLabel(text);
-            label.addLinkListener(new JHtmlLabel.LinkListener() {
-              @Override
-              public void onLinkActivated(@Nonnull final JHtmlLabel source, @Nonnull final String link) {
-                new DonateButton().doClick();
-              }
-            });
-            NotificationManager.getInstance().showNotification(null, "Do you like the application?", NotificationManager.Type.INFO, label);
-            prefs.putBoolean(PROPERTY_OFFER_TO_DONATE_WAS_SHOWN, true);
-            PreferencesManager.getInstance().flush();
-          }
+        final Timer timer = new Timer(60000, e -> {
+          final String text = findTextBundle().getString("messageService.donation.text");
+          final JHtmlLabel label = new JHtmlLabel(text);
+          label.addLinkListener((source, link) -> new DonateButton().doClick());
+          NotificationManager.getInstance().showNotification(null,
+              findTextBundle().getString("messageService.donation.title"), NotificationManager.Type.INFO, label);
+          LOGGER.info("Shown offer to make donation");
+          prefs.putBoolean(PROPERTY_OFFER_TO_DONATE_WAS_SHOWN, true);
+          PreferencesManager.getInstance().flush();
         });
         timer.setRepeats(false);
         timer.start();

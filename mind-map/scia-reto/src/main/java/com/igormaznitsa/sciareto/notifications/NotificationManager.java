@@ -44,12 +44,9 @@ public class NotificationManager {
   }
 
   public void clearAll() {
-    Utils.safeSwingCall(new Runnable() {
-      @Override
-      public void run() {
-        SciaRetoStarter.getApplicationFrame().getStackPanel().removeAll();
-        SciaRetoStarter.getApplicationFrame().getGlassPane().setVisible(false);
-      }
+    Utils.safeSwingCall(() -> {
+      SciaRetoStarter.getApplicationFrame().getStackPanel().removeAll();
+      SciaRetoStarter.getApplicationFrame().getGlassPane().setVisible(false);
     });
   }
 
@@ -60,28 +57,25 @@ public class NotificationManager {
   }
 
   public void showNotification(@Nullable final Image icon, @Nullable final String title, @Nonnull final Type type, @Nonnull final JComponent component) {
-    Utils.safeSwingCall(new Runnable() {
-      @Override
-      public void run() {
-        final JPanel stack = SciaRetoStarter.getApplicationFrame().getStackPanel();
+    Utils.safeSwingCall(() -> {
+      final JPanel stack = SciaRetoStarter.getApplicationFrame().getStackPanel();
 
-        Color color = Color.WHITE;
-        switch (type) {
-          case ERROR:
-            color = new Color(0xFFCCCC, false);
-            break;
-          case WARN:
-            color = new Color(0xFFFF99, false);
-            break;
-          case INFO:
-            color = new Color(0xCCFFCC, false);
-            break;
-        }
-
-        stack.add(new MessagePanel(icon, title, color, component), 0);
-        stack.revalidate();
-        SciaRetoStarter.getApplicationFrame().getGlassPane().setVisible(true);
+      Color color = Color.WHITE;
+      switch (type) {
+        case ERROR:
+          color = new Color(0xFFCCCC, false);
+          break;
+        case WARN:
+          color = new Color(0xFFFF99, false);
+          break;
+        case INFO:
+          color = new Color(0xCCFFCC, false);
+          break;
       }
+
+      stack.add(new MessagePanel(icon, title, color, component), 0);
+      stack.revalidate();
+      SciaRetoStarter.getApplicationFrame().getGlassPane().setVisible(true);
     });
   }
 }
