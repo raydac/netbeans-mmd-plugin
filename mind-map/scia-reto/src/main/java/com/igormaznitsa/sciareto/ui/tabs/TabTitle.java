@@ -1,23 +1,24 @@
 /*
- * Copyright (C) 2018 Igor Maznitsa.
+ * Copyright (C) 2015-2022 Igor A. Maznitsa
  *
- * This library is free software; you can redistribute it and/or
+ * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * version 3 of the License, or (at your option) any later version.
  *
- * This library is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301  USA
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
 package com.igormaznitsa.sciareto.ui.tabs;
+
+import static com.igormaznitsa.sciareto.ui.UiUtils.findTextBundle;
 
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
@@ -29,7 +30,6 @@ import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.editors.EditorContentType;
 import com.igormaznitsa.sciareto.ui.tree.NodeProject;
 import java.nio.file.Path;
-import org.apache.commons.lang3.StringEscapeUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -38,6 +38,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
+import org.apache.commons.text.StringEscapeUtils;
 
 public final class TabTitle extends JPanel {
 
@@ -170,12 +171,8 @@ public final class TabTitle extends JPanel {
       result = true;
       final NodeProject project = this.context.findProjectForFile(this.associatedFile);
       if (project != null) {
-        SciaRetoStarter.getApplicationFrame().asyncReloadProject(project, new Runnable() {
-          @Override
-          public void run() {
-            context.focusInTree(TabTitle.this);
-          }
-        });
+        SciaRetoStarter.getApplicationFrame().asyncReloadProject(project,
+            () -> context.focusInTree(TabTitle.this));
       }
     }
     return result;
@@ -210,8 +207,8 @@ public final class TabTitle extends JPanel {
   public void doSafeClose() {
     final boolean close = !this.changed
         || DialogProviderManager.getInstance().getDialogProvider()
-        .msgConfirmOkCancel(SciaRetoStarter.getApplicationFrame(), "Non saved file",
-            "Close unsaved document '" + makeName() + "\'?");
+        .msgConfirmOkCancel(SciaRetoStarter.getApplicationFrame(), findTextBundle().getString("TabTitle.msgConfirmSafeClose.title"),
+            String.format(findTextBundle().getString("TabTitle.msgConfirmSafeClose.text"), makeName()));
     if (close) {
       this.context.closeTab(this);
     }
@@ -275,14 +272,11 @@ public final class TabTitle extends JPanel {
   }
 
   private void updateView() {
-    Utils.safeSwingCall(new Runnable() {
-      @Override
-      public void run() {
-        titleLabel.setText(
-            "<html>" + (changed ? "<b>*<u>" : "") + StringEscapeUtils.escapeHtml3(makeName()) +
-                (changed ? "</u></b>" : "") + "</html>"); //NOI18N
-        revalidate();
-      }
+    Utils.safeSwingCall(() -> {
+      titleLabel.setText(
+          "<html>" + (changed ? "<b>*<u>" : "") + StringEscapeUtils.escapeHtml3(makeName()) +
+              (changed ? "</u></b>" : "") + "</html>"); //NOI18N
+      revalidate();
     });
   }
 
