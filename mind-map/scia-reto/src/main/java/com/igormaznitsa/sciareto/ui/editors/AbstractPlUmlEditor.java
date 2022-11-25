@@ -129,44 +129,29 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
       Pattern.compile("^\\s*newpage($|\\s.*$)", Pattern.MULTILINE);
 
   private static final int DELAY_AUTOREFRESH_SECONDS = 5;
-  private final JLabel progressLabel = new JLabel(BigLoaderIconAnimationConroller.LOADING);
-
-  private volatile LastRendered lastSuccessfullyRenderedText = null;
-
-  private File lastExportedFile = null;
+  private static final Set<ExportType> DEFAULT_EXPORT_TYPES =
+      Collections.unmodifiableSet(EnumSet.allOf(ExportType.class));
   protected final ScalableRsyntaxTextArea editor;
+  private final JLabel progressLabel = new JLabel(BigLoaderIconAnimationConroller.LOADING);
   private final TabTitle title;
   private final ScalableImage imageComponent;
   private final JSplitPane mainPanel;
   private final JPanel renderedPanel;
   private final JScrollPane renderedScrollPane;
   private final JLabel labelWarningNoGraphwiz;
-  private boolean ignoreChange;
-
   private final JButton buttonPrevPage;
   private final JButton buttonNextPage;
   private final JLabel labelPageNumber;
   private final JCheckBox autoRefresh;
-  private int pageNumberToRender = 0;
-
   private final JPanel editorPanel;
-
   private final JPanel menu;
-
   private final DirectProcessor<Boolean> eventProcessor = DirectProcessor.create();
   private final Disposable eventChain;
-
   private final ScaleStatusIndicator scaleLabel;
-  
-  public enum ExportType {
-    SVG,
-    PNG,
-    LATEX,
-    ASC;
-  }
-
-  private static final Set<ExportType> DEFAULT_EXPORT_TYPES =
-      Collections.unmodifiableSet(EnumSet.<ExportType>allOf(ExportType.class));
+  private volatile LastRendered lastSuccessfullyRenderedText = null;
+  private File lastExportedFile = null;
+  private boolean ignoreChange;
+  private int pageNumberToRender = 0;
 
   public AbstractPlUmlEditor(@Nonnull final Context context, @Nonnull File file)
       throws IOException {
@@ -192,7 +177,7 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
         }
       }
     });
-    
+
     final AutoCompletion autoCompletion =
         new AutoCompletion(new PlantUmlTokenMaker().makeCompletionProvider());
     autoCompletion.setAutoActivationEnabled(true);
@@ -252,24 +237,26 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
             GridBagConstraints.VERTICAL, new Insets(2, 0, 0, 0), 0, 0);
 
     final JButton buttonRefresh = new JButton(loadMenuIcon("arrow_refresh"));
-    buttonRefresh.setToolTipText("Refresh image for text");
+    buttonRefresh.setToolTipText(
+        this.bundle.getString("editorAbstractPlUml.buttonRefresh.tooltip"));
     buttonRefresh.addActionListener((ActionEvent e) -> {
       startRenderScript();
     });
 
     final JButton buttonEditScript = new JButton(loadMenuIcon("edit_script")) {
       @Override
-      public void setEnabled(final boolean flag) {
-        super.setEnabled(true);
-      }
-
-      @Override
       public boolean isEnabled() {
         return true;
       }
+
+      @Override
+      public void setEnabled(final boolean flag) {
+        super.setEnabled(true);
+      }
     };
 
-    buttonEditScript.setToolTipText("Edit script");
+    buttonEditScript.setToolTipText(
+        this.bundle.getString("editorAbstractPlUml.buttonEditScript.tooltip"));
     buttonEditScript.addActionListener((ActionEvent e) -> {
       if (isTextEditorVisible()) {
         mainPanel.setDividerLocation(0);
@@ -283,7 +270,8 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
     final JButton buttonExportImage;
     if (this.isExportImageAsFileAllowed()) {
       buttonExportImage = new JButton(loadMenuIcon("picture_save"));
-      buttonExportImage.setToolTipText("Export image as file");
+      buttonExportImage.setToolTipText(
+          this.bundle.getString("editorAbstractPlUml.buttonExportImageFile.tooltip"));
       buttonExportImage.addActionListener((ActionEvent e) -> {
         SciaRetoStarter.getApplicationFrame().endFullScreenIfActive();
         exportAsFile();
@@ -295,7 +283,8 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
     final JButton buttonClipboardImage;
     if (this.isCopyImageToClipboardAllowed()) {
       buttonClipboardImage = new JButton(loadMenuIcon("clipboard_image"));
-      buttonClipboardImage.setToolTipText("Copy image to clipboard");
+      buttonClipboardImage.setToolTipText(
+          this.bundle.getString("editorAbstractPlUml.buttonExportClipboardImage.tooltip"));
       buttonClipboardImage.addActionListener((ActionEvent e) -> {
         final BufferedImage image = imageComponent.getImage();
         if (image != null) {
@@ -310,7 +299,8 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
     final JButton buttonClipboardText;
     if (this.isCopyScriptToClipboardAllowed()) {
       buttonClipboardText = new JButton(loadMenuIcon("clipboard_text"));
-      buttonClipboardText.setToolTipText("Copy script to clipboard");
+      buttonClipboardText.setToolTipText(
+          this.bundle.getString("editorAbstractPlUml.buttonExportClipboardText.tooltip"));
       buttonClipboardText.addActionListener((ActionEvent e) -> {
         Toolkit.getDefaultToolkit().getSystemClipboard()
             .setContents(new StringSelection(editor.getText()), null);
@@ -321,14 +311,16 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
 
     if (isPageAllowed()) {
       this.buttonPrevPage = new JButton(loadMenuIcon("resultset_previous"));
-      this.buttonPrevPage.setToolTipText("Previous page");
+      this.buttonPrevPage.setToolTipText(
+          this.bundle.getString("editorAbstractPlUml.buttonPrevPage.tooltip"));
       this.buttonPrevPage.addActionListener((ActionEvent e) -> {
         pageNumberToRender--;
         startRenderScript();
       });
 
       this.buttonNextPage = new JButton(loadMenuIcon("resultset_next"));
-      this.buttonNextPage.setToolTipText("Next page");
+      this.buttonNextPage.setToolTipText(
+          this.bundle.getString("editorAbstractPlUml.buttonNextPage.tooltip"));
       this.buttonNextPage.addActionListener((ActionEvent e) -> {
         pageNumberToRender++;
         startRenderScript();
@@ -342,20 +334,23 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
     }
 
     this.labelWarningNoGraphwiz =
-        makeLinkLabel("You should install Graphviz!", "https://www.graphviz.org/download/",
-            "Open download page", ICON_WARNING);
+        makeLinkLabel(this.bundle.getString("editorAbstractPlUml.labelWranGraphviz.text"),
+            "https://www.graphviz.org/download/",
+            this.bundle.getString("editorAbstractPlUml.labelWranGraphviz.title"), ICON_WARNING);
 
     final JButton buttonPrintImage;
     if (isPrintImageAllowed()) {
       buttonPrintImage = new JButton(loadMenuIcon("printer"));
-      buttonPrintImage.setToolTipText("Print current page");
+      buttonPrintImage.setToolTipText(
+          this.bundle.getString("editorAbstractPlUml.buttonPrint.tooltip"));
       buttonPrintImage.addActionListener((@Nonnull final ActionEvent e) -> {
         SciaRetoStarter.getApplicationFrame().endFullScreenIfActive();
         final MMDPrintPanel printPanel =
             new MMDPrintPanel(DialogProviderManager.getInstance().getDialogProvider(), null,
                 PrintableObject.newBuild().image(imageComponent.getImage()).build());
         UiUtils.makeOwningDialogResizable(printPanel);
-        JOptionPane.showMessageDialog(mainPanel, printPanel, "Print PlantUML image",
+        JOptionPane.showMessageDialog(mainPanel, printPanel,
+            this.bundle.getString("editorAbstractPlUml.msgDialogPrint.title"),
             JOptionPane.PLAIN_MESSAGE);
       });
     } else {
@@ -365,13 +360,15 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
     final JButton buttonAscImageToClipboard;
     if (isCopyAsAscIIImageInClipboardAllowed()) {
       buttonAscImageToClipboard = new JButton(loadMenuIcon("clipboard_asc"));
-      buttonAscImageToClipboard.setToolTipText("Copy ASCII image to clipboard");
+      buttonAscImageToClipboard.setToolTipText(
+          this.bundle.getString("editorAbstractPlUml.buttonAscImageToClipboard.tooltip"));
       buttonAscImageToClipboard.addActionListener((@Nonnull final ActionEvent e) -> {
         final String text = renderPageAsAscII();
         if (text == null) {
           JOptionPane.showMessageDialog(mainPanel,
-              "Can't generate ASCII for the diagram.\nMay be it is unsupported for such kind of diagrams.",
-              "Can't generate", JOptionPane.WARNING_MESSAGE);
+              this.bundle.getString("editorAbstractPlUml.errorMsgDialog.ascii.text"),
+              this.bundle.getString("editorAbstractPlUml.errorMsgDialog.ascii.title"),
+              JOptionPane.WARNING_MESSAGE);
         } else {
           final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
           if (clipboard != null) {
@@ -383,9 +380,11 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
       buttonAscImageToClipboard = null;
     }
 
-    this.autoRefresh = new JCheckBox("Auto-refresh", true);
+    this.autoRefresh =
+        new JCheckBox(this.bundle.getString("editorAbstractPlUml.checkBoxAutorefresh.title"), true);
     this.autoRefresh.setToolTipText(String
-        .format("Refresh rendered image during typing (in %d seconds)", DELAY_AUTOREFRESH_SECONDS));
+        .format(this.bundle.getString("editorAbstractPlUml.checkBoxAutorefresh.tooltip"),
+            DELAY_AUTOREFRESH_SECONDS));
 
     this.autoRefresh.addActionListener((@Nonnull final ActionEvent e) -> {
       if (!autoRefresh.isSelected()) {
@@ -535,7 +534,7 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
       this.scaleLabel.doZoomIn();
     }
   }
-  
+
   @Override
   public boolean showSearchPane(@Nonnull final JPanel searchPanel) {
     this.editorPanel.add(searchPanel, BorderLayout.NORTH);
@@ -607,15 +606,12 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
       }
     } catch (Exception ex) {
       logger.warn("Detected exception in syntax check : " + ex.getMessage());
-      result = false;
     }
     return result;
   }
 
   public void hideTextPanel() {
-    SwingUtilities.invokeLater(() -> {
-      mainPanel.setDividerLocation(0);
-    });
+    SwingUtilities.invokeLater(() -> mainPanel.setDividerLocation(0));
 
     this.editor.addKeyListener(new KeyAdapter() {
       @Override
@@ -660,7 +656,8 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
     final Map attributes = font.getAttributes();
     attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
     result.setFont(font.deriveFont(attributes));
-    result.setForeground(UiUtils.figureOutThatDarkTheme() ? Color.YELLOW.darker() : Color.BLUE.brighter());
+    result.setForeground(
+        UiUtils.figureOutThatDarkTheme() ? Color.YELLOW.darker() : Color.BLUE.brighter());
     result.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     result.setToolTipText(toolTip);
     result.addMouseListener(new MouseAdapter() {
@@ -717,7 +714,7 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
       @Nonnull
       @Override
       public String getDescription() {
-        return "SVG images (*.svg)";
+        return bundle.getString("editorAbstractPlUml.fileFilter.svg.description");
       }
     };
 
@@ -730,7 +727,7 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
       @Nonnull
       @Override
       public String getDescription() {
-        return "PNG images (*.png)";
+        return bundle.getString("editorAbstractPlUml.fileFilter.png.description");
       }
     };
 
@@ -743,7 +740,7 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
       @Nonnull
       @Override
       public String getDescription() {
-        return "LaTeX text files (*.tex)";
+        return bundle.getString("editorAbstractPlUml.fileFilter.latex.description");
       }
     };
 
@@ -756,12 +753,12 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
       @Nonnull
       @Override
       public String getDescription() {
-        return "ASC text files (*.txt)";
+        return bundle.getString("editorAbstractPlUml.fileFilter.ascii.description");
       }
     };
 
-    fileChooser.setApproveButtonText("Export");
-    fileChooser.setDialogTitle("Export PlantUML image as File");
+    fileChooser.setApproveButtonText(bundle.getString("editorAbstractPlUml.fileChooser.approve"));
+    fileChooser.setDialogTitle(bundle.getString("editorAbstractPlUml.fileChooser.title"));
     fileChooser.setMultiSelectionEnabled(false);
 
     final Set<ExportType> allowedExportTypes = this.getAllowedExportTypes();
@@ -831,7 +828,9 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
         } catch (Exception ex) {
           logger.error("Can't render script as image", ex);
           JOptionPane
-              .showMessageDialog(this.mainPanel, "Can't render script! Check syntax!", "Error",
+              .showMessageDialog(this.mainPanel,
+                  bundle.getString("editorAbstractPlUml.renderError.text"),
+                  bundle.getString("editorAbstractPlUml.renderError.title"),
                   JOptionPane.ERROR_MESSAGE);
           return;
         }
@@ -846,13 +845,16 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
         } catch (IOException ex) {
           logger.error("Can't export script as image", ex);
           JOptionPane.showMessageDialog(this.mainPanel,
-              "Can't export! May be the format is not supported by the diagram type!", "Error",
+              bundle.getString("editorAbstractPlUml.renderError.cantexport.text"),
+              bundle.getString("editorAbstractPlUml.renderError.title"),
               JOptionPane.ERROR_MESSAGE);
         }
       } else {
         logger.warn("Page number is <= 0");
         JOptionPane
-            .showMessageDialog(this.mainPanel, "Can't export! Page is not selected!", "Warning",
+            .showMessageDialog(this.mainPanel,
+                bundle.getString("editorAbstractPlUml.renderWarning.text"),
+                bundle.getString("editorAbstractPlUml.renderWarning.title"),
                 JOptionPane.WARNING_MESSAGE);
       }
     }
@@ -867,7 +869,7 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
 
   @Override
   public void focusToEditor(final int line) {
-    SwingUtilities.invokeLater(() -> imageComponent.requestFocusInWindow());
+    SwingUtilities.invokeLater(imageComponent::requestFocusInWindow);
   }
 
   @Override
@@ -892,12 +894,9 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
       } catch (final CannotRedoException ex) {
         logger.warn("Can't make redo in plantUML editor : " + ex.getMessage());
       } finally {
-        SwingUtilities.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            backup();
-            startRenderScript();
-          }
+        SwingUtilities.invokeLater(() -> {
+          backup();
+          startRenderScript();
         });
       }
     }
@@ -912,12 +911,9 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
       } catch (final CannotUndoException ex) {
         logger.warn("Can't make undo in plantUML editor : " + ex.getMessage());
       } finally {
-        SwingUtilities.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            backup();
-            startRenderScript();
-          }
+        SwingUtilities.invokeLater(() -> {
+          backup();
+          startRenderScript();
         });
       }
     }
@@ -1071,12 +1067,11 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
       if (customRendering) {
         reader = null;
         totalPages = countNewPages(theText);
-        imageIndex = Math.max(1, Math.min(this.pageNumberToRender, totalPages));
       } else {
         reader = new SourceStringReader(theText, "UTF-8");
         totalPages = Math.max(countNewPages(theText), reader.getBlocks().size());
-        imageIndex = Math.max(1, Math.min(this.pageNumberToRender, totalPages));
       }
+      imageIndex = Math.max(1, Math.min(this.pageNumberToRender, totalPages));
 
       if (imageIndex != this.pageNumberToRender) {
         this.pageNumberToRender = imageIndex;
@@ -1353,6 +1348,13 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
   public boolean isPasteAllowed() {
     final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
     return Utils.isDataFlavorAvailable(clipboard, DataFlavor.stringFlavor);
+  }
+
+  public enum ExportType {
+    SVG,
+    PNG,
+    LATEX,
+    ASC
   }
 
   protected static final class LastRendered {

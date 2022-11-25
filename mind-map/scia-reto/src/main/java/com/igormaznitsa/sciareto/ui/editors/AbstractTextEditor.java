@@ -19,13 +19,12 @@
 
 package com.igormaznitsa.sciareto.ui.editors;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.File;
 import java.io.IOException;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
-
-import static java.util.Objects.requireNonNull;
 
 public abstract class AbstractTextEditor extends AbstractEditor {
 

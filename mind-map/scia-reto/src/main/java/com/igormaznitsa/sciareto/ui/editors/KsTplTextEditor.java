@@ -23,7 +23,6 @@ import static com.igormaznitsa.sciareto.ui.UiUtils.loadIcon;
 import static java.lang.String.format;
 import static net.sourceforge.plantuml.StringUtils.unicode;
 
-
 import com.igormaznitsa.sciareto.Context;
 import java.awt.GridBagConstraints;
 import java.awt.Toolkit;
@@ -55,16 +54,10 @@ import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
 public final class KsTplTextEditor extends AbstractPlUmlEditor {
 
   public static final Set<String> SUPPORTED_EXTENSIONS = Collections.singleton("kstpl");
-  private static final String MIME = "text/kstpl";
   public static final String NEW_TEMPLATE = "Topology\n"
       + "Sub-topologies:\n"
       + "Sub-topology: 0\n"
       + "	Source:  KSTREAM-SOURCE-0000000000 (topics: [conversation-meta])\n";
-
-  private volatile boolean modeOrtho;
-  private volatile boolean modeHoriz;
-  private volatile boolean modeGroupTopics;
-  private volatile boolean modeGroupStores;
   public static final FileFilter SRC_FILE_FILTER = new FileFilter() {
 
     @Override
@@ -82,29 +75,26 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
       return "KStreams topology files (*.kstpl)";
     }
   };
+  private static final String MIME = "text/kstpl";
   private static final String PROPERTY_ORTHOGONAL = "edge.ortho";
   private static final String PROPERTY_TOPICS_GROUP = "group.topics";
   private static final String PROPERTY_STORE_GROUP = "group.stores";
-
   private static final Icon ICON_PLANTUML = new ImageIcon(loadIcon("clipboard_plantuml16.png"));
   private static final String PROPERTY_LAYOUT_HORIZ = "layout.horiz";
   private static final Pattern GLOBAL_STORAGE_SUBTOPOLOGY =
       Pattern.compile(".*global.*store.*", Pattern.CASE_INSENSITIVE);
+  private volatile boolean modeOrtho;
+  private volatile boolean modeHoriz;
+  private volatile boolean modeGroupTopics;
+  private volatile boolean modeGroupStores;
   private JCheckBox checkBoxGroupTopics;
   private JCheckBox checkBoxGroupStores;
-
-  @Override
-  protected boolean isPageAllowed() {
-    return false;
-  }
-
   private JCheckBox checkBoxOrtho;
+  private JCheckBox checkBoxHorizontal;
 
   public KsTplTextEditor(@Nonnull final Context context, @Nonnull File file) throws IOException {
     super(context, file);
   }
-
-  private JCheckBox checkBoxHorizontal;
 
   @Nonnull
   private static String makePumlMultiline(@Nonnull final String text,
@@ -115,6 +105,11 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
     return text.replace("-", "-\\n")
         .replace(" ", "\\n")
         .replace("_", "_\\n");
+  }
+
+  @Override
+  protected boolean isPageAllowed() {
+    return false;
   }
 
   @Override
@@ -165,16 +160,14 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
             if (!result.containsKey(e.id)) {
               result.put(e.id, "__tel_" + counter.incrementAndGet());
             }
-            e.dataItems.forEach((k, v) -> {
-              v.forEach(z -> {
-                if (!result.containsKey(z)) {
-                  result.put(z,
-                      "__dta_" + (k.hashCode() & 0x7FFFFFFF) + "_" + counter.incrementAndGet());
-                }
-              });
-            });
+            e.dataItems.forEach((k, v) -> v.forEach(z -> {
+              if (!result.containsKey(z)) {
+                result.put(z,
+                    "__dta_" + (k.hashCode() & 0x7FFFFFFF) + "_" + counter.incrementAndGet());
+              }
+            }));
           });
-      x.orphans.stream().forEach(a -> {
+      x.orphans.forEach(a -> {
         if (!result.containsKey(a.id)) {
           result.put(a.id, "__tel_" + counter.incrementAndGet());
         }
@@ -250,8 +243,8 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
           .append("shadowing<<Sub-Topologies>> false\n")
           .append("}\n")
           .append("title ").append(unicode("KStreams topology \""
-          + (this.getTabTitle().getAssociatedFile() == null ? "none" :
-          this.getTabTitle().getAssociatedFile().getName()) + '\"')).append('\n');
+              + (this.getTabTitle().getAssociatedFile() == null ? "none" :
+              this.getTabTitle().getAssociatedFile().getName()) + '\"')).append('\n');
       final Map<String, String> keys = generateKeyMap(parser);
 
       for (final KStreamsTopologyDescriptionParser.Topologies t : parser.getTopologies()) {
@@ -336,7 +329,7 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
           if (groupTopics) {
             builder.append("package \"Topics\" #DFFFDF {\n");
           }
-          builder.append(bufferBroker.toString());
+          builder.append(bufferBroker);
           if (groupTopics) {
             builder.append("}\n");
           }
@@ -347,7 +340,7 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
           if (groupStores) {
             builder.append("package \"Stores\" #FED8B1 {\n");
           }
-          builder.append(bufferStores.toString());
+          builder.append(bufferStores);
           if (groupStores) {
             builder.append("}\n");
           }
@@ -355,43 +348,37 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
 
         if (bufferOthers.length() > 0) {
           builder.append("package \"Others\" #DDDDDD {\n");
-          builder.append(bufferOthers.toString());
+          builder.append(bufferOthers);
           builder.append("}\n");
         }
       }
 
-      parser.getTopologies().forEach(topology -> {
-        Stream.concat(topology.subTopologies.stream().flatMap(st -> st.children.values().stream()),
-            topology.orphans.stream())
-            .forEach(element -> {
-              final String elemKey = keys.get(element.id);
-              element.to.forEach(dst -> {
-                builder.append(format("%s -->> %s%n", elemKey, keys.get(dst.id)));
-              });
-              element.from.stream()
-                  .filter(src -> src.to.stream().noneMatch(tl -> tl.id.equals(element.id)))
-                  .forEach(src -> {
-                    builder.append(format("%s -->> %s%n", keys.get(src.id), elemKey));
-                  });
-              element.dataItems.values().stream().flatMap(Collection::stream)
-                  .forEach(dataItemName -> {
-                    final String link;
-                    switch (KStreamType.find(element)) {
-                      case SOURCE:
-                        link = "<<=.=";
-                        break;
-                      case SINK:
-                        link = "=.=>>";
-                        break;
-                      default:
-                        link = "=.=";
-                        break;
-                    }
-                    builder.append(format("%s %s %s%n", elemKey, link, keys.get(dataItemName)));
-                  });
+      parser.getTopologies().forEach(topology -> Stream.concat(topology.subTopologies.stream().flatMap(st -> st.children.values().stream()),
+              topology.orphans.stream())
+          .forEach(element -> {
+            final String elemKey = keys.get(element.id);
+            element.to.forEach(dst -> builder.append(format("%s -->> %s%n", elemKey, keys.get(dst.id))));
+            element.from.stream()
+                .filter(src -> src.to.stream().noneMatch(tl -> tl.id.equals(element.id)))
+                .forEach(src -> builder.append(format("%s -->> %s%n", keys.get(src.id), elemKey)));
+            element.dataItems.values().stream().flatMap(Collection::stream)
+                .forEach(dataItemName -> {
+                  final String link;
+                  switch (KStreamType.find(element)) {
+                    case SOURCE:
+                      link = "<<=.=";
+                      break;
+                    case SINK:
+                      link = "=.=>>";
+                      break;
+                    default:
+                      link = "=.=";
+                      break;
+                  }
+                  builder.append(format("%s %s %s%n", elemKey, link, keys.get(dataItemName)));
+                });
 
-            });
-      });
+          }));
 
       builder.append("@enduml\n");
 
@@ -436,45 +423,69 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
                                      @Nonnull final GridBagConstraints gbdata) {
     final JButton buttonClipboardText = new JButton(ICON_PLANTUML);
     buttonClipboardText.setName("BUTTON.PLANTUML");
-    buttonClipboardText.setToolTipText("Copy formed PlantUML script to clipboard");
-    buttonClipboardText.addActionListener((ActionEvent e) -> {
-      Toolkit.getDefaultToolkit().getSystemClipboard()
-          .setContents(new StringSelection(preprocessEditorText(editor.getText())), null);
-    });
+    buttonClipboardText.setToolTipText(
+        this.bundle.getString("editorKsTpl.buttonClipboardTtext.tooltip"));
+    buttonClipboardText.addActionListener((ActionEvent e) -> Toolkit.getDefaultToolkit().getSystemClipboard()
+        .setContents(new StringSelection(preprocessEditorText(editor.getText())), null));
 
-    checkBoxGroupTopics = new JCheckBox("Group topics  ", this.modeGroupTopics);
+    checkBoxGroupTopics =
+        new JCheckBox(this.bundle.getString("editorKsTpl.checkBoxGroupTopics.title"),
+            this.modeGroupTopics);
     checkBoxGroupTopics.setName(PROPERTY_TOPICS_GROUP);
-    checkBoxGroupTopics.setToolTipText("Group all topics on scheme together");
-    checkBoxGroupTopics.addActionListener((x) -> {
-      this.onConfigCheckboxChange(checkBoxGroupTopics);
-    });
+    checkBoxGroupTopics.setToolTipText(
+        this.bundle.getString("editorKsTpl.checkBoxGroupTopics.tooltip"));
+    checkBoxGroupTopics.addActionListener((x) -> this.onConfigCheckboxChange(checkBoxGroupTopics));
 
-    checkBoxGroupStores = new JCheckBox("Group stores  ", this.modeGroupStores);
+    checkBoxGroupStores =
+        new JCheckBox(this.bundle.getString("editorKsTpl.checkBoxGroupStores.title"),
+            this.modeGroupStores);
     checkBoxGroupStores.setName(PROPERTY_STORE_GROUP);
-    checkBoxGroupStores.setToolTipText("Group all stores on scheme together");
-    checkBoxGroupStores.addActionListener((x) -> {
-      this.onConfigCheckboxChange(checkBoxGroupStores);
-    });
+    checkBoxGroupStores.setToolTipText(
+        this.bundle.getString("editorKsTpl.checkBoxGroupStores.tooltip"));
+    checkBoxGroupStores.addActionListener((x) -> this.onConfigCheckboxChange(checkBoxGroupStores));
 
-    checkBoxOrtho = new JCheckBox("Orthogonal lines  ", this.modeOrtho);
+    checkBoxOrtho =
+        new JCheckBox(this.bundle.getString("editorKsTpl.checkBoxOrtho.title"), this.modeOrtho);
     checkBoxOrtho.setName(PROPERTY_ORTHOGONAL);
-    checkBoxOrtho.setToolTipText("Orthogonal connector lines");
-    checkBoxOrtho.addActionListener((x) -> {
-      this.onConfigCheckboxChange(checkBoxOrtho);
-    });
+    checkBoxOrtho.setToolTipText(this.bundle.getString("editorKsTpl.checkBoxOrtho.tooltip"));
+    checkBoxOrtho.addActionListener((x) -> this.onConfigCheckboxChange(checkBoxOrtho));
 
-    checkBoxHorizontal = new JCheckBox("Horizontal layout  ", this.modeHoriz);
+    checkBoxHorizontal =
+        new JCheckBox(this.bundle.getString("editorKsTpl.checkBoxHorizontal.title"),
+            this.modeHoriz);
     checkBoxHorizontal.setName(PROPERTY_LAYOUT_HORIZ);
-    checkBoxHorizontal.setToolTipText("Horizontal layouting of components");
-    checkBoxHorizontal.addActionListener((x) -> {
-      this.onConfigCheckboxChange(checkBoxHorizontal);
-    });
+    checkBoxHorizontal.setToolTipText(
+        this.bundle.getString("editorKsTpl.checkBoxHorizontal.tooltip"));
+    checkBoxHorizontal.addActionListener((x) -> this.onConfigCheckboxChange(checkBoxHorizontal));
 
     panel.add(buttonClipboardText, gbdata);
     panel.add(checkBoxGroupTopics, gbdata);
     panel.add(checkBoxGroupStores, gbdata);
     panel.add(checkBoxOrtho, gbdata);
     panel.add(checkBoxHorizontal, gbdata);
+  }
+
+  @Override
+  protected void doPutMapping(@Nonnull final AbstractTokenMakerFactory f) {
+    f.putMapping(MIME, "com.igormaznitsa.sciareto.ui.editors.KStreamsTopologyTokenMaker");
+  }
+
+  @Override
+  @Nonnull
+  protected String getSyntaxEditingStyle() {
+    return MIME;
+  }
+
+  @Nonnull
+  @Override
+  public String getDefaultExtension() {
+    return "kstpl";
+  }
+
+  @Override
+  @Nonnull
+  public FileFilter getFileFilter() {
+    return SRC_FILE_FILTER;
   }
 
   private enum PartitioningFlag {
@@ -570,28 +581,5 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
       }
       return format(this.pumlPattern, makePumlMultiline(unicode(element.id), 0), alias, color);
     }
-  }
-
-  @Override
-  protected void doPutMapping(@Nonnull final AbstractTokenMakerFactory f) {
-    f.putMapping(MIME, "com.igormaznitsa.sciareto.ui.editors.KStreamsTopologyTokenMaker");
-  }
-
-  @Override
-  @Nonnull
-  protected String getSyntaxEditingStyle() {
-    return MIME;
-  }
-
-  @Nonnull
-  @Override
-  public String getDefaultExtension() {
-    return "kstpl";
-  }
-
-  @Override
-  @Nonnull
-  public FileFilter getFileFilter() {
-    return SRC_FILE_FILTER;
   }
 }

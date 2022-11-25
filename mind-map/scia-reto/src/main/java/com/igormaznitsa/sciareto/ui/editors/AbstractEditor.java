@@ -38,8 +38,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.ResourceBundle;
 
 public abstract class AbstractEditor implements TabProvider, Disposable {
+
+  protected final ResourceBundle bundle =
+      ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
 
   private final AtomicBoolean disposeFlag = new AtomicBoolean();
   private static final Map<String, ImageIcon> ICON_CACHE = new HashMap<>();
