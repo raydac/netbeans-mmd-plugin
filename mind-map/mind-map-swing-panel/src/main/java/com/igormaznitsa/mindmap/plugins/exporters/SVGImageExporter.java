@@ -87,7 +87,7 @@ import org.apache.commons.text.StringEscapeUtils;
 
 public class SVGImageExporter extends AbstractExporter {
 
-  protected static final String FONT_CLASS_NAME = "mindMapTitleFont";
+  protected static final String FONT_CLASS_NAME = "mmdTitleFont";
   private static final Map<String, String[]> LOCAL_FONT_MAP = new HashMap<String, String[]>() {
     {
       put("dialog", new String[] {"sans-serif", "SansSerif"});
@@ -156,7 +156,7 @@ public class SVGImageExporter extends AbstractExporter {
     result.append("font-weight: ").append(fontWeight).append(';').append(NEXT_LINE);
 
     findWoffFont(font).ifPresent(woff -> {
-      result.append("src: url(data:application/font-woff;base64,").append(Utils.base64encode(woff)).append(") format(woff);").append(NEXT_LINE);
+      result.append("src: url(\"data:application/font-woff;base64,").append(Utils.base64encode(woff)).append("\") format(woff);").append(NEXT_LINE);
     });
 
     return result.toString();
@@ -294,7 +294,7 @@ public class SVGImageExporter extends AbstractExporter {
   }
 
   private String prepareStylePart(final MindMapPanelConfig config) {
-    return "<style>" + NEXT_LINE +
+    return "<style type=\"text/css\">" + NEXT_LINE +
         '.' + FONT_CLASS_NAME + " {" + NEXT_LINE + font2style(config.getFont()) + "}" + NEXT_LINE +
         "</style>";
   }
