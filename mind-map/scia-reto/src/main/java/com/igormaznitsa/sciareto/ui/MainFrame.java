@@ -1145,7 +1145,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
         menuUndo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/undo.png"))); // NOI18N
         menuUndo.setMnemonic('u');
-        menuUndo.setText("Undo");
+        menuUndo.setText(bundle.getString("mainMenu.itemEdit.itemUndo")); // NOI18N
         menuUndo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuUndoActionPerformed(evt);

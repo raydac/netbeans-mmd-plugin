@@ -26,11 +26,14 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import java.util.ResourceBundle;
 
 public class FileListPanel extends javax.swing.JPanel implements TableModel {
 
   private static final long serialVersionUID = 2901921029860574818L;
 
+  private final ResourceBundle bundle = UiUtils.findTextBundle();
+  
   private static final class FileSelector {
 
     private boolean selected;
@@ -96,8 +99,6 @@ public class FileListPanel extends javax.swing.JPanel implements TableModel {
   @Override
   @Nonnull
   public String getColumnName(final int columnIndex) {
-    final java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
-  
     switch(columnIndex){
       case 0 : return bundle.getString("panelFileList.tableColumn.Selected"); //NOI18N
       case 1 : return bundle.getString("panelFileList.tableColumn.File");
