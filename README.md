@@ -15,11 +15,13 @@ Initially I developed plugin for NetBeans IDE but because in companies, where I 
 
 # Changelog
 
-__1.5.3 (SNAPSHOT)__
-- SR:  updated PlantUML to 1.2022.12
+__1.6.0 (SNAPSHOT)__
+- ALL: improved SVG exporter to prevent image duplication
+- SR:  updated PlantUML to 1.2022.13
 - SR:  embedded JDK updated to 19.0.1+11
 - SR:  added support of SVG images in viewer
 - ALL: rework Base64, now JDK API in use
+- ALL: __refactoring of base components, changes in plugin API__
 
 __1.5.2 (11-sep-2022)__
 - SR:  added way to set PlantUML security profile through preferences
