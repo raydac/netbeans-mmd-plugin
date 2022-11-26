@@ -191,6 +191,7 @@ public final class MMDEditor extends AbstractTextEditor
     this.currentModelState.set(this.mindMapPanel.getModel().asString());
   }
 
+  @Nonnull
   public static FileFilter makeFileFilter() {
     return new FileFilter() {
       @Override

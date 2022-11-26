@@ -91,6 +91,7 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
         .replace("_", "_\\n");
   }
 
+  @Nonnull
   public static FileFilter makeFileFilter() {
     return new FileFilter() {
 

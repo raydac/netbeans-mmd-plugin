@@ -326,6 +326,7 @@ public final class SourceTextEditor extends AbstractTextEditor {
     gotoLine(line);
   }
 
+  @Nonnull
   public static FileFilter makeFileFilter() {
     return new FileFilter() {
 

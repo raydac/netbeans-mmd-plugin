@@ -48,6 +48,7 @@ public final class PlantUmlTextEditor extends AbstractPlUmlEditor {
     super(context, file);
   }
 
+  @Nonnull
   public static FileFilter makeFileFilter() {
     return new FileFilter() {
 

@@ -96,6 +96,7 @@ public final class UiUtils {
     }
   }
 
+  @Nonnull
   public static ResourceBundle findTextBundle() {
     return getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle", IDEBridgeFactory.findInstance()
         .getIDELocale());
