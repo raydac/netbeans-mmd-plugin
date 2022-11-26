@@ -25,33 +25,29 @@ import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
-import java.awt.Dimension;
 import javax.swing.Icon;
 import javax.swing.JMenuItem;
-import javax.swing.JScrollPane;
 
 public class EmoticonPopUpMenuPlugin extends AbstractPopupMenuItem {
 
-  private static final Icon ICON = ImageIconServiceProvider.findInstance().getIconForId(IconID.ICON_EMOTICONS);
+  private static final Icon ICON =
+      ImageIconServiceProvider.findInstance().getIconForId(IconID.ICON_EMOTICONS);
 
   @Override
   public JMenuItem makeMenuItem(final PluginContext context, final Topic activeTopic) {
     final JMenuItem result =
-        UI_COMPO_FACTORY.makeMenuItem(MmdI18n.getInstance().findBundle().getString("Emoticons.MenuTitle"), ICON);
+        UI_COMPO_FACTORY.makeMenuItem(
+            MmdI18n.getInstance().findBundle().getString("Emoticons.MenuTitle"), ICON);
     result.setToolTipText(MmdI18n.getInstance().findBundle().getString("Emoticons.MenuTooltip"));
     result.addActionListener(e -> {
       final IconPanel iconPanel = new IconPanel();
-      final JScrollPane scrollPane = UI_COMPO_FACTORY.makeScrollPane();
-      scrollPane.getVerticalScrollBar().setUnitIncrement(32);
-      scrollPane.getVerticalScrollBar().setBlockIncrement(96);
-      scrollPane.setPreferredSize(new Dimension(512, 400));
-      scrollPane.setViewportView(iconPanel);
       if (context.getDialogProvider()
-          .msgOkCancel(null, MmdI18n.getInstance().findBundle().getString("Emoticons.DialogTitle"), scrollPane)) {
+          .msgOkCancel(null, MmdI18n.getInstance().findBundle().getString("Emoticons.DialogTitle"),
+              iconPanel)) {
         final String emoticonName = iconPanel.getSelectedName();
         if (emoticonName != null) {
           final boolean changed;
-          if ("empty".equals(emoticonName)) {
+          if (IconPanel.ICON_EMPTY.equals(emoticonName)) {
             changed = setAttribute(null, context, activeTopic);
           } else {
             changed = setAttribute(emoticonName, context, activeTopic);
