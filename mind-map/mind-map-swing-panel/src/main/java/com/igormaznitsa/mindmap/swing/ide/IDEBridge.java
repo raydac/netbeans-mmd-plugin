@@ -17,7 +17,9 @@
 package com.igormaznitsa.mindmap.swing.ide;
 
 import com.igormaznitsa.commons.version.Version;
+import java.util.Collections;
 import java.util.Locale;
+import java.util.Map;
 import javax.swing.Icon;
 
 /**
@@ -70,9 +72,20 @@ public interface IDEBridge {
    * Load icon resource through inside tools provided by IDE if it is possible, the class loader of the provided class will be used to find resource.
    *
    * @param path  path to the icon, must not be null
-   * @param klazz class which class loader will be used for loading of resource, must not be null
+   * @param baseClassToLoad class which class loader will be used for loading of resource, must not be null
    * @return the icon, it must not be null, if it is not found then IDE will process the situation by its inside mechanisms and some runtime exception will be thrown
    * @since 1.2.0
    */
-  Icon loadIcon(String path, Class<?> klazz);
+  Icon loadIcon(String path, Class<?> baseClassToLoad);
+
+  /**
+   * Allows to make some communication with IDE for request custom objects.
+   * @param properties properties for requested object, must not be null
+   * @return requested object map, must not be null but can be empty.
+   * @since 1.6.0
+   * @see com.igormaznitsa.mindmap.plugins.exporters.SVGImageExporter
+   */
+  default Map<String, Object> lookup(final Map<String,Object> properties) {
+    return Collections.emptyMap();
+  }
 }

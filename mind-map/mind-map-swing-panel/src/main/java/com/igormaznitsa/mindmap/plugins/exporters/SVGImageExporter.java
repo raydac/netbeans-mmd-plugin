@@ -76,6 +76,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import javax.imageio.ImageIO;
@@ -112,8 +113,18 @@ public class SVGImageExporter extends AbstractExporter {
   private static final String KEY_PARAMETER_UNFOLD_ALL = "mmd.exporter.svg.unfold.all";
   private static final String KEY_PARAMETER_DRAW_BACKGROUND = "mmd.exporter.svg.background.draw";
 
+  public static final String LOOKUP_PARAM_REQ_FONT = "mmd.exporter.svg.font";
+  public static final String LOOKUP_PARAM_RESP_WOFF_FONT_AS_ARRAY = "mmd.exporter.svg.font.woff";
+
   static {
     DOUBLE = new DecimalFormat("#.###", DecimalFormatSymbols.getInstance(Locale.US));
+  }
+
+  private static Optional<byte[]> findWoffFont(final Font font) {
+    final Map<String,Object> map = new HashMap<>();
+    map.put(LOOKUP_PARAM_REQ_FONT, font);
+    final Map<String,Object> result = IDEBridgeFactory.findInstance().lookup(map);
+    return Optional.ofNullable((byte[]) result.get(LOOKUP_PARAM_RESP_WOFF_FONT_AS_ARRAY));
   }
 
   private static String dbl2str(final double value) {
@@ -143,6 +154,10 @@ public class SVGImageExporter extends AbstractExporter {
     result.append("font-size: ").append(fontSize).append(';').append(NEXT_LINE);
     result.append("font-style: ").append(fontStyle).append(';').append(NEXT_LINE);
     result.append("font-weight: ").append(fontWeight).append(';').append(NEXT_LINE);
+
+    findWoffFont(font).ifPresent(woff -> {
+      result.append("src: url(data:application/font-woff;base64,").append(Utils.base64encode(woff)).append(") format(woff);").append(NEXT_LINE);
+    });
 
     return result.toString();
   }

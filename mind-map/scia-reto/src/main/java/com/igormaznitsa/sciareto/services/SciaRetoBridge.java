@@ -22,11 +22,13 @@ import com.igormaznitsa.commons.version.Version;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.plugins.exporters.SVGImageExporter;
 import com.igormaznitsa.mindmap.swing.ide.IDEBridge;
 import com.igormaznitsa.mindmap.swing.ide.NotificationType;
 import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.notifications.NotificationManager;
 import com.igormaznitsa.sciareto.ui.platform.PlatformProvider;
+import java.awt.Font;
 import java.awt.Image;
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,12 +39,22 @@ import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
+import org.apache.commons.io.IOUtils;
 
 public class SciaRetoBridge implements IDEBridge {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SciaRetoBridge.class);
 
   private final Map<String, Image> IMAGE_CACHE = new HashMap<>();
+
+  @Nonnull
+  private static String removeStartSlash(@Nonnull final String path) {
+    String result = path;
+    if (path.startsWith("/") || path.startsWith("\\")) { //NOI18N
+      result = result.substring(1);
+    }
+    return result;
+  }
 
   @Override
   @Nonnull
@@ -94,15 +106,6 @@ public class SciaRetoBridge implements IDEBridge {
     }
   }
 
-  @Nonnull
-  private static String removeStartSlash(@Nonnull final String path) {
-    String result = path;
-    if (path.startsWith("/") || path.startsWith("\\")) { //NOI18N
-      result = result.substring(1);
-    }
-    return result;
-  }
-
   @Override
   @Nonnull
   public Icon loadIcon(@Nonnull final String path, @Nonnull final Class<?> klazz) {
@@ -125,5 +128,23 @@ public class SciaRetoBridge implements IDEBridge {
       }
     }
     return new ImageIcon(image);
+  }
+
+  @Override
+  public Map<String, Object> lookup(final Map<String, Object> properties) {
+    final Map<String, Object> result = new HashMap<>();
+    if (properties.containsKey(SVGImageExporter.LOOKUP_PARAM_REQ_FONT)) {
+      final Font font = (Font) properties.get(SVGImageExporter.LOOKUP_PARAM_REQ_FONT);
+      if (font.getName().startsWith("Fira Code")) {
+        final String fileName = "FiraCode-" + font.getName().substring(9).trim() + ".woff";
+        try {
+          final byte[] resource = IOUtils.resourceToByteArray("/fonts/woff/" + fileName);
+          result.put(SVGImageExporter.LOOKUP_PARAM_RESP_WOFF_FONT_AS_ARRAY, resource);
+        } catch (IOException ex) {
+          LOGGER.error("Can't read WOFF resource for " + font.getName(), ex);
+        }
+      }
+    }
+    return result;
   }
 }
