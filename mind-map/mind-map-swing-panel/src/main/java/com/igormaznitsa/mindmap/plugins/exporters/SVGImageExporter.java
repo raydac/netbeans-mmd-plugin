@@ -325,26 +325,30 @@ public class SVGImageExporter extends AbstractExporter {
       final StringWriter writer = new StringWriter(4096);
       writer.write("<defs>");
       writer.write(NEXT_LINE);
-      for (final Map.Entry<RenderedImage, String> cachedImage : this.map.entrySet()) {
-        final ByteArrayOutputStream imageBuffer = new ByteArrayOutputStream(4096);
-        String pngBase64Encoded = "";
-        try {
-          if (ImageIO.write(cachedImage.getKey(), "png", imageBuffer)) {
-            pngBase64Encoded = Utils.base64encode(imageBuffer.toByteArray());
-          }
-        } catch (IOException ex) {
-          LOGGER.error("Can't render PNG image for internal IO error", ex);
-          pngBase64Encoded = "http://cant_render_image_for_io_error.org";
-        }
-        writer.write(
-            String.format(
-                " <image id=\"%s\" width=\"%d\" height=\"%d\" xlink:href=\"data:image/png;charset=utf-8;base64,%s\"/>",
-                cachedImage.getValue(),
-                cachedImage.getKey().getWidth(),
-                cachedImage.getKey().getHeight(),
-                pngBase64Encoded));
-        writer.write(NEXT_LINE);
-      }
+
+      this.map.entrySet().stream()
+          .sorted(Map.Entry.comparingByValue())
+          .forEach(e -> {
+            final ByteArrayOutputStream imageBuffer = new ByteArrayOutputStream(4096);
+            String pngBase64Encoded = "";
+            try {
+              if (ImageIO.write(e.getKey(), "png", imageBuffer)) {
+                pngBase64Encoded = Utils.base64encode(imageBuffer.toByteArray());
+              }
+            } catch (IOException ex) {
+              LOGGER.error("Can't render PNG image for internal IO error", ex);
+              pngBase64Encoded = "http://cant_render_image_for_io_error.org";
+            }
+            writer.write(
+                String.format(
+                    " <image id=\"%s\" width=\"%d\" height=\"%d\" xlink:href=\"data:image/png;charset=utf-8;base64,%s\"/>",
+                    e.getValue(),
+                    e.getKey().getWidth(),
+                    e.getKey().getHeight(),
+                    pngBase64Encoded));
+            writer.write(NEXT_LINE);
+          });
+
       writer.write("</defs>");
       writer.write(NEXT_LINE);
       return writer.toString();
