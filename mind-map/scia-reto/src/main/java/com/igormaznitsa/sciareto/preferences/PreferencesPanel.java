@@ -32,6 +32,8 @@ import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.metrics.MetricsService;
 import static com.igormaznitsa.sciareto.preferences.PrefUtils.PROPERTY_PLANTUML_DOT_PATH;
 import static com.igormaznitsa.sciareto.preferences.PrefUtils.PROPERTY_PLANTUML_SECURITY_PROFILE;
+import static java.util.Comparator.naturalOrder;
+
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.editors.PlantUmlSecurityProfile;
 import com.igormaznitsa.sciareto.ui.editors.ScalableRsyntaxTextArea;
@@ -85,12 +87,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
   private Font fontMindMapEditor = ScalableRsyntaxTextArea.DEFAULT_FONT;
 
   private final MindMapPanelConfig config = new MindMapPanelConfig();
-  private final transient Map<String, KeyShortcut> mapKeyShortCuts = new TreeMap<>(new Comparator<String>() {
-    @Override
-    public int compare(final String o1, final String o2) {
-      return o1.compareTo(o2);
-    }
-  });
+  private final transient Map<String, KeyShortcut> mapKeyShortCuts = new TreeMap<>(naturalOrder());
 
   public PreferencesPanel(final Context context) {
     this.context = context;

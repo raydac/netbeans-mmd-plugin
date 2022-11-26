@@ -24,6 +24,7 @@ import com.igormaznitsa.mindmap.swing.panel.utils.RenderQuality;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.GraphicsEnvironment;
 import java.awt.event.KeyEvent;
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
@@ -36,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
+import java.util.stream.Stream;
 import javax.swing.KeyStroke;
 import org.apache.commons.lang3.SystemUtils;
 
@@ -66,8 +68,7 @@ public final class MindMapPanelConfig implements Serializable {
 
   private static final long serialVersionUID = -4273687011484460064L;
   private transient final List<WeakReference<MindMapConfigListener>> listeners =
-          new ArrayList<>();
-
+      new ArrayList<>();
   private transient final Map<String, KeyShortcut> mapShortCut = new HashMap<>();
   private int collapsatorSize = 16;
   private int textMargins = 10;
@@ -104,18 +105,18 @@ public final class MindMapPanelConfig implements Serializable {
   private float selectLineWidth = 3.0f;
   private float jumpLinkWidth = 1.5f;
   private boolean smartTextPaste = false;
-  private Font font = new Font(Font.SERIF, Font.BOLD, 18);
+  private Font font;
   private double scale = 1.0d;
   private boolean dropShadow = true;
   private RenderQuality renderQuality = Utils.getDefaultRenderQialityForOs();
   private transient volatile boolean notificationEnabled = true;
-
   public MindMapPanelConfig(final MindMapPanelConfig cfg, final boolean copyListeners) {
     this();
     this.makeFullCopyOf(cfg, copyListeners, false);
   }
 
   public MindMapPanelConfig() {
+    this.font = findDefaultFont(Font.BOLD, 18);
     if (SystemUtils.IS_OS_MAC) {
       // key map for MAC
       this.mapShortCut.put(KEY_ADD_CHILD_AND_START_EDIT,
@@ -209,6 +210,15 @@ public final class MindMapPanelConfig implements Serializable {
       this.mapShortCut.put(KEY_SHOW_POPUP, new KeyShortcut(KEY_SHOW_POPUP, KeyEvent.VK_SPACE,
           KeyEvent.CTRL_MASK | KeyEvent.ALT_MASK));
     }
+  }
+
+  public static Font findDefaultFont(final int style, final int size) {
+    return Stream.of(
+            GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames())
+        .filter(x -> x.startsWith("Fira Code"))
+        .map(x -> new Font("Fira Code", style, size))
+        .findFirst()
+        .orElse(new Font(Font.SERIF, style, size));
   }
 
   public boolean isKeyEvent(final String id, final KeyEvent event,

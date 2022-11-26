@@ -32,7 +32,7 @@ import org.fife.ui.rtextarea.RUndoManager;
 
 public final class ScalableRsyntaxTextArea extends RSyntaxTextArea {
 
-    public static final Font DEFAULT_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 14);
+    public static final Font DEFAULT_FONT = MindMapPanelConfig.findDefaultFont(Font.PLAIN, 14);
     private static final float SCALE_STEP = 0.5f;
     private static final float SCALE_MIN = 0.03f;
     private static final float SCALE_MAX = 10.0f;

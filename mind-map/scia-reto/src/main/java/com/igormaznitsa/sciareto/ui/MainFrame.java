@@ -66,8 +66,11 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.Rectangle;
@@ -80,6 +83,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -154,6 +158,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
   public MainFrame(@Nullable final GraphicsConfiguration gfc, @Nonnull @MustNotContainNull final String... args) throws IOException {
     super(gfc);
+    registerApplicationFonts();
     initComponents();
 
     if (PlatformProvider.getPlatform().registerPlatformMenuEvent(com.igormaznitsa.sciareto.ui.platform.PlatformMenuEvent.ABOUT, this)) {
@@ -437,7 +442,33 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
                 this.menuViewUIScale.add(scaleMenuItem);
             });
   }
-  
+
+  private static void registerApplicationFonts() {
+    LOGGER.info("Registering application fonts");
+    final String[] fontFiles = new String[] {
+        "FiraCode-Bold.ttf",
+        "FiraCode-Light.ttf",
+        "FiraCode-Medium.ttf",
+        "FiraCode-Regular.ttf",
+        "FiraCode-Retina.ttf",
+        "FiraCode-SemiBold.ttf"
+    };
+    final GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
+    for (final String fontFileName : fontFiles) {
+      try (final InputStream fontInputStream = MainFrame.class.getResourceAsStream(
+          "/fonts/" + fontFileName)) {
+        if (fontInputStream == null) {
+          throw new IOException("Can't find font file among resources: " + fontFileName);
+        }
+        graphicsEnvironment.registerFont(Font.createFont(Font.TRUETYPE_FONT, fontInputStream));
+      } catch (final FontFormatException ex) {
+        LOGGER.error("Can't register font file because format error: " + fontFileName);
+      } catch (IOException ex) {
+        LOGGER.error("Can't register font file because IO error: " + fontFileName, ex);
+      }
+    }
+  }
+
   private void ensureTreePanelVisible() {
     final int divider = this.mainSplitPane.getDividerLocation();
     if (divider <= 3) {
