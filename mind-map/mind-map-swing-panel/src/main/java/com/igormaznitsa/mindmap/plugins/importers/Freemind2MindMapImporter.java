@@ -94,7 +94,7 @@ public class Freemind2MindMapImporter extends AbstractImporter {
         }
 
         if (file.isFile()) {
-          topic.putAttribute(ImageVisualAttributePlugin.ATTR_KEY,
+          topic.putAttribute(ImageVisualAttributePlugin.MMD_TOPIC_ATTRIBUTE_IMAGE_DATA,
               Utils.rescaleImageAndEncodeAsBase64(file, -1));
           break;
         }

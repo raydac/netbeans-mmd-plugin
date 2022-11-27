@@ -209,7 +209,8 @@ public class CoggleMM2MindMapImporter extends AbstractImporter {
 
     final String encodedImage = loadFirstSuccessfulImage(foundImageURLs);
     if (encodedImage != null) {
-      topicToProcess.putAttribute(ImageVisualAttributePlugin.ATTR_KEY, encodedImage);
+      topicToProcess.putAttribute(ImageVisualAttributePlugin.MMD_TOPIC_ATTRIBUTE_IMAGE_DATA,
+          encodedImage);
     }
 
     if (succesfullDecodedUrl != null) {

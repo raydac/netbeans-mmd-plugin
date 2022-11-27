@@ -215,11 +215,13 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
   private boolean containAttribute(PluginContext context, final Topic activeTopic) {
     boolean result = false;
     if (activeTopic != null) {
-      result = activeTopic.getAttribute(ImageVisualAttributePlugin.ATTR_KEY) != null;
+      result =
+          activeTopic.getAttribute(ImageVisualAttributePlugin.MMD_TOPIC_ATTRIBUTE_IMAGE_DATA) !=
+              null;
     }
     if (!result) {
       for (final Topic t : context.getSelectedTopics()) {
-        result = t.getAttribute(ImageVisualAttributePlugin.ATTR_KEY) != null;
+        result = t.getAttribute(ImageVisualAttributePlugin.MMD_TOPIC_ATTRIBUTE_IMAGE_DATA) != null;
         if (result) {
           break;
         }
@@ -234,9 +236,9 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
       final String imageFilePath,
       final String imageName
   ) {
-    topic.putAttribute(ImageVisualAttributePlugin.ATTR_KEY, packedImage);
-    topic.putAttribute(ImageVisualAttributePlugin.ATTR_IMAGE_NAME, imageName);
-    topic.putAttribute(ImageVisualAttributePlugin.ATTR_IMAGE_URI_KEY, imageFilePath);
+    topic.putAttribute(ImageVisualAttributePlugin.MMD_TOPIC_ATTRIBUTE_IMAGE_DATA, packedImage);
+    topic.putAttribute(ImageVisualAttributePlugin.MMD_TOPIC_ATTRIBUTE_IMAGE_NAME, imageName);
+    topic.putAttribute(ImageVisualAttributePlugin.MMD_TOPIC_ATTRIBUTE_IMAGE_URI, imageFilePath);
   }
 
   private void setAttribute(final PluginContext context,

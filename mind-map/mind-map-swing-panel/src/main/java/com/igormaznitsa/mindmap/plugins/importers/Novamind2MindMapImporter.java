@@ -179,7 +179,8 @@ public class Novamind2MindMapImporter extends AbstractImporter {
       if (imageResourceId != null) {
         final String imageBody = manifest.findResourceImage(imageResourceId);
         if (imageBody != null) {
-          processing.putAttribute(ImageVisualAttributePlugin.ATTR_KEY, imageBody);
+          processing.putAttribute(ImageVisualAttributePlugin.MMD_TOPIC_ATTRIBUTE_IMAGE_DATA,
+              imageBody);
         }
       }
 

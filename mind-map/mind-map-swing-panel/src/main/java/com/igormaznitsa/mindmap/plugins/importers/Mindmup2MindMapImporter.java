@@ -228,7 +228,7 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
           if (encoded == null) {
             LOGGER.warn("Can't convert image : " + iconUrl);
           } else {
-            topic.putAttribute(ImageVisualAttributePlugin.ATTR_KEY, encoded);
+            topic.putAttribute(ImageVisualAttributePlugin.MMD_TOPIC_ATTRIBUTE_IMAGE_DATA, encoded);
           }
         } catch (final Exception ex) {
           LOGGER.error("Can't load image : " + iconUrl, ex);

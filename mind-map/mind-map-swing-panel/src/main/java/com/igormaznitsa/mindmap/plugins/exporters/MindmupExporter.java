@@ -16,7 +16,7 @@
 
 package com.igormaznitsa.mindmap.plugins.exporters;
 
-import static com.igormaznitsa.mindmap.plugins.attributes.images.ImageVisualAttributePlugin.ATTR_KEY;
+import static com.igormaznitsa.mindmap.plugins.attributes.images.ImageVisualAttributePlugin.MMD_TOPIC_ATTRIBUTE_IMAGE_DATA;
 
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.ExtraFile;
@@ -108,7 +108,7 @@ public class MindmupExporter extends AbstractExporter {
     final ExtraLink link = (ExtraLink) this.findExtra(topic, Extra.ExtraType.LINK);
     final ExtraFile file = (ExtraFile) this.findExtra(topic, Extra.ExtraType.FILE);
 
-    final String encodedImage = topic.getAttribute(ATTR_KEY);
+    final String encodedImage = topic.getAttribute(MMD_TOPIC_ATTRIBUTE_IMAGE_DATA);
 
     if (jump != null) {
       linkMap.put(uuid, jump.getValue());

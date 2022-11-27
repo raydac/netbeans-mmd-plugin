@@ -131,7 +131,8 @@ public class SciaRetoBridge implements IDEBridge {
   }
 
   @Override
-  public Map<String, Object> lookup(final Map<String, Object> properties) {
+  @Nonnull
+  public Map<String, Object> lookup(@Nonnull final Map<String, Object> properties) {
     final Map<String, Object> result = new HashMap<>();
     if (properties.containsKey(SVGImageExporter.LOOKUP_PARAM_REQ_FONT)) {
       final Font font = (Font) properties.get(SVGImageExporter.LOOKUP_PARAM_REQ_FONT);

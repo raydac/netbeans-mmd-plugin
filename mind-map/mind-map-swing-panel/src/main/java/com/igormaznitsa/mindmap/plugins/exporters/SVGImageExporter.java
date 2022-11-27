@@ -155,9 +155,9 @@ public class SVGImageExporter extends AbstractExporter {
     result.append("font-style: ").append(fontStyle).append(';').append(NEXT_LINE);
     result.append("font-weight: ").append(fontWeight).append(';').append(NEXT_LINE);
 
-    findWoffFont(font).ifPresent(woff -> {
-      result.append("src: url(\"data:application/font-woff;base64,").append(Utils.base64encode(woff)).append("\") format(woff);").append(NEXT_LINE);
-    });
+    findWoffFont(font).ifPresent(
+        woff -> result.append("src: url(\"data:application/font-woff;base64,")
+            .append(Utils.base64encode(woff)).append("\") format(woff);").append(NEXT_LINE));
 
     return result.toString();
   }
