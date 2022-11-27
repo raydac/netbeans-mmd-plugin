@@ -41,7 +41,6 @@ public class MiscIcons {
 
   static {
     final InputStream iconListReadStream = MiscIcons.class.getResourceAsStream("/com/igormaznitsa/mindmap/swing/miscicons/icon.lst");
-
     final Map<String, ImageContainer> imageContainers = new HashMap<>();
 
     try {

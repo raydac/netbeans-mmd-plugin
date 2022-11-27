@@ -27,7 +27,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.im.InputContext;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -52,8 +51,6 @@ public final class IconPanel extends JPanel {
 
   public static final String ICON_EMPTY = "empty";
   private static final long serialVersionUID = 4823626757838675154L;
-  private static final BufferedImage EMPTY_ICON =
-      new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
   private final ButtonGroup group = Utils.UI_COMPO_FACTORY.makeButtonGroup();
   private final JPanel iconPanel;
   private final JTextField textField;
@@ -202,11 +199,7 @@ public final class IconPanel extends JPanel {
 
     result.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(),
         BorderFactory.createEmptyBorder(3, 3, 3, 3)));
-    if (name.equals(ICON_EMPTY)) {
-      result.setIcon(new ImageIcon(EMPTY_ICON));
-    } else {
-      result.setIcon(new ImageIcon(requireNonNull(MiscIcons.findForName(name))));
-    }
+    result.setIcon(new ImageIcon(requireNonNull(MiscIcons.findForName(name))));
     result.setName(name);
     result.setFocusPainted(false);
     result.setToolTipText(name);
