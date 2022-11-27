@@ -25,6 +25,7 @@ import com.igormaznitsa.mindmap.plugins.api.MindMapPlugin;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.api.Renderable;
 import com.igormaznitsa.mindmap.plugins.api.VisualAttributePlugin;
+import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import java.awt.Image;
@@ -38,10 +39,6 @@ import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
 
 public class ImageVisualAttributePlugin implements VisualAttributePlugin {
-
-  public static final String ATTR_KEY = "mmd.image";
-  public static final String ATTR_IMAGE_NAME = "mmd.image.name";
-  public static final String ATTR_IMAGE_URI_KEY = "mmd.image.uri";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ImageVisualAttributePlugin.class);
   private static final Map<Topic, Renderable> CACHED_IMAGES = new WeakHashMap<>();
@@ -58,9 +55,9 @@ public class ImageVisualAttributePlugin implements VisualAttributePlugin {
       final Set<Extra.ExtraType> extraTypes
   ) {
     boolean result = false;
-    if (extraTypes != null && topic.getAttribute(ATTR_KEY) != null) {
+    if (extraTypes != null && topic.getAttribute(MMD_TOPIC_ATTRIBUTE_IMAGE_DATA) != null) {
       if (extraTypes.contains(Extra.ExtraType.NOTE)) {
-        final String text = topic.getAttribute(ATTR_IMAGE_NAME);
+        final String text = topic.getAttribute(MMD_TOPIC_ATTRIBUTE_IMAGE_NAME);
         if (text != null) {
           result = pattern.matcher(text).find();
         }
@@ -68,7 +65,7 @@ public class ImageVisualAttributePlugin implements VisualAttributePlugin {
       if (!result &&
           (extraTypes.contains(Extra.ExtraType.LINK) ||
               extraTypes.contains(Extra.ExtraType.FILE))) {
-        final String text = topic.getAttribute(ATTR_IMAGE_URI_KEY);
+        final String text = topic.getAttribute(MMD_TOPIC_ATTRIBUTE_IMAGE_URI);
         if (text != null) {
           try {
             result =
@@ -95,7 +92,7 @@ public class ImageVisualAttributePlugin implements VisualAttributePlugin {
 
   private Image extractImage(final Topic topic) {
     Image result = null;
-    final String encoded = topic.getAttribute(ATTR_KEY);
+    final String encoded = topic.getAttribute(MMD_TOPIC_ATTRIBUTE_IMAGE_DATA);
     if (encoded != null) {
       try {
         result = ImageIO.read(new ByteArrayInputStream(Utils.base64decode(encoded)));
@@ -110,13 +107,14 @@ public class ImageVisualAttributePlugin implements VisualAttributePlugin {
   public boolean onClick(final PluginContext context, final Topic topic,
                          final boolean activeGroupModifier, final int clickCount) {
     if (clickCount > 1) {
-      final String imageFilePathUri = topic.getAttribute(ATTR_IMAGE_URI_KEY);
+      final String imageFilePathUri = topic.getAttribute(MMD_TOPIC_ATTRIBUTE_IMAGE_URI);
       if (imageFilePathUri != null) {
         try {
           context.openFile(new MMapURI(imageFilePathUri).asFile(context.getProjectFolder()), false);
         } catch (URISyntaxException ex) {
           context.getDialogProvider()
-              .msgWarn(context.getPanel(), "URI syntax exception: " + imageFilePathUri);
+              .msgWarn(context.getPanel(), String.format(MmdI18n.getInstance().findBundle()
+                  .getString("pluginImageVisualAttr.warn.uriSyntaxError"), imageFilePathUri));
         }
       }
     } else {
@@ -130,9 +128,9 @@ public class ImageVisualAttributePlugin implements VisualAttributePlugin {
 
   @Override
   public String getToolTip(final PluginContext context, final Topic activeTopic) {
-    String result = activeTopic.getAttribute(ATTR_IMAGE_URI_KEY);
+    String result = activeTopic.getAttribute(MMD_TOPIC_ATTRIBUTE_IMAGE_URI);
     if (result == null) {
-      result = activeTopic.getAttribute(ATTR_IMAGE_NAME);
+      result = activeTopic.getAttribute(MMD_TOPIC_ATTRIBUTE_IMAGE_NAME);
     }
     return result;
   }
@@ -140,13 +138,13 @@ public class ImageVisualAttributePlugin implements VisualAttributePlugin {
   @Override
   public boolean isClickable(final PluginContext context,
                              final Topic activeTopic) {
-    final String imageFilePath = activeTopic.getAttribute(ATTR_IMAGE_URI_KEY);
+    final String imageFilePath = activeTopic.getAttribute(MMD_TOPIC_ATTRIBUTE_IMAGE_URI);
     return imageFilePath != null;
   }
 
   @Override
   public String getAttributeKey() {
-    return ATTR_KEY;
+    return MMD_TOPIC_ATTRIBUTE_IMAGE_DATA;
   }
 
   @Override

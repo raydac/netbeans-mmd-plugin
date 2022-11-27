@@ -16,6 +16,7 @@
 
 package com.igormaznitsa.mindmap.plugins.api;
 
+import com.igormaznitsa.mindmap.model.StandardTopicAttributes;
 import com.igormaznitsa.mindmap.model.TopicFinder;
 
 /**
@@ -23,7 +24,7 @@ import com.igormaznitsa.mindmap.model.TopicFinder;
  *
  * @since 1.2
  */
-public interface AttributePlugin extends MindMapPlugin, TopicFinder {
+public interface AttributePlugin extends MindMapPlugin, TopicFinder, StandardTopicAttributes {
 
   /**
    * Attribute name which can be returned if plug-in doesn't process attributes.

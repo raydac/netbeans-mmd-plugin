@@ -10,14 +10,17 @@ public interface StandardTopicAttributes {
    * HTML formatted color for border.
    */
   String MMD_TOPIC_ATTRIBUTE_COLOR_BORDER = "borderColor";
+
   /**
    * HTML formatted color for background fill.
    */
   String MMD_TOPIC_ATTRIBUTE_COLOR_FILL = "fillColor";
+
   /**
    * HTML formatted color for title.
    */
   String MMD_TOPIC_ATTRIBUTE_COLOR_TEXT = "textColor";
+
   /**
    * Boolean flag shows that topic should be on left for its parent. Works only for direct root children.
    */
@@ -41,6 +44,7 @@ public interface StandardTopicAttributes {
    * Flag shows that topic associated note is encrypted one.
    */
   String MMD_TOPIC_ATTRIBUTE_NOTE_ENCRYPTED = "extras.note.encrypted";
+
   /**
    * Attribute contains non-encrypted password hint for encrypted note.
    */
@@ -50,5 +54,20 @@ public interface StandardTopicAttributes {
    * Type of text align in topic title. Supported left, center and right.
    */
   String MMD_TOPIC_ATTRIBUTE_TITLE_ALIGN = "align";
+
+  /**
+   * Encoded Base64 image data saved for topic.
+   */
+  String MMD_TOPIC_ATTRIBUTE_IMAGE_DATA = "mmd.image";
+
+  /**
+   * Name of image saved for topic.
+   */
+  String MMD_TOPIC_ATTRIBUTE_IMAGE_NAME = "mmd.image.name";
+
+  /**
+   * URI of image saved in topic.
+   */
+  String MMD_TOPIC_ATTRIBUTE_IMAGE_URI = "mmd.image.uri";
 
 }
