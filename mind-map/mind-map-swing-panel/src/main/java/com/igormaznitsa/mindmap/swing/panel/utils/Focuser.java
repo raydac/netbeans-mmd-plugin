@@ -18,9 +18,12 @@
  */
 package com.igormaznitsa.mindmap.swing.panel.utils;
 
+import static java.util.Objects.requireNonNull;
+
 import java.awt.Window;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.function.Consumer;
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 import javax.swing.event.AncestorEvent;
@@ -29,19 +32,29 @@ import javax.swing.event.AncestorListener;
 public final class Focuser implements AncestorListener {
 
   private final JComponent component;
+  private final Consumer<Window>[] extraActions;
 
-  public Focuser(final JComponent component) {
+  @SafeVarargs
+  public Focuser(final JComponent component, final Consumer<Window>... extraActions) {
     this.component = component;
     this.component.addAncestorListener(this);
+    this.extraActions = requireNonNull(extraActions);
   }
 
   @Override
   public void ancestorAdded(final AncestorEvent event) {
     if (event.getID() == AncestorEvent.ANCESTOR_ADDED) {
       if (event.getAncestor() instanceof Window) {
-        ((Window) event.getAncestor()).addWindowListener(new WindowAdapter() {
+        final Window window = (Window) event.getAncestor();
+        window.addWindowListener(new WindowAdapter() {
           private void doBusiness() {
-            SwingUtilities.invokeLater(component::requestFocus);
+            SwingUtilities.invokeLater(() -> {
+              component.requestFocus();
+              for (final Consumer<Window> r : extraActions) {
+                r.accept(window);
+              }
+            });
+
           }
 
           @Override

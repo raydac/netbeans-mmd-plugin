@@ -26,6 +26,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.im.InputContext;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -41,6 +42,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
+import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.plaf.metal.MetalToggleButtonUI;
@@ -65,6 +67,7 @@ public final class IconPanel extends JPanel {
         MmdI18n.getInstance().findBundle().getString("Emoticons.panelTextField.tooltip"));
     this.textField.getDocument().addDocumentListener(new DocumentListener() {
       private void updateForEvent(final DocumentEvent event) {
+        tryForceEnglishForInput();
         try {
           fillForName(
               event.getDocument().getText(0, event.getDocument().getLength()));
@@ -101,7 +104,24 @@ public final class IconPanel extends JPanel {
 
     this.fillForName("");
 
-    new Focuser(this.textField);
+    new Focuser(this.textField, window -> {
+      SwingUtilities.invokeLater(() -> {
+        final InputContext inputContext = window.getInputContext();
+        if (inputContext != null) {
+          inputContext.selectInputMethod(Locale.ENGLISH);
+        }
+      });
+      SwingUtilities.invokeLater(this::tryForceEnglishForInput);
+    });
+  }
+
+  private void tryForceEnglishForInput() {
+    SwingUtilities.invokeLater(() -> {
+      final InputContext inputContext = this.textField.getInputContext();
+      if (inputContext != null) {
+        inputContext.selectInputMethod(Locale.ENGLISH);
+      }
+    });
   }
 
   private boolean anyDifference(final List<String> names) {
