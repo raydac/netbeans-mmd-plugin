@@ -5,6 +5,5 @@ import com.igormaznitsa.mindmap.annotations.MmdTopic;
 
 @MmdTopic(colorFill = MmdColor.ORANGE)
 public interface Interface2 extends Interface1 {
-  @MmdTopic
   void method2_1();
 }

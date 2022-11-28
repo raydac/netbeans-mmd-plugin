@@ -216,6 +216,8 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
       annotatedElements.forEach(
           element -> {
             final Annotation[] annotationInstances = element.getAnnotationsByType(annotationClass);
+            final long startPosition =
+                AnnotationUtils.findStartPosition(this.sourcePositions, this.trees, element);
             final UriLine position =
                 AnnotationUtils.findPosition(this.sourcePositions, this.trees, element);
 
@@ -227,14 +229,14 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
                       file -> foundAnnotationList.add(
                           new MmdAnnotationWrapper(
                               element, file, new File(position.getUri()).toPath(),
-                              position.getLine())));
+                              position.getLine(), startPosition)));
             } else {
               Arrays.stream(annotationInstances)
                   .forEach(
                       instance -> foundAnnotationList.add(
                           new MmdAnnotationWrapper(
                               element, instance, new File(position.getUri()).toPath(),
-                              position.getLine())));
+                              position.getLine(), startPosition)));
             }
           });
     }

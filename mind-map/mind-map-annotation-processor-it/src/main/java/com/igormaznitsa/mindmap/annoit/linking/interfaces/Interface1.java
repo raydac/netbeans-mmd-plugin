@@ -4,9 +4,9 @@ import com.igormaznitsa.mindmap.annotations.MmdTopic;
 
 @MmdTopic
 public interface Interface1 extends RootInterface {
-  @MmdTopic
+  @MmdTopic(jumpTo = "$$$111")
   void method1();
 
-  @MmdTopic
+  @MmdTopic(jumpTo = "RootInterface")
   void method2();
 }

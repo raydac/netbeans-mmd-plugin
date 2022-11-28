@@ -154,6 +154,10 @@ public abstract class AbstractItem {
     return this.annotationContainer.getLine();
   }
 
+  public long getStartPosition() {
+    return this.annotationContainer.getStartPositionInsideFile();
+  }
+
   public Path getPath() {
     return this.annotationContainer.getPath();
   }

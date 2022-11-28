@@ -56,10 +56,25 @@ public final class AnnotationUtils {
     final TreePath treePath = trees.getPath(element);
     final CompilationUnitTree compilationUnit = treePath.getCompilationUnit();
 
-    final long startPosition =
-        sourcePositions.getStartPosition(compilationUnit, treePath.getLeaf());
+    final long startPosition = findStartPosition(sourcePositions, trees, element);
     final long lineNumber = compilationUnit.getLineMap().getLineNumber(startPosition);
     return new UriLine(compilationUnit.getSourceFile().toUri(), lineNumber);
+  }
+
+  /**
+   * Find starting position of element inside file.
+   *
+   * @param sourcePositions auxiliary utility class, must not be null
+   * @param trees           auxiliary utility class, must not be null
+   * @param element         element which position should be found
+   * @return start position of element inside file or -1 if not found
+   * @see javax.tools.Diagnostic#NOPOS
+   */
+  public static long findStartPosition(
+      final SourcePositions sourcePositions, final Trees trees, final Element element) {
+    final TreePath treePath = trees.getPath(element);
+    final CompilationUnitTree compilationUnit = treePath.getCompilationUnit();
+    return sourcePositions.getStartPosition(compilationUnit, treePath.getLeaf());
   }
 
   /**

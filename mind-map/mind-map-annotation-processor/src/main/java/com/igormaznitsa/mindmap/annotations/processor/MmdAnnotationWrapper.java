@@ -41,6 +41,11 @@ public class MmdAnnotationWrapper {
   private final long line;
 
   /**
+   * Start position of element inside file
+   */
+  private final long startPositionInsideFile;
+
+  /**
    * Element providing the annotation.
    */
   private final Element element;
@@ -56,14 +61,24 @@ public class MmdAnnotationWrapper {
    * @throws IllegalArgumentException thrown if line is zero or negative one
    */
   public MmdAnnotationWrapper(
-      final Element element, final Annotation annotation, final Path path, final long line) {
+      final Element element,
+      final Annotation annotation,
+      final Path path,
+      final long line,
+      final long startPositionInsideFile
+  ) {
     this.element = requireNonNull(element);
     this.annotation = requireNonNull(annotation);
     this.path = requireNonNull(path);
-    if (line < 1) {
-      throw new IllegalArgumentException("Unexpected line number: " + line);
+    if (line < 1 || startPositionInsideFile < 0) {
+      throw new IllegalArgumentException("Can't detect position of element inside file: " + line);
     }
     this.line = line;
+    this.startPositionInsideFile = startPositionInsideFile;
+  }
+
+  public long getStartPositionInsideFile() {
+    return this.startPositionInsideFile;
   }
 
   @Override

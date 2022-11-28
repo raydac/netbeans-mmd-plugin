@@ -11,6 +11,7 @@ import static org.apache.commons.io.FileUtils.readFileToString;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -42,10 +43,25 @@ public abstract class AbstractMmdTest {
     assertEquals(topic.getAttribute(MMD_TOPIC_ATTRIBUTE_EMOTICON), emoticon.getId());
   }
 
+  protected static Topic findForPath(final MindMap mindMap, final String... path) {
+    assertNotEquals("Empty path", 0, path.length);
+    Topic topic = null;
+    for (final String s : path) {
+      if (topic == null) {
+        topic = mindMap.getRoot();
+      } else {
+        topic = topic.getChildren().stream().filter(x -> s.equals(x.getText())).findFirst()
+            .orElse(null);
+      }
+      assertNotNull("Can't find for path: " + Arrays.toString(path), topic);
+    }
+    return topic;
+  }
+
   protected static void assertTopicPath(final Topic topic, final String... path) {
     final String[] detectedPath = Arrays.stream(topic.getPath()).map(Topic::getText).toArray(
         String[]::new);
-    assertArrayEquals(detectedPath, detectedPath);
+    assertArrayEquals(path, detectedPath);
   }
 
   protected static void assertTopicColors(
