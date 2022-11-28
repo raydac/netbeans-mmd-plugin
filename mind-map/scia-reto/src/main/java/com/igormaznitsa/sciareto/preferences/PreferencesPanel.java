@@ -27,6 +27,7 @@ import com.igormaznitsa.mindmap.swing.panel.utils.KeyShortcut;
 import com.igormaznitsa.mindmap.swing.panel.utils.PropertiesPreferences;
 import com.igormaznitsa.mindmap.swing.panel.utils.RenderQuality;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.metrics.MetricsService;
@@ -35,6 +36,7 @@ import static com.igormaznitsa.sciareto.preferences.PrefUtils.PROPERTY_PLANTUML_
 import static java.util.Comparator.naturalOrder;
 
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
+import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.editors.PlantUmlSecurityProfile;
 import com.igormaznitsa.sciareto.ui.editors.ScalableRsyntaxTextArea;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.FontSelector;
@@ -1217,7 +1219,14 @@ public final class PreferencesPanel extends javax.swing.JPanel {
   }//GEN-LAST:event_buttonFontActionPerformed
 
   private void buttonAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAboutActionPerformed
-    JOptionPane.showMessageDialog(this, new AboutPanel(), "About", JOptionPane.PLAIN_MESSAGE);
+      final JPanel aboutPanel = new AboutPanel();
+      UiUtils.makeOwningDialogResizable(aboutPanel);
+      final JScrollPane scrollPane = UIComponentFactoryProvider.findInstance().makeScrollPane();
+      scrollPane.setViewportView(aboutPanel);
+      scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+      scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+      JOptionPane.showMessageDialog(SciaRetoStarter.getApplicationFrame(), scrollPane, "About", JOptionPane.PLAIN_MESSAGE);
   }//GEN-LAST:event_buttonAboutActionPerformed
 
   private void colorChooserJumpLinkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_colorChooserJumpLinkActionPerformed

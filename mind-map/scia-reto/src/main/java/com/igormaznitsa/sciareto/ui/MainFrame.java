@@ -29,6 +29,7 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.ide.IDEBridgeFactory;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.preferences.FileHistoryManager;
@@ -1395,8 +1396,14 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     }// </editor-fold>//GEN-END:initComponents
 
   private void menuAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuAboutActionPerformed
-    final JPanel panel = new AboutPanel();
-    JOptionPane.showMessageDialog(SciaRetoStarter.getApplicationFrame(), panel, "About", JOptionPane.PLAIN_MESSAGE);
+    final JPanel aboutPanel = new AboutPanel();
+    UiUtils.makeOwningDialogResizable(aboutPanel);
+    final JScrollPane scrollPane = UIComponentFactoryProvider.findInstance().makeScrollPane();
+    scrollPane.setViewportView(aboutPanel);
+    scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+    scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+    
+    JOptionPane.showMessageDialog(SciaRetoStarter.getApplicationFrame(), scrollPane, "About", JOptionPane.PLAIN_MESSAGE);
   }//GEN-LAST:event_menuAboutActionPerformed
 
   private void menuOpenProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuOpenProjectActionPerformed
