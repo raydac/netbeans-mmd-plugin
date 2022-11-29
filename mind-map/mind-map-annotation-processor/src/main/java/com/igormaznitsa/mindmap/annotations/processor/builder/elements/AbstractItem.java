@@ -122,17 +122,17 @@ public abstract class AbstractItem {
       topic.putAttribute(MmdAttribute.TOPIC_LINK_UID.getId(), topicAnnotation.uid());
     }
 
-    if (topicAnnotation.colorBorder() != MmdColor.DEFAULT) {
+    if (topicAnnotation.colorBorder() != MmdColor.Default) {
       topic.putAttribute(
           MmdAttribute.COLOR_BORDER.getId(), topicAnnotation.colorBorder().getHtmlColor());
     }
 
-    if (topicAnnotation.colorFill() != MmdColor.DEFAULT) {
+    if (topicAnnotation.colorFill() != MmdColor.Default) {
       topic.putAttribute(
           MmdAttribute.COLOR_FILL.getId(), topicAnnotation.colorFill().getHtmlColor());
     }
 
-    if (topicAnnotation.colorText() != MmdColor.DEFAULT) {
+    if (topicAnnotation.colorText() != MmdColor.Default) {
       topic.putAttribute(
           MmdAttribute.COLOR_TEXT.getId(), topicAnnotation.colorText().getHtmlColor());
     }

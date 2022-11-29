@@ -120,21 +120,21 @@ public @interface MmdTopic {
    *
    * @return text color for the topic.
    */
-  MmdColor colorText() default MmdColor.DEFAULT;
+  MmdColor colorText() default MmdColor.Default;
 
   /**
    * Background fill color for the topic.
    *
    * @return background fill color for the topic.
    */
-  MmdColor colorFill() default MmdColor.DEFAULT;
+  MmdColor colorFill() default MmdColor.Default;
 
   /**
    * Border fill color for the topic.
    *
    * @return border fill color for the topic.
    */
-  MmdColor colorBorder() default MmdColor.DEFAULT;
+  MmdColor colorBorder() default MmdColor.Default;
 
   /**
    * Flag to ask topic to be collapsed

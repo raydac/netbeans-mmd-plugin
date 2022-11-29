@@ -241,24 +241,24 @@ final class InternalLayoutBlock {
 
     for (int i = topicPath.length - 1; i >= 0; i--) {
       final InternalLayoutBlock next = topicPath[i];
-      if (colorText == MmdColor.DEFAULT) {
+      if (colorText == MmdColor.Default) {
         colorText = next.getAnnotationItem().asMmdTopicAnnotation().colorText();
       }
-      if (colorFill == MmdColor.DEFAULT) {
+      if (colorFill == MmdColor.Default) {
         colorFill = next.getAnnotationItem().asMmdTopicAnnotation().colorFill();
       }
-      if (colorBorder == MmdColor.DEFAULT) {
+      if (colorBorder == MmdColor.Default) {
         colorBorder = next.getAnnotationItem().asMmdTopicAnnotation().colorBorder();
       }
     }
 
-    if (colorText != MmdColor.DEFAULT) {
+    if (colorText != MmdColor.Default) {
       topic.putAttribute(COLOR_TEXT.getId(), colorText.getHtmlColor());
     }
-    if (colorFill != MmdColor.DEFAULT) {
+    if (colorFill != MmdColor.Default) {
       topic.putAttribute(COLOR_FILL.getId(), colorFill.getHtmlColor());
     }
-    if (colorBorder != MmdColor.DEFAULT) {
+    if (colorBorder != MmdColor.Default) {
       topic.putAttribute(COLOR_BORDER.getId(), colorBorder.getHtmlColor());
     }
   }

@@ -11,9 +11,9 @@ import com.igormaznitsa.mindmap.annotations.MmdTopic;
     rootTopic = @MmdTopic(
         uid = "rootTopicUid",
         title = "Root topic",
-        colorFill = MmdColor.AQUA,
-        colorText = MmdColor.ORANGE,
-        colorBorder = MmdColor.RED,
+        colorFill = MmdColor.Aqua,
+        colorText = MmdColor.Orange,
+        colorBorder = MmdColor.Red,
         emoticon = MmdEmoticon.ACORN,
         note = "Some test\nmultiline note\none more line",
         uri = "https://sciareto.com"
@@ -21,7 +21,7 @@ import com.igormaznitsa.mindmap.annotations.MmdTopic;
 public class Root {
 
   @MmdTopic(title = "method one",
-      colorFill = MmdColor.TOMATO,
+      colorFill = MmdColor.Tomato,
       emoticon = MmdEmoticon.ABACUS
   )
   public void Method1() {
@@ -43,7 +43,7 @@ public class Root {
 
   }
 
-  @MmdTopic(path = "method one", colorFill = MmdColor.BLACK, colorText = MmdColor.WHITE, emoticon = MmdEmoticon.ANDROID, jumpTo = "Root topic")
+  @MmdTopic(path = "method one", colorFill = MmdColor.Black, colorText = MmdColor.White, emoticon = MmdEmoticon.ANDROID, jumpTo = "Root topic")
   public void SubMethod2() {
 
   }

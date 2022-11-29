@@ -70,15 +70,15 @@ public abstract class AbstractMmdTest {
       final MmdColor colorFill,
       final MmdColor colorBorder) {
 
-    if (colorText != MmdColor.DEFAULT) {
+    if (colorText != MmdColor.Default) {
       assertEquals(colorText.getHtmlColor(), topic.getAttribute(MMD_TOPIC_ATTRIBUTE_COLOR_TEXT));
     }
 
-    if (colorFill != MmdColor.DEFAULT) {
+    if (colorFill != MmdColor.Default) {
       assertEquals(colorFill.getHtmlColor(), topic.getAttribute(MMD_TOPIC_ATTRIBUTE_COLOR_FILL));
     }
 
-    if (colorBorder != MmdColor.DEFAULT) {
+    if (colorBorder != MmdColor.Default) {
       assertEquals(colorBorder.getHtmlColor(),
           topic.getAttribute(MMD_TOPIC_ATTRIBUTE_COLOR_BORDER));
     }

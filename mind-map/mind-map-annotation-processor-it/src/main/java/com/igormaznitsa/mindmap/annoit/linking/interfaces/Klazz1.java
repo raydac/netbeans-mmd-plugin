@@ -3,7 +3,7 @@ package com.igormaznitsa.mindmap.annoit.linking.interfaces;
 import com.igormaznitsa.mindmap.annotations.MmdColor;
 import com.igormaznitsa.mindmap.annotations.MmdTopic;
 
-@MmdTopic(colorFill = MmdColor.GREEN)
+@MmdTopic(colorFill = MmdColor.LightGreen)
 public class Klazz1 implements Interface2 {
   @MmdTopic
   @Override
