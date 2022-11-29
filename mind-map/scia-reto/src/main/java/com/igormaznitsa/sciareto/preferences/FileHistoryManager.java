@@ -29,6 +29,7 @@ import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.IOUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import java.nio.charset.StandardCharsets;
 
 public final class FileHistoryManager {
 
@@ -102,12 +103,12 @@ public final class FileHistoryManager {
   
   @Nonnull
   private String encodeString(@Nonnull final String str) throws IOException {
-    return Base64.encodeBase64String(IOUtils.packData(str.getBytes("UTF-8"))); //NOI18N
+    return Base64.encodeBase64String(IOUtils.packData(str.getBytes(StandardCharsets.UTF_8)));
   }
 
   @Nonnull
   private String decodeString(@Nonnull final String str) throws IOException {
-    return new String(IOUtils.unpackData(Base64.decodeBase64(str)), "UTF-8"); //NOI18N
+    return new String(IOUtils.unpackData(Base64.decodeBase64(str)), StandardCharsets.UTF_8);
   }
 
   @Nonnull

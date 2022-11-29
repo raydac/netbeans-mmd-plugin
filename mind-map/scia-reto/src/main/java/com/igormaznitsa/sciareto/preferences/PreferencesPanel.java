@@ -53,6 +53,7 @@ import javax.swing.filechooser.FileFilter;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.*;
 import java.util.prefs.Preferences;
@@ -229,11 +230,12 @@ public final class PreferencesPanel extends javax.swing.JPanel {
 
         jPanel6.setLayout(new java.awt.GridBagLayout());
 
-        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Connector and collapsator options"));
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
+        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("PreferencesPanel.panelConnectorAndCollapsatorOptions.title"))); // NOI18N
         jPanel3.setLayout(new java.awt.GridBagLayout());
 
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel2.setText("Collapsator width:");
+        jLabel2.setText(bundle.getString("PreferencesPanel.labelConnecorWidth")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -257,7 +259,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         jPanel3.add(spinnerConnectorWidth, gridBagConstraints);
 
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel5.setText("Collapsator size:");
+        jLabel5.setText(bundle.getString("PreferencesPanel.labelCollapsatorSize")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
@@ -281,7 +283,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         jPanel3.add(spinnerCollapsatorSize, gridBagConstraints);
 
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel6.setText("Collapsator width:");
+        jLabel6.setText(bundle.getString("PreferencesPanel.labelCollapsatorWidth")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
@@ -300,7 +302,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         jPanel3.add(spinnerCollapsatorWidth, gridBagConstraints);
 
         jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel7.setText("Jump link width:");
+        jLabel7.setText(bundle.getString("PreferencesPanel.labelJumpLinkWidth")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -324,7 +326,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
 
         jPanel15.setLayout(new java.awt.GridLayout(2, 2));
 
-        colorChooserCollapsatorBackground.setText("Collapsator fill");
+        colorChooserCollapsatorBackground.setText(bundle.getString("PreferencesPanel.buttonCollapsatorFill")); // NOI18N
         colorChooserCollapsatorBackground.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         colorChooserCollapsatorBackground.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -333,7 +335,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         });
         jPanel15.add(colorChooserCollapsatorBackground);
 
-        colorChooserCollapsatorBorder.setText("Collapsator border");
+        colorChooserCollapsatorBorder.setText(bundle.getString("PreferencesPanel.buttonCollapsatorBorder")); // NOI18N
         colorChooserCollapsatorBorder.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         colorChooserCollapsatorBorder.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -342,7 +344,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         });
         jPanel15.add(colorChooserCollapsatorBorder);
 
-        colorChooserJumpLink.setText("Jump link");
+        colorChooserJumpLink.setText(bundle.getString("PreferencesPanel.buttonJumpLink")); // NOI18N
         colorChooserJumpLink.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         colorChooserJumpLink.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -351,7 +353,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         });
         jPanel15.add(colorChooserJumpLink);
 
-        colorChooserConnectorColor.setText("Connector color");
+        colorChooserConnectorColor.setText(bundle.getString("PreferencesPanel.buttonConnectorColor")); // NOI18N
         colorChooserConnectorColor.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         colorChooserConnectorColor.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -375,10 +377,10 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         jPanel6.add(jPanel3, gridBagConstraints);
 
-        jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("Paper options"));
+        jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("PreferencesPanel.paperOptions.title"))); // NOI18N
         jPanel4.setLayout(new java.awt.GridBagLayout());
 
-        colorChooserPaperColor.setText("Background fill");
+        colorChooserPaperColor.setText(bundle.getString("PreferencesPanel.buttonBackgroundFill")); // NOI18N
         colorChooserPaperColor.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         colorChooserPaperColor.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -393,7 +395,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
         jPanel4.add(colorChooserPaperColor, gridBagConstraints);
 
-        checkBoxShowGrid.setText("Show grid");
+        checkBoxShowGrid.setText(bundle.getString("PreferencesPanel.checkboxShowGrid")); // NOI18N
         checkBoxShowGrid.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 checkBoxShowGridActionPerformed(evt);
@@ -407,7 +409,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         jPanel4.add(checkBoxShowGrid, gridBagConstraints);
 
-        colorChooserGridColor.setText("Grid color");
+        colorChooserGridColor.setText(bundle.getString("PreferencesPanel.buttonGridColor")); // NOI18N
         colorChooserGridColor.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         colorChooserGridColor.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -433,14 +435,14 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         gridBagConstraints.gridy = 0;
         jPanel4.add(spinnerGridStep, gridBagConstraints);
 
-        jLabel1.setText("Grid step: ");
+        jLabel1.setText(bundle.getString("PreferencesPanel.label.gridStep")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.ipady = 5;
         jPanel4.add(jLabel1, gridBagConstraints);
 
-        jPanel13.setBorder(javax.swing.BorderFactory.createTitledBorder("Render quality"));
+        jPanel13.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("PreferencesPanel.panelRenderQuality.title"))); // NOI18N
         jPanel13.setLayout(new java.awt.BorderLayout());
 
         comboBoxRenderQuality.setModel(new DefaultComboBoxModel<RenderQuality>(RenderQuality.values()));
@@ -468,10 +470,10 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         jPanel6.add(jPanel4, gridBagConstraints);
 
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Element options"));
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("PreferencesPanel.panelElementOptrions.title"))); // NOI18N
         jPanel2.setLayout(new java.awt.GridBagLayout());
 
-        colorChooserRootBackground.setText("Root fill");
+        colorChooserRootBackground.setText(bundle.getString("PreferencesPanel.buttonRootFill")); // NOI18N
         colorChooserRootBackground.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         colorChooserRootBackground.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -485,7 +487,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         jPanel2.add(colorChooserRootBackground, gridBagConstraints);
 
-        colorChooserRootText.setText("Root text");
+        colorChooserRootText.setText(bundle.getString("PreferencesPanel.buttonRootText")); // NOI18N
         colorChooserRootText.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         colorChooserRootText.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -499,7 +501,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         jPanel2.add(colorChooserRootText, gridBagConstraints);
 
-        colorChooser1stBackground.setText("1st level fill");
+        colorChooser1stBackground.setText(bundle.getString("PreferencesPanel.button1levelFill")); // NOI18N
         colorChooser1stBackground.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         colorChooser1stBackground.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -513,7 +515,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         jPanel2.add(colorChooser1stBackground, gridBagConstraints);
 
-        colorChooser1stText.setText("1st level text");
+        colorChooser1stText.setText(bundle.getString("PreferencesPanel.button1levelTextl")); // NOI18N
         colorChooser1stText.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         colorChooser1stText.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -527,7 +529,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         jPanel2.add(colorChooser1stText, gridBagConstraints);
 
-        colorChooser2ndBackground.setText("2nd level fill");
+        colorChooser2ndBackground.setText(bundle.getString("PreferencesPanel.button2levelFill")); // NOI18N
         colorChooser2ndBackground.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         colorChooser2ndBackground.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -541,7 +543,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         jPanel2.add(colorChooser2ndBackground, gridBagConstraints);
 
-        colorChooser2ndText.setText("2nd level text");
+        colorChooser2ndText.setText(bundle.getString("PreferencesPanel.button2levelTextl")); // NOI18N
         colorChooser2ndText.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         colorChooser2ndText.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -555,10 +557,10 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         jPanel2.add(colorChooser2ndText, gridBagConstraints);
 
-        jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("Selection frame"));
+        jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("PreferencesPanel.panelSelectionFrame.title"))); // NOI18N
         jPanel5.setLayout(new java.awt.GridBagLayout());
 
-        colorChooserSelectLine.setText("Select frame color");
+        colorChooserSelectLine.setText(bundle.getString("PreferencesPanel.buttonSelectFrameColor")); // NOI18N
         colorChooserSelectLine.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         colorChooserSelectLine.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -573,7 +575,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         jPanel5.add(colorChooserSelectLine, gridBagConstraints);
 
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel3.setText("Selection frame width:");
+        jLabel3.setText(bundle.getString("PreferencesPanel.labelSelectionFrameWidth")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -591,7 +593,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         jPanel5.add(spinnerSelectLineWidth, gridBagConstraints);
 
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel4.setText("Selection frame gap:");
+        jLabel4.setText(bundle.getString("PreferencesPanel.labelSelectionFrameGap")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
@@ -620,7 +622,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         gridBagConstraints.weighty = 1000.0;
         jPanel2.add(filler2, gridBagConstraints);
 
-        jPanel10.setBorder(javax.swing.BorderFactory.createTitledBorder("Text editor font"));
+        jPanel10.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("PreferencesPanel.panelTextEditorFont.title"))); // NOI18N
         jPanel10.setLayout(new java.awt.BorderLayout());
 
         buttonFontForEditor.setText("...");
@@ -640,7 +642,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
 
         jPanel11.setLayout(new java.awt.BorderLayout());
 
-        checkBoxDropShadow.setText("Drop shadow");
+        checkBoxDropShadow.setText(bundle.getString("PreferencesPanel.checkDropShadow")); // NOI18N
         checkBoxDropShadow.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 checkBoxDropShadowActionPerformed(evt);
@@ -659,7 +661,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         jPanel12.add(spinnerElementBorderWidth, java.awt.BorderLayout.CENTER);
 
         labelBorderWidth.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        labelBorderWidth.setText("Border width:");
+        labelBorderWidth.setText(bundle.getString("PreferencesPanel.labelBorderWidth")); // NOI18N
         jPanel12.add(labelBorderWidth, java.awt.BorderLayout.WEST);
 
         jPanel11.add(jPanel12, java.awt.BorderLayout.EAST);
@@ -679,7 +681,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         gridBagConstraints.weighty = 1000.0;
         jPanel2.add(filler4, gridBagConstraints);
 
-        panelGraphvizDot.setBorder(javax.swing.BorderFactory.createTitledBorder("Graphviz DOT file (for PlantUML)"));
+        panelGraphvizDot.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("PreferencesPanel.panelGraphvizDot.title"))); // NOI18N
         panelGraphvizDot.setLayout(new java.awt.GridBagLayout());
 
         textFieldPathToGraphvizDot.setColumns(3);
@@ -716,7 +718,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         gridBagConstraints.weighty = 1000.0;
         jPanel2.add(filler5, gridBagConstraints);
 
-        jPanel16.setBorder(javax.swing.BorderFactory.createTitledBorder("1st level horz.gap"));
+        jPanel16.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("PreferencesPanel.panel1levelHorztGap.title"))); // NOI18N
         jPanel16.setLayout(new java.awt.BorderLayout());
 
         slider1stLevelHorzGap.setMajorTickSpacing(30);
@@ -738,7 +740,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         jPanel2.add(jPanel16, gridBagConstraints);
 
-        jPanel17.setBorder(javax.swing.BorderFactory.createTitledBorder("1st level vert.gap"));
+        jPanel17.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("PreferencesPanel.panel1levelVertGap.title"))); // NOI18N
         jPanel17.setLayout(new java.awt.BorderLayout());
 
         slider1stLevelVertGap.setMajorTickSpacing(30);
@@ -760,7 +762,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         jPanel2.add(jPanel17, gridBagConstraints);
 
-        jPanel18.setBorder(javax.swing.BorderFactory.createTitledBorder("2nd level horz.gap"));
+        jPanel18.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("PreferencesPanel.panel2levelHorzGap.title"))); // NOI18N
         jPanel18.setLayout(new java.awt.BorderLayout());
 
         slider2ndLevelHorzGap.setMajorTickSpacing(30);
@@ -782,7 +784,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         jPanel2.add(jPanel18, gridBagConstraints);
 
-        jPanel19.setBorder(javax.swing.BorderFactory.createTitledBorder("2nd level vert.gap"));
+        jPanel19.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("PreferencesPanel.panel2levelVertGap.title"))); // NOI18N
         jPanel19.setLayout(new java.awt.BorderLayout());
 
         slider2ndLevelVertGap.setMajorTickSpacing(30);
@@ -804,7 +806,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         jPanel2.add(jPanel19, gridBagConstraints);
 
-        panelPlantUmlSecurityProfile.setBorder(javax.swing.BorderFactory.createTitledBorder("PlantUML security (restart required)"));
+        panelPlantUmlSecurityProfile.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("PreferencesPanel.panelPlantUmlSecurity.title"))); // NOI18N
         panelPlantUmlSecurityProfile.setLayout(new java.awt.BorderLayout());
 
         comboBoxPlantUmlSecurityProfile.setModel(new DefaultComboBoxModel<PlantUmlSecurityProfile>(PlantUmlSecurityProfile.values()));
@@ -825,10 +827,10 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         jPanel6.add(jPanel2, gridBagConstraints);
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Misc"));
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("PreferencesPanel.panelMisc.title"))); // NOI18N
         jPanel1.setLayout(new java.awt.GridBagLayout());
 
-        checkboxUseInsideBrowser.setText("Prefer internal browser to open URL"); // NOI18N
+        checkboxUseInsideBrowser.setText(bundle.getString("PreferencesPanel.checkPreferInternalBrowser")); // NOI18N
         checkboxUseInsideBrowser.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 checkboxUseInsideBrowserActionPerformed(evt);
@@ -840,7 +842,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         jPanel1.add(checkboxUseInsideBrowser, gridBagConstraints);
 
-        checkboxRelativePathsForFilesInTheProject.setText("Use relative paths for project files"); // NOI18N
+        checkboxRelativePathsForFilesInTheProject.setText(bundle.getString("PreferencesPanel.checkUseRelativePaths")); // NOI18N
         checkboxRelativePathsForFilesInTheProject.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 checkboxRelativePathsForFilesInTheProjectActionPerformed(evt);
@@ -852,7 +854,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         jPanel1.add(checkboxRelativePathsForFilesInTheProject, gridBagConstraints);
 
-        checkBoxUnfoldCollapsedTarget.setText("Unfold collapsed drop target");
+        checkBoxUnfoldCollapsedTarget.setText(bundle.getString("PreferencesPanel.checkUnfoldCollapsedDropTarget")); // NOI18N
         checkBoxUnfoldCollapsedTarget.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 checkBoxUnfoldCollapsedTargetActionPerformed(evt);
@@ -864,7 +866,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         jPanel1.add(checkBoxUnfoldCollapsedTarget, gridBagConstraints);
 
-        checkBoxCopyColorInfoToNewAllowed.setText("Copy parent color info to new child");
+        checkBoxCopyColorInfoToNewAllowed.setText(bundle.getString("PreferencesPanel.checkCopyParentColorIntoNewChild")); // NOI18N
         checkBoxCopyColorInfoToNewAllowed.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 checkBoxCopyColorInfoToNewAllowedActionPerformed(evt);
@@ -876,7 +878,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         jPanel1.add(checkBoxCopyColorInfoToNewAllowed, gridBagConstraints);
 
-        checkBoxKnowledgeFolderAutogenerationAllowed.setText("Enable autocreation .projectKnowledge folder");
+        checkBoxKnowledgeFolderAutogenerationAllowed.setText(bundle.getString("PreferencesPanel.checkEnableAutocreationKnowledgeFolder")); // NOI18N
         checkBoxKnowledgeFolderAutogenerationAllowed.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 checkBoxKnowledgeFolderAutogenerationAllowedActionPerformed(evt);
@@ -888,7 +890,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         jPanel1.add(checkBoxKnowledgeFolderAutogenerationAllowed, gridBagConstraints);
 
-        jPanel7.setBorder(javax.swing.BorderFactory.createTitledBorder("Mind map topic text font"));
+        jPanel7.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("PreferencesPanel.panelTextFont.title"))); // NOI18N
         jPanel7.setLayout(new java.awt.BorderLayout());
 
         buttonFont.setText("..."); // NOI18N
@@ -906,7 +908,6 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         gridBagConstraints.weightx = 1000.0;
         jPanel1.add(jPanel7, gridBagConstraints);
 
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
         jPanel8.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("MMDCfgPanel.ShortCutsTitle"))); // NOI18N
         jPanel8.setLayout(new java.awt.BorderLayout());
 
@@ -918,7 +919,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         });
         jPanel8.add(buttonOpenShortcutEditor, java.awt.BorderLayout.NORTH);
 
-        panelScalingModifiers.setBorder(javax.swing.BorderFactory.createTitledBorder("Activator to scale with wheel"));
+        panelScalingModifiers.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("PreferencesPanel.panelScaleWithWheel.title"))); // NOI18N
         panelScalingModifiers.setLayout(new java.awt.GridLayout(1, 0));
 
         checkBoxScalingCTRL.setText("CTRL"); // NOI18N
@@ -961,7 +962,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         jPanel1.add(jPanel8, gridBagConstraints);
 
-        checkboxMetricsAllowed.setText("Enable metrics upload");
+        checkboxMetricsAllowed.setText(bundle.getString("PreferencesPanel.checkEnableMetricsUpload")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 6;
@@ -969,7 +970,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         jPanel1.add(checkboxMetricsAllowed, gridBagConstraints);
 
-        checkboxTrimTopicText.setText("Trim topic text before set"); // NOI18N
+        checkboxTrimTopicText.setText(bundle.getString("PreferencesPanel.checkTrimTopicText")); // NOI18N
         checkboxTrimTopicText.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 checkboxTrimTopicTextActionPerformed(evt);
@@ -981,7 +982,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         jPanel1.add(checkboxTrimTopicText, gridBagConstraints);
 
-        checkBoxShowHiddenFiles.setText("Show hidden files (needs folder reload)");
+        checkBoxShowHiddenFiles.setText(bundle.getString("PreferencesPanel.checkShowHiddenFiles")); // NOI18N
         checkBoxShowHiddenFiles.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 checkBoxShowHiddenFilesActionPerformed(evt);
@@ -994,7 +995,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         jPanel1.add(checkBoxShowHiddenFiles, gridBagConstraints);
 
-        checkBoxSmartTextPaste.setText("Smart text paste");
+        checkBoxSmartTextPaste.setText(bundle.getString("PreferencesPanel.checkSmartTextPaste")); // NOI18N
         checkBoxSmartTextPaste.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 checkBoxSmartTextPasteActionPerformed(evt);
@@ -1007,7 +1008,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         jPanel1.add(checkBoxSmartTextPaste, gridBagConstraints);
 
-        checkBoxBackupLastEdit.setText("Auto-backup last edit");
+        checkBoxBackupLastEdit.setText(bundle.getString("PreferencesPanel.checkAutoBackupLastEdit")); // NOI18N
         checkBoxBackupLastEdit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 checkBoxBackupLastEditActionPerformed(evt);
@@ -1030,7 +1031,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         jPanel9.setLayout(new java.awt.GridBagLayout());
 
         buttonAbout.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/info16.png"))); // NOI18N
-        buttonAbout.setText("About"); // NOI18N
+        buttonAbout.setText(bundle.getString("PreferencesPanel.buttonAbout")); // NOI18N
         buttonAbout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonAboutActionPerformed(evt);
@@ -1042,6 +1043,9 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         jPanel9.add(buttonAbout, gridBagConstraints);
+
+        donateButton1.setText(bundle.getString("PreferencesPanel.buttonDonate")); // NOI18N
+        donateButton1.setToolTipText(bundle.getString("PreferencesPanel.buttonDonate.tooltip")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -1055,7 +1059,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         jPanel9.add(filler1, gridBagConstraints);
 
         buttonResetToDefault.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/stop.png"))); // NOI18N
-        buttonResetToDefault.setText("Reset to default");
+        buttonResetToDefault.setText(bundle.getString("PreferencesPanel.buttonResetToDefault")); // NOI18N
         buttonResetToDefault.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonResetToDefaultActionPerformed(evt);
@@ -1072,7 +1076,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         jPanel9.add(filler3, gridBagConstraints);
 
         buttonExportToFile.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/document_export16.png"))); // NOI18N
-        buttonExportToFile.setText("Export to File");
+        buttonExportToFile.setText(bundle.getString("PreferencesPanel.buttonExportToFile")); // NOI18N
         buttonExportToFile.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonExportToFileActionPerformed(evt);
@@ -1085,7 +1089,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         jPanel9.add(buttonExportToFile, gridBagConstraints);
 
         buttonImportFromFile.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/document_import16.png"))); // NOI18N
-        buttonImportFromFile.setText("Import from File");
+        buttonImportFromFile.setText(bundle.getString("PreferencesPanel.buttonImportFromFile")); // NOI18N
         buttonImportFromFile.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonImportFromFileActionPerformed(evt);
@@ -1098,7 +1102,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         jPanel9.add(buttonImportFromFile, gridBagConstraints);
 
         buttonExtensionsOpenInSystem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/file_manager.png"))); // NOI18N
-        buttonExtensionsOpenInSystem.setText("System file extensions");
+        buttonExtensionsOpenInSystem.setText(bundle.getString("PreferencesPanel.buttonSystemFileExtensions")); // NOI18N
         buttonExtensionsOpenInSystem.setToolTipText("File extensions which should be opened in system browser");
         buttonExtensionsOpenInSystem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1207,7 +1211,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
   private void buttonFontActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonFontActionPerformed
     final FontSelector fontSelector = new FontSelector(this.config.getFont());
 
-    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(this, "Select font", fontSelector)) {
+    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(this, UiUtils.findTextBundle().getString("PreferencesPanel.msgSelectFont.title"), fontSelector)) {
       final Font selectedFont = fontSelector.getValue();
       this.config.setFont(selectedFont);
       this.fontMindMapEditor = selectedFont;
@@ -1226,7 +1230,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
       scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
       scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-      JOptionPane.showMessageDialog(SciaRetoStarter.getApplicationFrame(), scrollPane, "About", JOptionPane.PLAIN_MESSAGE);
+      JOptionPane.showMessageDialog(SciaRetoStarter.getApplicationFrame(), scrollPane, UiUtils.findTextBundle().getString("PreferencesPanel.msgAbout.title"), JOptionPane.PLAIN_MESSAGE);
   }//GEN-LAST:event_buttonAboutActionPerformed
 
   private void colorChooserJumpLinkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_colorChooserJumpLinkActionPerformed
@@ -1247,7 +1251,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
       list.add(e.getValue());
     }
     final KeyShortCutEditPanel panel = new KeyShortCutEditPanel(list);
-    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(this, "Edit shortcuts", panel)) {
+    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(this, UiUtils.findTextBundle().getString("PreferencesPanel.ShortcutEditor.title"), panel)) {
       for (final KeyShortcut s : panel.getResult()) {
         this.mapKeyShortCuts.put(s.getID(), s);
       }
@@ -1393,7 +1397,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
 
   private void buttonFontForEditorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonFontForEditorActionPerformed
     final FontSelector fontSelector = new FontSelector(this.fontTextEditor);
-    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(this, "Select Text editor font", fontSelector)) {
+    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(this, UiUtils.findTextBundle().getString("PreferencesPanel.FontForEditor.title"), fontSelector)) {
       this.fontTextEditor = fontSelector.getValue();
       updateFontButton(this.buttonFontForEditor, fontSelector.getValue());
       if (this.changeNotificationAllowed) {
@@ -1405,10 +1409,12 @@ public final class PreferencesPanel extends javax.swing.JPanel {
   private void buttonExportToFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonExportToFileActionPerformed
     File file = DialogProviderManager.getInstance()
             .getDialogProvider()
-            .msgSaveFileDialog(this, null,"exportProperties", "Export settings", null, true, new FileFilter[]{new PropertiesFileFilter()}, "Save");
+            .msgSaveFileDialog(this, null,"exportProperties", UiUtils.findTextBundle().getString("PreferencesPanel.ExportProperties.title"), null, true, new FileFilter[]{new PropertiesFileFilter()}, 
+                    UiUtils.findTextBundle().getString("PreferencesPanel.ExportProperties.approve"));
     if (file != null) {
       if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".properties")) { //NOI18N
-        final Boolean addExt = DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNoCancel(this, "Add extension", "Add '.properties' extension?");
+        final Boolean addExt = DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNoCancel(this, 
+                UiUtils.findTextBundle().getString("PreferencesPanel.AddExtension.title"), UiUtils.findTextBundle().getString("PreferencesPanel.AddExtension.question"));
         if (addExt == null) {
           return;
         }
@@ -1417,7 +1423,9 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         }
       }
 
-      if (file.exists() && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(this, "Override file", String.format("File %s exists, to override it?", file.getName()))) {
+      if (file.exists() && !DialogProviderManager.getInstance().getDialogProvider()
+              .msgConfirmOkCancel(this, UiUtils.findTextBundle().getString("PreferencesPanel.OverrideFile.title"), 
+                      String.format(UiUtils.findTextBundle().getString("PreferencesPanel.OverrideFile.question"), file.getName()))) {
         return;
       }
 
@@ -1425,10 +1433,11 @@ public final class PreferencesPanel extends javax.swing.JPanel {
       final MindMapPanelConfig cfg = fillBySettings(new MindMapPanelConfig(), prefs);
       cfg.saveTo(prefs);
       try {
-        FileUtils.write(file, prefs.toString(), "UTF-8");
+        FileUtils.write(file, prefs.toString(), StandardCharsets.UTF_8);
       } catch (final Exception ex) {
         LOGGER.error("Can't export settings", ex); //NOI18N
-        DialogProviderManager.getInstance().getDialogProvider().msgError(this, "Can't export settings [" + ex.getMessage() + ']'); //NOI18N
+        DialogProviderManager.getInstance().getDialogProvider().msgError(this, 
+                UiUtils.findTextBundle().getString("PreferencesPanel.ExportProperties.error") + ex.getMessage()); //NOI18N
       }
     }
   }//GEN-LAST:event_buttonExportToFileActionPerformed
@@ -1437,13 +1446,16 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     final File file = DialogProviderManager
             .getInstance()
             .getDialogProvider()
-            .msgOpenFileDialog(this, null, "importProperties", "Import settings", null, true, new FileFilter[]{new PropertiesFileFilter()}, "Open");
+            .msgOpenFileDialog(this, null, "importProperties", 
+                    UiUtils.findTextBundle().getString("PreferencesPanel.ImportSettings.title"), null, true, new FileFilter[]{new PropertiesFileFilter()}, 
+                    UiUtils.findTextBundle().getString("PreferencesPanel.ImportSettings.approve"));
     if (file != null) {
       try {
-        load(new PropertiesPreferences("SciaReto", FileUtils.readFileToString(file, "UTF-8")));
+        load(new PropertiesPreferences("SciaReto", FileUtils.readFileToString(file, StandardCharsets.UTF_8)));
       } catch (final Exception ex) {
         LOGGER.error("Can't import settings", ex); //NOI18N
-        DialogProviderManager.getInstance().getDialogProvider().msgError(SciaRetoStarter.getApplicationFrame(), "Can't import settings [" + ex.getMessage() + ']');
+        DialogProviderManager.getInstance().getDialogProvider().msgError(SciaRetoStarter.getApplicationFrame(), 
+                UiUtils.findTextBundle().getString("PreferencesPanel.ImportSettings.error") + ex.getMessage());
       }
     }
   }//GEN-LAST:event_buttonImportFromFileActionPerformed
@@ -1468,8 +1480,8 @@ public final class PreferencesPanel extends javax.swing.JPanel {
 
     private void buttonGraphvizDotFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonGraphvizDotFileActionPerformed
       final JFileChooser fileChooser = new JFileChooser(this.textFieldPathToGraphvizDot.getText());
-      fileChooser.setDialogTitle("Select GraphViz dot executable file");
-      fileChooser.setApproveButtonText("Select");
+      fileChooser.setDialogTitle(UiUtils.findTextBundle().getString("PreferencesPanel.SelectGraphVizDot.title"));
+      fileChooser.setApproveButtonText(UiUtils.findTextBundle().getString("PreferencesPanel.SelectGraphVizDot.approve"));
       fileChooser.setAcceptAllFileFilterUsed(true);
       fileChooser.setMultiSelectionEnabled(false);
 
@@ -1483,7 +1495,8 @@ public final class PreferencesPanel extends javax.swing.JPanel {
 
   private void buttonExtensionsOpenInSystemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonExtensionsOpenInSystemActionPerformed
     final SysFileExtensionEditorPanel dataPanel = new SysFileExtensionEditorPanel(SystemFileExtensionManager.getInstance().getExtensionsAsCommaSeparatedString());
-    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(this, "System file extensions", dataPanel)) {
+    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(this, 
+            UiUtils.findTextBundle().getString("PreferencesPanel.SystemFileExtensions.title"), dataPanel)) {
       SystemFileExtensionManager.getInstance().setExtensionsAsCommaSeparatedString(dataPanel.getValuerNullIfDefault());
     }
   }//GEN-LAST:event_buttonExtensionsOpenInSystemActionPerformed

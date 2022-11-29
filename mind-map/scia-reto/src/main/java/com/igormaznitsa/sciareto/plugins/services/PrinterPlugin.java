@@ -47,16 +47,28 @@ public class PrinterPlugin extends AbstractPopupMenuItem implements MMDPrintPane
   public JMenuItem makeMenuItem(@Nonnull PluginContext context, @Nullable Topic activeTopic) {
     final MMDPrintPanel.Adaptor adaptor = this;
 
-    final JMenuItem printAction = UI_COMPO_FACTORY.makeMenuItem(findTextBundle().getString("MMDGraphEditor.makePopUp.miPrintPreview"), new ImageIcon(ICON_PRINTER));
-    printAction.addActionListener(e -> {
-      SciaRetoStarter.getApplicationFrame().endFullScreenIfActive();
-      final MMDPrintPanel panel = new MMDPrintPanel(context.getDialogProvider(), adaptor, PrintableObject.newBuild().mmdpanel(context.getPanel()).build());
-      UiUtils.makeOwningDialogResizable(panel);
-      JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(context.getPanel()), panel, "Print mind map", JOptionPane.PLAIN_MESSAGE);
-    });
+    final JMenuItem printAction =
+        UI_COMPO_FACTORY.makeMenuItem(
+            findTextBundle().getString("MMDGraphEditor.makePopUp.miPrintPreview.menuItem"),
+            new ImageIcon(ICON_PRINTER));
+    printAction.addActionListener(
+        e -> {
+          SciaRetoStarter.getApplicationFrame().endFullScreenIfActive();
+          final MMDPrintPanel panel =
+              new MMDPrintPanel(
+                  context.getDialogProvider(),
+                  adaptor,
+                  PrintableObject.newBuild().mmdpanel(context.getPanel()).build());
+          UiUtils.makeOwningDialogResizable(panel);
+          JOptionPane.showMessageDialog(
+              SwingUtilities.windowForComponent(context.getPanel()),
+              panel,
+              findTextBundle().getString("MMDGraphEditor.makePopUp.miPrintPreview.msgDialog.title"),
+              JOptionPane.PLAIN_MESSAGE);
+        });
     return printAction;
   }
-
+  
   @Override
   public boolean isEnabled(@Nonnull final PluginContext context, @Nullable final Topic activeTopic) {
     return !context.getPanel().getModel().isEmpty();

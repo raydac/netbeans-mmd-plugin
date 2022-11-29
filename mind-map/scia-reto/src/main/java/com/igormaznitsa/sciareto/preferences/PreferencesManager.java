@@ -21,7 +21,7 @@ import com.igormaznitsa.meta.common.utils.IOUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import java.awt.Font;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -62,13 +62,8 @@ public class PreferencesManager {
         LOGGER.error("Can't generate UUID", ex); //NOI18N
       }
     }
-    try {
-      this.installationUUID = UUID.fromString(new String(IOUtils.unpackData(Base64.decodeBase64(packedUuid)), "UTF-8")); //NOI18N
-      LOGGER.info("Installation UUID : " + this.installationUUID.toString()); //NOI18N
-    } catch (UnsupportedEncodingException ex) {
-      LOGGER.error("Can't decode UUID", ex); //NOI18N
-      throw new Error("Unexpected error", ex); //NOI18N
-    }
+    this.installationUUID = UUID.fromString(new String(IOUtils.unpackData(Base64.decodeBase64(packedUuid)), StandardCharsets.UTF_8));
+    LOGGER.info("Installation UUID : " + this.installationUUID.toString()); //NOI18N
   }
 
   @Nonnull
