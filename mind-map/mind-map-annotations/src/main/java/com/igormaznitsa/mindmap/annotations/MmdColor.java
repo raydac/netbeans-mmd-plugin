@@ -606,7 +606,7 @@ public enum MmdColor {
 
     String hexColor = Integer.toHexString(rawRgb).toUpperCase(Locale.ENGLISH);
     this.argb = rawRgb | 0xFF000000;
-    hexColor = "000000".substring(6 - hexColor.length()) + hexColor;
+    hexColor = "000000".substring(0, 6 - hexColor.length()) + hexColor;
     this.htmlColor = '#' + hexColor;
   }
 
