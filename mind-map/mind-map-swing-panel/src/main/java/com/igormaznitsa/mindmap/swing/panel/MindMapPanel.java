@@ -964,11 +964,11 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
     final List<Topic> allTopicsWithJumps = map.findAllTopicsForExtraType(Extra.ExtraType.TOPIC);
 
     final float lineWidth = cfg.safeScaleFloatValue(cfg.getJumpLinkWidth(), 0.1f);
-    final float connectorWidth = cfg.safeScaleFloatValue(cfg.getConnectorWidth(), 0.1f);
+    final float connectorLineWidth = cfg.safeScaleFloatValue(1.0f, 0.1f);
 
     final Color jumpLinkColor = cfg.getJumpLinkColor();
 
-    final float arrowSize = cfg.safeScaleFloatValue(10.0f * cfg.getJumpLinkWidth(), 0.2f);
+    final float arrowSize = cfg.safeScaleFloatValue(10.0f * cfg.getConnectorWidth(), 0.2f);
 
     for (Topic src : allTopicsWithJumps) {
       final ExtraTopic extra =
@@ -998,7 +998,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
                   srcRect,
                   dstRect,
                   lineWidth,
-                  connectorWidth,
+                  connectorLineWidth,
                   arrowSize,
                   jumpLinkColor
               );
@@ -1014,7 +1014,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
       final Rectangle2D start,
       final Rectangle2D destination,
       final float lineWidth,
-      final float connectorWidth,
+      final float connectorLineWidth,
       final float arrowSize,
       final Color color
   ) {
@@ -1025,7 +1025,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
     final Point2D arrowPoint = Utils.findRectEdgeIntersection(destination, startX, startY);
 
     if (arrowPoint != null) {
-      gfx.setStroke(connectorWidth, StrokeType.SOLID);
+      gfx.setStroke(connectorLineWidth, StrokeType.SOLID);
 
       double angle = findLineAngle(arrowPoint.getX(), arrowPoint.getY(), startX, startY);
 
