@@ -1029,12 +1029,13 @@ public final class MMDEditor extends AbstractTextEditor
                 noteText = new NoteEditorData(decrypted.toString(), pass, note.getHint());
               } else {
                 DialogProviderManager.getInstance().getDialogProvider()
-                    .msgError(SciaRetoStarter.getApplicationFrame(), "Wrong password!");
+                    .msgError(SciaRetoStarter.getApplicationFrame(),
+                        findTextBundle().getString("MMDGraphEditor.msgErrorPassword.text"));
               }
             } catch (RuntimeException ex) {
               DialogProviderManager.getInstance().getDialogProvider()
                   .msgError(SciaRetoStarter.getApplicationFrame(),
-                      "Can't decode encrypted text for error!\nEither broken data or current JDK security policy doesn't support AES-256!");
+                      findTextBundle().getString("MMDGraphEditor.msgCantDecodeEncrypted.text"));
               logger.error("Can't decode encrypted note", ex);
             }
           }
@@ -1066,7 +1067,8 @@ public final class MMDEditor extends AbstractTextEditor
             } catch (RuntimeException ex) {
               DialogProviderManager.getInstance().getDialogProvider()
                   .msgError(this.getMainComponent(),
-                      "Can't encrypt text for error!\nExamine log and check JDK security policy for AES-256 support!");
+                      findTextBundle().getString("MMDGraphEditor.msgCantEncrypt.text")
+                  );
               logger.error("Can't encrypt note", ex);
               return;
             }

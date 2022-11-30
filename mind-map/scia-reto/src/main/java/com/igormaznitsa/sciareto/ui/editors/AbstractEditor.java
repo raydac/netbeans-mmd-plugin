@@ -18,8 +18,6 @@
 
 package com.igormaznitsa.sciareto.ui.editors;
 
-import static com.igormaznitsa.sciareto.ui.UiUtils.findTextBundle;
-
 import com.igormaznitsa.meta.common.interfaces.Disposable;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
@@ -29,6 +27,7 @@ import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.preferences.SpecificKeys;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
+import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.tabs.TabProvider;
 import java.io.File;
 import java.io.IOException;
@@ -47,7 +46,7 @@ import javax.swing.filechooser.FileFilter;
 public abstract class AbstractEditor implements TabProvider, Disposable {
 
   private static final Map<String, ImageIcon> ICON_CACHE = new HashMap<>();
-  protected final ResourceBundle bundle = findTextBundle();
+  protected final ResourceBundle bundle = UiUtils.findTextBundle();
   protected final Logger logger;
   private final AtomicBoolean disposeFlag = new AtomicBoolean();
   protected MindMapPanelConfig mindMapPanelConfig;
@@ -78,9 +77,8 @@ public abstract class AbstractEditor implements TabProvider, Disposable {
   }
 
   @Override
-  public void focusToEditor(int line) {
-    throw new UnsupportedOperationException(
-        "Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  public void focusToEditor(final int line) {
+
   }
 
   @Override
@@ -113,15 +111,20 @@ public abstract class AbstractEditor implements TabProvider, Disposable {
   public final boolean saveDocumentAs() throws IOException {
     final DialogProvider dialogProvider = DialogProviderManager.getInstance().getDialogProvider();
     final File file = this.getTabTitle().getAssociatedFile();
-    File fileToSave = dialogProvider.msgSaveFileDialog(SciaRetoStarter.getApplicationFrame(),
+    File fileToSave = dialogProvider.msgSaveFileDialog(
+        SciaRetoStarter.getApplicationFrame(),
         null,
-        "save-as", "Save as", file, true, new FileFilter[] {getFileFilter()}, "Save");
+        "save-as",
+        this.bundle.getString("editorAbstract.dialogSaveAs.title"),
+        file, true, new FileFilter[] {getFileFilter()},
+        this.bundle.getString("editorAbstract.dialogSaveAs.approve"));
     if (fileToSave != null) {
       if (!fileToSave.getName().contains(".")) {
         final Boolean result =
             dialogProvider.msgConfirmYesNoCancel(SciaRetoStarter.getApplicationFrame(),
-                "Add extension",
-                String.format("Add file extenstion '%s'?", this.getDefaultExtension()));
+                this.bundle.getString("editorAbstract.dialogAddExtension.title"),
+                String.format(this.bundle.getString("editorAbstract.dialogAddExtension.text"),
+                    this.getDefaultExtension()));
         if (result == null) {
           return false;
         }
@@ -143,8 +146,8 @@ public abstract class AbstractEditor implements TabProvider, Disposable {
         || textFile.hasSameContent(textFile.getFile())
         || DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(
         SciaRetoStarter.getApplicationFrame(),
-        findTextBundle().getString("editorAbstract.msgConfirmOverwrite.title"),
-        String.format(findTextBundle().getString("editorAbstract.msgConfirmOverwrite.text"),
+        this.bundle.getString("editorAbstract.msgConfirmOverwrite.title"),
+        String.format(this.bundle.getString("editorAbstract.msgConfirmOverwrite.text"),
             textFile.getFile().getName()));
   }
 
@@ -236,16 +239,24 @@ public abstract class AbstractEditor implements TabProvider, Disposable {
     SciaRetoStarter.disposeSplash();
 
     if (DialogProviderManager.getInstance().getDialogProvider()
-        .msgConfirmYesNo(this.getContainerToShow(), "Restore from backup?",
-            String.format("Detected backup '%s', restore content?", backupFile.getName()))) {
+        .msgConfirmYesNo(this.getContainerToShow(),
+
+            this.bundle.getString("editorAbstract.msgRestoreFromBackup.title"),
+            String.format(this.bundle.getString("editorAbstract.msgRestoreFromBackup.text"),
+                backupFile.getName()))) {
       try {
         final TextFile result = new TextFileBackup.Restored(backupFile).asTextFile();
         DialogProviderManager.getInstance().getDialogProvider().msgWarn(this.getContainerToShow(),
-            "Restored from backup file: " + backupFile.getName());
+            String.format(
+                this.bundle.getString("editorAbstract.msgRestoredFromFileBackup.text"),
+                backupFile.getName()
+            ));
         return result;
       } catch (IOException ex) {
         DialogProviderManager.getInstance().getDialogProvider().msgError(this.getContainerToShow(),
-            "Can't restore backup file for error: " + ex.getMessage());
+            String.format(
+                this.bundle.getString("editorAbstract.msgCantRestoredFromFileBackup.text"),
+                ex.getMessage()));
         return null;
       }
     } else {

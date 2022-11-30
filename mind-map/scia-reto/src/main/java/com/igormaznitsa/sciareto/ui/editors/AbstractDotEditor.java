@@ -18,6 +18,8 @@
 
 package com.igormaznitsa.sciareto.ui.editors;
 
+import static com.igormaznitsa.sciareto.ui.UiUtils.findTextBundle;
+
 import com.igormaznitsa.meta.common.utils.IOUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
@@ -110,14 +112,14 @@ public abstract class AbstractDotEditor extends AbstractPlUmlEditor {
       final byte[] formedContent = bos.toByteArray();
 
       if (processState.differs(ProcessState.TERMINATED_OK())) {
-        throw new IllegalStateException("Can't render image, status is " + processState);
+        throw new IllegalStateException(String.format(findTextBundle().getString("editorDot.cantRenderImage"),processState));
       } else if (formedContent.length == 0) {
-        throw new IllegalArgumentException("Can't render, looks like script has syntax error");
+        throw new IllegalArgumentException(findTextBundle().getString("editorDot.cantRenderSyntaxError"));
       } else {
         return formedContent;
       }
     } else {
-      throw new IllegalStateException("Can't render DOT script: " + state.getTextMessage());
+      throw new IllegalStateException(String.format(findTextBundle().getString("editorDot.cantRenderStatusNotOk"),state.getTextMessage()));
     }
   }
 
@@ -129,7 +131,7 @@ public abstract class AbstractDotEditor extends AbstractPlUmlEditor {
       @Nonnull final AtomicReference<Exception> error
   ) {
     if (text.trim().isEmpty()) {
-      error.set(new IllegalArgumentException("There is no any DOT script"));
+      error.set(new IllegalArgumentException(findTextBundle().getString("editorDot.emptyText")));
       return;
     }
 

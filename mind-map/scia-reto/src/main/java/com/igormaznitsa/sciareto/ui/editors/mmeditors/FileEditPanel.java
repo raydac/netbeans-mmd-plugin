@@ -102,7 +102,8 @@ public final class FileEditPanel extends javax.swing.JPanel {
         setLayout(new java.awt.GridBagLayout());
 
         labelBrowseCurrentLink.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/file_link.png"))); // NOI18N
-        labelBrowseCurrentLink.setToolTipText("Double click to open file");
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
+        labelBrowseCurrentLink.setToolTipText(bundle.getString("panelFileEdit.clickIcon.tooltip")); // NOI18N
         labelBrowseCurrentLink.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         labelBrowseCurrentLink.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         labelBrowseCurrentLink.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -120,7 +121,6 @@ public final class FileEditPanel extends javax.swing.JPanel {
         add(textFieldFilePath, gridBagConstraints);
 
         buttonChooseFile.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/file_manager.png"))); // NOI18N
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
         buttonChooseFile.setToolTipText(bundle.getString("panelFileEdit.tooltipSelectFile")); // NOI18N
         buttonChooseFile.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

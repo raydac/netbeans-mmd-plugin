@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.TreeMap;
@@ -130,9 +131,8 @@ public class KStreamsTopologyDescriptionParser {
         }
       }
       return newElement;
-    }).filter(newElement -> (newElement != null)).forEachOrdered(newElement -> {
-      topologyElementMaps.put(newElement.id, newElement);
-    });
+    }).filter(Objects::nonNull)
+        .forEachOrdered(newElement -> topologyElementMaps.put(newElement.id, newElement));
 
     this.topologies.forEach(x -> x.link(topologyElementMaps));
   }
@@ -166,7 +166,7 @@ public class KStreamsTopologyDescriptionParser {
   }
 
   public int size() {
-    return this.topologies.stream().mapToInt(x -> x.size()).sum();
+    return this.topologies.stream().mapToInt(Topologies::size).sum();
   }
 
   @Override
@@ -245,7 +245,7 @@ public class KStreamsTopologyDescriptionParser {
                 final String foundSingleData = dataFinder.group(3);
                 if (foundDataList != null) {
                   final List<String> foundItems =
-                      Arrays.stream(foundDataList.split(",")).map(x -> x.trim())
+                      Arrays.stream(foundDataList.split(",")).map(String::trim)
                           .filter(x -> !x.isEmpty()).collect(Collectors.toList());
                   this.dataItems.put(foundType, foundItems);
                 }

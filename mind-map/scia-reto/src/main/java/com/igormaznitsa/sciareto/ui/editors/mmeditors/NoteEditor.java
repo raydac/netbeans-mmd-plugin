@@ -19,6 +19,7 @@
 package com.igormaznitsa.sciareto.ui.editors.mmeditors;
 
 import static com.igormaznitsa.sciareto.ui.UiUtils.findTextBundle;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 import com.igormaznitsa.mindmap.ide.commons.SwingUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
@@ -26,12 +27,14 @@ import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.panel.ui.PasswordPanel;
 import com.igormaznitsa.mindmap.swing.panel.utils.Focuser;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.preferences.SpecificKeys;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.UiUtils;
+import java.nio.charset.StandardCharsets;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -57,6 +60,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Locale;
+import java.util.ResourceBundle;
 
 public final class NoteEditor extends JPanel {
 
@@ -77,7 +81,6 @@ public final class NoteEditor extends JPanel {
           .getString("PlainTextEditor.fileFilter.description");
     }
   };
-  private final Focuser focuser;
   private Wrapping wrapping;
   private String password;
   private String hint;
@@ -256,7 +259,7 @@ public final class NoteEditor extends JPanel {
 
     UiUtils.makeOwningDialogResizable(this);
 
-    this.focuser = new Focuser(this.editorPane);
+    new Focuser(this.editorPane);
   }
 
   public boolean isCancelled() {
@@ -364,7 +367,7 @@ public final class NoteEditor extends JPanel {
             new FileFilter[] {TEXT_FILE_FILTER}, "Open"); //NOI18N
     if (toOpen != null) {
       try {
-        final String text = FileUtils.readFileToString(toOpen, "UTF-8"); //NOI18N
+        final String text = FileUtils.readFileToString(toOpen, UTF_8);
         this.editorPane.setText(text);
       } catch (Exception ex) {
         LOGGER.error("Error during text file loading", ex); //NOI18N
@@ -428,27 +431,30 @@ public final class NoteEditor extends JPanel {
 
   private void initComponents() {
 
-    buttonToolBar = new JToolBar();
-    buttonUndo = new javax.swing.JButton();
-    buttonRedo = new javax.swing.JButton();
-    buttonImport = new javax.swing.JButton();
-    buttonExport = new javax.swing.JButton();
-    buttonCopy = new javax.swing.JButton();
-    buttonPaste = new javax.swing.JButton();
-    buttonBrowse = new javax.swing.JButton();
-    buttonClear = new javax.swing.JButton();
-    toggleButtonEncrypt = new JToggleButton();
-    jPanel1 = new JPanel();
-    labelCursorPos = new JLabel();
-    jSeparator1 = new JSeparator();
-    labelWrapMode = new JLabel();
+    final UIComponentFactory factory = UIComponentFactoryProvider.findInstance();
+    final ResourceBundle bundle = UiUtils.findTextBundle();
+
+    buttonToolBar = factory.makeToolBar();
+    buttonUndo = factory.makeButton();
+    buttonRedo = factory.makeButton();
+    buttonImport = factory.makeButton();
+    buttonExport = factory.makeButton();
+    buttonCopy = factory.makeButton();
+    buttonPaste = factory.makeButton();
+    buttonBrowse = factory.makeButton();
+    buttonClear = factory.makeButton();
+    toggleButtonEncrypt = factory.makeToggleButton();
+    jPanel1 = factory.makePanel();
+    labelCursorPos = factory.makeLabel();
+    jSeparator1 = factory.makeMenuSeparator();
+    labelWrapMode = factory.makeLabel();
     filler1 =
         new Filler(new java.awt.Dimension(16, 0), new java.awt.Dimension(16, 0),
             new java.awt.Dimension(16, 32767));
-    jScrollPane2 = new JScrollPane();
-    editorPane = new JTextArea();
+    jScrollPane2 = factory.makeScrollPane();
+    editorPane = factory.makeTextArea();
 
-    setLayout(new java.awt.BorderLayout());
+    setLayout(new BorderLayout());
 
     buttonToolBar.setFloatable(false);
     buttonToolBar.setRollover(true);
@@ -456,7 +462,7 @@ public final class NoteEditor extends JPanel {
     buttonUndo
         .setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/undo.png"))); // NOI18N
     buttonUndo.setMnemonic('u');
-    buttonUndo.setText("Undo");
+    buttonUndo.setText(bundle.getString("NoteEditor.buttonUndo.text"));
     buttonUndo.setFocusable(false);
     buttonUndo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     buttonUndo.setNextFocusableComponent(buttonRedo);
@@ -467,7 +473,7 @@ public final class NoteEditor extends JPanel {
     buttonRedo
         .setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/redo.png"))); // NOI18N
     buttonRedo.setMnemonic('r');
-    buttonRedo.setText("Redo");
+    buttonRedo.setText(bundle.getString("NoteEditor.buttonRedo.text"));
     buttonRedo.setFocusable(false);
     buttonRedo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     buttonRedo.setNextFocusableComponent(buttonImport);
@@ -478,8 +484,8 @@ public final class NoteEditor extends JPanel {
     buttonImport
         .setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/disk16.png"))); // NOI18N
     buttonImport.setMnemonic('i');
-    buttonImport.setText("Import");
-    buttonImport.setToolTipText("Import text content from UTF8 encoded text file");
+    buttonImport.setText(bundle.getString("NoteEditor.buttonImport.text"));
+    buttonImport.setToolTipText(bundle.getString("NoteEditor.buttonImport.tooltip"));
     buttonImport.setFocusable(false);
     buttonImport.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     buttonImport.setNextFocusableComponent(buttonExport);
@@ -490,8 +496,8 @@ public final class NoteEditor extends JPanel {
     buttonExport.setIcon(
         new javax.swing.ImageIcon(getClass().getResource("/icons/file_save16.png"))); // NOI18N
     buttonExport.setMnemonic('e');
-    buttonExport.setText("Export");
-    buttonExport.setToolTipText("Export text content into UTF8 encoded file");
+    buttonExport.setText(bundle.getString("NoteEditor.buttonExport.text"));
+    buttonExport.setToolTipText(bundle.getString("NoteEditor.buttonExport.tooltip"));
     buttonExport.setFocusable(false);
     buttonExport.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     buttonExport.setNextFocusableComponent(buttonCopy);
@@ -502,8 +508,8 @@ public final class NoteEditor extends JPanel {
     buttonCopy.setIcon(
         new javax.swing.ImageIcon(getClass().getResource("/icons/page_copy16.png"))); // NOI18N
     buttonCopy.setMnemonic('c');
-    buttonCopy.setText("Copy");
-    buttonCopy.setToolTipText("Copy selected text content into clipboard");
+    buttonCopy.setText(bundle.getString("NoteEditor.buttonCopy.text"));
+    buttonCopy.setToolTipText(bundle.getString("NoteEditor.buttonCopy.tooltip"));
     buttonCopy.setFocusable(false);
     buttonCopy.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     buttonCopy.setNextFocusableComponent(buttonPaste);
@@ -514,8 +520,8 @@ public final class NoteEditor extends JPanel {
     buttonPaste.setIcon(
         new javax.swing.ImageIcon(getClass().getResource("/icons/paste_plain16.png"))); // NOI18N
     buttonPaste.setMnemonic('p');
-    buttonPaste.setText("Paste");
-    buttonPaste.setToolTipText("Paste text content from clipboard into current position");
+    buttonPaste.setText(bundle.getString("NoteEditor.buttonPaste.text"));
+    buttonPaste.setToolTipText(bundle.getString("NoteEditor.buttonPaste.tooltip"));
     buttonPaste.setFocusable(false);
     buttonPaste.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     buttonPaste.setNextFocusableComponent(buttonBrowse);
@@ -526,8 +532,8 @@ public final class NoteEditor extends JPanel {
     buttonBrowse
         .setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/link16.png"))); // NOI18N
     buttonBrowse.setMnemonic('b');
-    buttonBrowse.setText("Browse");
-    buttonBrowse.setToolTipText("Open selected link in browser");
+    buttonBrowse.setText(bundle.getString("NoteEditor.buttonBrowse.text"));
+    buttonBrowse.setToolTipText(bundle.getString("NoteEditor.buttonBrowse.tooltip"));
     buttonBrowse.setFocusable(false);
     buttonBrowse.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     buttonBrowse.setNextFocusableComponent(buttonClear);
@@ -538,8 +544,8 @@ public final class NoteEditor extends JPanel {
     buttonClear
         .setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/cross16.png"))); // NOI18N
     buttonClear.setMnemonic('a');
-    buttonClear.setText("Clear All");
-    buttonClear.setToolTipText("Clear all text content");
+    buttonClear.setText(bundle.getString("NoteEditor.buttonClearAll.text"));
+    buttonClear.setToolTipText(bundle.getString("NoteEditor.buttonClearAll.tooltip"));
     buttonClear.setFocusable(false);
     buttonClear.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     buttonClear.setNextFocusableComponent(editorPane);
@@ -551,15 +557,15 @@ public final class NoteEditor extends JPanel {
         new javax.swing.ImageIcon(getClass().getResource("/icons/set_password16.png"))); // NOI18N
     toggleButtonEncrypt.setSelectedIcon(
         new javax.swing.ImageIcon(getClass().getResource("/icons/set_password16on.png"))); // NOI18N
-    toggleButtonEncrypt.setText("Protect");
-    toggleButtonEncrypt.setToolTipText("Encrypt the note and set password");
+    toggleButtonEncrypt.setText(bundle.getString("NoteEditor.buttonProtect.text"));
+    toggleButtonEncrypt.setToolTipText(bundle.getString("NoteEditor.buttonProtect.tooltip"));
     toggleButtonEncrypt.setFocusable(false);
     toggleButtonEncrypt.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     toggleButtonEncrypt.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
     toggleButtonEncrypt.addActionListener(this::toggleButtonEncryptActionPerformed);
     buttonToolBar.add(toggleButtonEncrypt);
 
-    add(buttonToolBar, java.awt.BorderLayout.NORTH);
+    add(buttonToolBar, BorderLayout.NORTH);
 
     jPanel1.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
@@ -585,14 +591,14 @@ public final class NoteEditor extends JPanel {
     jPanel1.add(labelWrapMode);
     jPanel1.add(filler1);
 
-    add(jPanel1, java.awt.BorderLayout.PAGE_END);
+    add(jPanel1, BorderLayout.PAGE_END);
 
     editorPane.setColumns(20);
     editorPane.setRows(5);
     editorPane.setNextFocusableComponent(buttonUndo);
     jScrollPane2.setViewportView(editorPane);
 
-    add(jScrollPane2, java.awt.BorderLayout.CENTER);
+    add(jScrollPane2, BorderLayout.CENTER);
   }
 
   private void buttonExportActionPerformed(ActionEvent evt) {
@@ -603,7 +609,7 @@ public final class NoteEditor extends JPanel {
     if (toSave != null) {
       try {
         final String text = this.editorPane.getText();
-        FileUtils.writeStringToFile(toSave, text, "UTF-8"); //NOI18N
+        FileUtils.writeStringToFile(toSave, text, UTF_8); //NOI18N
       } catch (final Exception ex) {
         LOGGER.error("Error during text file saving", ex); //NOI18N
         DialogProviderManager.getInstance().getDialogProvider().msgError(SciaRetoStarter.getApplicationFrame(),
