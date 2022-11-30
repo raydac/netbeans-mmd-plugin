@@ -63,7 +63,7 @@ public class SystemFileExtensionManager {
 
     for (final String s : parsed) {
       final String trimmed = s.trim();
-      if (!s.isEmpty() && ext.equalsIgnoreCase(s)) {
+      if (!s.isEmpty() && ext.equalsIgnoreCase(trimmed)) {
         found = true;
         break;
       }
