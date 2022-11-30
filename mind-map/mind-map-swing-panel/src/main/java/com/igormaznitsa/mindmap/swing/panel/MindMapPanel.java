@@ -1390,7 +1390,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   /**
    * Put session object for key.
    *
-   * @param key key of he object, must not be null
+   * @param key key of the object, must not be null
    * @param obj object to be placed, if null then object will be removed
    * @since 1.4.2
    */
@@ -1491,13 +1491,10 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
       try {
         final MindMapPanel theInstance = this;
         final double scale = this.config.getScale();
-        this.config.makeAtomicChange(new Runnable() {
-          @Override
-          public void run() {
-            config.makeFullCopyOf(controller.provideConfigForMindMapPanel(theInstance), false,
-                false);
-            config.setScale(scale);
-          }
+        this.config.makeAtomicChange(() -> {
+          config.makeFullCopyOf(controller.provideConfigForMindMapPanel(theInstance), false,
+              false);
+          config.setScale(scale);
         });
         invalidate();
         repaint();
@@ -1722,20 +1719,17 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
    * @since 1.3.1
    */
   public void executeModelJobs(final ModelJob... jobs) {
-    Utils.safeSwingCall(new Runnable() {
-      @Override
-      public void run() {
-        for (final ModelJob j : jobs) {
-          try {
-            if (!j.doChangeModel(model)) {
-              break;
-            }
-          } catch (Exception ex) {
-            LOGGER.error("Errot during job execution", ex);
+    Utils.safeSwingCall(() -> {
+      for (final ModelJob j : jobs) {
+        try {
+          if (!j.doChangeModel(model)) {
+            break;
           }
+        } catch (Exception ex) {
+          LOGGER.error("Errot during job execution", ex);
         }
-        fireNotificationMindMapChanged(true);
       }
+      fireNotificationMindMapChanged(true);
     });
   }
 
@@ -2286,12 +2280,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
     this.lock();
     try {
       if (this.elementUnderEdit != null) {
-        Utils.safeSwingBlockingCall(new Runnable() {
-          @Override
-          public void run() {
-            endEdit(false);
-          }
-        });
+        Utils.safeSwingBlockingCall(() -> endEdit(false));
       }
 
       final List<int[]> selectedPaths = new ArrayList<>();
@@ -2461,20 +2450,17 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
 
   @Override
   public void doLayout() {
-    final Runnable run = new Runnable() {
-      @Override
-      public void run() {
-        if (lockIfNotDisposed()) {
-          try {
-            invalidate();
-            updateElementsAndSizeForCurrentGraphics(true, false);
-            repaint();
-          } finally {
-            unlock();
-          }
+    final Runnable run = () -> {
+      if (lockIfNotDisposed()) {
+        try {
+          invalidate();
+          updateElementsAndSizeForCurrentGraphics(true, false);
+          repaint();
+        } finally {
+          unlock();
         }
-        MindMapPanel.super.doLayout();
       }
+      MindMapPanel.super.doLayout();
     };
 
     if (SwingUtilities.isEventDispatchThread()) {

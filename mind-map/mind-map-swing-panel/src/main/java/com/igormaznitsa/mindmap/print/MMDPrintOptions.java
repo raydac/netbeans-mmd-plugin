@@ -66,7 +66,7 @@ public class MMDPrintOptions {
   /**
    * Get scale, must not be 0.
    *
-   * @return the scale, must be great than zero.
+   * @return the scale, must be greater than zero.
    */
   public double getScale() {
     return this.scale;
@@ -75,7 +75,7 @@ public class MMDPrintOptions {
   /**
    * Set scale.
    *
-   * @param value new scale, must be great than zero.
+   * @param value new scale, must be greater than zero.
    * @return this instance
    */
   public MMDPrintOptions setScale(final double value) {

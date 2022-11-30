@@ -136,9 +136,7 @@ public final class ElementRoot extends AbstractElement {
                                       final double cx, final double cy) {
     super.alignElementAndChildren(cfg, leftSide, cx, cy);
 
-    final double dx = cx;
-    final double dy = cy;
-    this.moveTo(dx, dy);
+    this.moveTo(cx, cy);
 
     final double insetVert = cfg.getFirstLevelVerticalInset() * cfg.getScale();
     final double insetHorz = cfg.getFirstLevelHorizontalInset() * cfg.getScale();
@@ -147,8 +145,8 @@ public final class ElementRoot extends AbstractElement {
     final double rightHeight = calcTotalChildrenHeight(insetVert, false);
 
     if (leftHeight > 0.0d) {
-      final double ddx = dx - insetHorz;
-      double ddy = dy - (leftHeight - this.bounds.getHeight()) / 2;
+      final double ddx = cx - insetHorz;
+      double ddy = cy - (leftHeight - this.bounds.getHeight()) / 2;
       for (final Topic t : this.model.getChildren()) {
         final AbstractCollapsableElement c =
             requireNonNull((AbstractCollapsableElement) t.getPayload());
@@ -160,8 +158,8 @@ public final class ElementRoot extends AbstractElement {
     }
 
     if (rightHeight > 0.0d) {
-      final double ddx = dx + this.bounds.getWidth() + insetHorz;
-      double ddy = dy - (rightHeight - this.bounds.getHeight()) / 2;
+      final double ddx = cx + this.bounds.getWidth() + insetHorz;
+      double ddy = cy - (rightHeight - this.bounds.getHeight()) / 2;
       for (final Topic t : this.model.getChildren()) {
         final AbstractCollapsableElement c =
             requireNonNull((AbstractCollapsableElement) t.getPayload());
@@ -196,8 +194,6 @@ public final class ElementRoot extends AbstractElement {
     final double insetV = cfg.getScale() * cfg.getFirstLevelVerticalInset();
     final double insetH = cfg.getScale() * cfg.getFirstLevelHorizontalInset();
 
-    final Dimension2D result = size;
-
     double leftWidth = 0.0d;
     double leftHeight = 0.0d;
     double rightWidth = 0.0d;
@@ -209,19 +205,19 @@ public final class ElementRoot extends AbstractElement {
     for (final Topic t : this.model.getChildren()) {
       final ElementLevelFirst w = requireNonNull((ElementLevelFirst) t.getPayload());
 
-      w.calcBlockSize(cfg, result, false);
+      w.calcBlockSize(cfg, size, false);
 
       if (w.isLeftDirection()) {
-        leftWidth = Math.max(leftWidth, result.getWidth());
-        leftHeight += result.getHeight();
+        leftWidth = Math.max(leftWidth, size.getWidth());
+        leftHeight += size.getHeight();
         if (nonfirstOnLeft) {
           leftHeight += insetV;
         } else {
           nonfirstOnLeft = true;
         }
       } else {
-        rightWidth = Math.max(rightWidth, result.getWidth());
-        rightHeight += result.getHeight();
+        rightWidth = Math.max(rightWidth, size.getWidth());
+        rightHeight += size.getHeight();
         if (nonfirstOnRight) {
           rightHeight += insetV;
         } else {
@@ -239,12 +235,12 @@ public final class ElementRoot extends AbstractElement {
     this.rightBlockSize.setSize(rightWidth, rightHeight);
 
     if (childrenOnly) {
-      result.setSize(leftWidth + rightWidth, Math.max(leftHeight, rightHeight));
+      size.setSize(leftWidth + rightWidth, Math.max(leftHeight, rightHeight));
     } else {
-      result.setSize(leftWidth + rightWidth + this.bounds.getWidth(), Math.max(this.bounds.getHeight(), Math.max(leftHeight, rightHeight)));
+      size.setSize(leftWidth + rightWidth + this.bounds.getWidth(), Math.max(this.bounds.getHeight(), Math.max(leftHeight, rightHeight)));
     }
 
-    return result;
+    return size;
   }
 
   @Override

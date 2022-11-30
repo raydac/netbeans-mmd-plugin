@@ -350,8 +350,8 @@ final class ColorPickerPanel {
     }
 
     public static Color getContrastColor(final Color color) {
-      double y = (299 * color.getRed() + 587 * color.getGreen() + 114 * color.getBlue()) / 1000;
-      return y >= 128 ? Color.BLACK : Color.WHITE;
+      final double y = (299 * color.getRed() + 587 * color.getGreen() + 114 * color.getBlue()) / 1000.0d;
+      return y >= 128.0d ? Color.BLACK : Color.WHITE;
     }
 
     @Override

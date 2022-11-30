@@ -188,9 +188,8 @@ public abstract class AbstractElement {
 
   public void doPaintConnectors(final MMGraphics g, final boolean leftDirection,
                                 final MindMapPanelConfig cfg) {
-    final Rectangle2D source = this.bounds;
     for (final Topic t : this.model.getChildren()) {
-      drawConnector(g, source, (requireNonNull((AbstractElement) t.getPayload())).getBounds(),
+      drawConnector(g, this.bounds, (requireNonNull((AbstractElement) t.getPayload())).getBounds(),
           leftDirection, cfg);
     }
   }

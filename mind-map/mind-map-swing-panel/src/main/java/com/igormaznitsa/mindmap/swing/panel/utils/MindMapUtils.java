@@ -84,13 +84,11 @@ public final class MindMapUtils {
 
     Topic lastVisible = null;
 
-    if (path.length > 0) {
-      for (final Topic t : path) {
-        lastVisible = t;
-        final boolean collapsed = Boolean.parseBoolean(t.getAttribute(ATTR_COLLAPSED.getText()));
-        if (collapsed) {
-          break;
-        }
+    for (final Topic t : path) {
+      lastVisible = t;
+      final boolean collapsed = Boolean.parseBoolean(t.getAttribute(ATTR_COLLAPSED.getText()));
+      if (collapsed) {
+        break;
       }
     }
 
@@ -343,7 +341,7 @@ public final class MindMapUtils {
   }
 
   /**
-   * Generate sub tree for whitespace offsets in text lines.
+   * Generate subtree for whitespace offsets in text lines.
    *
    * @param topic topic to be root for generated text
    * @param text  text source to make topics

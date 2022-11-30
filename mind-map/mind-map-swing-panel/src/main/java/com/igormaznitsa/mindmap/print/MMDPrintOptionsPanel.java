@@ -70,7 +70,7 @@ public final class MMDPrintOptionsPanel extends JPanel {
     for (int i = 25; i <= 500; i += 25) {
       zoom.add(i + " %");
     }
-    this.comboZoom.setModel(new DefaultComboBoxModel<>(zoom.toArray()));
+    this.comboZoom.setModel(new DefaultComboBoxModel(zoom.toArray()));
 
     final GridBagConstraints gbc = new GridBagConstraints();
 

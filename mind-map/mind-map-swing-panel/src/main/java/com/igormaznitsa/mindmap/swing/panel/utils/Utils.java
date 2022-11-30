@@ -1015,9 +1015,7 @@ public final class Utils {
           final List<JButton> dialogButtons = findAllOptionPaneButtons(dialog.getRootPane());
           dialogButtons.stream()
               .filter(x -> "cancel".equalsIgnoreCase(x.getText()))
-              .forEach(x -> replaceActionListenerForButton(x, be -> {
-                processor.accept(dialog);
-              }));
+              .forEach(x -> replaceActionListenerForButton(x, be -> processor.accept(dialog)));
 
           dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 

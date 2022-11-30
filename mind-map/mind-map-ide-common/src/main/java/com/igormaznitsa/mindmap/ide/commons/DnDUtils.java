@@ -154,7 +154,7 @@ public final class DnDUtils {
           final String uri = new UrlFile(file).getURL();
           result = uri == null ? null : new URI(uri);
         } catch (URISyntaxException | IOException ex) {
-          result = null;
+          // do nothing and just return null
         }
       }
     }

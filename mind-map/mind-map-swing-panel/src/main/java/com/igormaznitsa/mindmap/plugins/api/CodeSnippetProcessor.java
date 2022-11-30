@@ -25,7 +25,7 @@ public interface CodeSnippetProcessor extends MindMapPlugin {
   /**
    * Get name of attribute key associated with the plug-in.
    *
-   * @return the array of language names (case sensitive)
+   * @return the array of language names (case-sensitive)
    */
   String[] getProcessingLanguageNames();
 }

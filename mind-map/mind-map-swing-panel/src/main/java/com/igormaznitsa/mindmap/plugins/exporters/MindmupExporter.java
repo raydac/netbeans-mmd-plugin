@@ -235,13 +235,10 @@ public class MindmupExporter extends AbstractExporter {
   public void doExportToClipboard(final PluginContext context, final Set<AbstractParameter<?>> options)
       throws IOException {
     final String text = makeContent(context.getPanel());
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-        if (clipboard != null) {
-          clipboard.setContents(new StringSelection(text), null);
-        }
+    SwingUtilities.invokeLater(() -> {
+      final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+      if (clipboard != null) {
+        clipboard.setContents(new StringSelection(text), null);
       }
     });
   }

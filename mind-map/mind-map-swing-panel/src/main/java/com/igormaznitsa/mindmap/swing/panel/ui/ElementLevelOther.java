@@ -109,15 +109,12 @@ public class ElementLevelOther extends ElementLevelFirst {
 
   @Override
   public Color getBackgroundColor(final MindMapPanelConfig config) {
-    final Color dflt =
-        this.fillColor == null ? config.getOtherLevelBackgroundColor() : this.fillColor;
-    return dflt;
+    return this.fillColor == null ? config.getOtherLevelBackgroundColor() : this.fillColor;
   }
 
   @Override
   public Color getTextColor(final MindMapPanelConfig config) {
-    final Color dflt = this.textColor == null ? config.getOtherLevelTextColor() : this.textColor;
-    return dflt;
+    return this.textColor == null ? config.getOtherLevelTextColor() : this.textColor;
   }
 
 }
