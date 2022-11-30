@@ -17,7 +17,6 @@
  */
 package com.igormaznitsa.sciareto.ui.misc;
 
-import com.google.common.base.Function;
 import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.logger.Logger;
@@ -49,11 +48,10 @@ import java.awt.Dimension;
 import java.awt.Paint;
 import java.awt.Rectangle;
 import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -64,12 +62,13 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 
-public final class FileLinkGraphPanel extends javax.swing.JPanel {
+public final class FileLinkGraphPanel extends JPanel {
 
   private static final long serialVersionUID = -5145163577941732908L;
 
@@ -84,7 +83,11 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
   private static final Icon RELAYOUT_ICON = new ImageIcon(UiUtils.loadIcon("graph16.png")); //NOI18N
 
   public enum FileVertexType {
-    FOLDER("folder.png", "Folder"), DOCUMENT("document.png", "Document"), MINDMAP("mindmap.png", "Mind Map"), UNKNOWN("unknown.png", "Unknown"), NOTFOUND("notfound.png", "Not found"); //NOI18N
+    FOLDER("folder.png", "Folder"),
+    DOCUMENT("document.png", "Document"),
+    MINDMAP("mindmap.png", "Mind Map"),
+    UNKNOWN("unknown.png", "Unknown"),
+    NOTFOUND("notfound.png", "Not found"); //NOI18N
 
     private final Icon icon;
     private final String text;
@@ -115,7 +118,7 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
     public FileVertex(@Nonnull final File file, @Nonnull final FileVertexType type) {
       this.type = type;
       this.text = file.getName();
-      this.tooltip = "<html><b>" + type.toString() + "</b><br>" + StringEscapeUtils.unescapeHtml3(FilenameUtils.normalizeNoEndSeparator(file.getAbsolutePath())) + "</html>"; //NOI18N
+      this.tooltip = "<html><b>" + type + "</b><br>" + StringEscapeUtils.unescapeHtml3(FilenameUtils.normalizeNoEndSeparator(file.getAbsolutePath())) + "</html>"; //NOI18N
       this.file = file;
     }
 
@@ -190,7 +193,7 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
     try {
 
       thisVertex = new FileVertex(mindMapFile, FileVertexType.MINDMAP);
-      map = new MindMap(new StringReader(FileUtils.readFileToString(mindMapFile, "UTF-8"))); //NOI18N
+      map = new MindMap(new StringReader(FileUtils.readFileToString(mindMapFile, StandardCharsets.UTF_8)));
 
       if (parent != null) {
         for (final MMapURI fileUri : MapUtils.extractAllFileLinks(map)) {
@@ -277,9 +280,7 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
     final Graph<FileVertex, Number> graph = makeGraph(projectFolder, startMindMap);
 
     if (graph.getVertexCount() == 0) {
-
-      this.add(new JLabel("There is not any Mind map in the project!"), BorderLayout.CENTER);
-
+      this.add(new JLabel(UiUtils.findTextBundle().getString("panelFileLinkGraph.labelNotAnyMindMap")), BorderLayout.CENTER);
     } else {
       final ISOMLayout<FileVertex, Number> graphLayout = new ISOMLayout<>(graph);
 
@@ -300,12 +301,7 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
       graphViewer.setGraphMouse(graphMouse);
       graphViewer.setGraphLayout(new CircleLayout<>(graph));
 
-      graphViewer.getRenderContext().setVertexIconTransformer(new Function<FileVertex, Icon>() {
-        @Override
-        public Icon apply(@Nonnull final FileVertex f) {
-          return f.getType().getIcon();
-        }
-      });
+      graphViewer.getRenderContext().setVertexIconTransformer(f -> f.getType().getIcon());
 
       graphViewer.setBackground(COLOR_BACKGROUND);
       graphViewer.getRenderContext().setVertexLabelTransformer(new ToStringLabeller());
@@ -315,29 +311,19 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
       graphViewer.getRenderContext().setVertexLabelRenderer(labelRenderer);
       graphViewer.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.S);
 
-      final Function<Number, Paint> edgePaintTransformer = new Function<Number, Paint>() {
-        @Override
-        public Paint apply(@Nonnull final Number input) {
-          return COLOR_ARROW;
-        }
-      };
+      final java.util.function.Function<Number, Paint> edgePaintTransformer = input -> COLOR_ARROW;
 
-      graphViewer.getRenderContext().setEdgeDrawPaintTransformer(edgePaintTransformer);
-      graphViewer.getRenderContext().setArrowFillPaintTransformer(edgePaintTransformer);
-      graphViewer.getRenderContext().setArrowDrawPaintTransformer(edgePaintTransformer);
+      graphViewer.getRenderContext().setEdgeDrawPaintTransformer(edgePaintTransformer::apply);
+      graphViewer.getRenderContext().setArrowFillPaintTransformer(edgePaintTransformer::apply);
+      graphViewer.getRenderContext().setArrowDrawPaintTransformer(edgePaintTransformer::apply);
 
-      graphViewer.setVertexToolTipTransformer(new Function<FileVertex, String>() {
-        @Override
-        @Nonnull
-        public String apply(@Nonnull final FileVertex f) {
-          return f.getTooltip();
-        }
-      });
+      graphViewer.setVertexToolTipTransformer(FileVertex::getTooltip);
 
-      graphViewer.addGraphMouseListener(new GraphMouseListener<FileVertex>() {
+      graphViewer.addGraphMouseListener(new GraphMouseListener<>() {
         @Override
         public void graphClicked(@Nonnull final FileVertex v, @Nonnull final MouseEvent me) {
-          if (!me.isPopupTrigger() && me.getClickCount() > 1 && v.getType() != FileVertexType.NOTFOUND) {
+          if (!me.isPopupTrigger() && me.getClickCount() > 1 &&
+              v.getType() != FileVertexType.NOTFOUND) {
             selectedVertex = v;
             final Window window = SwingUtilities.getWindowAncestor(graphViewer);
             if (window != null) {
@@ -363,17 +349,14 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
       graphViewer.scaleToLayout(new LayoutScalingControl());
 
       final JButton layoutButton = new JButton(RELAYOUT_ICON);
-      layoutButton.setToolTipText("Relayout graph");
+      layoutButton.setToolTipText(UiUtils.findTextBundle().getString("panelFileLinkGraph.layoutButton.tooltip"));
       layoutButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-      layoutButton.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(@Nonnull final ActionEvent e) {
-          final Rectangle visible = scroll.getVisibleRect();
-          graphViewer.setGraphLayout(new CircleLayout<>(graph));
-          graphViewer.repaint();
-          scroll.revalidate();
-          scroll.repaint();
-        }
+      layoutButton.addActionListener(e -> {
+        final Rectangle visible = scroll.getVisibleRect();
+        graphViewer.setGraphLayout(new CircleLayout<>(graph));
+        graphViewer.repaint();
+        scroll.revalidate();
+        scroll.repaint();
       });
 
       scroll.setCorner(layoutButton);
@@ -396,7 +379,7 @@ public final class FileLinkGraphPanel extends javax.swing.JPanel {
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
   private void initComponents() {
 
-    setLayout(new java.awt.BorderLayout());
+    setLayout(new BorderLayout());
   }// </editor-fold>//GEN-END:initComponents
 
 

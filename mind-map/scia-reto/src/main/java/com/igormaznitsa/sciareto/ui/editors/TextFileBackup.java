@@ -56,13 +56,13 @@ public class TextFileBackup {
 
   private static void writeLong(final long value, @Nonnull final OutputStream out)
       throws IOException {
-    final byte[] splitted = new byte[8];
+    final byte[] split = new byte[8];
     long acc = value;
     for (int i = 0; i < 8; i++) {
-      splitted[i] = (byte) acc;
+      split[i] = (byte) acc;
       acc >>>= 8;
     }
-    IOUtils.write(splitted, out);
+    IOUtils.write(split, out);
   }
 
   @Nullable

@@ -17,6 +17,7 @@
  */
 package com.igormaznitsa.sciareto.ui.misc;
 
+import com.igormaznitsa.sciareto.ui.UiUtils;
 import java.awt.Color;
 import java.awt.Component;
 import java.util.Locale;
@@ -62,7 +63,7 @@ public final class NodeListRenderer extends DefaultListCellRenderer {
       return node.toString();
     } else {
       final String projectName = project.toString();
-      return node.toString() + " (found in " + projectName + ')';
+      return String.format(UiUtils.findTextBundle().getString("NodeListRenderer.textForNode"), node, projectName);
     }
   }
 

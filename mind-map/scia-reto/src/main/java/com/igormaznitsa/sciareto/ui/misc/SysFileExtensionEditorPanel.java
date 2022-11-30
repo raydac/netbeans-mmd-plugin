@@ -38,12 +38,7 @@ public class SysFileExtensionEditorPanel extends javax.swing.JPanel {
     initComponents();
     this.tableExtensions.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     makeModelAndSetToTable(initValue);
-    this.tableExtensions.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-      @Override
-      public void valueChanged(@Nonnull final ListSelectionEvent e) {
-        updateButtons();
-      }
-    });
+    this.tableExtensions.getSelectionModel().addListSelectionListener(e -> updateButtons());
     updateButtons();
   }
 
