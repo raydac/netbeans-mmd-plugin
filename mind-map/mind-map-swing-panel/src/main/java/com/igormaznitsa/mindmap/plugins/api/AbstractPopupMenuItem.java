@@ -17,8 +17,10 @@
 package com.igormaznitsa.mindmap.plugins.api;
 
 import com.igormaznitsa.mindmap.model.Topic;
+import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
+import java.util.ResourceBundle;
 
 /**
  * Abstract auxiliary class to implement an abstract pop-up menu item.
@@ -27,9 +29,16 @@ import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
  */
 public abstract class AbstractPopupMenuItem implements PopUpMenuItemPlugin {
 
-  protected static final UIComponentFactory UI_COMPO_FACTORY = UIComponentFactoryProvider.findInstance();
+  protected static final UIComponentFactory UI_COMPO_FACTORY =
+      UIComponentFactoryProvider.findInstance();
+
+  private final ResourceBundle resourceBundle = MmdI18n.getInstance().findBundle();
 
   public AbstractPopupMenuItem() {
+  }
+
+  public ResourceBundle getResourceBundle() {
+    return this.resourceBundle;
   }
 
   @Override

@@ -21,4 +21,5 @@ public interface SpecificKeys {
   static String PROPERTY_BACKUP_LAST_EDIT_BEFORE_SAVE = "sr.sk.text.editor.backup.last.edit.before.save"; //NOI18N
   static String PROPERTY_TEXT_EDITOR_FONT = "sr.sk.text.editor.font"; //NOI18N
   static String PROPERTY_EXTENSIONS_TO_BE_OPENED_IN_SYSTEM = "sr.sk.extensions.system.browser"; //NOI18N
+  static String PROPERTY_LANGUAGE = "sr.sk.ide.language"; //NOI18N
 }

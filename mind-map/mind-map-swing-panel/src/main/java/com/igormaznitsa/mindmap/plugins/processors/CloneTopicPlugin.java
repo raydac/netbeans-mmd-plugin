@@ -20,7 +20,6 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.api.AbstractFocusedTopicPlugin;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
-import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 import javax.swing.Icon;
@@ -42,8 +41,8 @@ public class CloneTopicPlugin extends AbstractFocusedTopicPlugin {
   @Override
   protected String getName(final PluginContext context, final Topic activeTopic) {
     return context.getSelectedTopics().length > 0 ?
-        MmdI18n.getInstance().findBundle().getString("MMDGraphEditor.makePopUp.miCloneSelectedTopic") :
-        MmdI18n.getInstance().findBundle().getString("MMDGraphEditor.makePopUp.miCloneTheTopic");
+        this.getResourceBundle().getString("MMDGraphEditor.makePopUp.miCloneSelectedTopic") :
+        this.getResourceBundle().getString("MMDGraphEditor.makePopUp.miCloneTheTopic");
   }
 
   @Override
@@ -54,8 +53,8 @@ public class CloneTopicPlugin extends AbstractFocusedTopicPlugin {
     if (toClone != null) {
 
       final Boolean cloneSubtree = !toClone.isEmpty() ? context.getDialogProvider()
-          .msgConfirmYesNoCancel(null, MmdI18n.getInstance().findBundle().getString("MindMapPanel.titleCloneTopicRequest"),
-              MmdI18n.getInstance().findBundle().getString("MindMapPanel.cloneTopicSubtreeRequestMsg")) : Boolean.FALSE;
+          .msgConfirmYesNoCancel(null, this.getResourceBundle().getString("MindMapPanel.titleCloneTopicRequest"),
+              this.getResourceBundle().getString("MindMapPanel.cloneTopicSubtreeRequestMsg")) : Boolean.FALSE;
       if (cloneSubtree == null) {
         return;
       }

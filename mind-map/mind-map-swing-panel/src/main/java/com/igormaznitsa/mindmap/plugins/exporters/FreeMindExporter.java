@@ -30,7 +30,6 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.api.parameters.AbstractParameter;
-import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.ide.IDEBridgeFactory;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
@@ -234,11 +233,11 @@ public class FreeMindExporter extends AbstractExporter {
           context.getPanel(),
           context,
           this.getClass().getName(),
-          MmdI18n.getInstance().findBundle().getString("FreeMindExporter.saveDialogTitle"),
+          this.getResourceBundle().getString("FreeMindExporter.saveDialogTitle"),
           null,
           ".mm",
-          MmdI18n.getInstance().findBundle().getString("FreeMindExporter.filterDescription"),
-          MmdI18n.getInstance().findBundle().getString("FreeMindExporter.approveButtonText"));
+          this.getResourceBundle().getString("FreeMindExporter.filterDescription"),
+          this.getResourceBundle().getString("FreeMindExporter.approveButtonText"));
       fileToSaveMap = MindMapUtils.checkFileAndExtension(context.getPanel(), fileToSaveMap, ".mm");
       theOut = fileToSaveMap == null ? null :
           new BufferedOutputStream(new FileOutputStream(fileToSaveMap, false));
@@ -265,12 +264,12 @@ public class FreeMindExporter extends AbstractExporter {
 
   @Override
   public String getName(final PluginContext context, final Topic actionTopic) {
-    return MmdI18n.getInstance().findBundle().getString("FreeMindExporter.exporterName");
+    return this.getResourceBundle().getString("FreeMindExporter.exporterName");
   }
 
   @Override
   public String getReference(final PluginContext context, final Topic actionTopic) {
-    return MmdI18n.getInstance().findBundle().getString("FreeMindExporter.exporterReference");
+    return this.getResourceBundle().getString("FreeMindExporter.exporterReference");
   }
 
   @Override

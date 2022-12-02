@@ -25,7 +25,6 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.api.parameters.AbstractParameter;
-import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.ide.IDEBridgeFactory;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
@@ -247,11 +246,11 @@ public class TextExporter extends AbstractExporter {
           context.getPanel(),
           context,
           this.getClass().getName(),
-          MmdI18n.getInstance().findBundle().getString("TextExporter.saveDialogTitle"),
+          this.getResourceBundle().getString("TextExporter.saveDialogTitle"),
           null,
           ".txt",
-          MmdI18n.getInstance().findBundle().getString("TextExporter.filterDescription"),
-          MmdI18n.getInstance().findBundle().getString("TextExporter.approveButtonText"));
+          this.getResourceBundle().getString("TextExporter.filterDescription"),
+          this.getResourceBundle().getString("TextExporter.approveButtonText"));
       fileToSaveMap = MindMapUtils.checkFileAndExtension(context.getPanel(), fileToSaveMap, ".txt");
       theOut = fileToSaveMap == null ? null :
           new BufferedOutputStream(new FileOutputStream(fileToSaveMap, false));
@@ -274,12 +273,12 @@ public class TextExporter extends AbstractExporter {
 
   @Override
   public String getName(final PluginContext context, final Topic actionTopic) {
-    return MmdI18n.getInstance().findBundle().getString("TextExporter.exporterName");
+    return this.getResourceBundle().getString("TextExporter.exporterName");
   }
 
   @Override
   public String getReference(final PluginContext context, final Topic actionTopic) {
-    return MmdI18n.getInstance().findBundle().getString("TextExporter.exporterReference");
+    return this.getResourceBundle().getString("TextExporter.exporterReference");
   }
 
   @Override

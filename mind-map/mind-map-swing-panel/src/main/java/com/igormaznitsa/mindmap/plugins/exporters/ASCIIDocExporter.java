@@ -29,7 +29,6 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.api.parameters.AbstractParameter;
-import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import com.igormaznitsa.mindmap.swing.services.IconID;
@@ -109,8 +108,8 @@ public class ASCIIDocExporter extends AbstractExporter {
 
     if (link != null) {
       final String url = link.getValue().toString();
-      final String ascurl = link.getValue().asString(true, true);
-      state.append("link:").append(ascurl).append("[Link]").appendNextLine().appendNextLine();
+      final String ascUrl = link.getValue().asString(true, true);
+      state.append("link:").append(ascUrl).append("[Link]").appendNextLine().appendNextLine();
     }
 
     if (transition != null) {
@@ -170,11 +169,11 @@ public class ASCIIDocExporter extends AbstractExporter {
           context.getPanel(),
           context,
           this.getClass().getName(),
-          MmdI18n.getInstance().findBundle().getString("ASCIIDOCExporter.saveDialogTitle"),
+          this.getResourceBundle().getString("ASCIIDOCExporter.saveDialogTitle"),
           null,
           ".asciidoc",
-          MmdI18n.getInstance().findBundle().getString("ASCIIDOCExporter.filterDescription"),
-          MmdI18n.getInstance().findBundle().getString("ASCIIDOCExporter.approveButtonText"));
+          this.getResourceBundle().getString("ASCIIDOCExporter.filterDescription"),
+          this.getResourceBundle().getString("ASCIIDOCExporter.approveButtonText"));
       fileToSaveMap =
           MindMapUtils.checkFileAndExtension(context.getPanel(), fileToSaveMap, ".asciidoc");
       theOut = fileToSaveMap == null ? null :
@@ -198,12 +197,12 @@ public class ASCIIDocExporter extends AbstractExporter {
 
   @Override
   public String getName(final PluginContext context, final Topic actionTopic) {
-    return MmdI18n.getInstance().findBundle().getString("ASCIIDOCExporter.exporterName");
+    return this.getResourceBundle().getString("ASCIIDOCExporter.exporterName");
   }
 
   @Override
   public String getReference(final PluginContext context, final Topic actionTopic) {
-    return MmdI18n.getInstance().findBundle().getString("ASCIIDOCExporter.exporterReference");
+    return this.getResourceBundle().getString("ASCIIDOCExporter.exporterReference");
   }
 
   @Override

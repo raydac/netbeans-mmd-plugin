@@ -22,7 +22,6 @@ import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.api.AbstractFocusedTopicPlugin;
 import com.igormaznitsa.mindmap.plugins.api.ExternallyExecutedPlugin;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
-import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 import javax.swing.Icon;
@@ -47,8 +46,8 @@ public class ExtraFilePlugin extends AbstractFocusedTopicPlugin implements Exter
       return "...";
     }
     return actionTopic.getExtras().containsKey(Extra.ExtraType.FILE) ?
-        MmdI18n.getInstance().findBundle().getString("MMDGraphEditor.makePopUp.miEditFile")
-        : MmdI18n.getInstance().findBundle().getString("MMDGraphEditor.makePopUp.miAddFile");
+        this.getResourceBundle().getString("MMDGraphEditor.makePopUp.miEditFile")
+        : this.getResourceBundle().getString("MMDGraphEditor.makePopUp.miAddFile");
   }
 
   @Override

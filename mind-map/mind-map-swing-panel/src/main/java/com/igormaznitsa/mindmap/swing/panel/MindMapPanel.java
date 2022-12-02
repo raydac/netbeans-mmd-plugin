@@ -92,6 +92,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.ResourceBundle;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -109,7 +110,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 
 public class MindMapPanel extends JComponent implements ClipboardOwner {
 
@@ -143,7 +144,6 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   private final AtomicReference<Dimension> mindMapImageSize =
       new AtomicReference<>(new Dimension());
   private final UUID uuid = UUID.randomUUID();
-  private final MmdI18n mmdI18n = MmdI18n.getInstance();
   private volatile MindMap model;
   private volatile String errorText;
   private transient AbstractElement elementUnderEdit = null;
@@ -152,6 +152,8 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   private transient DraggedElement draggedElement = null;
   private transient AbstractElement destinationElement = null;
   private Point lastMousePressed = null;
+
+  private final ResourceBundle bundle = MmdI18n.getInstance().findBundle();
 
   public MindMapPanel(final MindMapPanelController controller) {
     super();
@@ -1442,34 +1444,34 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
         final String line = efile.getAsURI().getParameters().getProperty("line", null);
         if (line != null && !line.equals("0")) {
           builder.append(String.format(
-              this.mmdI18n.findBundle().getString("MindMapPanel.tooltipOpenFileWithLine"),
+              this.bundle.getString("MindMapPanel.tooltipOpenFileWithLine"),
               StringEscapeUtils.escapeHtml3(efile.getAsString()),
               StringEscapeUtils.escapeHtml3(line)));
         } else {
-          builder.append(this.mmdI18n.findBundle().getString("MindMapPanel.tooltipOpenFile"))
+          builder.append(this.bundle.getString("MindMapPanel.tooltipOpenFile"))
               .append(StringEscapeUtils.escapeHtml3(efile.getAsString()));
         }
       }
       break;
       case TOPIC: {
         final Topic topic = this.getModel().findTopicForLink((ExtraTopic) extra);
-        builder.append(this.mmdI18n.findBundle().getString("MindMapPanel.tooltipJumpToTopic"))
+        builder.append(this.bundle.getString("MindMapPanel.tooltipJumpToTopic"))
             .append(StringEscapeUtils.escapeHtml3(
                 ModelUtils.makeEllipsis(topic == null ? "----" : topic.getText(), 32)));
       }
       break;
       case LINK: {
-        builder.append(this.mmdI18n.findBundle().getString("MindMapPanel.tooltipOpenLink")).append(
+        builder.append(this.bundle.getString("MindMapPanel.tooltipOpenLink")).append(
             StringEscapeUtils.escapeHtml3(ModelUtils.makeEllipsis(extra.getAsString(), 48)));
       }
       break;
       case NOTE: {
         final ExtraNote extraNote = (ExtraNote) extra;
         if (extraNote.isEncrypted()) {
-          builder.append(this.mmdI18n.findBundle().getString("MindMapPanel.tooltipOpenText"))
+          builder.append(this.bundle.getString("MindMapPanel.tooltipOpenText"))
               .append("#######");
         } else {
-          builder.append(this.mmdI18n.findBundle().getString("MindMapPanel.tooltipOpenText"))
+          builder.append(this.bundle.getString("MindMapPanel.tooltipOpenText"))
               .append(StringEscapeUtils
                   .escapeHtml3(ModelUtils.makeEllipsis(extra.getAsString(), 64)));
         }

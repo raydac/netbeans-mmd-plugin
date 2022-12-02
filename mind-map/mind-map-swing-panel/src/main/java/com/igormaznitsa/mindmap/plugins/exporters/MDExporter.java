@@ -29,7 +29,6 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.api.parameters.AbstractParameter;
-import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.ide.IDEBridgeFactory;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
@@ -257,11 +256,11 @@ public class MDExporter extends AbstractExporter {
           context.getPanel(),
           context,
           this.getClass().getName(),
-          MmdI18n.getInstance().findBundle().getString("MDExporter.saveDialogTitle"),
+          this.getResourceBundle().getString("MDExporter.saveDialogTitle"),
           null,
           ".MD",
-          MmdI18n.getInstance().findBundle().getString("MDExporter.filterDescription"),
-          MmdI18n.getInstance().findBundle().getString("MDExporter.approveButtonText"));
+          this.getResourceBundle().getString("MDExporter.filterDescription"),
+          this.getResourceBundle().getString("MDExporter.approveButtonText"));
       fileToSaveMap = MindMapUtils.checkFileAndExtension(context.getPanel(), fileToSaveMap, ".MD");
       theOut = fileToSaveMap == null ? null :
           new BufferedOutputStream(new FileOutputStream(fileToSaveMap, false));
@@ -284,12 +283,12 @@ public class MDExporter extends AbstractExporter {
 
   @Override
   public String getName(final PluginContext context, final Topic actionTopic) {
-    return MmdI18n.getInstance().findBundle().getString("MDExporter.exporterName");
+    return this.getResourceBundle().getString("MDExporter.exporterName");
   }
 
   @Override
   public String getReference(final PluginContext context, final Topic actionTopic) {
-    return MmdI18n.getInstance().findBundle().getString("MDExporter.exporterReference");
+    return this.getResourceBundle().getString("MDExporter.exporterReference");
   }
 
   @Override

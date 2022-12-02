@@ -31,7 +31,6 @@ import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.api.AbstractImporter;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.attributes.images.ImageVisualAttributePlugin;
-import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.ide.IDEBridgeFactory;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
@@ -185,8 +184,8 @@ public class Freemind2MindMapImporter extends AbstractImporter {
   @Override
   public MindMap doImport(final PluginContext context) throws Exception {
     final File file = this.selectFileForExtension(context,
-        MmdI18n.getInstance().findBundle().getString("MMDImporters.Freemind2MindMap.openDialogTitle"), null, "mm",
-        "Freemind files (.MM)", MmdI18n.getInstance().findBundle().getString("MMDImporters.ApproveImport"));
+        this.getResourceBundle().getString("MMDImporters.Freemind2MindMap.openDialogTitle"), null, "mm",
+        "Freemind files (.MM)", this.getResourceBundle().getString("MMDImporters.ApproveImport"));
 
     if (file == null) {
       return null;
@@ -337,12 +336,12 @@ public class Freemind2MindMapImporter extends AbstractImporter {
 
   @Override
   public String getName(final PluginContext context) {
-    return MmdI18n.getInstance().findBundle().getString("MMDImporters.Freemind2MindMap.Name");
+    return this.getResourceBundle().getString("MMDImporters.Freemind2MindMap.Name");
   }
 
   @Override
   public String getReference(final PluginContext context) {
-    return MmdI18n.getInstance().findBundle().getString("MMDImporters.Freemind2MindMap.Reference");
+    return this.getResourceBundle().getString("MMDImporters.Freemind2MindMap.Reference");
   }
 
   @Override

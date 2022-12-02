@@ -22,7 +22,6 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.api.AbstractPopupMenuItem;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
-import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 import javax.swing.Icon;
@@ -37,12 +36,12 @@ public class EmoticonPopUpMenuPlugin extends AbstractPopupMenuItem {
   public JMenuItem makeMenuItem(final PluginContext context, final Topic activeTopic) {
     final JMenuItem result =
         UI_COMPO_FACTORY.makeMenuItem(
-            MmdI18n.getInstance().findBundle().getString("Emoticons.MenuTitle"), ICON);
-    result.setToolTipText(MmdI18n.getInstance().findBundle().getString("Emoticons.MenuTooltip"));
+            this.getResourceBundle().getString("Emoticons.MenuTitle"), ICON);
+    result.setToolTipText(this.getResourceBundle().getString("Emoticons.MenuTooltip"));
     result.addActionListener(e -> {
       final IconPanel iconPanel = new IconPanel();
       if (context.getDialogProvider()
-          .msgOkCancel(null, MmdI18n.getInstance().findBundle().getString("Emoticons.DialogTitle"),
+          .msgOkCancel(null, this.getResourceBundle().getString("Emoticons.DialogTitle"),
               iconPanel)) {
         final String emoticonName = iconPanel.getSelectedName();
         if (emoticonName != null) {

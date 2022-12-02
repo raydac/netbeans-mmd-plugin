@@ -33,6 +33,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.regex.Pattern;
@@ -42,6 +43,7 @@ public class ImageVisualAttributePlugin implements VisualAttributePlugin {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ImageVisualAttributePlugin.class);
   private static final Map<Topic, Renderable> CACHED_IMAGES = new WeakHashMap<>();
+  private final ResourceBundle resourceBundle = MmdI18n.getInstance().findBundle();
 
   public static void clearCachedImages() {
     CACHED_IMAGES.clear();
@@ -113,8 +115,9 @@ public class ImageVisualAttributePlugin implements VisualAttributePlugin {
           context.openFile(new MMapURI(imageFilePathUri).asFile(context.getProjectFolder()), false);
         } catch (URISyntaxException ex) {
           context.getDialogProvider()
-              .msgWarn(context.getPanel(), String.format(MmdI18n.getInstance().findBundle()
-                  .getString("pluginImageVisualAttr.warn.uriSyntaxError"), imageFilePathUri));
+              .msgWarn(context.getPanel(), String.format(
+                  this.resourceBundle.getString("pluginImageVisualAttr.warn.uriSyntaxError"),
+                  imageFilePathUri));
         }
       }
     } else {

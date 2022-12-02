@@ -26,7 +26,6 @@ import com.igormaznitsa.mindmap.swing.panel.ui.TextAlign;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 import java.util.Locale;
-import java.util.ResourceBundle;
 import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.JMenu;
@@ -36,15 +35,17 @@ import org.apache.commons.lang3.ArrayUtils;
 
 public class TextAlignMenuPlugin extends AbstractPopupMenuItem {
 
-  private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("com/igormaznitsa/mindmap/swing/panel/Bundle");
-  private static final Icon ICON = ImageIconServiceProvider.findInstance().getIconForId(IconID.ICON_TEXT_ALIGN);
-  private static final Icon ICON_CENTER = ImageIconServiceProvider.findInstance().getIconForId(IconID.ICON_TEXT_ALIGN_CENTER);
-  private static final Icon ICON_LEFT = ImageIconServiceProvider.findInstance().getIconForId(IconID.ICON_TEXT_ALIGN_LEFT);
-  private static final Icon ICON_RIGHT = ImageIconServiceProvider.findInstance().getIconForId(IconID.ICON_TEXT_ALIGN_RIGHT);
-
+  private static final Icon ICON =
+      ImageIconServiceProvider.findInstance().getIconForId(IconID.ICON_TEXT_ALIGN);
+  private static final Icon ICON_CENTER =
+      ImageIconServiceProvider.findInstance().getIconForId(IconID.ICON_TEXT_ALIGN_CENTER);
+  private static final Icon ICON_LEFT =
+      ImageIconServiceProvider.findInstance().getIconForId(IconID.ICON_TEXT_ALIGN_LEFT);
+  private static final Icon ICON_RIGHT =
+      ImageIconServiceProvider.findInstance().getIconForId(IconID.ICON_TEXT_ALIGN_RIGHT);
   @Override
   public JMenuItem makeMenuItem(final PluginContext context, final Topic activeTopic) {
-    final JMenu result = UI_COMPO_FACTORY.makeMenu(BUNDLE.getString("TextAlign.Plugin.MenuTitle"));
+    final JMenu result = UI_COMPO_FACTORY.makeMenu(this.getResourceBundle().getString("TextAlign.Plugin.MenuTitle"));
     result.setIcon(ICON);
 
     final ButtonGroup buttonGroup = UI_COMPO_FACTORY.makeButtonGroup();
@@ -58,9 +59,15 @@ public class TextAlignMenuPlugin extends AbstractPopupMenuItem {
 
     final TextAlign sharedTextAlign = findSharedTextAlign(workTopics);
 
-    final JRadioButtonMenuItem menuLeft = UI_COMPO_FACTORY.makeRadioButtonMenuItem(BUNDLE.getString("TextAlign.Plugin.MenuTitle.Left"), ICON_LEFT, TextAlign.LEFT == sharedTextAlign);
-    final JRadioButtonMenuItem menuCenter = UI_COMPO_FACTORY.makeRadioButtonMenuItem(BUNDLE.getString("TextAlign.Plugin.MenuTitle.Center"), ICON_CENTER, TextAlign.CENTER == sharedTextAlign);
-    final JRadioButtonMenuItem menuRight = UI_COMPO_FACTORY.makeRadioButtonMenuItem(BUNDLE.getString("TextAlign.Plugin.MenuTitle.Right"), ICON_RIGHT, TextAlign.RIGHT == sharedTextAlign);
+    final JRadioButtonMenuItem menuLeft = UI_COMPO_FACTORY.makeRadioButtonMenuItem(
+        this.getResourceBundle().getString("TextAlign.Plugin.MenuTitle.Left"), ICON_LEFT,
+        TextAlign.LEFT == sharedTextAlign);
+    final JRadioButtonMenuItem menuCenter = UI_COMPO_FACTORY.makeRadioButtonMenuItem(
+        this.getResourceBundle().getString("TextAlign.Plugin.MenuTitle.Center"), ICON_CENTER,
+        TextAlign.CENTER == sharedTextAlign);
+    final JRadioButtonMenuItem menuRight = UI_COMPO_FACTORY.makeRadioButtonMenuItem(
+        this.getResourceBundle().getString("TextAlign.Plugin.MenuTitle.Right"), ICON_RIGHT,
+        TextAlign.RIGHT == sharedTextAlign);
 
     buttonGroup.add(menuLeft);
     buttonGroup.add(menuCenter);

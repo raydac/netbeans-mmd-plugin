@@ -20,7 +20,6 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.api.AbstractPopupMenuItem;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
-import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 import javax.swing.Icon;
@@ -33,7 +32,7 @@ public class CollapseAllPlugin extends AbstractPopupMenuItem {
   @Override
   public JMenuItem makeMenuItem(final PluginContext context, final Topic topic) {
     final JMenuItem result =
-        UI_COMPO_FACTORY.makeMenuItem(MmdI18n.getInstance().findBundle().getString("MMDGraphEditor.makePopUp.miCollapseAll"),
+        UI_COMPO_FACTORY.makeMenuItem(this.getResourceBundle().getString("MMDGraphEditor.makePopUp.miCollapseAll"),
             ICO);
     result.setEnabled(context.getPanel().getModel().getRoot() != null);
     result.addActionListener(e -> context.getPanel().collapseOrExpandAll(true));

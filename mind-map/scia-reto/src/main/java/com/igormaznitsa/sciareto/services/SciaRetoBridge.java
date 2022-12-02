@@ -27,6 +27,8 @@ import com.igormaznitsa.mindmap.swing.ide.IDEBridge;
 import com.igormaznitsa.mindmap.swing.ide.NotificationType;
 import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.notifications.NotificationManager;
+import com.igormaznitsa.sciareto.preferences.PreferencesManager;
+import com.igormaznitsa.sciareto.preferences.SpecificKeys;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.platform.PlatformProvider;
 import java.awt.Font;
@@ -34,6 +36,7 @@ import java.awt.Image;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.imageio.ImageIO;
@@ -41,6 +44,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.LocaleUtils;
 
 public class SciaRetoBridge implements IDEBridge {
 
@@ -55,6 +59,19 @@ public class SciaRetoBridge implements IDEBridge {
       result = result.substring(1);
     }
     return result;
+  }
+
+  @Override
+  public Locale getIDELocale() {
+    if (true) return new Locale("ru");
+    try {
+      final String languageCode = PreferencesManager.getInstance().getPreferences()
+          .get(SpecificKeys.PROPERTY_LANGUAGE, Locale.ENGLISH.getLanguage());
+      return LocaleUtils.toLocale(languageCode);
+    } catch (Exception ex){
+      LOGGER.error("Error during get or decode locale record", ex);
+      return Locale.ENGLISH;
+    }
   }
 
   @Override

@@ -22,7 +22,6 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.api.AbstractFocusedTopicPlugin;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
-import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 import javax.swing.Icon;
@@ -43,7 +42,7 @@ public class AddChildPlugin extends AbstractFocusedTopicPlugin {
 
   @Override
   protected String getName(final PluginContext context, final Topic activeTopic) {
-    return MmdI18n.getInstance().findBundle().getString("MMDGraphEditor.makePopUp.miAddChild");
+    return this.getResourceBundle().getString("MMDGraphEditor.makePopUp.miAddChild");
   }
 
   @Override

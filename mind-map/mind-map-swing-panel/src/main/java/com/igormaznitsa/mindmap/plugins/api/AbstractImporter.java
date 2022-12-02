@@ -22,7 +22,6 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
-import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.ide.IDEBridgeFactory;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
@@ -83,7 +82,7 @@ public abstract class AbstractImporter extends AbstractPopupMenuItem implements 
         }
       } catch (Exception ex) {
         LOGGER.error("Error during map import", ex);
-        context.getDialogProvider().msgError(null, MmdI18n.getInstance().findBundle().getString("MMDGraphEditor.makePopUp.errMsgCantImport"));
+        context.getDialogProvider().msgError(null, this.getResourceBundle().getString("MMDGraphEditor.makePopUp.errMsgCantImport"));
       }
     });
     return result;

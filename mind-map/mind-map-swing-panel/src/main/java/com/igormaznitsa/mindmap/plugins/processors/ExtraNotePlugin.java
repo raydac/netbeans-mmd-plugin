@@ -22,7 +22,6 @@ import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.api.AbstractFocusedTopicPlugin;
 import com.igormaznitsa.mindmap.plugins.api.ExternallyExecutedPlugin;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
-import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 import javax.swing.Icon;
@@ -47,8 +46,8 @@ public class ExtraNotePlugin extends AbstractFocusedTopicPlugin implements Exter
       return "...";
     }
     return activeTopic.getExtras().containsKey(Extra.ExtraType.NOTE) ?
-        MmdI18n.getInstance().findBundle().getString("MMDGraphEditor.makePopUp.miEditNote") :
-        MmdI18n.getInstance().findBundle().getString("MMDGraphEditor.makePopUp.miAddNote");
+        this.getResourceBundle().getString("MMDGraphEditor.makePopUp.miEditNote") :
+        this.getResourceBundle().getString("MMDGraphEditor.makePopUp.miAddNote");
   }
 
   @Override

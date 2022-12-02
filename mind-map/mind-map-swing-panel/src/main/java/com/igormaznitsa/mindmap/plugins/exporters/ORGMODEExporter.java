@@ -29,7 +29,6 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.api.parameters.AbstractParameter;
-import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.ide.IDEBridgeFactory;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
@@ -343,11 +342,11 @@ public class ORGMODEExporter extends AbstractExporter {
           context.getPanel(),
           context,
           this.getClass().getName(),
-          MmdI18n.getInstance().findBundle().getString("ORGMODEExporter.saveDialogTitle"),
+          this.getResourceBundle().getString("ORGMODEExporter.saveDialogTitle"),
           null,
           ".org",
-          MmdI18n.getInstance().findBundle().getString("ORGMODEExporter.filterDescription"),
-          MmdI18n.getInstance().findBundle().getString("ORGMODEExporter.approveButtonText"));
+          this.getResourceBundle().getString("ORGMODEExporter.filterDescription"),
+          this.getResourceBundle().getString("ORGMODEExporter.approveButtonText"));
       fileToSaveMap =
           MindMapUtils.checkFileAndExtension(context.getPanel(), fileToSaveMap, ".org");
       theOut = fileToSaveMap == null ? null :
@@ -366,12 +365,12 @@ public class ORGMODEExporter extends AbstractExporter {
 
   @Override
   public String getName(final PluginContext context, final Topic actionTopic) {
-    return MmdI18n.getInstance().findBundle().getString("ORGMODEExporter.exporterName");
+    return this.getResourceBundle().getString("ORGMODEExporter.exporterName");
   }
 
   @Override
   public String getReference(final PluginContext context, Topic actionTopic) {
-    return MmdI18n.getInstance().findBundle().getString("ORGMODEExporter.exporterReference");
+    return this.getResourceBundle().getString("ORGMODEExporter.exporterReference");
   }
 
   @Override

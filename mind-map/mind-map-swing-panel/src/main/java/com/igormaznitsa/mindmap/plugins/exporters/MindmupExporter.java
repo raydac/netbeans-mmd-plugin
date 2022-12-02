@@ -30,7 +30,6 @@ import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.api.parameters.AbstractParameter;
-import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
@@ -255,11 +254,11 @@ public class MindmupExporter extends AbstractExporter {
           context.getPanel(),
           context,
           this.getClass().getName(),
-          MmdI18n.getInstance().findBundle().getString("MindmupExporter.saveDialogTitle"),
+          this.getResourceBundle().getString("MindmupExporter.saveDialogTitle"),
           null,
           ".mup",
-          MmdI18n.getInstance().findBundle().getString("MindmupExporter.filterDescription"),
-          MmdI18n.getInstance().findBundle().getString("MindmupExporter.approveButtonText"));
+          this.getResourceBundle().getString("MindmupExporter.filterDescription"),
+          this.getResourceBundle().getString("MindmupExporter.approveButtonText"));
       fileToSaveMap =
           MindMapUtils.checkFileAndExtension(context.getPanel(), fileToSaveMap, ".mup");
       theOut = fileToSaveMap == null ? null :
@@ -278,12 +277,12 @@ public class MindmupExporter extends AbstractExporter {
 
   @Override
   public String getName(final PluginContext context, final Topic actionTopic) {
-    return MmdI18n.getInstance().findBundle().getString("MindmupExporter.exporterName");
+    return this.getResourceBundle().getString("MindmupExporter.exporterName");
   }
 
   @Override
   public String getReference(final PluginContext context, final Topic actionTopic) {
-    return MmdI18n.getInstance().findBundle().getString("MindmupExporter.exporterReference");
+    return this.getResourceBundle().getString("MindmupExporter.exporterReference");
   }
 
   @Override

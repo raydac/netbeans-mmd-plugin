@@ -34,7 +34,6 @@ import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.api.AbstractImporter;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.attributes.images.ImageVisualAttributePlugin;
-import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.ide.IDEBridgeFactory;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
@@ -64,8 +63,8 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
   @Override
   public MindMap doImport(final PluginContext context) throws Exception {
     final File file = this.selectFileForExtension(context,
-        MmdI18n.getInstance().findBundle().getString("MMDImporters.Mindmup2MindMap.openDialogTitle"), null, "mup",
-        "Mindmup files (.MUP)", MmdI18n.getInstance().findBundle().getString("MMDImporters.ApproveImport"));
+        this.getResourceBundle().getString("MMDImporters.Mindmup2MindMap.openDialogTitle"), null, "mup",
+        "Mindmup files (.MUP)", this.getResourceBundle().getString("MMDImporters.ApproveImport"));
 
     if (file == null) {
       return null;
@@ -75,7 +74,7 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
       return this.doImportFile(file);
     } catch (final IllegalArgumentException ex) {
       LOGGER.error("Can't parse", ex);
-      context.getDialogProvider().msgError(null, MmdI18n.getInstance().findBundle().getString("MMDImporters.Mindmup2MindMap.Error.WrongFormat"));
+      context.getDialogProvider().msgError(null, this.getResourceBundle().getString("MMDImporters.Mindmup2MindMap.Error.WrongFormat"));
       return null;
     }
   }
@@ -262,12 +261,12 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
 
   @Override
   public String getName(final PluginContext context) {
-    return MmdI18n.getInstance().findBundle().getString("MMDImporters.Mindmup2MindMap.Name");
+    return this.getResourceBundle().getString("MMDImporters.Mindmup2MindMap.Name");
   }
 
   @Override
   public String getReference(final PluginContext context) {
-    return MmdI18n.getInstance().findBundle().getString("MMDImporters.Mindmup2MindMap.Reference");
+    return this.getResourceBundle().getString("MMDImporters.Mindmup2MindMap.Reference");
   }
 
   @Override
