@@ -84,23 +84,21 @@ public final class FileLinkGraphPanel extends JPanel {
   private static final Icon RELAYOUT_ICON = new ImageIcon(UiUtils.loadIcon("graph16.png")); //NOI18N
 
   public enum FileVertexType {
-    FOLDER("folder.png", "Folder"),
-    DOCUMENT("document.png", "Document"),
-    MINDMAP("mindmap.png", "Mind Map"),
-    UNKNOWN("unknown.png", "Unknown"),
-    NOTFOUND("notfound.png", "Not found"); //NOI18N
+    FOLDER("folder.png"),
+    DOCUMENT("document.png"),
+    MINDMAP("mindmap.png"),
+    UNKNOWN("unknown.png"),
+    NOTFOUND("notfound.png"); //NOI18N
 
     private final Icon icon;
-    private final String text;
 
-    private FileVertexType(@Nonnull final String icon, @Nonnull final String text) {
+    private FileVertexType(@Nonnull final String icon) {
       this.icon = new ImageIcon(UiUtils.loadIcon("graph/" + icon)); //NOI18N
-      this.text = text;
     }
 
-    @Override
-    public String toString() {
-      return text;
+    @Nonnull
+    public String getText() {
+      return SrI18n.getInstance().findBundle().getString("FileVertexType."+this.name()+".text");
     }
 
     @Nonnull
@@ -119,7 +117,7 @@ public final class FileLinkGraphPanel extends JPanel {
     public FileVertex(@Nonnull final File file, @Nonnull final FileVertexType type) {
       this.type = type;
       this.text = file.getName();
-      this.tooltip = "<html><b>" + type + "</b><br>" + StringEscapeUtils.unescapeHtml3(FilenameUtils.normalizeNoEndSeparator(file.getAbsolutePath())) + "</html>"; //NOI18N
+      this.tooltip = "<html><b>" + type.getText() + "</b><br>" + StringEscapeUtils.unescapeHtml3(FilenameUtils.normalizeNoEndSeparator(file.getAbsolutePath())) + "</html>"; //NOI18N
       this.file = file;
     }
 
@@ -353,7 +351,6 @@ public final class FileLinkGraphPanel extends JPanel {
       layoutButton.setToolTipText(SrI18n.getInstance().findBundle().getString("panelFileLinkGraph.layoutButton.tooltip"));
       layoutButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
       layoutButton.addActionListener(e -> {
-        final Rectangle visible = scroll.getVisibleRect();
         graphViewer.setGraphLayout(new CircleLayout<>(graph));
         graphViewer.repaint();
         scroll.revalidate();

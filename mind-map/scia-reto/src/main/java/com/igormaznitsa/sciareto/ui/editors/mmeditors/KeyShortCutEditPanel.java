@@ -19,6 +19,7 @@ package com.igormaznitsa.sciareto.ui.editors.mmeditors;
 
 import com.igormaznitsa.mindmap.swing.panel.utils.KeyShortcut;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+import com.igormaznitsa.sciareto.ui.SrI18n;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -66,8 +67,6 @@ public class KeyShortCutEditPanel extends javax.swing.JPanel implements TableMod
     
     this.tableKeyShortcuts.requestFocus();
   
-    final KeyShortCutEditPanel theInstance = this;
-    
     final ActionListener actionCheckBox = new ActionListener() {
       @Override
       public void actionPerformed (final ActionEvent e) {
@@ -90,7 +89,7 @@ public class KeyShortCutEditPanel extends javax.swing.JPanel implements TableMod
           listOfKeys.set(selectedRow, new KeyShortcut(oldShortCut.getID(), oldShortCut.getKeyCode(), modifiers));
           
           for(final TableModelListener l : listeners){
-            l.tableChanged(new TableModelEvent(theInstance,selectedRow));
+            l.tableChanged(new TableModelEvent(KeyShortCutEditPanel.this,selectedRow));
           }
           
           updateForSelected();
@@ -341,11 +340,14 @@ public class KeyShortCutEditPanel extends javax.swing.JPanel implements TableMod
     return 2;
   }
 
+  private final String columnNameFirst = SrI18n.getInstance().findBundle().getString("KeyShortCutEditPanel.ColumnName");
+  private final String columnNameSecond = SrI18n.getInstance().findBundle().getString("KeyShortCutEditPanel.ColumnKey");
+  
   @Override
   public String getColumnName (int columnIndex) {
     switch(columnIndex){
-      case 0 : return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("KeyShortCutEditPanel.ColumnName");
-      case 1 : return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("KeyShortCutEditPanel.ColumnKey");
+      case 0 : return columnNameFirst;
+      case 1 : return columnNameSecond;
       default: return null;
     }
   }

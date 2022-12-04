@@ -517,7 +517,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   public static void showExceptionDialog(@Nonnull final Exception ex) {
     MainFrame.LOGGER.error("Error", ex);
     Utils.safeSwingBlockingCall(() -> {
-      DialogProviderManager.getInstance().getDialogProvider().msgError(this,
+      DialogProviderManager.getInstance().getDialogProvider().msgError(
+          SciaRetoStarter.getApplicationFrame(),
           String.format(SrI18n.getInstance().findBundle().getString("mainFrame.showExceptionDialog.msg"), ex.getMessage()));
     });
   }
