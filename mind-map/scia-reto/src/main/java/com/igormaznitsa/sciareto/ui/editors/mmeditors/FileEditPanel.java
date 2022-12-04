@@ -27,6 +27,7 @@ import javax.swing.JFileChooser;
 import com.igormaznitsa.mindmap.ide.commons.SwingUtils;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import com.igormaznitsa.mindmap.swing.panel.utils.Focuser;
+import com.igormaznitsa.sciareto.ui.SrI18n;
 
 public final class FileEditPanel extends javax.swing.JPanel {
 
@@ -170,8 +171,8 @@ public final class FileEditPanel extends javax.swing.JPanel {
     if (theFile.isFile()) {
       chooser.setSelectedFile(theFile);
     }
-    chooser.setApproveButtonText("Select");
-    chooser.setDialogTitle("Select file");
+    chooser.setApproveButtonText(SrI18n.getInstance().findBundle().getString("FileEditPanel.fileChooser.approve"));
+    chooser.setDialogTitle(SrI18n.getInstance().findBundle().getString("FileEditPanel.fileChooser.title"));
     chooser.setMultiSelectionEnabled(false);
     chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 
