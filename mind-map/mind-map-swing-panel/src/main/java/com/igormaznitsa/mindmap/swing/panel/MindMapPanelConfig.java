@@ -215,8 +215,8 @@ public final class MindMapPanelConfig implements Serializable {
   public static Font findDefaultFont(final int style, final int size) {
     return Stream.of(
             GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames())
-        .filter(x -> x.startsWith("Fira Code"))
-        .map(x -> new Font("Fira Code", style, size))
+        .filter(x -> x.startsWith("Fira Code Semi"))
+        .map(x -> new Font(x, style, size))
         .findFirst()
         .orElse(new Font(Font.SERIF, style, size));
   }

@@ -102,7 +102,7 @@ public class MindMapPanelConfigTest {
     final MindMapPanelConfig one = new MindMapPanelConfig();
     final MindMapPanelConfig two = new MindMapPanelConfig();
 
-    one.setFont(two.getFont().deriveFont(17));
+    one.setFont(two.getFont().deriveFont(17.0f));
     assertTrue(one.hasDifferenceInParameters(two));
   }
 
@@ -130,98 +130,66 @@ public class MindMapPanelConfigTest {
       }
     }).when(prefs).put(anyString(), anyString());
 
-    doAnswer(new Answer() {
-      @Override
-      public Object answer(final InvocationOnMock invocation) throws Throwable {
-        final String key = invocation.getArgument(0);
-        final Integer value = invocation.getArgument(1);
-        storage.put(key, value);
-        return null;
-      }
+    doAnswer((Answer) (final InvocationOnMock invocation) -> {
+      final String key = invocation.getArgument(0);
+      final Integer value = invocation.getArgument(1);
+      storage.put(key, value);
+      return null;
     }).when(prefs).putInt(anyString(), anyInt());
 
-    doAnswer(new Answer() {
-      @Override
-      public Object answer(final InvocationOnMock invocation) throws Throwable {
-        final String key = invocation.getArgument(0);
-        final Boolean value = invocation.getArgument(1);
-        storage.put(key, value);
-        return null;
-      }
+    doAnswer((Answer) (final InvocationOnMock invocation) -> {
+      final String key = invocation.getArgument(0);
+      final Boolean value = invocation.getArgument(1);
+      storage.put(key, value);
+      return null;
     }).when(prefs).putBoolean(anyString(), anyBoolean());
 
-    doAnswer(new Answer() {
-      @Override
-      public Object answer(final InvocationOnMock invocation) throws Throwable {
-        final String key = invocation.getArgument(0);
-        final Float value = invocation.getArgument(1);
-        storage.put(key, value);
-        return null;
-      }
+    doAnswer((Answer) (final InvocationOnMock invocation) -> {
+      final String key = invocation.getArgument(0);
+      final Float value = invocation.getArgument(1);
+      storage.put(key, value);
+      return null;
     }).when(prefs).putFloat(anyString(), anyFloat());
 
-    doAnswer(new Answer() {
-      @Override
-      public Object answer(final InvocationOnMock invocation) throws Throwable {
-        final String key = invocation.getArgument(0);
-        final Double value = invocation.getArgument(1);
-        storage.put(key, value);
-        return null;
-      }
+    doAnswer((Answer) (final InvocationOnMock invocation) -> {
+      final String key = invocation.getArgument(0);
+      final Double value = invocation.getArgument(1);
+      storage.put(key, value);
+      return null;
     }).when(prefs).putDouble(anyString(), anyDouble());
 
-    when(prefs.get(anyString(), anyString())).thenAnswer(new Answer<String>() {
-      @Override
-      public String answer(InvocationOnMock invocation) throws Throwable {
-        final String key = invocation.getArgument(0);
-        final String def = invocation.getArgument(1);
-        return storage.containsKey(key) ? (String) storage.get(key) : def;
-      }
+    when(prefs.get(anyString(), anyString())).thenAnswer((InvocationOnMock invocation) -> {
+      final String key = invocation.getArgument(0);
+      final String def = invocation.getArgument(1);
+      return storage.containsKey(key) ? (String) storage.get(key) : def;
     });
 
-    when(prefs.getBoolean(anyString(), anyBoolean())).thenAnswer(new Answer<Boolean>() {
-      @Override
-      public Boolean answer(InvocationOnMock invocation) throws Throwable {
-        final String key = invocation.getArgument(0);
-        final Boolean def = invocation.getArgument(1);
-        return storage.containsKey(key) ? (Boolean) storage.get(key) : def;
-      }
+    when(prefs.getBoolean(anyString(), anyBoolean())).thenAnswer((InvocationOnMock invocation) -> {
+      final String key = invocation.getArgument(0);
+      final Boolean def = invocation.getArgument(1);
+      return storage.containsKey(key) ? (Boolean) storage.get(key) : def;
     });
 
-    when(prefs.getInt(anyString(), anyInt())).thenAnswer(new Answer<Integer>() {
-      @Override
-      public Integer answer(InvocationOnMock invocation) throws Throwable {
-        final String key = invocation.getArgument(0);
-        final Integer def = invocation.getArgument(1);
-        return storage.containsKey(key) ? (Integer) storage.get(key) : def;
-      }
+    when(prefs.getInt(anyString(), anyInt())).thenAnswer((InvocationOnMock invocation) -> {
+      final String key = invocation.getArgument(0);
+      final Integer def = invocation.getArgument(1);
+      return storage.containsKey(key) ? (Integer) storage.get(key) : def;
     });
 
-    when(prefs.getFloat(anyString(), anyFloat())).thenAnswer(new Answer<Float>() {
-      @Override
-      public Float answer(InvocationOnMock invocation) throws Throwable {
-        final String key = invocation.getArgument(0);
-        final Float def = invocation.getArgument(1);
-        return storage.containsKey(key) ? (Float) storage.get(key) : def;
-      }
+    when(prefs.getFloat(anyString(), anyFloat())).thenAnswer((InvocationOnMock invocation) -> {
+      final String key = invocation.getArgument(0);
+      final Float def = invocation.getArgument(1);
+      return storage.containsKey(key) ? (Float) storage.get(key) : def;
     });
 
-    when(prefs.getDouble(anyString(), anyDouble())).thenAnswer(new Answer<Double>() {
-      @Override
-      public Double answer(InvocationOnMock invocation) throws Throwable {
-        final String key = invocation.getArgument(0);
-        final Double def = invocation.getArgument(1);
-        return storage.containsKey(key) ? (Double) storage.get(key) : def;
-      }
+    when(prefs.getDouble(anyString(), anyDouble())).thenAnswer((InvocationOnMock invocation) -> {
+      final String key = invocation.getArgument(0);
+      final Double def = invocation.getArgument(1);
+      return storage.containsKey(key) ? (Double) storage.get(key) : def;
     });
 
     try {
-      when(prefs.keys()).thenAnswer(new Answer<String[]>() {
-        @Override
-        public String[] answer(final InvocationOnMock invocation) throws Throwable {
-          return storage.keySet().toArray(new String[0]);
-        }
-      });
+      when(prefs.keys()).thenAnswer((final InvocationOnMock invocation) -> storage.keySet().toArray(new String[0]));
     } catch (Exception ex) {
       fail("Unexpected exception");
     }
