@@ -63,10 +63,12 @@ public abstract class AbstractExporter extends AbstractPopupMenuItem implements 
           context.processPluginActivation((ExternallyExecutedPlugin) theInstance, activeTopic);
         } else {
           final Set<AbstractParameter<?>> parameters = this.makeDefaultParameters();
-          final JComponent options = DefaultParametersPanelFactory.getInstance().make(parameters);
-          if (options != null && !context.getDialogProvider()
-              .msgOkCancel(null, getName(context, activeTopic), options)) {
-            return;
+          if (!parameters.isEmpty()) {
+            final JComponent options = DefaultParametersPanelFactory.getInstance().make(parameters);
+            if (options != null && !context.getDialogProvider()
+                .msgOkCancel(null, getName(context, activeTopic), options)) {
+              return;
+            }
           }
           if ((e.getModifiers() & ActionEvent.CTRL_MASK) == 0) {
             LOGGER.info("Export map into file: " + AbstractExporter.this);
