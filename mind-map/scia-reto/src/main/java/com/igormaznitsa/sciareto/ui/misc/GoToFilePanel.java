@@ -177,8 +177,7 @@ public class GoToFilePanel extends javax.swing.JPanel implements Comparator<Node
 
         setLayout(new java.awt.GridBagLayout());
 
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
-        labelFilenameMask.setText(bundle.getString("panelGoToFilePanel.labelFileName")); // NOI18N
+        labelFilenameMask.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("panelGoToFilePanel.labelFileName")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;

@@ -251,10 +251,9 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
 
         textLabel.setBorder(javax.swing.BorderFactory.createEmptyBorder(8, 8, 8, 8));
         textLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
-        textLabel.setText(bundle.getString("AboutPanel.labelInfo.text")); // NOI18N
+        textLabel.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("AboutPanel.labelInfo.text")); // NOI18N
         textLabel.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
-        tabbedPaneContent.addTab(bundle.getString("AboutPanel.textLabel.TabConstraints.tabTitle"), textLabel); // NOI18N
+        tabbedPaneContent.addTab(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("AboutPanel.textLabel.TabConstraints.tabTitle"), textLabel); // NOI18N
 
         scrollPanelThirdParts.setBorder(javax.swing.BorderFactory.createEmptyBorder(8, 8, 8, 8));
 
@@ -273,17 +272,17 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
         tableThirdPartLibraries.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         scrollPanelThirdParts.setViewportView(tableThirdPartLibraries);
 
-        tabbedPaneContent.addTab(bundle.getString("AboutPanel.scrollPanelThirdParts.TabConstraints.tabTitle"), scrollPanelThirdParts); // NOI18N
+        tabbedPaneContent.addTab(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("AboutPanel.scrollPanelThirdParts.TabConstraints.tabTitle"), scrollPanelThirdParts); // NOI18N
 
         panelDonate.setBorder(javax.swing.BorderFactory.createEmptyBorder(8, 8, 8, 8));
         panelDonate.setLayout(new java.awt.BorderLayout());
 
-        textLabelDonation.setText(bundle.getString("AboutPanel.textLabelDonation.text")); // NOI18N
+        textLabelDonation.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("AboutPanel.textLabelDonation.text")); // NOI18N
         textLabelDonation.setVerticalAlignment(javax.swing.SwingConstants.TOP);
         textLabelDonation.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
         panelDonate.add(textLabelDonation, java.awt.BorderLayout.CENTER);
 
-        tabbedPaneContent.addTab(bundle.getString("AboutPanel.panelDonate.TabConstraints.tabTitle"), panelDonate); // NOI18N
+        tabbedPaneContent.addTab(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("AboutPanel.panelDonate.TabConstraints.tabTitle"), panelDonate); // NOI18N
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;

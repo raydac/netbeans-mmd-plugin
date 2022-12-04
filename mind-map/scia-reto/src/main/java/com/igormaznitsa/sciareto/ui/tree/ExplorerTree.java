@@ -17,7 +17,7 @@
  */
 package com.igormaznitsa.sciareto.ui.tree;
 
-import static com.igormaznitsa.sciareto.SciaRetoStarter.IDE_VERSION;
+import static com.igormaznitsa.sciareto.SciaRetoStarter.getApplicationFrame;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.Assertions;
@@ -33,11 +33,11 @@ import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.SciaRetoStarter;
-import com.igormaznitsa.sciareto.preferences.PrefUtils;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.FindFilesForTextPanel;
 import com.igormaznitsa.sciareto.ui.FindUsagesPanel;
 import com.igormaznitsa.sciareto.ui.MainFrame;
+import com.igormaznitsa.sciareto.ui.SrI18n;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.editors.DotScriptEditor;
 import com.igormaznitsa.sciareto.ui.editors.EditorContentType;
@@ -47,7 +47,6 @@ import com.igormaznitsa.sciareto.ui.editors.PlantUmlTextEditor;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -61,6 +60,7 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -90,6 +90,8 @@ public final class ExplorerTree extends JScrollPane {
   private final Context context;
 
   private static final Icon CROSS_ICON = new ImageIcon(UiUtils.loadIcon("nimbusCloseFrame.png"));
+
+  private final ResourceBundle bundle = SrI18n.getInstance().findBundle();
 
   public ExplorerTree(@Nonnull final Context context) throws IOException {
     super();
@@ -143,12 +145,7 @@ public final class ExplorerTree extends JScrollPane {
               final File file = node.makeFileForNode();
               if (file != null) {
                 if (context.openFileAsTab(file, -1)) {
-                  SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                      context.centerRootTopicIfFocusedMMD();
-                    }
-                  });
+                  SwingUtilities.invokeLater(context::centerRootTopicIfFocusedMMD);
                 } else {
                   UiUtils.openInSystemViewer(file);
                 }
@@ -242,7 +239,7 @@ public final class ExplorerTree extends JScrollPane {
   @Nonnull
   @MustNotContainNull
   public List<NodeFileOrFolder> findNodesForFile(@Nonnull final File file) {
-    return getCurrentGroup().findRelatedNodes(file, new ArrayList<NodeFileOrFolder>());
+    return getCurrentGroup().findRelatedNodes(file, new ArrayList<>());
   }
 
   public void сloseProject(@Nonnull final NodeProject tree) {
@@ -267,12 +264,8 @@ public final class ExplorerTree extends JScrollPane {
   }
 
   public void unfoldProject(@Nonnull final NodeProject node) {
-    Utils.safeSwingCall(new Runnable() {
-      @Override
-      public void run() {
-        projectTree.expandPath(new TreePath(new Object[]{getCurrentGroup(), node}));
-      }
-    });
+    Utils.safeSwingCall(
+        () -> projectTree.expandPath(new TreePath(new Object[]{getCurrentGroup(), node})));
   }
 
   @Nonnull
@@ -280,13 +273,10 @@ public final class ExplorerTree extends JScrollPane {
     final JPopupMenu result = new JPopupMenu();
 
     if (node instanceof NodeProject) {
-      final JMenuItem stopAndClose = new JMenuItem("Cancel and remove", CROSS_ICON);
-      stopAndClose.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(@Nonnull final ActionEvent e) {
-          ((NodeProject) node).cancelLoading();
-          сloseProject((NodeProject) node);
-        }
+      final JMenuItem stopAndClose = new JMenuItem(this.bundle.getString("explorerTree.menuItemCancelAndRemove.text"), CROSS_ICON);
+      stopAndClose.addActionListener(e -> {
+        ((NodeProject) node).cancelLoading();
+        сloseProject((NodeProject) node);
       });
 
       result.add(stopAndClose);
@@ -300,12 +290,10 @@ public final class ExplorerTree extends JScrollPane {
     final JPopupMenu result = new JPopupMenu();
 
     if (!node.isLeaf()) {
-      final JMenu makeNew = new JMenu("New...");
+      final JMenu makeNew = new JMenu(this.bundle.getString("explorerTree.menuNew.text"));
 
-      JMenuItem item = new JMenuItem("Folder");
-      item.addActionListener((@Nonnull final ActionEvent e) -> {
-        addChildTo(node, null);
-      });
+      JMenuItem item = new JMenuItem(this.bundle.getString("explorerTree.menuItemFolder.text"));
+      item.addActionListener((@Nonnull final ActionEvent e) -> addChildTo(node, null));
       makeNew.add(item);
 
       item = new JMenuItem("Mind map");
@@ -314,25 +302,25 @@ public final class ExplorerTree extends JScrollPane {
       });
       makeNew.add(item);
 
-      item = new JMenuItem("Text");
+      item = new JMenuItem(this.bundle.getString("explorerTree.menuItemText.text"));
       item.addActionListener((@Nonnull final ActionEvent e) -> {
         addChildTo(node, "txt"); //NOI18N
       });
       makeNew.add(item);
 
-      item = new JMenuItem("PlantUML");
+      item = new JMenuItem(this.bundle.getString("explorerTree.menuItemPlantUML.text"));
       item.addActionListener((@Nonnull final ActionEvent e) -> {
         addChildTo(node, "puml"); //NOI18N
       });
       makeNew.add(item);
 
-      item = new JMenuItem("KStreams topology");
+      item = new JMenuItem(this.bundle.getString("explorerTree.menuItemKStreamsTop.text"));
       item.addActionListener((@Nonnull final ActionEvent e) -> {
         addChildTo(node, "kstpl"); //NOI18N
       });
       makeNew.add(item);
 
-      item = new JMenuItem("DOT script");
+      item = new JMenuItem(this.bundle.getString("explorerTree.menuItemDotScript.text"));
       item.addActionListener((@Nonnull final ActionEvent e) -> {
         addChildTo(node, "gv"); //NOI18N
       });
@@ -342,28 +330,23 @@ public final class ExplorerTree extends JScrollPane {
     }
 
     if (!node.isProjectKnowledgeFolder()) {
-      final JMenuItem rename = new JMenuItem("Rename");
-      rename.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(@Nonnull final ActionEvent e) {
-          projectTree.startEditingAtPath(node.makeTreePath());
-        }
-      });
+      final JMenuItem rename = new JMenuItem(this.bundle.getString("explorerTree.menuItemRename.text"));
+      rename.addActionListener(e -> projectTree.startEditingAtPath(node.makeTreePath()));
       result.add(rename);
 
       if (node.isLeaf()) {
-        final JMenuItem doClone = new JMenuItem("Clone");
-        doClone.addActionListener(new ActionListener() {
-          @Override
-          public void actionPerformed(@Nonnull final ActionEvent e) {
-            try {
-              final File file = projectTree.cloneFile(node.makeTreePath());
-              if (file != null) {
-                addFileIfPossible(file, false);
-              }
-            } catch (IOException ex) {
-              DialogProviderManager.getInstance().getDialogProvider().msgError(SciaRetoStarter.getApplicationFrame(), "Can't make copy '" + node + '\'');
+        final JMenuItem doClone = new JMenuItem(this.bundle.getString("explorerTree.menuItemClone.text"));
+        doClone.addActionListener(e -> {
+          try {
+            final File file = projectTree.cloneFile(node.makeTreePath());
+            if (file != null) {
+              addFileIfPossible(file, false);
             }
+          } catch (IOException ex) {
+            DialogProviderManager.getInstance().getDialogProvider().msgError(
+                getApplicationFrame(),
+                String.format(this.bundle.getString("explorerTree.errorCantMakeCopy.text"), node)
+            );
           }
         });
         result.add(doClone);
@@ -371,46 +354,38 @@ public final class ExplorerTree extends JScrollPane {
     }
 
     if (node instanceof NodeProject) {
-      final JMenuItem close = new JMenuItem("Close");
-      close.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(@Nonnull final ActionEvent e) {
-          if (DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(SciaRetoStarter.getApplicationFrame(), "Close '" + node + '\'', "Do you really want close '" + node + "\'?\nIt will be just removed from the tree.")) {
-            сloseProject((NodeProject) node);
-          }
+      final JMenuItem close = new JMenuItem(this.bundle.getString("explorerTree.menuItemClose"));
+      close.addActionListener(e -> {
+        if (DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(
+            getApplicationFrame(),
+            String.format(this.bundle.getString("explorerTree.dlgClose.title"),node),
+            String.format(this.bundle.getString("explorerTree.dlgClose.msg"), node))) {
+          сloseProject((NodeProject) node);
         }
       });
       result.add(close);
 
-      final JMenuItem refresh = new JMenuItem("Reload");
-      refresh.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(@Nonnull final ActionEvent e) {
-          getCurrentGroup().startProjectFolderRefresh((NodeProject) node);
-        }
-      });
+      final JMenuItem refresh = new JMenuItem(this.bundle.getString("explorerTree.menuItemReload"));
+      refresh.addActionListener(
+          e -> getCurrentGroup().startProjectFolderRefresh((NodeProject) node));
       result.add(refresh);
     }
 
-    final JMenuItem delete = new JMenuItem("Delete");
-    delete.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(@Nonnull final ActionEvent e) {
-        if (DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo(null, "Delete", "Do you really want to delete \"" + node + "\"?")) {
-          context.deleteTreeNode(node);
-        }
+    final JMenuItem delete = new JMenuItem(this.bundle.getString("explorerTree.menuItemDelete"));
+    delete.addActionListener(e -> {
+      if (DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo(null,
+          this.bundle.getString("explorerTree.dlgDelete.title"),
+          String.format(this.bundle.getString("explorerTree.dlgDelete.msg"), node))) {
+        context.deleteTreeNode(node);
       }
     });
     result.add(delete);
 
-    final JMenuItem openInSystem = new JMenuItem("Open in System");
-    openInSystem.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(@Nonnull final ActionEvent e) {
-        final File file = node.makeFileForNode();
-        if (file != null && file.exists()) {
-          UiUtils.openInSystemViewer(file);
-        }
+    final JMenuItem openInSystem = new JMenuItem(this.bundle.getString("explorerTree.menuItemOpenInSystem"));
+    openInSystem.addActionListener(e -> {
+      final File file = node.makeFileForNode();
+      if (file != null && file.exists()) {
+        UiUtils.openInSystemViewer(file);
       }
     });
     result.add(openInSystem);
@@ -419,108 +394,83 @@ public final class ExplorerTree extends JScrollPane {
       final NodeProject theProject = (NodeProject) node;
       if (!theProject.hasKnowledgeFolder()) {
         final File knowledgeFolder = new File(theProject.getFolder(), Context.KNOWLEDGE_FOLDER);
-        final JMenuItem addKnowledgeFolder = new JMenuItem("Create Knowledge folder");
-        addKnowledgeFolder.addActionListener(new ActionListener() {
-          @Override
-          public void actionPerformed(@Nonnull final ActionEvent e) {
-            if (knowledgeFolder.mkdirs()) {
-              getCurrentGroup().startProjectFolderRefresh(theProject, new Runnable() {
-                @Override
-                public void run() {
-                  context.focusInTree(knowledgeFolder);
-                }
-              });
-            } else {
-              LOGGER.error("Can't create knowledge folder : " + knowledgeFolder); //NOI18N
-            }
+        final JMenuItem addKnowledgeFolder = new JMenuItem(this.bundle.getString("explorerTree.menuItemCreateKnowledgeFolder"));
+        addKnowledgeFolder.addActionListener(e -> {
+          if (knowledgeFolder.mkdirs()) {
+            getCurrentGroup().startProjectFolderRefresh(theProject,
+                () -> context.focusInTree(knowledgeFolder));
+          } else {
+            LOGGER.error("Can't create knowledge folder : " + knowledgeFolder); //NOI18N
           }
         });
         result.add(addKnowledgeFolder);
       }
     }
 
-    final String BUILD_GRAPH_ITEM = "Build file links graph";
+    final String buildGraphItemTitle = this.bundle.getString("explorerTree.menuItemBuildLinksGraph");
 
     if (node instanceof NodeProject) {
-      final JMenuItem buildMindMapGraph = new JMenuItem(BUILD_GRAPH_ITEM);
-      buildMindMapGraph.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(@Nonnull final ActionEvent e) {
-          context.showGraphMindMapFileLinksDialog(((NodeProject) node).getFolder(), null, true);
-        }
-      });
+      final JMenuItem buildMindMapGraph = new JMenuItem(buildGraphItemTitle);
+      buildMindMapGraph.addActionListener(
+          e -> context.showGraphMindMapFileLinksDialog(((NodeProject) node).getFolder(), null, true));
       result.add(buildMindMapGraph);
     } else if (node.isLeaf() && node.isMindMapFile()) {
-      final JMenuItem buildMindMapGraph = new JMenuItem(BUILD_GRAPH_ITEM);
-      buildMindMapGraph.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(@Nonnull final ActionEvent e) {
-          final NodeProject project = node.findProject();
-          context.showGraphMindMapFileLinksDialog(project == null ? null : project.getFolder(), node.makeFileForNode(), true);
-        }
+      final JMenuItem buildMindMapGraph = new JMenuItem(buildGraphItemTitle);
+      buildMindMapGraph.addActionListener(e -> {
+        final NodeProject project = node.findProject();
+        context.showGraphMindMapFileLinksDialog(project == null ? null : project.getFolder(), node.makeFileForNode(), true);
       });
       result.add(buildMindMapGraph);
     }
 
     final List<JMenuItem> optional = new ArrayList<>();
 
-    final JMenuItem menuSearchUsage = new JMenuItem("Find in maps");
-    menuSearchUsage.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(@Nonnull final ActionEvent e) {
+    final JMenuItem menuSearchUsage = new JMenuItem(this.bundle.getString("explorerTree.menuItemFindInMaps"));
+    menuSearchUsage.addActionListener(e -> {
 
-        if (context.hasUnsavedDocument() && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(null, "Detected unsaved documents", "Unsaved content will not be processed!")) {
-          return;
+      if (context.hasUnsavedDocument() && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(null,
+          this.bundle.getString("explorerTree.dlgConfirmUnsavedNotProcessed.title"),
+          this.bundle.getString("explorerTree.dlgConfirmUnsavedNotProcessed.msg"))) {
+        return;
+      }
+
+      final FindUsagesPanel panel = new FindUsagesPanel(context, node, false);
+      if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(null,
+          this.bundle.getString( "explorerTree.dlgFindUsages.title"), panel)) {
+        final NodeFileOrFolder selected = panel.getSelected();
+        panel.dispose();
+        if (selected != null) {
+          final File file = selected.makeFileForNode();
+          if (file != null) {
+            context.focusInTree(file);
+            SwingUtilities.invokeLater(this::requestFocus);
+          }
         }
+      } else {
+        panel.dispose();
+      }
+    });
+    optional.add(menuSearchUsage);
 
-        final FindUsagesPanel panel = new FindUsagesPanel(context, node, false);
-        if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(null, "Find usages in all opened projects", panel)) {
+    if (!node.isLeaf()) {
+      final JMenuItem menuSearchFilesForText = new JMenuItem(this.bundle.getString( "explorerTree.menuItemSearchForText"));
+      menuSearchFilesForText.addActionListener(e -> {
+        final FindFilesForTextPanel panel = new FindFilesForTextPanel(context, node, JOptionPane.OK_OPTION);
+
+        if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(getApplicationFrame(),
+            String.format(this.bundle.getString( "explorerTree.dlgFindFilesForText.title"),node.name),
+            panel)) {
           final NodeFileOrFolder selected = panel.getSelected();
           panel.dispose();
           if (selected != null) {
             final File file = selected.makeFileForNode();
             if (file != null) {
               context.focusInTree(file);
-              SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                  requestFocus();
-                }
-              });
+              SwingUtilities.invokeLater(this::requestFocus);
             }
           }
         } else {
           panel.dispose();
-        }
-      }
-    });
-    optional.add(menuSearchUsage);
-
-    if (!node.isLeaf()) {
-      final JMenuItem menuSearchFilesForText = new JMenuItem("Find files for text");
-      menuSearchFilesForText.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          final FindFilesForTextPanel panel = new FindFilesForTextPanel(context, node, JOptionPane.OK_OPTION);
-
-          if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(null, "Find files for text in '" + node.name + '\'', panel)) {
-            final NodeFileOrFolder selected = panel.getSelected();
-            panel.dispose();
-            if (selected != null) {
-              final File file = selected.makeFileForNode();
-              if (file != null) {
-                context.focusInTree(file);
-                SwingUtilities.invokeLater(new Runnable() {
-                  @Override
-                  public void run() {
-                    requestFocus();
-                  }
-                });
-              }
-            }
-          } else {
-            panel.dispose();
-          }
         }
       });
 
@@ -529,22 +479,14 @@ public final class ExplorerTree extends JScrollPane {
 
     final TabTitle editingTab = this.context.getFocusedTab();
     if (editingTab != null && editingTab.getType() == EditorContentType.MINDMAP) {
-      final JMenuItem addIntoMap = new JMenuItem("Add File as topic");
-      addIntoMap.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(@Nonnull final ActionEvent e) {
-          addTreeAsTopic(context.findProjectForFile(editingTab.getAssociatedFile()), node, ((MMDEditor) editingTab.getProvider().getEditor()));
-        }
-      });
+      final JMenuItem addIntoMap = new JMenuItem(this.bundle.getString( "explorerTree.menuItemAddFileAsTopic"));
+      addIntoMap.addActionListener(
+          e -> addTreeAsTopic(context.findProjectForFile(editingTab.getAssociatedFile()), node, ((MMDEditor) editingTab.getProvider().getEditor())));
       optional.add(addIntoMap);
     }
 
-    if (!optional.isEmpty()) {
-      result.add(new JSeparator());
-      for (final JMenuItem i : optional) {
-        result.add(i);
-      }
-    }
+    result.add(new JSeparator());
+    optional.forEach(result::add);
 
     return result;
   }
@@ -553,19 +495,31 @@ public final class ExplorerTree extends JScrollPane {
 
     final File projectFolder = project == null ? null : project.getFolder();
 
-    if (project != null && (node.findProject() != project && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(null, "Different projects", "Opened Map file from another project. File paths will not be relative ones."))) {
+    if (project != null && (node.findProject() != project && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(
+        getApplicationFrame(),
+        this.bundle.getString( "explorerTree.dlgDifferentProjects.title"),
+        this.bundle.getString( "explorerTree.dlgDifferentProjects.msg")))
+    ) {
       return;
     }
 
     final List<Topic> targetTopics = new ArrayList<>(Arrays.asList(editor.getMindMapPanel().getSelectedTopics()));
 
     if (targetTopics.size() > 1) {
-      if (!DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(null, "Multiple selection detected", "New children will be generated for all focused topics.")) {
+      if (!DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(
+          getApplicationFrame(),
+          this.bundle.getString( "explorerTree.dlgMultipleSelection.title"),
+          this.bundle.getString( "explorerTree.dlgMultipleSelection.msg"))
+      ) {
         return;
       }
     } else {
       if (targetTopics.isEmpty() && editor.getMindMapPanel().getModel().getRoot() != null) {
-        if (!DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(null, "No selected parent", "There is not selected topic. The Root will be used as the parent.")) {
+        if (!DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(
+            getApplicationFrame(),
+            this.bundle.getString( "explorerTree.dlgNoSelectedParent.title"),
+            this.bundle.getString( "explorerTree.dlgNoSelectedParent.msg"))
+        ) {
           return;
         }
         targetTopics.add(editor.getMindMapPanel().getModel().getRoot());
@@ -613,9 +567,7 @@ public final class ExplorerTree extends JScrollPane {
 
         if (editor.getMindMapPanel().getSelectedTopics().length == 0 && createdTopic != null) {
           final Topic forfocus = createdTopic;
-          SwingUtilities.invokeLater(() -> {
-              editor.getMindMapPanel().focusTo(forfocus);
-          });
+          SwingUtilities.invokeLater(() -> editor.getMindMapPanel().focusTo(forfocus));
         }
 
         return true;
@@ -624,7 +576,14 @@ public final class ExplorerTree extends JScrollPane {
   }
 
   private void addChildTo(@Nonnull final NodeFileOrFolder folder, @Nullable final String extension) {
-    String fileName = JOptionPane.showInputDialog(SciaRetoStarter.getApplicationFrame(), extension == null ? "Folder name" : "File name", extension == null ? "New folder" : "New " + extension.toUpperCase(Locale.ENGLISH) + " file", JOptionPane.QUESTION_MESSAGE);
+    String fileName = JOptionPane.showInputDialog(
+        getApplicationFrame(), extension == null ?
+            this.bundle.getString( "explorerTree.dlgAddChildTo.folder.msg")
+    : this.bundle.getString( "explorerTree.dlgAddChildTo.file.msg"),
+        extension == null ?
+            this.bundle.getString( "explorerTree.dlgAddChildTo.folder.title")
+            : String.format(this.bundle.getString( "explorerTree.dlgAddChildTo.file.title"), extension.toUpperCase(Locale.ENGLISH)),
+        JOptionPane.QUESTION_MESSAGE);
     if (fileName != null) {
       fileName = fileName.trim();
       if (NodeProjectGroup.FILE_NAME.matcher(fileName).matches()) {
@@ -640,7 +599,8 @@ public final class ExplorerTree extends JScrollPane {
         }
         final File file = new File(folder.makeFileForNode(), fileName);
         if (file.exists()) {
-          DialogProviderManager.getInstance().getDialogProvider().msgError(null, "File '" + fileName + "' already exists!");
+          DialogProviderManager.getInstance().getDialogProvider().msgError(getApplicationFrame(),
+              String.format(this.bundle.getString( "explorerTree.dlgFileExists.msg"), fileName));
           return;
         }
 
@@ -649,7 +609,8 @@ public final class ExplorerTree extends JScrollPane {
         if (extension == null) {
           if (!file.mkdirs()) {
             LOGGER.error("Can't create folder"); //NOI18N
-            DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't create folder '" + fileName + "'!");
+            DialogProviderManager.getInstance().getDialogProvider().msgError(getApplicationFrame(),
+                String.format(this.bundle.getString( "explorerTree.dlgCantCreateFolder.msg"), fileName));
           } else {
             ok = true;
           }
@@ -669,47 +630,52 @@ public final class ExplorerTree extends JScrollPane {
                 ok = true;
               } catch (IOException ex) {
                 LOGGER.error("Can't create MMD file", ex); //NOI18N
-                DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't create mind map '" + fileName + "'!");
+                DialogProviderManager.getInstance().getDialogProvider().msgError(getApplicationFrame(),
+                    String.format(this.bundle.getString( "explorerTree.dlgCantCreateMmdFile.msg"), fileName));
               }
             }
             break;
             case "puml": { //NOI18N
               try {
-                FileUtils.write(file, PlantUmlTextEditor.NEW_TEMPLATE, "UTF-8"); //NOI18N
+                FileUtils.write(file, PlantUmlTextEditor.NEW_TEMPLATE, StandardCharsets.UTF_8); //NOI18N
                 ok = true;
               } catch (IOException ex) {
                 LOGGER.error("Can't create PUML file", ex); //NOI18N
-                DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't create puml file '" + fileName + "'!");
+                DialogProviderManager.getInstance().getDialogProvider().msgError(getApplicationFrame(),
+                    String.format(this.bundle.getString( "explorerTree.dlgCantCreatePumlFile.msg"), fileName));
               }
             }
             break;
             case "kstpl": { //NOI18N
               try {
-                FileUtils.write(file, KsTplTextEditor.NEW_TEMPLATE, "UTF-8"); //NOI18N
+                FileUtils.write(file, KsTplTextEditor.NEW_TEMPLATE, StandardCharsets.UTF_8); //NOI18N
                 ok = true;
               } catch (IOException ex) {
                 LOGGER.error("Can't create KSTPL file", ex); //NOI18N
-                DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't create KSTPL file '" + fileName + "'!");
+                DialogProviderManager.getInstance().getDialogProvider().msgError(getApplicationFrame(),
+                    String.format(this.bundle.getString( "explorerTree.dlgCantCreateKsTplFile.msg"), fileName));
               }
             }
             break;
             case "txt": { //NOI18N
               try {
-                FileUtils.write(file, "", "UTF-8"); //NOI18N
+                FileUtils.write(file, "", StandardCharsets.UTF_8); //NOI18N
                 ok = true;
               } catch (IOException ex) {
                 LOGGER.error("Can't create TXT file", ex); //NOI18N
-                DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't create txt file '" + fileName + "'!");
+                DialogProviderManager.getInstance().getDialogProvider().msgError(getApplicationFrame(),
+                    String.format(this.bundle.getString( "explorerTree.dlgCantCreateTxtFile.msg"), fileName));
               }
             }
             break;
             case "gv": { //NOI18N
               try {
-                FileUtils.write(file, DotScriptEditor.NEW_TEMPLATE, "UTF-8"); //NOI18N
+                FileUtils.write(file, DotScriptEditor.NEW_TEMPLATE, StandardCharsets.UTF_8); //NOI18N
                 ok = true;
               } catch (IOException ex) {
-                LOGGER.error("Can't create TXT file", ex); //NOI18N
-                DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Can't create txt file '" + fileName + "'!");
+                LOGGER.error("Can't create GV file", ex); //NOI18N
+                DialogProviderManager.getInstance().getDialogProvider().msgError(getApplicationFrame(),
+                    String.format(this.bundle.getString( "explorerTree.dlgCantCreateGvFile.msg"), fileName));
               }
             }
             break;
@@ -722,11 +688,13 @@ public final class ExplorerTree extends JScrollPane {
           try {
             addFileIfPossible(file, true);
           } catch (IOException ex) {
-            DialogProviderManager.getInstance().getDialogProvider().msgError(SciaRetoStarter.getApplicationFrame(), "Error:" + ex.getMessage());
+            DialogProviderManager.getInstance().getDialogProvider().msgError(getApplicationFrame(),
+                String.format(this.bundle.getString( "explorerTree.dlgAddChildError.msg"), ex.getMessage()));
           }
         }
       } else {
-        DialogProviderManager.getInstance().getDialogProvider().msgError(SciaRetoStarter.getApplicationFrame(), "Illegal file name!");
+        DialogProviderManager.getInstance().getDialogProvider().msgError(getApplicationFrame(),
+            this.bundle.getString( "explorerTree.dlgIllegalFileName.msg"));
       }
     }
   }
@@ -758,7 +726,7 @@ public final class ExplorerTree extends JScrollPane {
       if (parentFolderPath != null) {
         final NodeFileOrFolder folder = (NodeFileOrFolder) parentFolderPath.getLastPathComponent();
         try {
-          getCurrentGroup().addChild(folder, PrefUtils.isShowHiddenFilesAndFolders(), file);
+          getCurrentGroup().addChild(folder, file);
           if (openAndFocusInTree) {
             context.openFileAsTab(file, -1);
             context.focusInTree(file);

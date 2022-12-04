@@ -153,8 +153,7 @@ public final class FontSelector extends javax.swing.JPanel implements ActionList
 
         jPanel1.setLayout(new java.awt.GridBagLayout());
 
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
-        jLabel1.setText(bundle.getString("panelFontSelector.labelName")); // NOI18N
+        jLabel1.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("panelFontSelector.labelName")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -168,7 +167,7 @@ public final class FontSelector extends javax.swing.JPanel implements ActionList
         gridBagConstraints.ipadx = 80;
         jPanel1.add(comboBoxName, gridBagConstraints);
 
-        jLabel2.setText(bundle.getString("panelFontSelector.labelStyle")); // NOI18N
+        jLabel2.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("panelFontSelector.labelStyle")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 0;
@@ -183,7 +182,7 @@ public final class FontSelector extends javax.swing.JPanel implements ActionList
         gridBagConstraints.ipadx = 80;
         jPanel1.add(comboBoxStyle, gridBagConstraints);
 
-        jLabel3.setText(bundle.getString("panelFontSelector.labelSize")); // NOI18N
+        jLabel3.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("panelFontSelector.labelSize")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 4;
         gridBagConstraints.gridy = 0;

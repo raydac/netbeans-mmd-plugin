@@ -32,7 +32,7 @@ public class FileListPanel extends javax.swing.JPanel implements TableModel {
 
   private static final long serialVersionUID = 2901921029860574818L;
 
-  private final ResourceBundle bundle = UiUtils.findTextBundle();
+  private final ResourceBundle bundle = SrI18n.getInstance().findBundle();
   
   private static final class FileSelector {
 

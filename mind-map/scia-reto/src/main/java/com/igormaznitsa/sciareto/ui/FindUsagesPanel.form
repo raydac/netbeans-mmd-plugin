@@ -19,7 +19,7 @@
     <Component class="javax.swing.JLabel" name="jLabel1">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="panelFindUsages.labelSearchUsageOf" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="panelFindUsages.labelSearchUsageOf" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
       <Constraints>
@@ -31,7 +31,6 @@
     <Component class="javax.swing.JTextField" name="textFieldSearchPath">
       <Properties>
         <Property name="editable" type="boolean" value="false"/>
-        <Property name="text" type="java.lang.String" value="jTextField1"/>
       </Properties>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">

@@ -18,14 +18,13 @@
 
 package com.igormaznitsa.sciareto.ui.tabs;
 
-import static com.igormaznitsa.sciareto.ui.UiUtils.findTextBundle;
-
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
+import com.igormaznitsa.sciareto.ui.SrI18n;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.editors.EditorContentType;
 import com.igormaznitsa.sciareto.ui.tree.NodeProject;
@@ -207,8 +206,8 @@ public final class TabTitle extends JPanel {
   public void doSafeClose() {
     final boolean close = !this.changed
         || DialogProviderManager.getInstance().getDialogProvider()
-        .msgConfirmOkCancel(SciaRetoStarter.getApplicationFrame(), findTextBundle().getString("TabTitle.msgConfirmSafeClose.title"),
-            String.format(findTextBundle().getString("TabTitle.msgConfirmSafeClose.text"), makeName()));
+        .msgConfirmOkCancel(SciaRetoStarter.getApplicationFrame(), SrI18n.getInstance().findBundle().getString("TabTitle.msgConfirmSafeClose.title"),
+            String.format(SrI18n.getInstance().findBundle().getString("TabTitle.msgConfirmSafeClose.text"), makeName()));
     if (close) {
       this.context.closeTab(this);
     }
@@ -242,8 +241,9 @@ public final class TabTitle extends JPanel {
 
     if (askUserConfirmationIfChanged && isChanged() &&
         !DialogProviderManager.getInstance().getDialogProvider()
-            .msgConfirmYesNo(SciaRetoStarter.getApplicationFrame(), "File changed",
-                String.format("File '%s' is changed, reload?",
+            .msgConfirmYesNo(SciaRetoStarter.getApplicationFrame(),
+                SrI18n.getInstance().findBundle().getString("TabTitle.msgConfirmReload.title"),
+                String.format(SrI18n.getInstance().findBundle().getString("TabTitle.msgConfirmReload.msg"),
                     (this.associatedFile == null ? "..." : this.associatedFile.getName())))) {
       return reloaded;
     }

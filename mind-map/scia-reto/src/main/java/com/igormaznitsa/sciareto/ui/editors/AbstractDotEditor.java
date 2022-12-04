@@ -18,12 +18,11 @@
 
 package com.igormaznitsa.sciareto.ui.editors;
 
-import static com.igormaznitsa.sciareto.ui.UiUtils.findTextBundle;
-
 import com.igormaznitsa.meta.common.utils.IOUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.sciareto.Context;
+import com.igormaznitsa.sciareto.ui.SrI18n;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -112,14 +111,14 @@ public abstract class AbstractDotEditor extends AbstractPlUmlEditor {
       final byte[] formedContent = bos.toByteArray();
 
       if (processState.differs(ProcessState.TERMINATED_OK())) {
-        throw new IllegalStateException(String.format(findTextBundle().getString("editorDot.cantRenderImage"),processState));
+        throw new IllegalStateException(String.format(SrI18n.getInstance().findBundle().getString("editorDot.cantRenderImage"),processState));
       } else if (formedContent.length == 0) {
-        throw new IllegalArgumentException(findTextBundle().getString("editorDot.cantRenderSyntaxError"));
+        throw new IllegalArgumentException(SrI18n.getInstance().findBundle().getString("editorDot.cantRenderSyntaxError"));
       } else {
         return formedContent;
       }
     } else {
-      throw new IllegalStateException(String.format(findTextBundle().getString("editorDot.cantRenderStatusNotOk"),state.getTextMessage()));
+      throw new IllegalStateException(String.format(SrI18n.getInstance().findBundle().getString("editorDot.cantRenderStatusNotOk"),state.getTextMessage()));
     }
   }
 
@@ -131,7 +130,7 @@ public abstract class AbstractDotEditor extends AbstractPlUmlEditor {
       @Nonnull final AtomicReference<Exception> error
   ) {
     if (text.trim().isEmpty()) {
-      error.set(new IllegalArgumentException(findTextBundle().getString("editorDot.emptyText")));
+      error.set(new IllegalArgumentException(SrI18n.getInstance().findBundle().getString("editorDot.emptyText")));
       return;
     }
 

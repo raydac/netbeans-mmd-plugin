@@ -22,7 +22,7 @@
         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
           <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
             <TitledBorder title="Shortcut keys list">
-              <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="KeyShortCutEditPanel.ScrollPaneBorderTitle" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+              <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="KeyShortCutEditPanel.ScrollPaneBorderTitle" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
             </TitledBorder>
           </Border>
         </Property>
@@ -113,35 +113,35 @@
         <Component class="javax.swing.JLabel" name="labelKeyCode">
           <Properties>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="KeyShortCutEditPanel.labelKeyCode.text_1" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="KeyShortCutEditPanel.labelKeyCode.text_1" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
             </Property>
           </Properties>
         </Component>
         <Component class="javax.swing.JCheckBox" name="checkBoxALT">
           <Properties>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="KeyShortCutEditPanel.checkBoxALT.text_1" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="KeyShortCutEditPanel.checkBoxALT.text_1" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
             </Property>
           </Properties>
         </Component>
         <Component class="javax.swing.JCheckBox" name="checkBoxCTRL">
           <Properties>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="KeyShortCutEditPanel.checkBoxCTRL.text_1" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="KeyShortCutEditPanel.checkBoxCTRL.text_1" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
             </Property>
           </Properties>
         </Component>
         <Component class="javax.swing.JCheckBox" name="checkBoxSHIFT">
           <Properties>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="KeyShortCutEditPanel.checkBoxSHIFT.text_1" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="KeyShortCutEditPanel.checkBoxSHIFT.text_1" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
             </Property>
           </Properties>
         </Component>
         <Component class="javax.swing.JCheckBox" name="checkBoxMeta">
           <Properties>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="KeyShortCutEditPanel.checkBoxMeta.text_1" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="KeyShortCutEditPanel.checkBoxMeta.text_1" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
             </Property>
           </Properties>
         </Component>
@@ -155,7 +155,7 @@
         <Component class="javax.swing.JToggleButton" name="buttonEditKeyCode">
           <Properties>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="KeyShortCutEditPanel.buttonEditKeyCode.text_1" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="KeyShortCutEditPanel.buttonEditKeyCode.text_1" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
             </Property>
           </Properties>
           <Events>

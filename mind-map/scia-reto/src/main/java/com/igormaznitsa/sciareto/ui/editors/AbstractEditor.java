@@ -27,7 +27,7 @@ import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.preferences.SpecificKeys;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
-import com.igormaznitsa.sciareto.ui.UiUtils;
+import com.igormaznitsa.sciareto.ui.SrI18n;
 import com.igormaznitsa.sciareto.ui.tabs.TabProvider;
 import java.io.File;
 import java.io.IOException;
@@ -46,7 +46,7 @@ import javax.swing.filechooser.FileFilter;
 public abstract class AbstractEditor implements TabProvider, Disposable {
 
   private static final Map<String, ImageIcon> ICON_CACHE = new HashMap<>();
-  protected final ResourceBundle bundle = UiUtils.findTextBundle();
+  protected final ResourceBundle bundle = SrI18n.getInstance().findBundle();
   protected final Logger logger;
   private final AtomicBoolean disposeFlag = new AtomicBoolean();
   protected MindMapPanelConfig mindMapPanelConfig;

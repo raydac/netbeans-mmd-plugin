@@ -86,8 +86,7 @@ public final class ColorAttributePanel extends javax.swing.JPanel {
 
         setLayout(new java.awt.GridBagLayout());
 
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
-        colorChooserBorder.setText(bundle.getString("panelColorAttribute.buttonBorderColor")); // NOI18N
+        colorChooserBorder.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("panelColorAttribute.buttonBorderColor")); // NOI18N
         colorChooserBorder.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -97,7 +96,7 @@ public final class ColorAttributePanel extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(8, 16, 8, 16);
         add(colorChooserBorder, gridBagConstraints);
 
-        colorChooserFill.setText(bundle.getString("panelColorAttribute.buttonFillColor")); // NOI18N
+        colorChooserFill.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("panelColorAttribute.buttonFillColor")); // NOI18N
         colorChooserFill.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -107,7 +106,7 @@ public final class ColorAttributePanel extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(0, 16, 8, 16);
         add(colorChooserFill, gridBagConstraints);
 
-        colorChooserText.setText(bundle.getString("panelColorAttribute.buttonTextColor")); // NOI18N
+        colorChooserText.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("panelColorAttribute.buttonTextColor")); // NOI18N
         colorChooserText.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -118,7 +117,7 @@ public final class ColorAttributePanel extends javax.swing.JPanel {
         add(colorChooserText, gridBagConstraints);
 
         buttonResetBorder.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/cross16.png"))); // NOI18N
-        buttonResetBorder.setToolTipText(bundle.getString("panelColorAttribute.buttonResetValue")); // NOI18N
+        buttonResetBorder.setToolTipText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("panelColorAttribute.buttonResetValue")); // NOI18N
         buttonResetBorder.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonResetBorderActionPerformed(evt);
@@ -131,7 +130,7 @@ public final class ColorAttributePanel extends javax.swing.JPanel {
         add(buttonResetBorder, gridBagConstraints);
 
         buttonResetFill.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/cross16.png"))); // NOI18N
-        buttonResetFill.setToolTipText(bundle.getString("panelColorAttribute.buttonResetValue")); // NOI18N
+        buttonResetFill.setToolTipText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("panelColorAttribute.buttonResetValue")); // NOI18N
         buttonResetFill.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonResetFillActionPerformed(evt);
@@ -144,7 +143,7 @@ public final class ColorAttributePanel extends javax.swing.JPanel {
         add(buttonResetFill, gridBagConstraints);
 
         buttonResetText.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/cross16.png"))); // NOI18N
-        buttonResetText.setToolTipText(bundle.getString("panelColorAttribute.buttonResetValue")); // NOI18N
+        buttonResetText.setToolTipText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("panelColorAttribute.buttonResetValue")); // NOI18N
         buttonResetText.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonResetTextActionPerformed(evt);

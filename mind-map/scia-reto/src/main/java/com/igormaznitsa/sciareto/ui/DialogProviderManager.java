@@ -45,21 +45,21 @@ public final class DialogProviderManager {
     public void msgError(@Nullable final Component parentComponent, @Nonnull final String text) {
       JOptionPane
           .showMessageDialog(GetUtils.ensureNonNull(parentComponent, SciaRetoStarter.getApplicationFrame()),
-              text, "Error!", JOptionPane.ERROR_MESSAGE);
+              text, SrI18n.getInstance().findBundle().getString("dialogProvider.error.title"), JOptionPane.ERROR_MESSAGE);
     }
 
     @Override
     public void msgInfo(@Nullable final Component parentComponent, @Nonnull final String text) {
       JOptionPane
           .showMessageDialog(GetUtils.ensureNonNull(parentComponent, SciaRetoStarter.getApplicationFrame()),
-              text, "Info", JOptionPane.INFORMATION_MESSAGE);
+              text, SrI18n.getInstance().findBundle().getString("dialogProvider.info.title"), JOptionPane.INFORMATION_MESSAGE);
     }
 
     @Override
     public void msgWarn(@Nullable Component parentComponent, @Nonnull final String text) {
       JOptionPane
           .showMessageDialog(GetUtils.ensureNonNull(parentComponent, SciaRetoStarter.getApplicationFrame()),
-              text, "Warning!", JOptionPane.WARNING_MESSAGE);
+              text, SrI18n.getInstance().findBundle().getString("dialogProvider.warning.title"), JOptionPane.WARNING_MESSAGE);
     }
 
     @Override

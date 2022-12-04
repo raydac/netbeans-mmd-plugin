@@ -55,7 +55,7 @@ public class NodeProject extends NodeFileOrFolder {
   private final AtomicReference<Disposable> loadDispose = new AtomicReference<>();
   
   public NodeProject(@Nonnull final NodeProjectGroup group, @Nonnull final File folder) throws IOException {
-    super(group, true, folder.getName(), PrefUtils.isShowHiddenFilesAndFolders(), !Files.isWritable(folder.toPath()));
+    super(group, true, folder.getName(), !Files.isWritable(folder.toPath()));
     this.folder = folder;
     this.knowledgeFolderPresented = new File(folder, Context.KNOWLEDGE_FOLDER).isDirectory();
   }
@@ -102,7 +102,6 @@ public class NodeProject extends NodeFileOrFolder {
   @MustNotContainNull
   public List<File> findAffectedFiles(@Nonnull final File changedFile) {
     final File baseFolder = makeFileForNode();
-    final boolean isfolder = changedFile.isDirectory();
 
     final List<File> result = new ArrayList<>();
     FileUtils.listFiles(baseFolder, new String[]{"mmd", "MMD"}, true).forEach((mindMapFile) -> {
@@ -151,8 +150,6 @@ public class NodeProject extends NodeFileOrFolder {
   @Override
   public Mono<NodeFileOrFolder> readSubtree(final boolean addHiddenFilesAndFolders) {
     final AtomicLong time = new AtomicLong();
-    final AtomicReference<NodeFileOrFolder> knowledgeFolder = new AtomicReference<>();
-    
     return Mono.just(this)
             .doOnSubscribe(s -> {
               time.set(System.currentTimeMillis());

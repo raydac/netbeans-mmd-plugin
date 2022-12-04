@@ -25,7 +25,6 @@ import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_F
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_TEXT_COLOR;
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.doesContainOnlyStandardAttributes;
 import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispatchThread;
-import static com.igormaznitsa.sciareto.ui.UiUtils.findTextBundle;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.annotation.UiThread;
@@ -72,6 +71,7 @@ import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.preferences.SystemFileExtensionManager;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.FindTextScopeProvider;
+import com.igormaznitsa.sciareto.ui.SrI18n;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.ColorAttributePanel;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.FileEditPanel;
@@ -202,7 +202,7 @@ public final class MMDEditor extends AbstractTextEditor
       @Override
       @Nonnull
       public String getDescription() {
-        return findTextBundle().getString("editorAbstractPlUml.fileFilter.mmd.description");
+        return SrI18n.getInstance().findBundle().getString("editorAbstractPlUml.fileFilter.mmd.description");
       }
     };
   }
@@ -682,7 +682,7 @@ public final class MMDEditor extends AbstractTextEditor
             DialogProviderManager.getInstance().getDialogProvider()
                 .msgWarn(SciaRetoStarter.getApplicationFrame(), String
                     .format(
-                        findTextBundle().getString("MMDGraphEditor.onClickExtra.errorCanfFindFile"),
+                        SrI18n.getInstance().findBundle().getString("MMDGraphEditor.onClickExtra.errorCanfFindFile"),
                         theFile));
           }
         }
@@ -695,7 +695,7 @@ public final class MMDEditor extends AbstractTextEditor
             DialogProviderManager.getInstance().getDialogProvider()
                 .msgError(SciaRetoStarter.getApplicationFrame(), String
                     .format(
-                        findTextBundle().getString("MMDGraphEditor.onClickOnExtra.msgCantBrowse"),
+                        SrI18n.getInstance().findBundle().getString("MMDGraphEditor.onClickOnExtra.msgCantBrowse"),
                         uri));
           }
         }
@@ -710,7 +710,7 @@ public final class MMDEditor extends AbstractTextEditor
             // not presented
             DialogProviderManager.getInstance().getDialogProvider()
                 .msgWarn(SciaRetoStarter.getApplicationFrame(),
-                    findTextBundle().getString("MMDGraphEditor.onClickOnExtra.msgCantFindTopic"));
+                    SrI18n.getInstance().findBundle().getString("MMDGraphEditor.onClickOnExtra.msgCantFindTopic"));
           } else {
             // detected
             this.mindMapPanel.focusTo(theTopic);
@@ -745,9 +745,9 @@ public final class MMDEditor extends AbstractTextEditor
     } else {
       result = DialogProviderManager.getInstance().getDialogProvider()
           .msgConfirmYesNo(SciaRetoStarter.getApplicationFrame(),
-              findTextBundle().getString("MMDGraphEditor.allowedRemovingOfTopics,title"), String
+              SrI18n.getInstance().findBundle().getString("MMDGraphEditor.allowedRemovingOfTopics,title"), String
                   .format(
-                      findTextBundle().getString("MMDGraphEditor.allowedRemovingOfTopics.message"),
+                      SrI18n.getInstance().findBundle().getString("MMDGraphEditor.allowedRemovingOfTopics.message"),
                       topics.length));
     }
     return result;
@@ -882,9 +882,9 @@ public final class MMDEditor extends AbstractTextEditor
       if (topic.getExtras().containsKey(Extra.ExtraType.LINK)) {
         if (!DialogProviderManager.getInstance().getDialogProvider()
             .msgConfirmOkCancel(SciaRetoStarter.getApplicationFrame(),
-                findTextBundle().getString(
+                SrI18n.getInstance().findBundle().getString(
                     "MMDGraphEditor.addDataObjectLinkToElement.confirmTitle"),
-                findTextBundle().getString(
+                SrI18n.getInstance().findBundle().getString(
                     "MMDGraphEditor.addDataObjectLinkToElement.confirmMsg"))) {
           return;
         }
@@ -903,9 +903,9 @@ public final class MMDEditor extends AbstractTextEditor
       if (topic.getExtras().containsKey(Extra.ExtraType.NOTE)) {
         if (!DialogProviderManager.getInstance().getDialogProvider()
             .msgConfirmOkCancel(SciaRetoStarter.getApplicationFrame(),
-                findTextBundle().getString(
+                SrI18n.getInstance().findBundle().getString(
                     "MMDGraphEditor.addDataObjectTextToElement.confirmTitle"),
-                findTextBundle().getString(
+                SrI18n.getInstance().findBundle().getString(
                     "MMDGraphEditor.addDataObjectTextToElement.confirmMsg"))) {
           return;
         }
@@ -949,8 +949,8 @@ public final class MMDEditor extends AbstractTextEditor
       if (topic.getExtras().containsKey(Extra.ExtraType.FILE)) {
         if (!DialogProviderManager.getInstance().getDialogProvider()
             .msgConfirmOkCancel(SciaRetoStarter.getApplicationFrame(),
-                findTextBundle().getString("MMDGraphEditor.addDataObjectToElement.confirmTitle"),
-                findTextBundle().getString("MMDGraphEditor.addDataObjectToElement.confirmMsg"))) {
+                SrI18n.getInstance().findBundle().getString("MMDGraphEditor.addDataObjectToElement.confirmTitle"),
+                SrI18n.getInstance().findBundle().getString("MMDGraphEditor.addDataObjectToElement.confirmMsg"))) {
           return;
         }
       }
@@ -1009,7 +1009,7 @@ public final class MMDEditor extends AbstractTextEditor
       if (note == null) {
         // create new
         result = UiUtils.editText(String
-            .format(findTextBundle().getString("MMDGraphEditor.editTextForTopic.dlfAddNoteTitle"),
+            .format(SrI18n.getInstance().findBundle().getString("MMDGraphEditor.editTextForTopic.dlfAddNoteTitle"),
                 Utils.makeShortTextVersion(topic.getText(), 16)), new NoteEditorData()); //NOI18N
       } else {
         // edit
@@ -1030,12 +1030,12 @@ public final class MMDEditor extends AbstractTextEditor
               } else {
                 DialogProviderManager.getInstance().getDialogProvider()
                     .msgError(SciaRetoStarter.getApplicationFrame(),
-                        findTextBundle().getString("MMDGraphEditor.msgErrorPassword.text"));
+                        SrI18n.getInstance().findBundle().getString("MMDGraphEditor.msgErrorPassword.text"));
               }
             } catch (RuntimeException ex) {
               DialogProviderManager.getInstance().getDialogProvider()
                   .msgError(SciaRetoStarter.getApplicationFrame(),
-                      findTextBundle().getString("MMDGraphEditor.msgCantDecodeEncrypted.text"));
+                      SrI18n.getInstance().findBundle().getString("MMDGraphEditor.msgCantDecodeEncrypted.text"));
               logger.error("Can't decode encrypted note", ex);
             }
           }
@@ -1047,7 +1047,7 @@ public final class MMDEditor extends AbstractTextEditor
         } else {
           result = UiUtils.editText(String
               .format(
-                  findTextBundle().getString("MMDGraphEditor.editTextForTopic.dlgEditNoteTitle"),
+                  SrI18n.getInstance().findBundle().getString("MMDGraphEditor.editTextForTopic.dlgEditNoteTitle"),
                   Utils.makeShortTextVersion(topic.getText(), 16)), noteText);
         }
       }
@@ -1067,7 +1067,7 @@ public final class MMDEditor extends AbstractTextEditor
             } catch (RuntimeException ex) {
               DialogProviderManager.getInstance().getDialogProvider()
                   .msgError(this.getMainComponent(),
-                      findTextBundle().getString("MMDGraphEditor.msgCantEncrypt.text")
+                      SrI18n.getInstance().findBundle().getString("MMDGraphEditor.msgCantEncrypt.text")
                   );
               logger.error("Can't encrypt note", ex);
               return;
@@ -1119,7 +1119,7 @@ public final class MMDEditor extends AbstractTextEditor
                 .getSessionObject(Misc.SESSIONKEY_ADD_FILE_OPEN_IN_SYSTEM, Boolean.class, false));
         dataContainer =
             UiUtils.editFilePath(
-                findTextBundle().getString("MMDGraphEditor.editFileLinkForTopic.dlgTitle"),
+                SrI18n.getInstance().findBundle().getString("MMDGraphEditor.editFileLinkForTopic.dlgTitle"),
                 this.mindMapPanel.getSessionObject(Misc.SESSIONKEY_ADD_FILE_LAST_FOLDER, File.class,
                     projectFolder),
                 prefilled);
@@ -1140,7 +1140,7 @@ public final class MMDEditor extends AbstractTextEditor
             flagOpenInSystem);
         dataContainer = UiUtils
             .editFilePath(
-                findTextBundle().getString("MMDGraphEditor.editFileLinkForTopic.addPathTitle"),
+                SrI18n.getInstance().findBundle().getString("MMDGraphEditor.editFileLinkForTopic.addPathTitle"),
                 projectFolder, origPath);
       }
 
@@ -1180,7 +1180,7 @@ public final class MMDEditor extends AbstractTextEditor
             } else {
               DialogProviderManager.getInstance().getDialogProvider()
                   .msgError(SciaRetoStarter.getApplicationFrame(), String.format(
-                      findTextBundle().getString(
+                      SrI18n.getInstance().findBundle().getString(
                           "MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"),
                       dataContainer.getFilePathWithLine().getPath()));
             }
@@ -1189,7 +1189,7 @@ public final class MMDEditor extends AbstractTextEditor
                 .format("URI syntax error: %s", dataContainer.getFilePathWithLine()), ex); //NOI18N
             DialogProviderManager.getInstance().getDialogProvider()
                 .msgError(SciaRetoStarter.getApplicationFrame(), String.format(
-                    findTextBundle().getString(
+                    SrI18n.getInstance().findBundle().getString(
                         "MMDGraphEditor.editFileLinkForTopic.errorCantConvertFilePath"),
                     dataContainer.getFilePathWithLine().getPath()));
           }
@@ -1217,7 +1217,7 @@ public final class MMDEditor extends AbstractTextEditor
             new MindMapTreePanel(this.mindMapPanel.getModel(), null, true, null);
         if (DialogProviderManager.getInstance().getDialogProvider()
             .msgOkCancel(SciaRetoStarter.getApplicationFrame(),
-                findTextBundle().getString(
+                SrI18n.getInstance().findBundle().getString(
                     "MMDGraphEditor.editTopicLinkForTopic.dlgSelectTopicTitle"),
                 treePanel)) {
           final Topic selected = treePanel.getSelectedTopic();
@@ -1233,7 +1233,7 @@ public final class MMDEditor extends AbstractTextEditor
             new MindMapTreePanel(this.mindMapPanel.getModel(), link, true, null);
         if (DialogProviderManager.getInstance().getDialogProvider()
             .msgOkCancel(SciaRetoStarter.getApplicationFrame(),
-                findTextBundle().getString(
+                SrI18n.getInstance().findBundle().getString(
                     "MMDGraphEditor.editTopicLinkForTopic.dlgEditSelectedTitle"),
                 panel)) {
           final Topic selected = panel.getSelectedTopic();
@@ -1280,12 +1280,12 @@ public final class MMDEditor extends AbstractTextEditor
       if (link == null) {
         // create new
         result = UiUtils.editURI(String
-            .format(findTextBundle().getString("MMDGraphEditor.editLinkForTopic.dlgAddURITitle"),
+            .format(SrI18n.getInstance().findBundle().getString("MMDGraphEditor.editLinkForTopic.dlgAddURITitle"),
                 Utils.makeShortTextVersion(topic.getText(), 16)), null);
       } else {
         // edit
         result = UiUtils.editURI(String
-            .format(findTextBundle().getString("MMDGraphEditor.editLinkForTopic.dlgEditURITitle"),
+            .format(SrI18n.getInstance().findBundle().getString("MMDGraphEditor.editLinkForTopic.dlgEditURITitle"),
                 Utils.makeShortTextVersion(topic.getText(), 16)), link.getValue());
       }
       if (result != null) {
@@ -1326,7 +1326,7 @@ public final class MMDEditor extends AbstractTextEditor
         new ColorAttributePanel(source.getModel(), borderColor, fillColor, textColor);
     if (DialogProviderManager.getInstance().getDialogProvider()
         .msgOkCancel(SciaRetoStarter.getApplicationFrame(),
-            String.format(findTextBundle().getString("MMDGraphEditor.colorEditDialogTitle"),
+            String.format(SrI18n.getInstance().findBundle().getString("MMDGraphEditor.colorEditDialogTitle"),
                 topics.length),
             panel)) {
       ColorAttributePanel.Result result = panel.getResult();
@@ -1382,8 +1382,8 @@ public final class MMDEditor extends AbstractTextEditor
       if (destinationTopic.getExtras().containsKey(Extra.ExtraType.TOPIC)) {
         if (!DialogProviderManager.getInstance().getDialogProvider()
             .msgConfirmOkCancel(SciaRetoStarter.getApplicationFrame(),
-                findTextBundle().getString("MMDGraphEditor.addTopicToElement.confirmTitle"),
-                findTextBundle().getString("MMDGraphEditor.addTopicToElement.confirmMsg"))) {
+                SrI18n.getInstance().findBundle().getString("MMDGraphEditor.addTopicToElement.confirmTitle"),
+                SrI18n.getInstance().findBundle().getString("MMDGraphEditor.addTopicToElement.confirmMsg"))) {
           return result;
         }
       }

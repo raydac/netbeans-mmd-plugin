@@ -8,7 +8,7 @@
           <Properties>
             <Property name="mnemonic" type="int" value="102"/>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemFile" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemFile" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
             </Property>
           </Properties>
           <Events>
@@ -24,7 +24,7 @@
                 </Property>
                 <Property name="mnemonic" type="int" value="119"/>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemFile.itemNewProject" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemFile.itemNewProject" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
               <Events>
@@ -37,7 +37,7 @@
                   <Image iconType="3" name="/icons/document16.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemFile.itemNewFile" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemFile.itemNewFile" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
               <Events>
@@ -53,7 +53,7 @@
                 </Property>
                 <Property name="mnemonic" type="int" value="101"/>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemFile.itemOpenProject" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemFile.itemOpenProject" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
               <Events>
@@ -64,7 +64,7 @@
               <Properties>
                 <Property name="mnemonic" type="int" value="106"/>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemFile.itemOpenRecentProject" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemFile.itemOpenRecentProject" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
             </Menu>
@@ -72,7 +72,7 @@
               <Properties>
                 <Property name="mnemonic" type="int" value="111"/>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemFile.itemOpenFile" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemFile.itemOpenFile" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
               <Events>
@@ -83,7 +83,7 @@
               <Properties>
                 <Property name="mnemonic" type="int" value="102"/>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemFile.itemOpenRecentFile" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemFile.itemOpenRecentFile" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
             </Menu>
@@ -96,7 +96,7 @@
                 </Property>
                 <Property name="mnemonic" type="int" value="115"/>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemFile.itemSave" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemFile.itemSave" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
               <Events>
@@ -110,7 +110,7 @@
                 </Property>
                 <Property name="mnemonic" type="int" value="118"/>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemFile.itemSaveAs" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemFile.itemSaveAs" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
               <Events>
@@ -124,7 +124,7 @@
                 </Property>
                 <Property name="mnemonic" type="int" value="97"/>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemFile.itemSaveAll" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemFile.itemSaveAll" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
               <Events>
@@ -140,7 +140,7 @@
                 </Property>
                 <Property name="mnemonic" type="int" value="120"/>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemFile.itemExit" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemFile.itemExit" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
               <Events>
@@ -153,7 +153,7 @@
           <Properties>
             <Property name="mnemonic" type="int" value="101"/>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemEdit" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemEdit" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
             </Property>
           </Properties>
           <Events>
@@ -169,7 +169,7 @@
                 </Property>
                 <Property name="mnemonic" type="int" value="116"/>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemEdit.itemShowTreeContextMenu" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemEdit.itemShowTreeContextMenu" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
               <Events>
@@ -185,7 +185,7 @@
                 </Property>
                 <Property name="mnemonic" type="int" value="117"/>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemEdit.itemUndo" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemEdit.itemUndo" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
               <Events>
@@ -199,7 +199,7 @@
                 </Property>
                 <Property name="mnemonic" type="int" value="114"/>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemEdit.itemRedo" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemEdit.itemRedo" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
               <Events>
@@ -215,7 +215,7 @@
                 </Property>
                 <Property name="mnemonic" type="int" value="116"/>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemEdit.itemCut" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemEdit.itemCut" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
               <Events>
@@ -229,7 +229,7 @@
                 </Property>
                 <Property name="mnemonic" type="int" value="121"/>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemEdit.itemCopy" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemEdit.itemCopy" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
               <Events>
@@ -243,7 +243,7 @@
                 </Property>
                 <Property name="mnemonic" type="int" value="112"/>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemEdit.itemPaste" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemEdit.itemPaste" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
               <Events>
@@ -259,7 +259,7 @@
                 </Property>
                 <Property name="mnemonic" type="int" value="110"/>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemEdit.itemFindText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemEdit.itemFindText" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
               <Events>
@@ -275,7 +275,7 @@
                 </Property>
                 <Property name="mnemonic" type="int" value="101"/>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemEdit.itemPreferences" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemEdit.itemPreferences" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
               <Events>
@@ -288,7 +288,7 @@
           <Properties>
             <Property name="mnemonic" type="int" value="118"/>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemView" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemView" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
             </Property>
           </Properties>
           <Events>
@@ -301,7 +301,7 @@
                   <Image iconType="3" name="/menu_icons/scale_image.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemView.itemUiScale" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemView.itemUiScale" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
             </Menu>
@@ -311,7 +311,7 @@
                   <Image iconType="3" name="/menu_icons/monitor.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemView.itemFullScreen" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemView.itemFullScreen" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
               <Events>
@@ -324,7 +324,7 @@
                   <Image iconType="3" name="/menu_icons/application.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemView.itemLookAndFeel" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemView.itemLookAndFeel" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
             </Menu>
@@ -334,7 +334,7 @@
                   <Image iconType="3" name="/menu_icons/zoom.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemView.itemZoom" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemView.itemZoom" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
               <SubComponents>
@@ -344,7 +344,7 @@
                       <Image iconType="3" name="/menu_icons/zoom_in.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemView.itemZoom.itemIn" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemView.itemZoom.itemIn" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <Events>
@@ -357,7 +357,7 @@
                       <Image iconType="3" name="/menu_icons/zoom_out.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemView.itemZoom.itemOut" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemView.itemZoom.itemOut" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <Events>
@@ -370,7 +370,7 @@
                       <Image iconType="3" name="/menu_icons/zoom_actual.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemView.itemZoom.itemReset" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemView.itemZoom.itemReset" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <Events>
@@ -385,7 +385,7 @@
           <Properties>
             <Property name="mnemonic" type="int" value="110"/>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemNavigate" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemNavigate" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
             </Property>
           </Properties>
           <Events>
@@ -399,7 +399,7 @@
                 </Property>
                 <Property name="mnemonic" type="int" value="102"/>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemNavigate.itemGoToFile" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemNavigate.itemGoToFile" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
               <Events>
@@ -412,7 +412,7 @@
                   <Image iconType="3" name="/icons/graph16.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemNavigate.itemBuildFileLinksGraph" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemNavigate.itemBuildFileLinksGraph" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
               <Events>
@@ -425,7 +425,7 @@
           <Properties>
             <Property name="mnemonic" type="int" value="104"/>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemHelp" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemHelp" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
             </Property>
           </Properties>
           <SubComponents>
@@ -435,7 +435,7 @@
                   <Image iconType="3" name="/menu_icons/help.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemHelp.itemHelp" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemHelp.itemHelp" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
               <Events>
@@ -448,7 +448,7 @@
                   <Image iconType="3" name="/menu_icons/factory.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemHelp.itemPlatUMLManual" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemHelp.itemPlatUMLManual" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
               <Events>
@@ -462,7 +462,7 @@
                 </Property>
                 <Property name="mnemonic" type="int" value="97"/>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemHelp.itemAbout" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemHelp.itemAbout" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
               <Events>
@@ -478,7 +478,7 @@
                 </Property>
                 <Property name="mnemonic" type="int" value="109"/>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemHelp.itemMakeDonation" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemHelp.itemMakeDonation" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
               <Events>

@@ -26,9 +26,9 @@ import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.SciaRetoStarter;
-import com.igormaznitsa.sciareto.preferences.PrefUtils;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.MainFrame;
+import com.igormaznitsa.sciareto.ui.SrI18n;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import java.io.File;
 import java.io.IOException;
@@ -56,8 +56,8 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(NodeProjectGroup.class);
 
-  public NodeProjectGroup(@Nonnull final Context context, @Nonnull final String name) throws IOException {
-    super(null, true, ".", PrefUtils.isShowHiddenFilesAndFolders(), false); //NOI18N
+  public NodeProjectGroup(@Nonnull final Context context, @Nonnull final String name) {
+    super(null, true, ".", false); //NOI18N
     this.groupName = name;
     this.context = context;
   }
@@ -156,7 +156,10 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
           final String newExtension = FilenameUtils.getExtension(newFileName);
 
           if (!oldExtension.equals(newExtension)) {
-            if (DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo(SciaRetoStarter.getApplicationFrame(), "Changed extension", String.format("You have changed extension! Restore old extension '%s'?", oldExtension))) {
+            if (DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo(
+                SciaRetoStarter.getApplicationFrame(), 
+                SrI18n.getInstance().findBundle().getString("nodeProjectGroup.msgChangedExtension.title"),
+                String.format(SrI18n.getInstance().findBundle().getString("nodeProjectGroup.msgChangedExtension.msg"),oldExtension))) {
               newFileName = FilenameUtils.getBaseName(newFileName) + (oldExtension.isEmpty() ? "" : '.' + oldExtension); //NOI18N
             }
           }
@@ -204,13 +207,16 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
               }
             } catch (IOException ex) {
               LOGGER.error("Can't rename file", ex); //NOI18N
-              DialogProviderManager.getInstance().getDialogProvider().msgError(SciaRetoStarter.getApplicationFrame(), "Can't rename file to '" + newValue + "\'");
+              DialogProviderManager.getInstance().getDialogProvider().msgError(
+                  SciaRetoStarter.getApplicationFrame(),
+                  String.format(SrI18n.getInstance().findBundle().getString("nodeProjectGroup.errorCantRename.msg"), newValue));
             }
           }
         }
       }
     } else {
-      DialogProviderManager.getInstance().getDialogProvider().msgError(SciaRetoStarter.getApplicationFrame(), "Inapropriate file name '" + newFileName + "'!");
+      DialogProviderManager.getInstance().getDialogProvider().msgError(SciaRetoStarter.getApplicationFrame(),
+          String.format(SrI18n.getInstance().findBundle().getString("nodeProjectGroup.errorInappropriateFileName.msg"), newFileName));
     }
   }
 
@@ -234,12 +240,9 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
 
     final TreeModelEvent event = new TreeModelEvent(this, new TreePath(new Object[]{this, project}));
 
-    Utils.safeSwingCall(new Runnable() {
-      @Override
-      public void run() {
-        for (final TreeModelListener l : listeners) {
-          l.treeStructureChanged(event);
-        }
+    Utils.safeSwingCall(() -> {
+      for (final TreeModelListener l : listeners) {
+        l.treeStructureChanged(event);
       }
     });
   }
@@ -275,12 +278,8 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
   public void startProjectFolderRefresh(@Nonnull final NodeProject nodeProject, @Nullable @MustNotContainNull final Runnable... invokeLater) {
     final int index = this.getIndex(nodeProject);
     if (index >= 0) {
-      SciaRetoStarter.getApplicationFrame().asyncReloadProject(nodeProject, ArrayUtils.joinArrays(invokeLater, new Runnable[]{new Runnable() {
-        @Override
-        public void run() {
-          nodeProject.fireNotifySubtreeChanged(NodeProjectGroup.this, listeners);
-        }
-      }}));
+      SciaRetoStarter.getApplicationFrame().asyncReloadProject(nodeProject, ArrayUtils.joinArrays(invokeLater, new Runnable[]{
+          () -> nodeProject.fireNotifySubtreeChanged(NodeProjectGroup.this, listeners)}));
     }
   }
 
@@ -307,8 +306,8 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
   }
 
   @Nonnull
-  public NodeFileOrFolder addChild(@Nonnull final NodeFileOrFolder folder, final boolean showHiddenFiles, @Nonnull final File childFile) throws IOException {
-    final NodeFileOrFolder newNode = folder.addFile(childFile, showHiddenFiles);
+  public NodeFileOrFolder addChild(@Nonnull final NodeFileOrFolder folder, @Nonnull final File childFile) throws IOException {
+    final NodeFileOrFolder newNode = folder.addFile(childFile);
     final TreeModelEvent event = new TreeModelEvent(this, folder.makeTreePath(), new int[]{newNode.getIndexAtParent()}, new Object[]{newNode});
     for (final TreeModelListener l : this.listeners) {
       l.treeNodesInserted(event);

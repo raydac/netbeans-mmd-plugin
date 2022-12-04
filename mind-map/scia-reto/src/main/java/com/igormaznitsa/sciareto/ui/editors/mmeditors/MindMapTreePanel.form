@@ -35,7 +35,6 @@
     </Container>
     <Container class="javax.swing.JToolBar" name="toolBar">
       <Properties>
-        <Property name="floatable" type="boolean" value="false"/>
         <Property name="rollover" type="boolean" value="true"/>
       </Properties>
       <Constraints>
@@ -52,7 +51,7 @@
               <Image iconType="3" name="/icons/toggle_expand16.png"/>
             </Property>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MindMapTreePanel.buttonExpandAll.text_1" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MindMapTreePanel.buttonExpandAll.text_1" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
             </Property>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>
@@ -68,7 +67,7 @@
               <Image iconType="3" name="/icons/toggle16.png"/>
             </Property>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MindMapTreePanel.buttonCollapseAll.text_1" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MindMapTreePanel.buttonCollapseAll.text_1" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
             </Property>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>
@@ -84,7 +83,7 @@
               <Image iconType="3" name="/icons/select16.png"/>
             </Property>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MindMapTreePanel.buttonUnselect.text_1" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MindMapTreePanel.buttonUnselect.text_1" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
             </Property>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>

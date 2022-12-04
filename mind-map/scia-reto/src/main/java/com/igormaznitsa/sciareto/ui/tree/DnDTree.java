@@ -17,7 +17,7 @@
  */
 package com.igormaznitsa.sciareto.ui.tree;
 
-import com.igormaznitsa.sciareto.preferences.PrefUtils;
+import com.igormaznitsa.sciareto.ui.SrI18n;
 import java.awt.Point;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -38,7 +38,7 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -57,6 +57,9 @@ public final class DnDTree extends JTree implements DragSourceListener, DropTarg
   private static final long serialVersionUID = -4915750239120689053L;
 
   private boolean dragAcceptableType = false;
+
+  private final String stringNoAccess = SrI18n.getInstance().findBundle().getString("treeDnd.tooltip.noaccess");
+  private final String stringReadOnly = SrI18n.getInstance().findBundle().getString("treeDnd.tooltip.readonly");
 
   public DnDTree() {
     super();
@@ -86,7 +89,7 @@ public final class DnDTree extends JTree implements DragSourceListener, DropTarg
         final JTree tree = (JTree) c;
         final TreePath selected = tree.getSelectionPath();
         final NodeFileOrFolder item = (NodeFileOrFolder) selected.getLastPathComponent();
-        return new FileTransferable(Arrays.asList(item.makeFileForNode()));
+        return new FileTransferable(Collections.singletonList(item.makeFileForNode()));
       }
 
       @Override
@@ -108,8 +111,8 @@ public final class DnDTree extends JTree implements DragSourceListener, DropTarg
       final NodeFileOrFolder nodeFileOrFolder = (NodeFileOrFolder) lastElement;
       final File file = nodeFileOrFolder.makeFileForNode();
       return file == null ? null
-              : (nodeFileOrFolder.hasNoAccess() ? "[NO ACCESS]" : "")
-              + (nodeFileOrFolder.hasNoAccess() ? "[READ ONLY]" : "")
+              : (nodeFileOrFolder.hasNoAccess() ? this.stringNoAccess : "")
+              + (nodeFileOrFolder.isReadOnly() ? this.stringReadOnly : "")
               + file.getAbsolutePath();
     } else {
       return null;
@@ -200,7 +203,7 @@ public final class DnDTree extends JTree implements DragSourceListener, DropTarg
   protected static boolean checkDragType(@Nonnull final DropTargetDragEvent dtde) {
     boolean result = false;
     for (final DataFlavor flavor : dtde.getCurrentDataFlavors()) {
-      final Class dataClass = flavor.getRepresentationClass();
+      final Class<?> dataClass = flavor.getRepresentationClass();
       if (FileTransferable.class.isAssignableFrom(dataClass) || flavor.isFlavorJavaFileListType()) {
         result = true;
         break;
@@ -216,7 +219,8 @@ public final class DnDTree extends JTree implements DragSourceListener, DropTarg
     if (path != null) {
       final Object selection = path.getLastPathComponent();
       if (selection instanceof NodeFileOrFolder) {
-        FileTransferable node = new FileTransferable(Arrays.asList(((NodeFileOrFolder) selection).makeFileForNode()));
+        FileTransferable node = new FileTransferable(
+            Collections.singletonList(((NodeFileOrFolder) selection).makeFileForNode()));
         dragGestureEvent.startDrag(DragSource.DefaultCopyDrop, node, this);
       }
     }
@@ -270,7 +274,7 @@ public final class DnDTree extends JTree implements DragSourceListener, DropTarg
       for (final String name : folders) {
         final File folder = new File(parent.makeFileForNode(), name);
         if (folder.isDirectory() || folder.mkdir()) {
-          parent = model.addChild(parent, PrefUtils.isShowHiddenFilesAndFolders(), folder);
+          parent = model.addChild(parent, folder);
         } else {
           throw new IOException("Can't find or create folder: " + folder);
         }
@@ -291,7 +295,6 @@ public final class DnDTree extends JTree implements DragSourceListener, DropTarg
 
     final File folder = baseFile.getParentFile();
 
-    String name = node.name;
     final String extension = FilenameUtils.getExtension(baseFile.getName());
     final String baseName = FilenameUtils.getBaseName(baseFile.getName());
     File newFile = null;

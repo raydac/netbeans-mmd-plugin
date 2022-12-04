@@ -18,8 +18,6 @@
 
 package com.igormaznitsa.sciareto.ui.tabs;
 
-import static com.igormaznitsa.sciareto.ui.UiUtils.findTextBundle;
-
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
@@ -27,6 +25,7 @@ import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.MainFrame;
+import com.igormaznitsa.sciareto.ui.SrI18n;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.editors.AbstractEditor;
 
@@ -102,12 +101,9 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
       }
     });
 
-    this.addChangeListener(new ChangeListener() {
-      @Override
-      public void stateChanged(@Nonnull final ChangeEvent e) {
-        if (enabledNotificationAboutChange) {
-          ((MainFrame) context).processTabChanged(getCurrentTitle());
-        }
+    this.addChangeListener((@Nonnull final ChangeEvent e) -> {
+      if (enabledNotificationAboutChange) {
+        ((MainFrame) context).processTabChanged(getCurrentTitle());
       }
     });
 
@@ -163,7 +159,7 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
       if (oldFile.equals(title.getAssociatedFile())) {
         title.setAssociatedFile(newFile);
         this.setToolTipTextAt(index, title.getToolTipText());
-        replaced |= true;
+        replaced = true;
       }
       index++;
     }
@@ -184,49 +180,43 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
       result = new JPopupMenu();
 
       if (title.isChanged()) {
-        final JMenuItem saveItem = new JMenuItem(findTextBundle().getString("panelEditorTab.menuItemSave"));
-        saveItem.addActionListener(new ActionListener() {
-          @Override
-          public void actionPerformed(@Nonnull final ActionEvent e) {
-            try {
-              title.save();
-            } catch (IOException ex) {
-              LOGGER.error("Can't save file", ex); //NOI18N
-              DialogProviderManager.getInstance().getDialogProvider()
-                  .msgError(SciaRetoStarter.getApplicationFrame(),
-                      findTextBundle().getString("panelEditorTab.errorCantSaveDocument"));
-            }
+        final JMenuItem saveItem = new JMenuItem(SrI18n.getInstance().findBundle().getString("panelEditorTab.menuItemSave"));
+        saveItem.addActionListener(e -> {
+          try {
+            title.save();
+          } catch (IOException ex) {
+            LOGGER.error("Can't save file", ex); //NOI18N
+            DialogProviderManager.getInstance().getDialogProvider()
+                .msgError(SciaRetoStarter.getApplicationFrame(),
+                    SrI18n.getInstance().findBundle().getString("panelEditorTab.errorCantSaveDocument"));
           }
         });
         result.add(saveItem);
       }
 
       if (title.getProvider().isSaveable()) {
-        final JMenuItem saveAsItem = new JMenuItem(findTextBundle().getString("panelEditorTab.menuItemSaveAs"));
-        saveAsItem.addActionListener(new ActionListener() {
-          @Override
-          public void actionPerformed(@Nonnull final ActionEvent e) {
-            try {
-              title.saveAs();
-            } catch (IOException ex) {
-              LOGGER.error("Can't save file", ex); //NOI18N
-              DialogProviderManager.getInstance().getDialogProvider()
-                  .msgError(SciaRetoStarter.getApplicationFrame(),
-                      findTextBundle().getString("panelEditorTab.errorCantSaveDocument"));
-            }
+        final JMenuItem saveAsItem = new JMenuItem(SrI18n.getInstance().findBundle().getString("panelEditorTab.menuItemSaveAs"));
+        saveAsItem.addActionListener((@Nonnull final ActionEvent e) -> {
+          try {
+            title.saveAs();
+          } catch (IOException ex) {
+            LOGGER.error("Can't save file", ex); //NOI18N
+            DialogProviderManager.getInstance().getDialogProvider()
+                .msgError(SciaRetoStarter.getApplicationFrame(),
+                    SrI18n.getInstance().findBundle().getString("panelEditorTab.errorCantSaveDocument"));
           }
         });
         result.add(saveAsItem);
       }
       result.add(new JSeparator());
 
-      final JMenuItem closeItem = new JMenuItem(findTextBundle().getString("panelEditorTab.menuItemClose"));
+      final JMenuItem closeItem = new JMenuItem(SrI18n.getInstance().findBundle().getString("panelEditorTab.menuItemClose"));
       closeItem.addActionListener((@Nonnull final ActionEvent e) -> {
         title.doSafeClose();
       });
       result.add(closeItem);
 
-      final JMenuItem closeOthers = new JMenuItem(findTextBundle().getString("panelEditorTab.menuItemCloseOthers"));
+      final JMenuItem closeOthers = new JMenuItem(SrI18n.getInstance().findBundle().getString("panelEditorTab.menuItemCloseOthers"));
       closeOthers.addActionListener((@Nonnull ActionEvent e) -> {
         final List<TabTitle> list = new ArrayList<>();
         for (final TabTitle t : theInstance) {
@@ -238,7 +228,7 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
       });
       result.add(closeOthers);
 
-      final JMenuItem closeAll = new JMenuItem(findTextBundle().getString("panelEditorTab.menuItemCloseAll"));
+      final JMenuItem closeAll = new JMenuItem(SrI18n.getInstance().findBundle().getString("panelEditorTab.menuItemCloseAll"));
       closeAll.addActionListener((@Nonnull ActionEvent e) -> {
         final List<TabTitle> list = new ArrayList<>();
         for (final TabTitle t : theInstance) {
@@ -250,13 +240,13 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
 
       result.add(new JSeparator());
 
-      final JMenuItem showInTree = new JMenuItem(findTextBundle().getString("panelEditorTab.menuItemSelectInTree"));
+      final JMenuItem showInTree = new JMenuItem(SrI18n.getInstance().findBundle().getString("panelEditorTab.menuItemSelectInTree"));
       showInTree.addActionListener((ActionEvent e) -> {
         context.focusInTree(title);
       });
       result.add(showInTree);
 
-      final JMenuItem openInSystem = new JMenuItem(findTextBundle().getString("panelEditorTab.menuItemOpenInSystem"));
+      final JMenuItem openInSystem = new JMenuItem(SrI18n.getInstance().findBundle().getString("panelEditorTab.menuItemOpenInSystem"));
       openInSystem.addActionListener((ActionEvent e) -> {
         final File file = title.getAssociatedFile();
         if (file != null && file.exists()) {
@@ -276,8 +266,8 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
     if (!foundUnsaved
         || DialogProviderManager.getInstance().getDialogProvider()
         .msgConfirmOkCancel(SciaRetoStarter.getApplicationFrame(),
-            findTextBundle().getString("panelEditorTab.errorTitleDetectedUnsaved"),
-            findTextBundle().getString("panelEditorTab.errorDetectedUnsaved"))) {
+            SrI18n.getInstance().findBundle().getString("panelEditorTab.errorTitleDetectedUnsaved"),
+            SrI18n.getInstance().findBundle().getString("panelEditorTab.errorDetectedUnsaved"))) {
       this.context.closeTab(titles);
     }
   }

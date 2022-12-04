@@ -298,8 +298,7 @@ public class FindUsagesPanel extends javax.swing.JPanel {
 
         setLayout(new java.awt.GridBagLayout());
 
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
-        jLabel1.setText(bundle.getString("panelFindUsages.labelSearchUsageOf")); // NOI18N
+        jLabel1.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("panelFindUsages.labelSearchUsageOf")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -307,7 +306,6 @@ public class FindUsagesPanel extends javax.swing.JPanel {
         add(jLabel1, gridBagConstraints);
 
         textFieldSearchPath.setEditable(false);
-        textFieldSearchPath.setText("jTextField1");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;

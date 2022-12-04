@@ -77,7 +77,6 @@ import java.awt.KeyboardFocusManager;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
@@ -254,15 +253,13 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       @Override
       public void menuSelected(MenuEvent e) {
         final File[] lastOpenedProjects = FileHistoryManager.getInstance().getLastOpenedProjects();
-        if (lastOpenedProjects.length > 0) {
-          for (final File folder : lastOpenedProjects) {
-            final JMenuItem item = new JMenuItem(folder.getName());
-            item.setToolTipText(folder.getAbsolutePath());
-            item.addActionListener((ActionEvent e1) -> {
-              openProject(folder, false);
-            });
-            menuOpenRecentProject.add(item);
-          }
+        for (final File folder : lastOpenedProjects) {
+          final JMenuItem item = new JMenuItem(folder.getName());
+          item.setToolTipText(folder.getAbsolutePath());
+          item.addActionListener((ActionEvent e1) -> {
+            openProject(folder, false);
+          });
+          menuOpenRecentProject.add(item);
         }
       }
 
@@ -280,18 +277,11 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       @Override
       public void menuSelected(MenuEvent e) {
         final File[] lastOpenedFiles = FileHistoryManager.getInstance().getLastOpenedFiles();
-        if (lastOpenedFiles.length > 0) {
-          for (final File file : lastOpenedFiles) {
-            final JMenuItem item = new JMenuItem(file.getName());
-            item.setToolTipText(file.getAbsolutePath());
-            item.addActionListener(new ActionListener() {
-              @Override
-              public void actionPerformed(ActionEvent e) {
-                openFileAsTab(file, -1);
-              }
-            });
-            menuOpenRecentFile.add(item);
-          }
+        for (final File file : lastOpenedFiles) {
+          final JMenuItem item = new JMenuItem(file.getName());
+          item.setToolTipText(file.getAbsolutePath());
+          item.addActionListener(e12 -> openFileAsTab(file, -1));
+          menuOpenRecentFile.add(item);
         }
       }
 
@@ -436,7 +426,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
                     if (x.getStateChange() == ItemEvent.SELECTED) {
                         UiUtils.saveUiScaleFactor(none ? null : scale);
                         LOGGER.info("Set UI scaling factor: " + scale);
-                        JOptionPane.showMessageDialog(SciaRetoStarter.getApplicationFrame(), "UI scaling requires application restart!", "Restart required", JOptionPane.WARNING_MESSAGE);
+                        DialogProviderManager.getInstance().getDialogProvider().msgWarn(this,
+                            SrI18n.getInstance().findBundle().getString("mainFrame.fillScaleUiMenu.restart"));
                     }
                 });
                 scaleButtonGroup.add(scaleMenuItem);
@@ -526,7 +517,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   public static void showExceptionDialog(@Nonnull final Exception ex) {
     MainFrame.LOGGER.error("Error", ex);
     Utils.safeSwingBlockingCall(() -> {
-      JOptionPane.showMessageDialog(SciaRetoStarter.getApplicationFrame(), "Error during loading : " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+      DialogProviderManager.getInstance().getDialogProvider().msgError(this,
+          String.format(SrI18n.getInstance().findBundle().getString("mainFrame.showExceptionDialog.msg"), ex.getMessage()));
     });
   }
 
@@ -553,12 +545,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
   @Override
   public void notifyUpdateRedoUndo() {
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        processTabChanged(tabPane.getCurrentTitle());
-      }
-    });
+    SwingUtilities.invokeLater(() -> processTabChanged(tabPane.getCurrentTitle()));
   }
 
   public JPanel getStackPanel() {
@@ -604,7 +591,9 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     }
 
     if (hasUnsaved) {
-      if (!DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(this, "Detected non-saved documents", "Detected unsaved documents! Close application?")) {
+      if (!DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(this,
+          SrI18n.getInstance().findBundle().getString("mainFrame.doClosing.title"),
+          SrI18n.getInstance().findBundle().getString("mainFrame.doClosing.msg"))) {
         return false;
       }
     }
@@ -644,11 +633,13 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       }
     }
 
-    if (changed && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(this, "Confirmation", "Some changed file will be affected! To close them?")) {
+    if (changed && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(this,
+        SrI18n.getInstance().findBundle().getString("mainFrame.safeCloseEditorsForFile.title"),
+        SrI18n.getInstance().findBundle().getString("mainFrame.safeCloseEditorsForFile.msg"))) {
       return false;
     }
 
-    closeTab(list.toArray(new TabTitle[list.size()]));
+    closeTab(list.toArray(new TabTitle[0]));
 
     return true;
   }
@@ -690,7 +681,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
           files.add(f);
         }
       }
-      FileHistoryManager.getInstance().saveActiveProjects(files.toArray(new File[files.size()]));
+      FileHistoryManager.getInstance().saveActiveProjects(files.toArray(new File[0]));
       files.clear();
 
       for (final TabTitle p : this.tabPane) {
@@ -699,7 +690,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
           files.add(f);
         }
       }
-      FileHistoryManager.getInstance().saveActiveFiles(files.toArray(new File[files.size()]));
+      FileHistoryManager.getInstance().saveActiveFiles(files.toArray(new File[0]));
     } catch (IOException ex) {
       LOGGER.error("Can't save state", ex); //NOI18N
     }
@@ -776,7 +767,10 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
             LOGGER.info("Exension of file " + file.getName() + " among extensions to be opened in system browser");
             result = false;
           } else {
-            if (file.length() >= (2L * 1024L * 1024L) && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo(SciaRetoStarter.getApplicationFrame(), "Very big file", "It is a very big file! Are you sure to open it?")) {
+            if (file.length() >= (2L * 1024L * 1024L) && !DialogProviderManager.getInstance().getDialogProvider()
+                .msgConfirmYesNo(SciaRetoStarter.getApplicationFrame(),
+                    SrI18n.getInstance().findBundle().getString("mainFrame.openFileAsTab.VeryBig.title"),
+                    SrI18n.getInstance().findBundle().getString("mainFrame.openFileAsTab.VeryBig.msg"))) {
               return true;
             }
 
@@ -926,11 +920,13 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         hasUnsaved |= t.isChanged();
       }
 
-      if (hasUnsaved && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(this, "Confirmation", "Are you sure to delete changed unsaved file?")) {
+      if (hasUnsaved && !DialogProviderManager.getInstance().getDialogProvider().msgConfirmOkCancel(this,
+          SrI18n.getInstance().findBundle().getString("mainFrame.deleteTreeNode.confirmDelete.title"),
+          SrI18n.getInstance().findBundle().getString("mainFrame.deleteTreeNode.confirmDelete.msg"))) {
         return false;
       }
 
-      closeTab(tabsToClose.toArray(new TabTitle[tabsToClose.size()]));
+      closeTab(tabsToClose.toArray(new TabTitle[0]));
 
       final NodeProject project = findProjectForFile(file);
 
@@ -956,12 +952,14 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         if (SystemUtils.deleteFile(file, DELETE_MOVING_FILE_TO_TRASH)) {
           ok = true;
         } else {
-          DialogProviderManager.getInstance().getDialogProvider().msgError(this, "Can't delete directory, see the log!");
+          DialogProviderManager.getInstance().getDialogProvider().msgError(this,
+              SrI18n.getInstance().findBundle().getString("mainFrame.deleteTreeNode.cantDeleteDir"));
         }
       } else {
         ok = SystemUtils.deleteFile(file, DELETE_MOVING_FILE_TO_TRASH);
         if (!ok) {
-          DialogProviderManager.getInstance().getDialogProvider().msgError(this, "Can't delete file!");
+          DialogProviderManager.getInstance().getDialogProvider().msgError(this,
+              SrI18n.getInstance().findBundle().getString("mainFrame.deleteTreeNode.cantDeleteFile"));
         }
       }
 
@@ -969,7 +967,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         explorerTree.deleteNode(node);
       }
 
-      if (!affectedFiles.isEmpty() && project != null) {
+      if (!affectedFiles.isEmpty()) {
         final List<File> changedFiles = project.deleteAllLinksToFile(affectedFiles, file);
         if (!changedFiles.isEmpty()) {
           for (final TabTitle t : tabPane) {
@@ -1045,8 +1043,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         setLocationByPlatform(true);
 
         menuFile.setMnemonic('f');
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
-        menuFile.setText(bundle.getString("mainMenu.itemFile")); // NOI18N
+        menuFile.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("mainMenu.itemFile")); // NOI18N
         menuFile.addMenuListener(new javax.swing.event.MenuListener() {
             public void menuCanceled(javax.swing.event.MenuEvent evt) {
                 menuFileMenuCanceled(evt);
@@ -1061,7 +1058,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
         menuNewProject.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/box_closed.png"))); // NOI18N
         menuNewProject.setMnemonic('w');
-        menuNewProject.setText(bundle.getString("mainMenu.itemFile.itemNewProject")); // NOI18N
+        menuNewProject.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("mainMenu.itemFile.itemNewProject")); // NOI18N
         menuNewProject.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuNewProjectActionPerformed(evt);
@@ -1070,7 +1067,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         menuFile.add(menuNewProject);
 
         menuNewFile.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/document16.png"))); // NOI18N
-        menuNewFile.setText(bundle.getString("mainMenu.itemFile.itemNewFile")); // NOI18N
+        menuNewFile.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("mainMenu.itemFile.itemNewFile")); // NOI18N
         menuNewFile.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuNewFileActionPerformed(evt);
@@ -1081,7 +1078,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
         menuOpenProject.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/open_folder.png"))); // NOI18N
         menuOpenProject.setMnemonic('e');
-        menuOpenProject.setText(bundle.getString("mainMenu.itemFile.itemOpenProject")); // NOI18N
+        menuOpenProject.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("mainMenu.itemFile.itemOpenProject")); // NOI18N
         menuOpenProject.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuOpenProjectActionPerformed(evt);
@@ -1090,11 +1087,11 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         menuFile.add(menuOpenProject);
 
         menuOpenRecentProject.setMnemonic('j');
-        menuOpenRecentProject.setText(bundle.getString("mainMenu.itemFile.itemOpenRecentProject")); // NOI18N
+        menuOpenRecentProject.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("mainMenu.itemFile.itemOpenRecentProject")); // NOI18N
         menuFile.add(menuOpenRecentProject);
 
         menuOpenFile.setMnemonic('o');
-        menuOpenFile.setText(bundle.getString("mainMenu.itemFile.itemOpenFile")); // NOI18N
+        menuOpenFile.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("mainMenu.itemFile.itemOpenFile")); // NOI18N
         menuOpenFile.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuOpenFileActionPerformed(evt);
@@ -1103,13 +1100,13 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         menuFile.add(menuOpenFile);
 
         menuOpenRecentFile.setMnemonic('f');
-        menuOpenRecentFile.setText(bundle.getString("mainMenu.itemFile.itemOpenRecentFile")); // NOI18N
+        menuOpenRecentFile.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("mainMenu.itemFile.itemOpenRecentFile")); // NOI18N
         menuFile.add(menuOpenRecentFile);
         menuFile.add(jSeparator3);
 
         menuSave.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/diskette.png"))); // NOI18N
         menuSave.setMnemonic('s');
-        menuSave.setText(bundle.getString("mainMenu.itemFile.itemSave")); // NOI18N
+        menuSave.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("mainMenu.itemFile.itemSave")); // NOI18N
         menuSave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuSaveActionPerformed(evt);
@@ -1119,7 +1116,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
         menuSaveAs.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/file_save_as.png"))); // NOI18N
         menuSaveAs.setMnemonic('v');
-        menuSaveAs.setText(bundle.getString("mainMenu.itemFile.itemSaveAs")); // NOI18N
+        menuSaveAs.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("mainMenu.itemFile.itemSaveAs")); // NOI18N
         menuSaveAs.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuSaveAsActionPerformed(evt);
@@ -1129,7 +1126,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
         menuSaveAll.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/disk_multiple.png"))); // NOI18N
         menuSaveAll.setMnemonic('a');
-        menuSaveAll.setText(bundle.getString("mainMenu.itemFile.itemSaveAll")); // NOI18N
+        menuSaveAll.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("mainMenu.itemFile.itemSaveAll")); // NOI18N
         menuSaveAll.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuSaveAllActionPerformed(evt);
@@ -1140,7 +1137,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
         menuExit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/door_in.png"))); // NOI18N
         menuExit.setMnemonic('x');
-        menuExit.setText(bundle.getString("mainMenu.itemFile.itemExit")); // NOI18N
+        menuExit.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("mainMenu.itemFile.itemExit")); // NOI18N
         menuExit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuExitActionPerformed(evt);
@@ -1151,7 +1148,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         mainMenu.add(menuFile);
 
         menuEdit.setMnemonic('e');
-        menuEdit.setText(bundle.getString("mainMenu.itemEdit")); // NOI18N
+        menuEdit.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("mainMenu.itemEdit")); // NOI18N
         menuEdit.addMenuListener(new javax.swing.event.MenuListener() {
             public void menuCanceled(javax.swing.event.MenuEvent evt) {
                 menuEditMenuCanceled(evt);
@@ -1166,7 +1163,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
         menuEditShowTreeContextMenu.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/tree_list16.png"))); // NOI18N
         menuEditShowTreeContextMenu.setMnemonic('t');
-        menuEditShowTreeContextMenu.setText(bundle.getString("mainMenu.itemEdit.itemShowTreeContextMenu")); // NOI18N
+        menuEditShowTreeContextMenu.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("mainMenu.itemEdit.itemShowTreeContextMenu")); // NOI18N
         menuEditShowTreeContextMenu.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuEditShowTreeContextMenuActionPerformed(evt);
@@ -1177,7 +1174,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
         menuUndo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/undo.png"))); // NOI18N
         menuUndo.setMnemonic('u');
-        menuUndo.setText(bundle.getString("mainMenu.itemEdit.itemUndo")); // NOI18N
+        menuUndo.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("mainMenu.itemEdit.itemUndo")); // NOI18N
         menuUndo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuUndoActionPerformed(evt);
@@ -1187,7 +1184,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
         menuRedo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/redo.png"))); // NOI18N
         menuRedo.setMnemonic('r');
-        menuRedo.setText(bundle.getString("mainMenu.itemEdit.itemRedo")); // NOI18N
+        menuRedo.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("mainMenu.itemEdit.itemRedo")); // NOI18N
         menuRedo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuRedoActionPerformed(evt);
@@ -1198,7 +1195,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
         menuEditCut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/cut16.png"))); // NOI18N
         menuEditCut.setMnemonic('t');
-        menuEditCut.setText(bundle.getString("mainMenu.itemEdit.itemCut")); // NOI18N
+        menuEditCut.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("mainMenu.itemEdit.itemCut")); // NOI18N
         menuEditCut.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuEditCutActionPerformed(evt);
@@ -1208,7 +1205,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
         menuEditCopy.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/page_copy16.png"))); // NOI18N
         menuEditCopy.setMnemonic('y');
-        menuEditCopy.setText(bundle.getString("mainMenu.itemEdit.itemCopy")); // NOI18N
+        menuEditCopy.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("mainMenu.itemEdit.itemCopy")); // NOI18N
         menuEditCopy.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuEditCopyActionPerformed(evt);
@@ -1218,7 +1215,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
         menuEditPaste.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/paste_plain16.png"))); // NOI18N
         menuEditPaste.setMnemonic('p');
-        menuEditPaste.setText(bundle.getString("mainMenu.itemEdit.itemPaste")); // NOI18N
+        menuEditPaste.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("mainMenu.itemEdit.itemPaste")); // NOI18N
         menuEditPaste.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuEditPasteActionPerformed(evt);
@@ -1229,7 +1226,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
         menuFindText.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/find16.png"))); // NOI18N
         menuFindText.setMnemonic('n');
-        menuFindText.setText(bundle.getString("mainMenu.itemEdit.itemFindText")); // NOI18N
+        menuFindText.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("mainMenu.itemEdit.itemFindText")); // NOI18N
         menuFindText.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuFindTextActionPerformed(evt);
@@ -1240,7 +1237,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
         menuPreferences.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/setting_tools.png"))); // NOI18N
         menuPreferences.setMnemonic('e');
-        menuPreferences.setText(bundle.getString("mainMenu.itemEdit.itemPreferences")); // NOI18N
+        menuPreferences.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("mainMenu.itemEdit.itemPreferences")); // NOI18N
         menuPreferences.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuPreferencesActionPerformed(evt);
@@ -1251,7 +1248,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         mainMenu.add(menuEdit);
 
         menuView.setMnemonic('v');
-        menuView.setText(bundle.getString("mainMenu.itemView")); // NOI18N
+        menuView.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("mainMenu.itemView")); // NOI18N
         menuView.addMenuListener(new javax.swing.event.MenuListener() {
             public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
@@ -1263,11 +1260,11 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         });
 
         menuViewUIScale.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/scale_image.png"))); // NOI18N
-        menuViewUIScale.setText(bundle.getString("mainMenu.itemView.itemUiScale")); // NOI18N
+        menuViewUIScale.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("mainMenu.itemView.itemUiScale")); // NOI18N
         menuView.add(menuViewUIScale);
 
         menuFullScreen.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/monitor.png"))); // NOI18N
-        menuFullScreen.setText(bundle.getString("mainMenu.itemView.itemFullScreen")); // NOI18N
+        menuFullScreen.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("mainMenu.itemView.itemFullScreen")); // NOI18N
         menuFullScreen.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuFullScreenActionPerformed(evt);
@@ -1276,14 +1273,14 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         menuView.add(menuFullScreen);
 
         menuLookAndFeel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/application.png"))); // NOI18N
-        menuLookAndFeel.setText(bundle.getString("mainMenu.itemView.itemLookAndFeel")); // NOI18N
+        menuLookAndFeel.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("mainMenu.itemView.itemLookAndFeel")); // NOI18N
         menuView.add(menuLookAndFeel);
 
         menuViewZoom.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/zoom.png"))); // NOI18N
-        menuViewZoom.setText(bundle.getString("mainMenu.itemView.itemZoom")); // NOI18N
+        menuViewZoom.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("mainMenu.itemView.itemZoom")); // NOI18N
 
         menuViewZoomIn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/zoom_in.png"))); // NOI18N
-        menuViewZoomIn.setText(bundle.getString("mainMenu.itemView.itemZoom.itemIn")); // NOI18N
+        menuViewZoomIn.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("mainMenu.itemView.itemZoom.itemIn")); // NOI18N
         menuViewZoomIn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuViewZoomInActionPerformed(evt);
@@ -1292,7 +1289,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         menuViewZoom.add(menuViewZoomIn);
 
         menuViewZoomOut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/zoom_out.png"))); // NOI18N
-        menuViewZoomOut.setText(bundle.getString("mainMenu.itemView.itemZoom.itemOut")); // NOI18N
+        menuViewZoomOut.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("mainMenu.itemView.itemZoom.itemOut")); // NOI18N
         menuViewZoomOut.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuViewZoomOutActionPerformed(evt);
@@ -1301,7 +1298,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         menuViewZoom.add(menuViewZoomOut);
 
         menuViewZoomReset.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/zoom_actual.png"))); // NOI18N
-        menuViewZoomReset.setText(bundle.getString("mainMenu.itemView.itemZoom.itemReset")); // NOI18N
+        menuViewZoomReset.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("mainMenu.itemView.itemZoom.itemReset")); // NOI18N
         menuViewZoomReset.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuViewZoomResetActionPerformed(evt);
@@ -1314,7 +1311,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         mainMenu.add(menuView);
 
         menuNavigate.setMnemonic('n');
-        menuNavigate.setText(bundle.getString("mainMenu.itemNavigate")); // NOI18N
+        menuNavigate.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("mainMenu.itemNavigate")); // NOI18N
         menuNavigate.addMenuListener(new javax.swing.event.MenuListener() {
             public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
@@ -1327,7 +1324,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
         menuGoToFile.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/rocket.png"))); // NOI18N
         menuGoToFile.setMnemonic('f');
-        menuGoToFile.setText(bundle.getString("mainMenu.itemNavigate.itemGoToFile")); // NOI18N
+        menuGoToFile.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("mainMenu.itemNavigate.itemGoToFile")); // NOI18N
         menuGoToFile.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuGoToFileActionPerformed(evt);
@@ -1336,7 +1333,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         menuNavigate.add(menuGoToFile);
 
         menuNavigateLinksGraph.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/graph16.png"))); // NOI18N
-        menuNavigateLinksGraph.setText(bundle.getString("mainMenu.itemNavigate.itemBuildFileLinksGraph")); // NOI18N
+        menuNavigateLinksGraph.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("mainMenu.itemNavigate.itemBuildFileLinksGraph")); // NOI18N
         menuNavigateLinksGraph.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuNavigateLinksGraphActionPerformed(evt);
@@ -1347,10 +1344,10 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         mainMenu.add(menuNavigate);
 
         menuHelp.setMnemonic('h');
-        menuHelp.setText(bundle.getString("mainMenu.itemHelp")); // NOI18N
+        menuHelp.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("mainMenu.itemHelp")); // NOI18N
 
         menuHelpHelp.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/help.png"))); // NOI18N
-        menuHelpHelp.setText(bundle.getString("mainMenu.itemHelp.itemHelp")); // NOI18N
+        menuHelpHelp.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("mainMenu.itemHelp.itemHelp")); // NOI18N
         menuHelpHelp.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuHelpHelpActionPerformed(evt);
@@ -1359,7 +1356,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         menuHelp.add(menuHelpHelp);
 
         menuHelpPLantUmpManual.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/factory.png"))); // NOI18N
-        menuHelpPLantUmpManual.setText(bundle.getString("mainMenu.itemHelp.itemPlatUMLManual")); // NOI18N
+        menuHelpPLantUmpManual.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("mainMenu.itemHelp.itemPlatUMLManual")); // NOI18N
         menuHelpPLantUmpManual.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuHelpPLantUmpManualActionPerformed(evt);
@@ -1369,7 +1366,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
         menuAbout.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/information.png"))); // NOI18N
         menuAbout.setMnemonic('a');
-        menuAbout.setText(bundle.getString("mainMenu.itemHelp.itemAbout")); // NOI18N
+        menuAbout.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("mainMenu.itemHelp.itemAbout")); // NOI18N
         menuAbout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuAboutActionPerformed(evt);
@@ -1380,7 +1377,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
         menuMakeDonation.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/coins_in_hand16.png"))); // NOI18N
         menuMakeDonation.setMnemonic('m');
-        menuMakeDonation.setText(bundle.getString("mainMenu.itemHelp.itemMakeDonation")); // NOI18N
+        menuMakeDonation.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("mainMenu.itemHelp.itemMakeDonation")); // NOI18N
         menuMakeDonation.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuMakeDonationActionPerformed(evt);
@@ -1403,7 +1400,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
     scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     
-    JOptionPane.showMessageDialog(SciaRetoStarter.getApplicationFrame(), scrollPane, "About", JOptionPane.PLAIN_MESSAGE);
+    JOptionPane.showMessageDialog(SciaRetoStarter.getApplicationFrame(), scrollPane,
+        SrI18n.getInstance().findBundle().getString("mainFrame.menuAboutActionPerformed.title"), JOptionPane.PLAIN_MESSAGE);
   }//GEN-LAST:event_menuAboutActionPerformed
 
   private void menuOpenProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuOpenProjectActionPerformed
@@ -1453,7 +1451,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     });
     fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
     fileChooser.setMultiSelectionEnabled(false);
-    fileChooser.setDialogTitle("Open project folder");
+    fileChooser.setDialogTitle(SrI18n.getInstance().findBundle().getString("mainFrame.openProjectFolder.title"));
 
     if (fileChooser.showOpenDialog(SciaRetoStarter.getApplicationFrame()) == JFileChooser.APPROVE_OPTION) {
       final File choosenFile = fileChooser.getSelectedFile();
@@ -1469,7 +1467,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   public NodeProject asyncReloadProject(@Nonnull final NodeProject project, @Nullable final Runnable... invokeLater) {
     assertSwingThread();
 
-    LOGGER.info("Starting asyncronous loading of " + project.toString());
+    LOGGER.info("Starting async loading of " + project.toString());
 
     project.initLoading(Mono.just(project)
             .map(proj -> {
@@ -1480,7 +1478,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
             .doOnError(error -> {
               LOGGER.error("Can't open project", error);
               SwingUtilities.invokeLater(() -> {
-                JOptionPane.showMessageDialog(rootPane, "Can't open project : " + error.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                DialogProviderManager.getInstance().getDialogProvider().msgError(this,
+                    String.format(SrI18n.getInstance().findBundle().getString("mainFrame.msgCantOpenProject.msg"), error.getMessage()));
               });
             })
             .doOnTerminate(() -> {
@@ -1514,7 +1513,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
               });
           });
         } catch (final IOException ex) {
-          JOptionPane.showMessageDialog(this.rootPane, "Can't open project : " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+          DialogProviderManager.getInstance().getDialogProvider().msgError(this,
+              String.format(SrI18n.getInstance().findBundle().getString("mainFrame.msgCantOpenProject.msg"), ex.getMessage()));
           LOGGER.error("Can't open project", ex);
           return false;
         }
@@ -1530,7 +1530,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       result = true;
     } else {
       LOGGER.error("Can't find folder : " + folder); //NOI18N
-      DialogProviderManager.getInstance().getDialogProvider().msgError(this, "Can't find project folder!");
+      DialogProviderManager.getInstance().getDialogProvider().msgError(this,
+          SrI18n.getInstance().findBundle().getString("mainFrame.msgCantFindProjFolder.title"));
     }
     return result;
   }
@@ -1554,7 +1555,9 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         Math.min(prefSize.height, (graphicsBounds.height << 1) / 3)
     ));
 
-    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(this, "Preferences", preferenceScrollPane)) {
+    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(this,
+        SrI18n.getInstance().findBundle().getString("mainFrame.msgPreferences.title"),
+        preferenceScrollPane)) {
       preferencesPanel.save();
       for (final TabTitle t : this.tabPane) {
         t.getProvider().updateConfiguration();
@@ -1568,7 +1571,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         t.save();
       } catch (IOException ex) {
         LOGGER.error("Can't save file", ex); //NOI18N
-        DialogProviderManager.getInstance().getDialogProvider().msgError(this, "Can't save document, may be it is read-only! See log!");
+        DialogProviderManager.getInstance().getDialogProvider().msgError(this,
+            SrI18n.getInstance().findBundle().getString("mainFrame.menuSaveAllActionPerformed.error"));
       }
     }
   }//GEN-LAST:event_menuSaveAllActionPerformed
@@ -1580,12 +1584,13 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   private void menuOpenFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuOpenFileActionPerformed
     final File file = DialogProviderManager.getInstance()
             .getDialogProvider()
-            .msgOpenFileDialog(null, null, "open-file", "Open file", null, true, new FileFilter[]{
+            .msgOpenFileDialog(null, null, "open-file",
+                SrI18n.getInstance().findBundle().getString("mainFrame.menuOpenFileActionPerformed.title"), null, true, new FileFilter[]{
       MMDEditor.makeFileFilter(),
       PlantUmlTextEditor.makeFileFilter(),
       KsTplTextEditor.makeFileFilter(),
       SourceTextEditor.makeFileFilter()
-    }, "Open");
+    }, SrI18n.getInstance().findBundle().getString("mainFrame.menuOpenFileActionPerformed.approve"));
     if (file != null) {
       if (openFileAsTab(file, -1)) {
         try {
@@ -1618,7 +1623,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         ((TabTitle) this.tabPane.getTabComponentAt(index)).save();
       } catch (IOException ex) {
         LOGGER.error("Can't save file", ex); //NOI18N
-        DialogProviderManager.getInstance().getDialogProvider().msgError(this, "Can't save document, may be it is read-only! See log!");
+        DialogProviderManager.getInstance().getDialogProvider().msgError(this,
+            SrI18n.getInstance().findBundle().getString("mainFrame.menuSaveActionPerformed.error"));
       }
     }
   }//GEN-LAST:event_menuSaveActionPerformed
@@ -1630,7 +1636,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         ((TabTitle) this.tabPane.getTabComponentAt(index)).saveAs();
       } catch (IOException ex) {
         LOGGER.error("Can't save file", ex); //NOI18N
-        DialogProviderManager.getInstance().getDialogProvider().msgError(this, "Can't save document, may be it is read-only! See log!");
+        DialogProviderManager.getInstance().getDialogProvider().msgError(this,
+            SrI18n.getInstance().findBundle().getString("mainFrame.menuSaveAsActionPerformed.error"));
       }
     }
   }//GEN-LAST:event_menuSaveAsActionPerformed
@@ -1667,9 +1674,9 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   private void menuNewProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuNewProjectActionPerformed
     final JFileChooser folderChooser = new JFileChooser();
     folderChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-    folderChooser.setDialogTitle("Create project folder");
+    folderChooser.setDialogTitle(SrI18n.getInstance().findBundle().getString("mainFrame.menuNewProjectActionPerformed.title"));
     folderChooser.setDialogType(JFileChooser.SAVE_DIALOG);
-    folderChooser.setApproveButtonText("Create");
+    folderChooser.setApproveButtonText(SrI18n.getInstance().findBundle().getString("mainFrame.menuNewProjectActionPerformed.approve"));
     folderChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
     if (folderChooser.showSaveDialog(SciaRetoStarter.getApplicationFrame()) == JFileChooser.APPROVE_OPTION) {
       final File file = folderChooser.getSelectedFile();
@@ -1677,11 +1684,13 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         final String [] files = file.list();
         if (files == null) {
           LOGGER.error("Can't create folder : " + file); //NOI18N
-          DialogProviderManager.getInstance().getDialogProvider().msgError(this, "Error during folder process: " + file);
+          DialogProviderManager.getInstance().getDialogProvider().msgError(this,
+              String.format(SrI18n.getInstance().findBundle().getString("mainFrame.dlgNewProjectActionPerformed.errorDuringFolderProcess"),file));
           return;
         }
         if (files.length > 0) {
-          DialogProviderManager.getInstance().getDialogProvider().msgError(this, "File '" + file.getName() + "' already exists and non-empty!");
+          DialogProviderManager.getInstance().getDialogProvider().msgError(this,
+              String.format(SrI18n.getInstance().findBundle().getString("mainFrame.dlgNewProjectActionPerformed.errorAlreadyExistsNotEmpty"), file.getName()));
         } else {
           prepareAndOpenProjectFolder(file);
         }
@@ -1703,7 +1712,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         final GraphicsDevice device = gconfig.getDevice();
         if (device.isFullScreenSupported()) {
           if (device.getFullScreenWindow() == null) {
-            final JLabel label = new JLabel("Opened in full screen");
+            final JLabel label = new JLabel(SrI18n.getInstance().findBundle().getString("mainFrame.labelOpenedInFullScreen"));
             final int tabIndex = this.tabPane.getSelectedIndex();
             this.tabPane.setComponentAt(tabIndex, label);
             final JWindow window = new JWindow(SciaRetoStarter.getApplicationFrame());
@@ -1746,7 +1755,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
           }
         } else {
           LOGGER.warn("Device doesn's support full screen"); //NOI18N
-          DialogProviderManager.getInstance().getDialogProvider().msgWarn(this, "The Device doesn't support full-screen mode!");
+          DialogProviderManager.getInstance().getDialogProvider().msgWarn(this,
+              SrI18n.getInstance().findBundle().getString("mainFrame.dlgDeviceDoesntSupportFullscreen.msg"));
         }
       } else {
         LOGGER.warn("Can't find graphics config for the frame"); //NOI18N
@@ -1760,16 +1770,14 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
   private void menuGoToFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuGoToFileActionPerformed
     final GoToFilePanel panel = new GoToFilePanel(this.explorerTree, JOptionPane.OK_OPTION);
-    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(null, "Go To File", panel)) {
+    if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(this, SrI18n.getInstance().findBundle().getString("mainFrame.dlgGoToFile.title"), panel)) {
       final NodeFileOrFolder selected = panel.getSelected();
       if (selected != null) {
         final File file = selected.makeFileForNode();
         if (file != null) {
           this.focusInTree(file);
           ensureTreePanelVisible();
-          SwingUtilities.invokeLater(() -> {
-            explorerTree.requestFocus();
-          });
+          SwingUtilities.invokeLater(explorerTree::requestFocus);
         }
       }
     }
@@ -1863,7 +1871,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
       final FileLinkGraphPanel graph = new FileLinkGraphPanel(projectFolderToUse, initialMindMapFile);
 
-      JOptionPane.showMessageDialog(this, graph, "Graph of Mind Map file links", JOptionPane.PLAIN_MESSAGE);
+      JOptionPane.showMessageDialog(this, graph,
+          SrI18n.getInstance().findBundle().getString("mainFrame.dlgGraphFileLinks.title"), JOptionPane.PLAIN_MESSAGE);
       final FileLinkGraphPanel.FileVertex selected = graph.getSelectedFile();
 
       final File fileToOpen = selected == null ? null : selected.getFile();
@@ -1881,7 +1890,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
           }
         }
         if (cantFind) {
-          DialogProviderManager.getInstance().getDialogProvider().msgWarn(this, "Can't open file \'" + fileToOpen.getAbsolutePath() + "\'!");
+          DialogProviderManager.getInstance().getDialogProvider().msgWarn(this,
+              String.format(SrI18n.getInstance().findBundle().getString("mainFrame.dlgGraphFileLinks.cantOpenFileMsg"), fileToOpen.getAbsolutePath()));
           result = false;
         }
       }
@@ -1912,7 +1922,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     }
 
     final JFileChooser fileChooser = new JFileChooser(currentFolder);
-    fileChooser.setDialogTitle("New file");
+    fileChooser.setDialogTitle(SrI18n.getInstance().findBundle().getString("mainFrame.fileChooserNewFile.title"));
 
     class Filter extends FileFilter {
 
@@ -1937,11 +1947,11 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     }
 
     fileChooser.setAcceptAllFileFilterUsed(false);
-    final Filter filerMindMap = new Filter("mmd", "Mind Map file (*.mmd)");
-    final Filter filerText = new Filter("txt", "Text file (*.txt)");
-    final Filter filerPuml = new Filter("puml", "PantUML file (*.puml)");
-    final Filter filerKstpl = new Filter("kstpl", "KStreams topology (*.kstpl)");
-    final Filter filerDot = new Filter("gv", "DOT script (*.gv)");
+    final Filter filerMindMap = new Filter("mmd", SrI18n.getInstance().findBundle().getString("mainFrame.fileFilter.mmd"));
+    final Filter filerText = new Filter("txt", SrI18n.getInstance().findBundle().getString("mainFrame.fileFilter.txt"));
+    final Filter filerPuml = new Filter("puml", SrI18n.getInstance().findBundle().getString("mainFrame.fileFilter.puml"));
+    final Filter filerKstpl = new Filter("kstpl", SrI18n.getInstance().findBundle().getString("mainFrame.fileFilter.kstpl"));
+    final Filter filerDot = new Filter("gv", SrI18n.getInstance().findBundle().getString("mainFrame.fileFilter.gv"));
 
     fileChooser.addChoosableFileFilter(filerMindMap);
     fileChooser.addChoosableFileFilter(filerText);
@@ -1951,7 +1961,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
     fileChooser.setFileFilter(filerMindMap);
 
-    if (fileChooser.showDialog(this, "Create") == JFileChooser.APPROVE_OPTION) {
+    if (fileChooser.showDialog(this, SrI18n.getInstance().findBundle().getString("mainFrame.fileChooserNewFile.approve")) == JFileChooser.APPROVE_OPTION) {
       final Filter choosenFilter = (Filter) fileChooser.getFileFilter();
       File selectedFile = fileChooser.getSelectedFile();
 
@@ -1991,7 +2001,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         this.explorerTree.addFileIfPossible(selectedFile, true);
       } catch (IOException ex) {
         LOGGER.error("Can't create file : " + selectedFile);
-        JOptionPane.showMessageDialog(this, "Can't create file", "Error", JOptionPane.ERROR_MESSAGE);
+        DialogProviderManager.getInstance().getDialogProvider().msgError(this,
+            SrI18n.getInstance().findBundle().getString("mainFrame.dlgCantCreateFile.msg"));
       }
     }
   }//GEN-LAST:event_menuNewFileActionPerformed
@@ -2053,7 +2064,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     final Runnable runnable = this.taskToEndFullScreen.getAndSet(null);
     if (runnable != null) {
       final AbstractEditor editor = this.tabPane.getCurrentEditor();
-      if (editor != null && editor instanceof MMDEditor) {
+      if (editor instanceof MMDEditor) {
         final MMDEditor mmdeditor = (MMDEditor) editor;
         mmdeditor.getMindMapPanel().endEdit(true);
       }
@@ -2082,10 +2093,10 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   @Override
   public File createMindMapFile(@Nullable final File folder) {
     final JFileChooser chooser = new JFileChooser(folder);
-    chooser.setDialogTitle("Create new Mind Map");
+    chooser.setDialogTitle(SrI18n.getInstance().findBundle().getString("mainFrame.createMMFileChooser.title"));
     chooser.setFileFilter(MMDEditor.makeFileFilter());
     chooser.setMultiSelectionEnabled(false);
-    chooser.setApproveButtonText("Create");
+    chooser.setApproveButtonText(SrI18n.getInstance().findBundle().getString("mainFrame.createMMFileChooser.approve"));
 
     File result = null;
 
@@ -2096,7 +2107,9 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       }
 
       if (file.exists()) {
-        DialogProviderManager.getInstance().getDialogProvider().msgError(this, "File '" + file + "' already exists!");
+        DialogProviderManager.getInstance().getDialogProvider()
+            .msgError(this,
+                String.format(SrI18n.getInstance().findBundle().getString("mainFrame.msgFileAlreadyExists.msg"), file));
       } else {
         try {
           final MindMap mindMap = new MindMap(true);
@@ -2106,7 +2119,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
           SystemUtils.saveUTFText(file, text);
           result = file;
         } catch (IOException ex) {
-          DialogProviderManager.getInstance().getDialogProvider().msgError(this, "Can't save mind map into file '" + file.getName() + "'");
+          DialogProviderManager.getInstance().getDialogProvider().msgError(this,
+              String.format(SrI18n.getInstance().findBundle().getString("mainFrame.msgCantSaveMindMapFile.msg"), file.getName()));
         }
       }
     }

@@ -17,12 +17,11 @@
  */
 package com.igormaznitsa.sciareto.notifications;
 
-import static com.igormaznitsa.sciareto.ui.UiUtils.findTextBundle;
-
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
+import com.igormaznitsa.sciareto.ui.SrI18n;
 import com.igormaznitsa.sciareto.ui.misc.DonateButton;
 import com.igormaznitsa.sciareto.ui.misc.JHtmlLabel;
 import java.util.prefs.Preferences;
@@ -49,11 +48,11 @@ public class MessagesService {
       final long totalUpstartTime = prefs.getLong(SciaRetoStarter.PROPERTY_TOTAL_UPSTART, 0L);
       if (totalUpstartTime >= (1000L * 3600L * 24L)) {
         final Timer timer = new Timer(60000, e -> {
-          final String text = findTextBundle().getString("messageService.donation.text");
+          final String text = SrI18n.getInstance().findBundle().getString("messageService.donation.text");
           final JHtmlLabel label = new JHtmlLabel(text);
           label.addLinkListener((source, link) -> new DonateButton().doClick());
           NotificationManager.getInstance().showNotification(null,
-              findTextBundle().getString("messageService.donation.title"), NotificationManager.Type.INFO, label);
+              SrI18n.getInstance().findBundle().getString("messageService.donation.title"), NotificationManager.Type.INFO, label);
           LOGGER.info("Shown offer to make donation");
           prefs.putBoolean(PROPERTY_OFFER_TO_DONATE_WAS_SHOWN, true);
           PreferencesManager.getInstance().flush();

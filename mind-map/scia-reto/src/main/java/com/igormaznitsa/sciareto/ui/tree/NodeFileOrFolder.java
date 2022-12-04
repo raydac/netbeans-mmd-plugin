@@ -70,7 +70,6 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
       @Nullable final NodeFileOrFolder parent,
       final boolean folder,
       @Nullable final String name,
-      final boolean showHiddenFiles,
       final boolean readOnly
   ) {
     this.parent = parent;
@@ -80,7 +79,7 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
       this.children = Collections.synchronizedList(new ArrayList<>());
       this.folderFlag = true;
     } else {
-      this.children = Collections.EMPTY_LIST;
+      this.children = List.of();
       this.folderFlag = false;
     }
 
@@ -151,9 +150,9 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
   }
 
   @Nonnull
-  public NodeFileOrFolder addFile(@Nonnull final File file, final boolean showHiddenFiles) throws IOException {
+  public NodeFileOrFolder addFile(@Nonnull final File file) {
     Assertions.assertTrue("Unexpected state!", this.folderFlag && file.getParentFile().equals(this.makeFileForNode())); //NOI18N
-    final NodeFileOrFolder result = new NodeFileOrFolder(this, file.isDirectory(), file.getName(), showHiddenFiles, !Files.isWritable(file.toPath()));
+    final NodeFileOrFolder result = new NodeFileOrFolder(this, file.isDirectory(), file.getName(), !Files.isWritable(file.toPath()));
     this.children.add(0, result);
     Collections.sort(this.children, this);
     return result;
@@ -191,7 +190,7 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
             }
 
             @Override
-            public void close() throws IOException {
+            public void close() {
             }
           };
         }
@@ -210,7 +209,7 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
             }
           })
           .map(f -> {
-            NodeFileOrFolder newItem = new NodeFileOrFolder(this, Files.isDirectory(f), f.getFileName().toString(), addHiddenFilesAndFolders, !Files.isWritable(f));
+            NodeFileOrFolder newItem = new NodeFileOrFolder(this, Files.isDirectory(f), f.getFileName().toString(), !Files.isWritable(f));
             this.children.add(newItem);
             return newItem;
           })
@@ -312,14 +311,14 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
 
   @Override
   public boolean isLeaf() {
-    return this.isLoading() ? true : !(this.folderFlag || this.noAccess);
+    return this.isLoading() || !(this.folderFlag || this.noAccess);
   }
 
   @Override
   @Nonnull
-  public Enumeration children() {
+  public Enumeration<NodeFileOrFolder> children() {
     final Iterator<NodeFileOrFolder> iterator = this.children.iterator();
-    return new Enumeration() {
+    return new Enumeration<>() {
 
       @Override
       public boolean hasMoreElements() {
@@ -328,7 +327,7 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
 
       @Override
       @Nonnull
-      public Object nextElement() {
+      public NodeFileOrFolder nextElement() {
         return iterator.next();
       }
     };
@@ -400,7 +399,7 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
   public Iterator<NodeFileOrFolder> iterator() {
     final List<NodeFileOrFolder> projects = new ArrayList<>(this.children);
     final Iterator<NodeFileOrFolder> result = projects.iterator();
-    return new Iterator<NodeFileOrFolder>() {
+    return new Iterator<>() {
       @Override
       public boolean hasNext() {
         return result.hasNext();

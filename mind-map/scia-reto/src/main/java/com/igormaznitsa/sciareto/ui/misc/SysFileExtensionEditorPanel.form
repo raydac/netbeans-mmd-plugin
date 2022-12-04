@@ -27,8 +27,12 @@
       <SubComponents>
         <Component class="javax.swing.JButton" name="buttonAddLine">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Add"/>
-            <Property name="toolTipText" type="java.lang.String" value="Add new empty line into table"/>
+            <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="panelSysFileExtensionEditor.buttonAdd" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
+            </Property>
+            <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="panelSysFileExtensionEditor.buttonAdd.tooltip" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
+            </Property>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonAddLineActionPerformed"/>
@@ -41,8 +45,12 @@
         </Component>
         <Component class="javax.swing.JButton" name="buttonEditLine">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Edit"/>
-            <Property name="toolTipText" type="java.lang.String" value="Start edit focused line"/>
+            <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="panelSysFileExtensionEditor.buttonEdit" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
+            </Property>
+            <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="panelSysFileExtensionEditor.buttonEdit.tooltip" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
+            </Property>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonEditLineActionPerformed"/>
@@ -55,8 +63,12 @@
         </Component>
         <Component class="javax.swing.JButton" name="buttonDeleteLine">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Delete"/>
-            <Property name="toolTipText" type="java.lang.String" value="Delete focused line"/>
+            <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="panelSysFileExtensionEditor.buttonDelete" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
+            </Property>
+            <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="panelSysFileExtensionEditor.buttonDelete.tooltip" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
+            </Property>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonDeleteLineActionPerformed"/>
@@ -84,8 +96,12 @@
         </Component>
         <Component class="javax.swing.JButton" name="buttonReset">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Reset"/>
-            <Property name="toolTipText" type="java.lang.String" value="Reset format list to default state"/>
+            <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="panelSysFileExtensionEditor.buttonReset" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
+            </Property>
+            <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="panelSysFileExtensionEditor.buttonReset.tooltip" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
+            </Property>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonResetActionPerformed"/>

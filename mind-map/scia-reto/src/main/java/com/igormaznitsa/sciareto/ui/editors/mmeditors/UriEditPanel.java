@@ -105,8 +105,7 @@ public final class UriEditPanel extends javax.swing.JPanel  {
         setLayout(new java.awt.GridBagLayout());
 
         labelBrowseCurrentLink.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/url_link.png"))); // NOI18N
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
-        labelBrowseCurrentLink.setToolTipText(bundle.getString("UriEditPanel.labelBrowseCurrentLink.toolTipText_1")); // NOI18N
+        labelBrowseCurrentLink.setToolTipText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("UriEditPanel.labelBrowseCurrentLink.toolTipText_1")); // NOI18N
         labelBrowseCurrentLink.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         labelBrowseCurrentLink.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         labelBrowseCurrentLink.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -125,7 +124,7 @@ public final class UriEditPanel extends javax.swing.JPanel  {
 
         labelValidator.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         labelValidator.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/question16.png"))); // NOI18N
-        labelValidator.setToolTipText(bundle.getString("panelUriEditor.tooltipLabelValidator")); // NOI18N
+        labelValidator.setToolTipText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("panelUriEditor.tooltipLabelValidator")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.ipadx = 10;
@@ -133,7 +132,7 @@ public final class UriEditPanel extends javax.swing.JPanel  {
         add(labelValidator, gridBagConstraints);
 
         butonReset.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/cross16.png"))); // NOI18N
-        butonReset.setToolTipText(bundle.getString("panelUriEditor.tooltipButtonReset")); // NOI18N
+        butonReset.setToolTipText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("panelUriEditor.tooltipButtonReset")); // NOI18N
         butonReset.setFocusable(false);
         butonReset.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

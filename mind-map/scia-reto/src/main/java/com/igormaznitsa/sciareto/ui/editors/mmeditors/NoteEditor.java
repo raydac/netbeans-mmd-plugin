@@ -18,7 +18,6 @@
 
 package com.igormaznitsa.sciareto.ui.editors.mmeditors;
 
-import static com.igormaznitsa.sciareto.ui.UiUtils.findTextBundle;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import com.igormaznitsa.mindmap.ide.commons.SwingUtils;
@@ -33,8 +32,8 @@ import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.preferences.SpecificKeys;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
+import com.igormaznitsa.sciareto.ui.SrI18n;
 import com.igormaznitsa.sciareto.ui.UiUtils;
-import java.nio.charset.StandardCharsets;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -68,7 +67,9 @@ public final class NoteEditor extends JPanel {
   private static final long serialVersionUID = -1715683034655322518L;
   private static final Logger LOGGER = LoggerFactory.getLogger(NoteEditor.class);
   private boolean cancelled;
-  private static final FileFilter TEXT_FILE_FILTER = new FileFilter() {
+
+  public static FileFilter makeFileFilter() {
+    return new FileFilter() {
 
     @Override
     public boolean accept(final File f) {
@@ -77,10 +78,11 @@ public final class NoteEditor extends JPanel {
 
     @Override
     public String getDescription() {
-      return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle")
-          .getString("PlainTextEditor.fileFilter.description");
+      return SrI18n.getInstance().findBundle().getString("PlainTextEditor.fileFilter.description");
     }
-  };
+    };
+  }
+  
   private Wrapping wrapping;
   private String password;
   private String hint;
@@ -363,8 +365,9 @@ public final class NoteEditor extends JPanel {
       ActionEvent evt) {
     final File toOpen = DialogProviderManager.getInstance().getDialogProvider()
         .msgOpenFileDialog(null, null, "note-editor",
-            findTextBundle().getString("PlainTextEditor.buttonLoadActionPerformed.title"), null, true,
-            new FileFilter[] {TEXT_FILE_FILTER}, "Open"); //NOI18N
+            SrI18n.getInstance().findBundle().getString("PlainTextEditor.buttonLoadActionPerformed.title"), null, true,
+            new FileFilter[] {makeFileFilter()}, 
+            SrI18n.getInstance().findBundle().getString("PlainTextEditor.buttonLoadActionPerformed.approve")); //NOI18N
     if (toOpen != null) {
       try {
         final String text = FileUtils.readFileToString(toOpen, UTF_8);
@@ -372,7 +375,7 @@ public final class NoteEditor extends JPanel {
       } catch (Exception ex) {
         LOGGER.error("Error during text file loading", ex); //NOI18N
         DialogProviderManager.getInstance().getDialogProvider().msgError(SciaRetoStarter.getApplicationFrame(),
-            findTextBundle().getString("PlainTextEditor.buttonLoadActionPerformed.msgError"));
+            SrI18n.getInstance().findBundle().getString("PlainTextEditor.buttonLoadActionPerformed.msgError"));
       }
     }
 
@@ -407,7 +410,8 @@ public final class NoteEditor extends JPanel {
     } catch (Exception ex) {
       LOGGER.error("Can't open link : " + selectedText); //NOI18N
       DialogProviderManager.getInstance().getDialogProvider()
-          .msgError(SciaRetoStarter.getApplicationFrame(), "Can't browse link : " + selectedText);
+          .msgError(SciaRetoStarter.getApplicationFrame(), 
+              String.format(SrI18n.getInstance().findBundle().getString("PlainTextEditor.msgBrowseLinkError.text"), selectedText));
     }
   }
 
@@ -421,7 +425,8 @@ public final class NoteEditor extends JPanel {
   }
 
   private void updateBottomPanel() {
-    this.labelWrapMode.setText("Wrap: " + this.wrapping.getDisplay());
+    this.labelWrapMode.setText(
+        String.format(SrI18n.getInstance().findBundle().getString("PlainTextEditor.wrap.prefix"), this.wrapping.getDisplay()));
   }
 
   @Nullable
@@ -432,7 +437,7 @@ public final class NoteEditor extends JPanel {
   private void initComponents() {
 
     final UIComponentFactory factory = UIComponentFactoryProvider.findInstance();
-    final ResourceBundle bundle = UiUtils.findTextBundle();
+    final ResourceBundle bundle = SrI18n.getInstance().findBundle();
 
     buttonToolBar = factory.makeToolBar();
     buttonUndo = factory.makeButton();
@@ -604,8 +609,8 @@ public final class NoteEditor extends JPanel {
   private void buttonExportActionPerformed(ActionEvent evt) {
     final File toSave = DialogProviderManager.getInstance().getDialogProvider()
         .msgSaveFileDialog(null, null,"note-editor",
-            findTextBundle().getString("PlainTextEditor.buttonSaveActionPerformed.saveTitle"), null,
-            true, new FileFilter[] {TEXT_FILE_FILTER}, "Save"); //NOI18N
+            SrI18n.getInstance().findBundle().getString("PlainTextEditor.buttonSaveActionPerformed.saveTitle"), null,
+            true, new FileFilter[] {makeFileFilter()}, SrI18n.getInstance().findBundle().getString("PlainTextEditor.buttonSaveActionPerformed.approve")); //NOI18N
     if (toSave != null) {
       try {
         final String text = this.editorPane.getText();
@@ -613,7 +618,7 @@ public final class NoteEditor extends JPanel {
       } catch (final Exception ex) {
         LOGGER.error("Error during text file saving", ex); //NOI18N
         DialogProviderManager.getInstance().getDialogProvider().msgError(SciaRetoStarter.getApplicationFrame(),
-            findTextBundle().getString("PlainTextEditor.buttonSaveActionPerformed.msgError"));
+            SrI18n.getInstance().findBundle().getString("PlainTextEditor.buttonSaveActionPerformed.msgError"));
       }
     }
   }
@@ -634,8 +639,8 @@ public final class NoteEditor extends JPanel {
       }
     } else {
       if (DialogProviderManager.getInstance().getDialogProvider()
-          .msgConfirmOkCancel(this, "Reset password",
-              "Do you really want reset password for the note?")) {
+          .msgConfirmOkCancel(this, SrI18n.getInstance().findBundle().getString("PasswordPanel.msgResetPassword.title"),
+              SrI18n.getInstance().findBundle().getString("PasswordPanel.msgResetPassword.msg"))) {
         this.password = null;
         this.hint = null;
       } else {

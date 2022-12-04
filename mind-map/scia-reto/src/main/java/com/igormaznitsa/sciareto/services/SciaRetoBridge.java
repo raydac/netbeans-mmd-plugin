@@ -29,6 +29,7 @@ import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.notifications.NotificationManager;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.preferences.SpecificKeys;
+import com.igormaznitsa.sciareto.ui.SrI18n;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.platform.PlatformProvider;
 import java.awt.Font;
@@ -61,6 +62,7 @@ public class SciaRetoBridge implements IDEBridge {
     return result;
   }
 
+  @Nonnull
   @Override
   public Locale getIDELocale() {
     if (true) return new Locale("ru");
@@ -116,8 +118,8 @@ public class SciaRetoBridge implements IDEBridge {
   public void notifyRestart() {
     JOptionPane.showMessageDialog(
         null,
-        UiUtils.findTextBundle().getString("SciaRetoBridge.restart.text"),
-        UiUtils.findTextBundle().getString("SciaRetoBridge.restart.title"),
+        SrI18n.getInstance().findBundle().getString("SciaRetoBridge.restart.text"),
+        SrI18n.getInstance().findBundle().getString("SciaRetoBridge.restart.title"),
         JOptionPane.WARNING_MESSAGE);
     try {
       PlatformProvider.getPlatform().dispose();

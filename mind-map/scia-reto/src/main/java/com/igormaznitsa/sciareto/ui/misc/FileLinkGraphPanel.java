@@ -22,6 +22,7 @@ import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.sciareto.ui.MapUtils;
+import com.igormaznitsa.sciareto.ui.SrI18n;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
@@ -280,7 +281,7 @@ public final class FileLinkGraphPanel extends JPanel {
     final Graph<FileVertex, Number> graph = makeGraph(projectFolder, startMindMap);
 
     if (graph.getVertexCount() == 0) {
-      this.add(new JLabel(UiUtils.findTextBundle().getString("panelFileLinkGraph.labelNotAnyMindMap")), BorderLayout.CENTER);
+      this.add(new JLabel(SrI18n.getInstance().findBundle().getString("panelFileLinkGraph.labelNotAnyMindMap")), BorderLayout.CENTER);
     } else {
       final ISOMLayout<FileVertex, Number> graphLayout = new ISOMLayout<>(graph);
 
@@ -349,7 +350,7 @@ public final class FileLinkGraphPanel extends JPanel {
       graphViewer.scaleToLayout(new LayoutScalingControl());
 
       final JButton layoutButton = new JButton(RELAYOUT_ICON);
-      layoutButton.setToolTipText(UiUtils.findTextBundle().getString("panelFileLinkGraph.layoutButton.tooltip"));
+      layoutButton.setToolTipText(SrI18n.getInstance().findBundle().getString("panelFileLinkGraph.layoutButton.tooltip"));
       layoutButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
       layoutButton.addActionListener(e -> {
         final Rectangle visible = scroll.getVisibleRect();

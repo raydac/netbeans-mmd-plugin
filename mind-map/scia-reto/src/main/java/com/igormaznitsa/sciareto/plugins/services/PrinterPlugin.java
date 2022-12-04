@@ -18,8 +18,6 @@
 
 package com.igormaznitsa.sciareto.plugins.services;
 
-import static com.igormaznitsa.sciareto.ui.UiUtils.findTextBundle;
-
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
@@ -29,6 +27,7 @@ import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.print.MMDPrintPanel;
 import com.igormaznitsa.mindmap.print.PrintableObject;
 import com.igormaznitsa.sciareto.SciaRetoStarter;
+import com.igormaznitsa.sciareto.ui.SrI18n;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 
 import javax.annotation.Nonnull;
@@ -49,7 +48,7 @@ public class PrinterPlugin extends AbstractPopupMenuItem implements MMDPrintPane
 
     final JMenuItem printAction =
         UI_COMPO_FACTORY.makeMenuItem(
-            findTextBundle().getString("MMDGraphEditor.makePopUp.miPrintPreview.menuItem"),
+            SrI18n.getInstance().findBundle().getString("MMDGraphEditor.makePopUp.miPrintPreview.menuItem"),
             new ImageIcon(ICON_PRINTER));
     printAction.addActionListener(
         e -> {
@@ -63,7 +62,7 @@ public class PrinterPlugin extends AbstractPopupMenuItem implements MMDPrintPane
           JOptionPane.showMessageDialog(
               SwingUtilities.windowForComponent(context.getPanel()),
               panel,
-              findTextBundle().getString("MMDGraphEditor.makePopUp.miPrintPreview.msgDialog.title"),
+              SrI18n.getInstance().findBundle().getString("MMDGraphEditor.makePopUp.miPrintPreview.msgDialog.title"),
               JOptionPane.PLAIN_MESSAGE);
         });
     return printAction;
@@ -110,13 +109,10 @@ public class PrinterPlugin extends AbstractPopupMenuItem implements MMDPrintPane
 
   @Override
   public void onPrintTaskStarted(@Nonnull final MMDPrintPanel source) {
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        final Window wnd = SwingUtilities.windowForComponent(source);
-        if (wnd != null) {
-          wnd.dispose();
-        }
+    SwingUtilities.invokeLater(() -> {
+      final Window wnd = SwingUtilities.windowForComponent(source);
+      if (wnd != null) {
+        wnd.dispose();
       }
     });
   }

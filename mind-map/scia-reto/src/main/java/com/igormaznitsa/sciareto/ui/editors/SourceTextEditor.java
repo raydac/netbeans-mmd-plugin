@@ -18,7 +18,6 @@
 
 package com.igormaznitsa.sciareto.ui.editors;
 
-import static com.igormaznitsa.sciareto.ui.UiUtils.findTextBundle;
 import static java.util.Arrays.asList;
 
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
@@ -27,6 +26,7 @@ import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.FindTextScopeProvider;
+import com.igormaznitsa.sciareto.ui.SrI18n;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 import java.awt.BorderLayout;
@@ -342,7 +342,7 @@ public final class SourceTextEditor extends AbstractTextEditor {
       @Override
       @Nonnull
       public String getDescription() {
-        return findTextBundle().getString("editorAbstractPlUml.fileFilter.source.description");
+        return SrI18n.getInstance().findBundle().getString("editorAbstractPlUml.fileFilter.source.description");
       }
     };
   }

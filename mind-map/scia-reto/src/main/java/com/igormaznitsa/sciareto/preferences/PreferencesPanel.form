@@ -12,7 +12,7 @@
     <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
-    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,3,12,0,0,3,-84"/>
+    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,3,12,0,0,3,-26"/>
   </AuxValues>
 
   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
@@ -35,7 +35,7 @@
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
                     <TitledBorder title="Connector and collapsator options">
-                      <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.panelConnectorAndCollapsatorOptions.title" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.panelConnectorAndCollapsatorOptions.title" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                     </TitledBorder>
                   </Border>
                 </Property>
@@ -52,7 +52,7 @@
                   <Properties>
                     <Property name="horizontalAlignment" type="int" value="4"/>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.labelConnecorWidth" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.labelConnecorWidth" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <Constraints>
@@ -80,7 +80,7 @@
                   <Properties>
                     <Property name="horizontalAlignment" type="int" value="4"/>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.labelCollapsatorSize" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.labelCollapsatorSize" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <Constraints>
@@ -111,7 +111,7 @@
                   <Properties>
                     <Property name="horizontalAlignment" type="int" value="4"/>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.labelCollapsatorWidth" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.labelCollapsatorWidth" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <Constraints>
@@ -139,7 +139,7 @@
                   <Properties>
                     <Property name="horizontalAlignment" type="int" value="4"/>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.labelJumpLinkWidth" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.labelJumpLinkWidth" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <Constraints>
@@ -178,7 +178,7 @@
                     <Component class="com.igormaznitsa.sciareto.ui.misc.ColorChooserButton" name="colorChooserCollapsatorBackground">
                       <Properties>
                         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                          <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.buttonCollapsatorFill" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                          <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.buttonCollapsatorFill" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                         </Property>
                         <Property name="horizontalAlignment" type="int" value="2"/>
                       </Properties>
@@ -189,7 +189,7 @@
                     <Component class="com.igormaznitsa.sciareto.ui.misc.ColorChooserButton" name="colorChooserCollapsatorBorder">
                       <Properties>
                         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                          <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.buttonCollapsatorBorder" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                          <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.buttonCollapsatorBorder" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                         </Property>
                         <Property name="horizontalAlignment" type="int" value="2"/>
                       </Properties>
@@ -200,7 +200,7 @@
                     <Component class="com.igormaznitsa.sciareto.ui.misc.ColorChooserButton" name="colorChooserJumpLink">
                       <Properties>
                         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                          <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.buttonJumpLink" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                          <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.buttonJumpLink" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                         </Property>
                         <Property name="horizontalAlignment" type="int" value="2"/>
                       </Properties>
@@ -211,7 +211,7 @@
                     <Component class="com.igormaznitsa.sciareto.ui.misc.ColorChooserButton" name="colorChooserConnectorColor">
                       <Properties>
                         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                          <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.buttonConnectorColor" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                          <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.buttonConnectorColor" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                         </Property>
                         <Property name="horizontalAlignment" type="int" value="2"/>
                       </Properties>
@@ -228,7 +228,7 @@
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
                     <TitledBorder title="Paper options">
-                      <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.paperOptions.title" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.paperOptions.title" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                     </TitledBorder>
                   </Border>
                 </Property>
@@ -244,7 +244,7 @@
                 <Component class="com.igormaznitsa.sciareto.ui.misc.ColorChooserButton" name="colorChooserPaperColor">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.buttonBackgroundFill" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.buttonBackgroundFill" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                     </Property>
                     <Property name="horizontalAlignment" type="int" value="2"/>
                   </Properties>
@@ -260,7 +260,7 @@
                 <Component class="javax.swing.JCheckBox" name="checkBoxShowGrid">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.checkboxShowGrid" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.checkboxShowGrid" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <Events>
@@ -275,7 +275,7 @@
                 <Component class="com.igormaznitsa.sciareto.ui.misc.ColorChooserButton" name="colorChooserGridColor">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.buttonGridColor" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.buttonGridColor" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                     </Property>
                     <Property name="horizontalAlignment" type="int" value="2"/>
                   </Properties>
@@ -306,7 +306,7 @@
                 <Component class="javax.swing.JLabel" name="jLabel1">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.label.gridStep" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.label.gridStep" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <Constraints>
@@ -320,7 +320,7 @@
                     <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                       <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
                         <TitledBorder title="Render quality">
-                          <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.panelRenderQuality.title" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                          <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.panelRenderQuality.title" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                         </TitledBorder>
                       </Border>
                     </Property>
@@ -360,7 +360,7 @@
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
                     <TitledBorder title="Element options">
-                      <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.panelElementOptrions.title" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.panelElementOptrions.title" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                     </TitledBorder>
                   </Border>
                 </Property>
@@ -376,7 +376,7 @@
                 <Component class="com.igormaznitsa.sciareto.ui.misc.ColorChooserButton" name="colorChooserRootBackground">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.buttonRootFill" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.buttonRootFill" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                     </Property>
                     <Property name="horizontalAlignment" type="int" value="2"/>
                   </Properties>
@@ -392,7 +392,7 @@
                 <Component class="com.igormaznitsa.sciareto.ui.misc.ColorChooserButton" name="colorChooserRootText">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.buttonRootText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.buttonRootText" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                     </Property>
                     <Property name="horizontalAlignment" type="int" value="2"/>
                   </Properties>
@@ -408,7 +408,7 @@
                 <Component class="com.igormaznitsa.sciareto.ui.misc.ColorChooserButton" name="colorChooser1stBackground">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.button1levelFill" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.button1levelFill" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                     </Property>
                     <Property name="horizontalAlignment" type="int" value="2"/>
                   </Properties>
@@ -424,7 +424,7 @@
                 <Component class="com.igormaznitsa.sciareto.ui.misc.ColorChooserButton" name="colorChooser1stText">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.button1levelTextl" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.button1levelTextl" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                     </Property>
                     <Property name="horizontalAlignment" type="int" value="2"/>
                   </Properties>
@@ -440,7 +440,7 @@
                 <Component class="com.igormaznitsa.sciareto.ui.misc.ColorChooserButton" name="colorChooser2ndBackground">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.button2levelFill" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.button2levelFill" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                     </Property>
                     <Property name="horizontalAlignment" type="int" value="2"/>
                   </Properties>
@@ -456,7 +456,7 @@
                 <Component class="com.igormaznitsa.sciareto.ui.misc.ColorChooserButton" name="colorChooser2ndText">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.button2levelTextl" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.button2levelTextl" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                     </Property>
                     <Property name="horizontalAlignment" type="int" value="2"/>
                   </Properties>
@@ -474,7 +474,7 @@
                     <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                       <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
                         <TitledBorder title="Selection frame">
-                          <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.panelSelectionFrame.title" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                          <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.panelSelectionFrame.title" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                         </TitledBorder>
                       </Border>
                     </Property>
@@ -490,7 +490,7 @@
                     <Component class="com.igormaznitsa.sciareto.ui.misc.ColorChooserButton" name="colorChooserSelectLine">
                       <Properties>
                         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                          <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.buttonSelectFrameColor" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                          <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.buttonSelectFrameColor" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                         </Property>
                         <Property name="horizontalAlignment" type="int" value="2"/>
                       </Properties>
@@ -507,7 +507,7 @@
                       <Properties>
                         <Property name="horizontalAlignment" type="int" value="4"/>
                         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                          <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.labelSelectionFrameWidth" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                          <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.labelSelectionFrameWidth" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                         </Property>
                       </Properties>
                       <Constraints>
@@ -532,7 +532,7 @@
                       <Properties>
                         <Property name="horizontalAlignment" type="int" value="4"/>
                         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                          <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.labelSelectionFrameGap" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                          <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.labelSelectionFrameGap" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                         </Property>
                       </Properties>
                       <Constraints>
@@ -575,7 +575,7 @@
                     <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                       <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
                         <TitledBorder title="Text editor font">
-                          <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.panelTextEditorFont.title" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                          <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.panelTextEditorFont.title" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                         </TitledBorder>
                       </Border>
                     </Property>
@@ -615,7 +615,7 @@
                     <Component class="javax.swing.JCheckBox" name="checkBoxDropShadow">
                       <Properties>
                         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                          <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.checkDropShadow" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                          <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.checkDropShadow" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                         </Property>
                       </Properties>
                       <Events>
@@ -655,7 +655,7 @@
                           <Properties>
                             <Property name="horizontalAlignment" type="int" value="4"/>
                             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.labelBorderWidth" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.labelBorderWidth" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                             </Property>
                           </Properties>
                           <Constraints>
@@ -688,7 +688,7 @@
                     <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                       <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
                         <TitledBorder title="Graphviz DOT file (for PlantUML)">
-                          <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.panelGraphvizDot.title" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                          <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.panelGraphvizDot.title" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                         </TitledBorder>
                       </Border>
                     </Property>
@@ -747,7 +747,7 @@
                     <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                       <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
                         <TitledBorder title="1st level horz.gap">
-                          <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.panel1levelHorztGap.title" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                          <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.panel1levelHorztGap.title" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                         </TitledBorder>
                       </Border>
                     </Property>
@@ -784,7 +784,7 @@
                     <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                       <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
                         <TitledBorder title="1st level vert.gap">
-                          <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.panel1levelVertGap.title" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                          <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.panel1levelVertGap.title" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                         </TitledBorder>
                       </Border>
                     </Property>
@@ -821,7 +821,7 @@
                     <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                       <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
                         <TitledBorder title="2nd level horz.gap">
-                          <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.panel2levelHorzGap.title" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                          <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.panel2levelHorzGap.title" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                         </TitledBorder>
                       </Border>
                     </Property>
@@ -858,7 +858,7 @@
                     <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                       <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
                         <TitledBorder title="2nd level vert.gap">
-                          <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.panel2levelVertGap.title" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                          <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.panel2levelVertGap.title" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                         </TitledBorder>
                       </Border>
                     </Property>
@@ -895,7 +895,7 @@
                     <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                       <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
                         <TitledBorder title="PlantUML security (restart required)">
-                          <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.panelPlantUmlSecurity.title" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                          <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.panelPlantUmlSecurity.title" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                         </TitledBorder>
                       </Border>
                     </Property>
@@ -932,7 +932,7 @@
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
                     <TitledBorder title="Misc">
-                      <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.panelMisc.title" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.panelMisc.title" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                     </TitledBorder>
                   </Border>
                 </Property>
@@ -948,7 +948,7 @@
                 <Component class="javax.swing.JCheckBox" name="checkboxUseInsideBrowser">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.checkPreferInternalBrowser" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.checkPreferInternalBrowser" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <Events>
@@ -963,7 +963,7 @@
                 <Component class="javax.swing.JCheckBox" name="checkboxRelativePathsForFilesInTheProject">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.checkUseRelativePaths" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.checkUseRelativePaths" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <Events>
@@ -978,7 +978,7 @@
                 <Component class="javax.swing.JCheckBox" name="checkBoxUnfoldCollapsedTarget">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.checkUnfoldCollapsedDropTarget" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.checkUnfoldCollapsedDropTarget" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <Events>
@@ -993,7 +993,7 @@
                 <Component class="javax.swing.JCheckBox" name="checkBoxCopyColorInfoToNewAllowed">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.checkCopyParentColorIntoNewChild" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.checkCopyParentColorIntoNewChild" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <Events>
@@ -1008,7 +1008,7 @@
                 <Component class="javax.swing.JCheckBox" name="checkBoxKnowledgeFolderAutogenerationAllowed">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.checkEnableAutocreationKnowledgeFolder" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.checkEnableAutocreationKnowledgeFolder" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <Events>
@@ -1025,7 +1025,7 @@
                     <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                       <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
                         <TitledBorder title="Mind map topic text font">
-                          <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.panelTextFont.title" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                          <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.panelTextFont.title" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                         </TitledBorder>
                       </Border>
                     </Property>
@@ -1058,7 +1058,7 @@
                     <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                       <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
                         <TitledBorder title="Key shortcuts">
-                          <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.ShortCutsTitle" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+                          <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.ShortCutsTitle" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                         </TitledBorder>
                       </Border>
                     </Property>
@@ -1074,7 +1074,7 @@
                     <Component class="javax.swing.JButton" name="buttonOpenShortcutEditor">
                       <Properties>
                         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                          <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.ShortCutsButtonText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;com/igormaznitsa/nbmindmap/i18n/Bundle&quot;).getString(&quot;{key}&quot;)"/>
+                          <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="MMDCfgPanel.ShortCutsButtonText" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                         </Property>
                       </Properties>
                       <Events>
@@ -1091,7 +1091,7 @@
                         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                           <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
                             <TitledBorder title="Activator to scale with wheel">
-                              <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.panelScaleWithWheel.title" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                              <ResourceString PropertyName="titleX" bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.panelScaleWithWheel.title" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                             </TitledBorder>
                           </Border>
                         </Property>
@@ -1146,7 +1146,7 @@
                 <Component class="javax.swing.JCheckBox" name="checkboxMetricsAllowed">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.checkEnableMetricsUpload" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.checkEnableMetricsUpload" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <Constraints>
@@ -1158,7 +1158,7 @@
                 <Component class="javax.swing.JCheckBox" name="checkboxTrimTopicText">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.checkTrimTopicText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.checkTrimTopicText" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <Events>
@@ -1173,7 +1173,7 @@
                 <Component class="javax.swing.JCheckBox" name="checkBoxShowHiddenFiles">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.checkShowHiddenFiles" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.checkShowHiddenFiles" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <Events>
@@ -1188,7 +1188,7 @@
                 <Component class="javax.swing.JCheckBox" name="checkBoxSmartTextPaste">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.checkSmartTextPaste" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.checkSmartTextPaste" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <Events>
@@ -1203,7 +1203,7 @@
                 <Component class="javax.swing.JCheckBox" name="checkBoxBackupLastEdit">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.checkAutoBackupLastEdit" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.checkAutoBackupLastEdit" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <Events>
@@ -1232,7 +1232,7 @@
                       <Image iconType="3" name="/icons/info16.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.buttonAbout" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.buttonAbout" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <Events>
@@ -1247,10 +1247,10 @@
                 <Component class="com.igormaznitsa.sciareto.ui.misc.DonateButton" name="donateButton1">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.buttonDonate" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.buttonDonate" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                     </Property>
                     <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.buttonDonate.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.buttonDonate.tooltip" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <Constraints>
@@ -1280,7 +1280,7 @@
                       <Image iconType="3" name="/menu_icons/stop.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.buttonResetToDefault" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.buttonResetToDefault" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <Events>
@@ -1319,7 +1319,7 @@
                       <Image iconType="3" name="/icons/document_export16.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.buttonExportToFile" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.buttonExportToFile" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <Events>
@@ -1337,7 +1337,7 @@
                       <Image iconType="3" name="/icons/document_import16.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.buttonImportFromFile" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.buttonImportFromFile" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <Events>
@@ -1355,9 +1355,11 @@
                       <Image iconType="3" name="/icons/file_manager.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.buttonSystemFileExtensions" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.buttonSystemFileExtensions" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
                     </Property>
-                    <Property name="toolTipText" type="java.lang.String" value="File extensions which should be opened in system browser"/>
+                    <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                      <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="PreferencesPanel.buttonSystemFileExtensions.tooltip" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
+                    </Property>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonExtensionsOpenInSystemActionPerformed"/>

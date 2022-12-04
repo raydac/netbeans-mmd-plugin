@@ -18,9 +18,8 @@
 
 package com.igormaznitsa.sciareto.ui.editors;
 
-import static com.igormaznitsa.sciareto.ui.UiUtils.findTextBundle;
-
 import com.igormaznitsa.sciareto.Context;
+import com.igormaznitsa.sciareto.ui.SrI18n;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import java.awt.GridBagConstraints;
 import java.io.File;
@@ -64,7 +63,7 @@ public final class PlantUmlTextEditor extends AbstractPlUmlEditor {
       @Override
       @Nonnull
       public String getDescription() {
-        return findTextBundle().getString("editorAbstractPlUml.fileFilter.puml.description");
+        return SrI18n.getInstance().findBundle().getString("editorAbstractPlUml.fileFilter.puml.description");
       }
     };
   }

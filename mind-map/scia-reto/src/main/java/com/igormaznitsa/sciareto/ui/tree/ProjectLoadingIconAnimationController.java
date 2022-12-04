@@ -82,11 +82,7 @@ public final class ProjectLoadingIconAnimationController {
   }
 
   public void unregisterLoadingProject(@Nonnull final NodeProject project) {
-    for (final LoadingIconRedrawer r : registeredRedrawers) {
-      if (r.path.getLastPathComponent() == project) {
-        registeredRedrawers.remove(r);
-      }
-    }
+    registeredRedrawers.removeIf(r -> r.path.getLastPathComponent() == project);
   }
 
  

@@ -28,6 +28,7 @@ import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.ide.IDEBridgeFactory;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.SciaRetoStarter;
@@ -94,12 +95,6 @@ public final class UiUtils {
     } catch (URISyntaxException ex) {
       throw new Error("Unexpected exception", ex); //NOI18N
     }
-  }
-
-  @Nonnull
-  public static ResourceBundle findTextBundle() {
-    return getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle", IDEBridgeFactory.findInstance()
-        .getIDELocale());
   }
 
   private UiUtils() {
@@ -360,7 +355,7 @@ public final class UiUtils {
       } catch (URISyntaxException ex) {
         DialogProviderManager.getInstance().getDialogProvider()
             .msgError(SciaRetoStarter.getApplicationFrame(),
-                String.format(findTextBundle().getString("NbUtils.errMsgIllegalURI"), text));
+                String.format(MmdI18n.getInstance().findBundle().getString("NbUtils.errMsgIllegalURI"), text));
         return null;
       }
     } else {
@@ -407,7 +402,7 @@ public final class UiUtils {
         DialogProviderManager.getInstance().getDialogProvider()
             .msgError(SciaRetoStarter.getApplicationFrame(),
                 String.format(
-                    findTextBundle().getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"),
+                    SrI18n.getInstance().findBundle().getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"),
                     result.getFilePathWithLine().getPath()));
         result = null;
       }

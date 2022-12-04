@@ -25,6 +25,7 @@ import static com.igormaznitsa.sciareto.preferences.PrefUtils.ENV_PLANTUML_LIMIT
 import static com.igormaznitsa.sciareto.preferences.PrefUtils.ENV_PLANTUML_SECURITY_PROFILE;
 
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
+import java.util.Locale;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

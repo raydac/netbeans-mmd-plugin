@@ -17,14 +17,13 @@
  */
 package com.igormaznitsa.sciareto.ui.misc;
 
-import static com.igormaznitsa.sciareto.ui.UiUtils.findTextBundle;
-
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.colorpicker.ColorChooser;
 import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
+import com.igormaznitsa.sciareto.ui.SrI18n;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 
 import javax.annotation.Nonnull;
@@ -66,7 +65,7 @@ public final class ColorChooserButton extends JButton {
 
         if (DialogProviderManager.getInstance().getDialogProvider()
                 .msgOkCancel(ownerWindow == null ? SciaRetoStarter.getApplicationFrame() : ownerWindow,
-                        String.format(findTextBundle().getString("ColorChoosingButton.dialogTitle"),
+                        String.format(SrI18n.getInstance().findBundle().getString("ColorChoosingButton.dialogTitle"),
                                 getText()),
                         colorChooser.getPanel())) {
           final Color selectedColor = colorChooser.getColor();

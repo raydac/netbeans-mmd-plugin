@@ -18,8 +18,6 @@
 
 package com.igormaznitsa.sciareto.ui;
 
-import static com.igormaznitsa.sciareto.ui.UiUtils.findTextBundle;
-
 import com.igormaznitsa.meta.common.utils.Assertions;
 import java.awt.Color;
 import java.awt.Cursor;
@@ -43,8 +41,8 @@ public class ScaleStatusIndicator extends JLabel {
     super();
     this.observableObject = Assertions.assertNotNull(observableObject);
     this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-    this.setToolTipText(findTextBundle().getString("scaleIndicator.tooltip"));
-    this.textTemplate = findTextBundle().getString("scaleIndicator.text");
+    this.setToolTipText(SrI18n.getInstance().findBundle().getString("scaleIndicator.tooltip"));
+    this.textTemplate = SrI18n.getInstance().findBundle().getString("scaleIndicator.text");
     this.setBackground(darkScheme ? Color.DARK_GRAY.brighter() : new Color(0xf7ffc8));
     this.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
     this.setForeground(darkScheme ? Color.YELLOW.darker() : Color.BLACK);

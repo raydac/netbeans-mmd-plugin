@@ -102,8 +102,7 @@ public final class FileEditPanel extends javax.swing.JPanel {
         setLayout(new java.awt.GridBagLayout());
 
         labelBrowseCurrentLink.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/file_link.png"))); // NOI18N
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
-        labelBrowseCurrentLink.setToolTipText(bundle.getString("panelFileEdit.clickIcon.tooltip")); // NOI18N
+        labelBrowseCurrentLink.setToolTipText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("panelFileEdit.clickIcon.tooltip")); // NOI18N
         labelBrowseCurrentLink.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         labelBrowseCurrentLink.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         labelBrowseCurrentLink.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -121,7 +120,7 @@ public final class FileEditPanel extends javax.swing.JPanel {
         add(textFieldFilePath, gridBagConstraints);
 
         buttonChooseFile.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/file_manager.png"))); // NOI18N
-        buttonChooseFile.setToolTipText(bundle.getString("panelFileEdit.tooltipSelectFile")); // NOI18N
+        buttonChooseFile.setToolTipText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("panelFileEdit.tooltipSelectFile")); // NOI18N
         buttonChooseFile.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonChooseFileActionPerformed(evt);
@@ -132,7 +131,7 @@ public final class FileEditPanel extends javax.swing.JPanel {
         add(buttonChooseFile, gridBagConstraints);
 
         buttonReset.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/cross16.png"))); // NOI18N
-        buttonReset.setToolTipText(bundle.getString("panelFileEdit.tooltipClearValue")); // NOI18N
+        buttonReset.setToolTipText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("panelFileEdit.tooltipClearValue")); // NOI18N
         buttonReset.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonResetActionPerformed(evt);
@@ -144,7 +143,7 @@ public final class FileEditPanel extends javax.swing.JPanel {
 
         optionPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
-        checkBoxShowFileInSystem.setText(bundle.getString("panelFileEdit.checkboxOpenInSystemBrowser")); // NOI18N
+        checkBoxShowFileInSystem.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("panelFileEdit.checkboxOpenInSystemBrowser")); // NOI18N
         optionPanel.add(checkBoxShowFileInSystem);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
