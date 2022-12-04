@@ -1,0 +1,50 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" 
+  "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Scia Reto Help</title>
+    <style>
+      body {
+        width: 75%
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Scia Reto editor</h1>
+    <hr>
+    <h2>Project</h2>
+    <p>The first step is either select or create a project. Because initially the editor was developed for software projects, "project" means just a folder. You can create new project through <b>File-&gt;New project</b> or choose existing folder through <b>File-&gt;Open project</b>. Opened project will be remembered and it will be opened automatically during next start of the application. Opened project will be shown in the project tree panel. You can close opened project in any moment, "close" means just removing project from panel without any deletion of the folder on disk.</p>
+    <h2>Files</h2>
+    <p>Main work item in the editor is a file, a file can be created in a project folder through pop-up menu, just activate pop-up menu for a project folder and select needed file format in <b>New...</b>. If you want open a file then just click twice on needed file in project tree. If you want open the file in associated system browser then activate pop-up menu for the file and select <b>Open in System</b>. File can be also removed through <b>Delete</b> and in the case the file will be removed from disk.</p>
+    <h2>Mind maps</h2>
+    <p>Mind map file (with *.mmd extension) will be opened in graphical view and by default it has only one root topic node. If you want add new nodes then:</p>
+    <ul>
+      <li>Select mind node with mouse click</li>
+      <li>Activate pop-up</li>
+      <li>Click <b>Add child</b></li>
+      <li>Also you can add new node by <b>TAB</b></li>
+    </ul>
+    <p>Pop-up menu is the main way for manipulations with a mind map but also there are some keyboard shortcuts, the main keyboard shortcuts are <b>TAB</b>(to add new child node) and <b>ENTER</b>(to add sibling node), you can navigate between nodes with cursor keys.</p>
+    <img src="./popup_menu.png"></img>
+    <h2>PlantUML files</h2>
+    <p>There is embedded editor of PlantUML files, but before you have to install <a href="https://www.graphviz.org/download/">Graphviz graph visualization software</a>.</p>
+    <p>By default any plantUML editor is opened in view mode, if you want edit plantUML script then you should open script editor panel in the top part of the page, you can make that through either pressing button <b>Edit script</b> or just drag the top page border by mouse.</p>
+    <p>During script edit operations, the view is updated automatically (if <b>Auto refresh</b> is on) after some time delay, the view is refreshed automatically also just after document save.</p>
+    <h2>F.A.Q.</h2>
+    <h3>How to make multiline text in mind map nodes?</h3>
+    <p>By default ENTER stops node text edit but if press <b>SHIFT+ENTER</b> then next line will be added.</p>
+    <h3>How quickly add link to a file?</h3>
+    <p>Mind map supports drag-n-drop operations so that just drag file from project tree by mouse and drop it over needed mind map node.</p>
+    <h3>How quickly create jump between nodes?</h3>
+    <p>Press CNTRL and drag target node by mouse, drop it over node where jump should be presented.</p>
+    <h3>How quickly hide/show project tree panel?</h3>
+    <p>Mouse double click on editor tab allows quickly hide/show project tree panel.</p>
+    <h3>How to select render quality?</h3>
+    <p>You can choose render quality through <b>Edit-&gt;Preferences-&gt;Render quality</b></p>
+    <h3>Where edit the list of keyboard shortcuts?</h3>
+    <p>Editable list of keyboard shortcuts is available through <b>Edit-&gt;Preferences-&gt;Edit keyboard shortcuts</b></p>
+    <h3>Added images is rescaled, why?</h3>
+    <p>Added images are saved inside text document as BASE64 encoded PNG images, it is very easy to add huge image and kill any possibility to process document, so that by default image is rescaled to have width and height no more than 350 px, It is possible to change the value through Java system property <i>mmap.max.image.side.size</i></p>
+  </body>
+</html>

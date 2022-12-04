@@ -19,6 +19,7 @@
 package com.igormaznitsa.sciareto.ui.editors;
 
 import com.igormaznitsa.sciareto.Context;
+import com.igormaznitsa.sciareto.ui.LocalizationController;
 import com.igormaznitsa.sciareto.ui.SrI18n;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import java.awt.GridBagConstraints;
@@ -72,7 +73,8 @@ public final class PlantUmlTextEditor extends AbstractPlUmlEditor {
   protected void addComponentsToLeftPart(@Nonnull final JPanel menuPanel,
                                          @Nonnull final GridBagConstraints constraints) {
     menuPanel.add(makeLinkLabel(bundle.getString("editorPlantUml.buttonPlantUmlManual.title"),
-        () -> UiUtils.openLocalResourceInDesktop("help/PlantUML_Language_Reference_Guide_en.pdf"),
+        () -> UiUtils.openLocalResourceInDesktop(String.format("help/PlantUML_Language_Reference_Guide_%s.pdf",
+            LocalizationController.getInstance().getLanguage().getLocale().getLanguage())),
         bundle.getString("editorPlantUml.buttonPlantUmlManual.tooltip"), ICON_INFO), constraints);
     menuPanel.add(makeLinkLabel(bundle.getString("editorPlantUml.buttonAsciiMathManual.title"),
         "http://asciimath.org/", bundle.getString("editorPlantUml.buttonAsciiMathManual.tooltip"),

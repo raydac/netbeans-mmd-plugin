@@ -116,7 +116,7 @@ public final class MindMapPanelConfig implements Serializable {
   }
 
   public MindMapPanelConfig() {
-    this.font = findDefaultFont(Font.BOLD, 18);
+    this.font = findDefaultFont(Font.PLAIN, 18);
     if (SystemUtils.IS_OS_MAC) {
       // key map for MAC
       this.mapShortCut.put(KEY_ADD_CHILD_AND_START_EDIT,

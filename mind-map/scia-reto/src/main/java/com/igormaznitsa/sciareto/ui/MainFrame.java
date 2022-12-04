@@ -2040,7 +2040,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   }//GEN-LAST:event_menuHelpPLantUmpManualActionPerformed
 
   private void menuHelpHelpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuHelpHelpActionPerformed
-    UiUtils.openLocalResourceInDesktop("help/index.html");
+    UiUtils.openLocalResourceInDesktop(String.format("help/index_%s.html", LocalizationController.getInstance().getLanguage().getLocale().getLanguage()));
   }//GEN-LAST:event_menuHelpHelpActionPerformed
 
   private void menuViewMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_menuViewMenuSelected
