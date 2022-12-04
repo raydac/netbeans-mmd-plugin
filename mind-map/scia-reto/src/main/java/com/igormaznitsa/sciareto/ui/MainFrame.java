@@ -327,8 +327,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       }
       menuItem.addActionListener((@Nonnull final ActionEvent e) -> {
         try {
-
           UIManager.setLookAndFeel(info.getClassName());
+          LocalizationController.getInstance().getLanguage().activate();
           SwingUtilities.updateComponentTreeUI(theInstance);
           PreferencesManager.getInstance().getPreferences()
               .put(SciaRetoStarter.PROPERTY_LOOKANDFEEL, info.getClassName());
@@ -349,6 +349,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         .sorted(Comparator.comparing(UIManager.LookAndFeelInfo::getName))
         .forEach(lfRegistrator);
     
+    fillLanguageMenu();
     fillScaleUiMenu();
     
     if (SystemUtils.isMac()) {
@@ -408,6 +409,27 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     this.explorerTree.focusToFirstElement();
   }
 
+  private void fillLanguageMenu() {
+      final LocalizationController.Language selected = LocalizationController.getInstance().getLanguage();
+      final ButtonGroup langButtonGroup = new ButtonGroup();
+      Stream.of(LocalizationController.Language.values())
+              .forEach(lang -> {
+                  final JRadioButtonMenuItem langMenuItem = new JRadioButtonMenuItem(lang.getTitle());
+                  langMenuItem.setSelected(lang == selected);
+                  langMenuItem.addItemListener(x -> {
+                      if (x.getStateChange() == ItemEvent.SELECTED) {
+                          LOGGER.info("Set language: " + lang);
+                          LocalizationController.getInstance().setLanguage(lang);
+                          SwingUtilities.updateComponentTreeUI(this);
+                          DialogProviderManager.getInstance().getDialogProvider()
+                                  .msgWarn(this, SrI18n.getInstance().findBundle().getString("mainFrame.languageChange.notification"));
+                      }
+                  });
+                  langButtonGroup.add(langMenuItem);
+                  this.menuLanguage.add(langMenuItem);
+              });
+  }
+  
   private void fillScaleUiMenu() {
     final String selectedScale = UiUtils.loadUiScaleFactor();
 
@@ -1023,6 +1045,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         jSeparator5 = new javax.swing.JPopupMenu.Separator();
         menuPreferences = new javax.swing.JMenuItem();
         menuView = new javax.swing.JMenu();
+        menuLanguage = new javax.swing.JMenu();
         menuViewUIScale = new javax.swing.JMenu();
         menuFullScreen = new javax.swing.JMenuItem();
         menuLookAndFeel = new javax.swing.JMenu();
@@ -1259,6 +1282,10 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
                 menuViewMenuSelected(evt);
             }
         });
+
+        menuLanguage.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/language16.png"))); // NOI18N
+        menuLanguage.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("mainFrame.menuLanguage")); // NOI18N
+        menuView.add(menuLanguage);
 
         menuViewUIScale.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/scale_image.png"))); // NOI18N
         menuViewUIScale.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("mainMenu.itemView.itemUiScale")); // NOI18N
@@ -2164,6 +2191,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     private javax.swing.JMenu menuHelp;
     private javax.swing.JMenuItem menuHelpHelp;
     private javax.swing.JMenuItem menuHelpPLantUmpManual;
+    private javax.swing.JMenu menuLanguage;
     private javax.swing.JMenu menuLookAndFeel;
     private javax.swing.JMenuItem menuMakeDonation;
     private javax.swing.JMenu menuNavigate;

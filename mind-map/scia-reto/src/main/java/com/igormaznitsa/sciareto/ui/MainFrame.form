@@ -295,6 +295,16 @@
             <EventHandler event="menuSelected" listener="javax.swing.event.MenuListener" parameters="javax.swing.event.MenuEvent" handler="menuViewMenuSelected"/>
           </Events>
           <SubComponents>
+            <Menu class="javax.swing.JMenu" name="menuLanguage">
+              <Properties>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/icons/language16.png"/>
+                </Property>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainFrame.menuLanguage" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
+                </Property>
+              </Properties>
+            </Menu>
             <Menu class="javax.swing.JMenu" name="menuViewUIScale">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
