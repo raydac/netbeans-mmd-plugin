@@ -88,16 +88,15 @@ import java.awt.image.BufferedImage;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Predicate;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
@@ -112,6 +111,9 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import org.apache.commons.text.StringEscapeUtils;
 
+/**
+ *
+ */
 public class MindMapPanel extends JComponent implements ClipboardOwner {
 
   public static final long serialVersionUID = 2783412123454232L;
@@ -132,8 +134,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   private static final int DRAG_POSITION_RIGHT = 4;
   private final MindMapPanelController controller;
   private final AtomicBoolean disposed = new AtomicBoolean();
-  private final ReentrantLock panelLocker = new ReentrantLock();
-  private final Map<String, Object> sessionObjects = new HashMap<>();
+  private final Map<String, Object> sessionObjects = new ConcurrentHashMap<>();
   private final List<MindMapListener> mindMapListeners = new CopyOnWriteArrayList<>();
   private final JTextArea textEditor = UI_COMPO_FACTORY.makeTextArea();
   private final JPanel textEditorPanel = UI_COMPO_FACTORY.makePanel();
@@ -172,75 +173,72 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
 
       @Override
       public void keyPressed(final KeyEvent e) {
-        if (lockIfNotDisposed()) {
-          try {
-            switch (e.getKeyCode()) {
-              case KeyEvent.VK_ENTER: {
+        if (isDisposed()) {
+          return;
+        }
+        if (!e.isConsumed()) {
+          switch (e.getKeyCode()) {
+            case KeyEvent.VK_ENTER: {
+              e.consume();
+            }
+            break;
+            case KeyEvent.VK_TAB: {
+              if ((e.getModifiers() & ALL_SUPPORTED_MODIFIERS) == 0) {
                 e.consume();
-              }
-              break;
-              case KeyEvent.VK_TAB: {
-                if ((e.getModifiers() & ALL_SUPPORTED_MODIFIERS) == 0) {
-                  e.consume();
-                  final Topic edited = elementUnderEdit.getModel();
-                  final int[] topicPosition = edited.getPositionPath();
-                  endEdit(true);
-                  final Topic theTopic = model.findAtPosition(topicPosition);
-                  if (theTopic != null) {
-                    makeNewChildAndStartEdit(theTopic, null);
-                  }
+                final Topic edited = elementUnderEdit.getModel();
+                final int[] topicPosition = edited.getPositionPath();
+                endEdit(true);
+                final Topic theTopic = model.findAtPosition(topicPosition);
+                if (theTopic != null) {
+                  makeNewChildAndStartEdit(theTopic, null);
                 }
               }
-              break;
-              default:
-                break;
             }
-          } finally {
-            unlock();
+            break;
+            default:
+              break;
           }
         }
       }
 
       @Override
       public void keyTyped(final KeyEvent e) {
-        if (lockIfNotDisposed()) {
-          try {
-            if (config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_TEXT_NEXT_LINE, e)) {
-              e.consume();
-              textEditor.insert("\n", textEditor.getCaretPosition());
-            } else if (e.getKeyChar() == KeyEvent.VK_ENTER &&
-                (e.getModifiers() & ALL_SUPPORTED_MODIFIERS) == 0) {
-              e.consume();
-              endEdit(true);
-            }
-          } finally {
-            unlock();
+        if (isDisposed()) {
+          return;
+        }
+        if (!e.isConsumed()) {
+          if (config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_TEXT_NEXT_LINE, e)) {
+            e.consume();
+            textEditor.insert("\n", textEditor.getCaretPosition());
+          } else if (e.getKeyChar() == KeyEvent.VK_ENTER &&
+              (e.getModifiers() & ALL_SUPPORTED_MODIFIERS) == 0) {
+            e.consume();
+            endEdit(true);
           }
         }
       }
 
       @Override
       public void keyReleased(final KeyEvent e) {
-        if (lockIfNotDisposed()) {
-          try {
-            if (config.isKeyEvent(MindMapPanelConfig.KEY_CANCEL_EDIT, e)) {
-              e.consume();
-              final Topic edited = elementUnderEdit == null ? null : elementUnderEdit.getModel();
-              endEdit(false);
-              if (edited != null && controller.canTopicBeDeleted(MindMapPanel.this, edited)) {
-                deleteTopics(false, edited);
-                if (pathToPrevTopicBeforeEdit != null) {
-                  final int[] path = pathToPrevTopicBeforeEdit;
-                  pathToPrevTopicBeforeEdit = null;
-                  final Topic topic = model.findAtPosition(path);
-                  if (topic != null) {
-                    select(topic, false);
-                  }
+        if (isDisposed()) {
+          return;
+        }
+        if (!e.isConsumed()) {
+          if (config.isKeyEvent(MindMapPanelConfig.KEY_CANCEL_EDIT, e)) {
+            e.consume();
+            final Topic edited = elementUnderEdit == null ? null : elementUnderEdit.getModel();
+            endEdit(false);
+            if (edited != null && controller.canTopicBeDeleted(MindMapPanel.this, edited)) {
+              deleteTopics(false, edited);
+              if (pathToPrevTopicBeforeEdit != null) {
+                final int[] path = pathToPrevTopicBeforeEdit;
+                pathToPrevTopicBeforeEdit = null;
+                final Topic topic = model.findAtPosition(path);
+                if (topic != null) {
+                  select(topic, false);
                 }
               }
             }
-          } finally {
-            unlock();
           }
         }
       }
@@ -249,49 +247,43 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
     this.textEditor.getDocument().addDocumentListener(new DocumentListener() {
 
       private void updateEditorPanelSize(final Dimension newSize) {
-        if (lockIfNotDisposed()) {
-          try {
-            final Dimension editorPanelMinSize = textEditorPanel.getMinimumSize();
-            final Dimension newDimension =
-                new Dimension(Math.max(editorPanelMinSize.width, newSize.width),
-                    Math.max(editorPanelMinSize.height, newSize.height));
+        final Dimension editorPanelMinSize = textEditorPanel.getMinimumSize();
+        final Dimension newDimension =
+            new Dimension(Math.max(editorPanelMinSize.width, newSize.width),
+                Math.max(editorPanelMinSize.height, newSize.height));
 
-            final Rectangle editorBounds = textEditorPanel.getBounds();
-            editorBounds.setSize(newDimension);
+        final Rectangle editorBounds = textEditorPanel.getBounds();
+        editorBounds.setSize(newDimension);
 
-            final Rectangle mainPanelBounds = MindMapPanel.this.getBounds();
+        final Rectangle mainPanelBounds = MindMapPanel.this.getBounds();
 
-            if (!mainPanelBounds.contains(editorBounds)) {
-              double ex = editorBounds.getX();
-              double ey = editorBounds.getY();
-              double ew = editorBounds.getWidth();
-              double eh = editorBounds.getHeight();
+        if (!mainPanelBounds.contains(editorBounds)) {
+          double ex = editorBounds.getX();
+          double ey = editorBounds.getY();
+          double ew = editorBounds.getWidth();
+          double eh = editorBounds.getHeight();
 
-              if (ex < 0.0d) {
-                ew -= ex;
-                ex = 0.0d;
-              }
-              if (ey < 0.0d) {
-                eh -= ey;
-                ey = 0.0d;
-              }
-
-              if (ex + ew > mainPanelBounds.getWidth()) {
-                ex = mainPanelBounds.getWidth() - ew;
-              }
-              if (ey + eh > mainPanelBounds.getHeight()) {
-                ey = mainPanelBounds.getHeight() - eh;
-              }
-
-              editorBounds.setRect(ex, ey, ew, eh);
-            }
-
-            textEditorPanel.setBounds(editorBounds);
-            textEditorPanel.repaint();
-          } finally {
-            unlock();
+          if (ex < 0.0d) {
+            ew -= ex;
+            ex = 0.0d;
           }
+          if (ey < 0.0d) {
+            eh -= ey;
+            ey = 0.0d;
+          }
+
+          if (ex + ew > mainPanelBounds.getWidth()) {
+            ex = mainPanelBounds.getWidth() - ew;
+          }
+          if (ey + eh > mainPanelBounds.getHeight()) {
+            ey = mainPanelBounds.getHeight() - eh;
+          }
+
+          editorBounds.setRect(ex, ey, ew, eh);
         }
+
+        textEditorPanel.setBounds(editorBounds);
+        textEditorPanel.repaint();
       }
 
       private void callUpdateEditorPanelSize() {
@@ -319,14 +311,11 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
     final KeyAdapter keyAdapter = new KeyAdapter() {
       @Override
       public void keyPressed(final KeyEvent e) {
-        if (lockIfNotDisposed()) {
-          try {
-            if (!e.isConsumed()) {
-              fireNotificationNonConsumedKeyEvent(e, KeyEventType.PRESSED);
-            }
-          } finally {
-            unlock();
-          }
+        if (isDisposed()) {
+          return;
+        }
+        if (!e.isConsumed()) {
+          fireNotificationNonConsumedKeyEvent(e, KeyEventType.PRESSED);
         }
       }
 
@@ -355,105 +344,102 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
 
       @Override
       public void keyTyped(final KeyEvent e) {
-        if (lockIfNotDisposed()) {
-          try {
-            this.processTypedKeyInternal(e);
-            if (!e.isConsumed()) {
-              fireNotificationNonConsumedKeyEvent(e, KeyEventType.TYPED);
-            }
-          } finally {
-            unlock();
+        if (isDisposed()) {
+          return;
+        }
+        if (!e.isConsumed()) {
+          this.processTypedKeyInternal(e);
+          if (!e.isConsumed()) {
+            fireNotificationNonConsumedKeyEvent(e, KeyEventType.TYPED);
           }
         }
       }
 
       @Override
       public void keyReleased(final KeyEvent e) {
-        if (lockIfNotDisposed()) {
-          try {
-            if ((e.getKeyCode() >= KeyEvent.VK_F1 && e.getKeyCode() <= KeyEvent.VK_F12)
-                || e.getKeyCode() == KeyEvent.VK_INSERT) {
-              this.processTypedKeyInternal(e);
+        if (isDisposed()) {
+          return;
+        }
+
+        if (!e.isConsumed()) {
+          if ((e.getKeyCode() >= KeyEvent.VK_F1 && e.getKeyCode() <= KeyEvent.VK_F12)
+              || e.getKeyCode() == KeyEvent.VK_INSERT) {
+            this.processTypedKeyInternal(e);
+          }
+
+          if (!e.isConsumed()) {
+            if (e.getKeyCode() == KeyEvent.VK_CONTEXT_MENU) {
+              e.consume();
+              processContextMenuKey();
+            } else if (config.isKeyEvent(MindMapPanelConfig.KEY_SHOW_POPUP, e)) {
+              e.consume();
+              processPopUpForShortcut();
+            } else if (config.isKeyEvent(MindMapPanelConfig.KEY_DELETE_TOPIC, e)) {
+              e.consume();
+              focusTo(deleteSelectedTopics(false));
+            } else if (config.isKeyEventDetected(e,
+                MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT,
+                MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT,
+                MindMapPanelConfig.KEY_FOCUS_MOVE_UP,
+                MindMapPanelConfig.KEY_FOCUS_MOVE_DOWN,
+                MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT_ADD_FOCUSED,
+                MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT_ADD_FOCUSED,
+                MindMapPanelConfig.KEY_FOCUS_MOVE_UP_ADD_FOCUSED,
+                MindMapPanelConfig.KEY_FOCUS_MOVE_DOWN_ADD_FOCUSED)) {
+              e.consume();
+              processMoveFocusByKey(e);
+            } else if (config.isKeyEvent(MindMapPanelConfig.KEY_ZOOM_IN, e)) {
+              e.consume();
+              setScale(Math.max(SCALE_MINIMUM, Math.min(getScale() + SCALE_STEP, SCALE_MAXIMUM)),
+                  false);
+              doLayout();
+              revalidate();
+              repaint();
+            } else if (config.isKeyEvent(MindMapPanelConfig.KEY_ZOOM_OUT, e)) {
+              e.consume();
+              setScale(Math.max(SCALE_MINIMUM, Math.min(getScale() - SCALE_STEP, SCALE_MAXIMUM)),
+                  false);
+              doLayout();
+              revalidate();
+              repaint();
+            } else if (config.isKeyEvent(MindMapPanelConfig.KEY_ZOOM_RESET, e)) {
+              e.consume();
+              setScale(1.0, false);
+              doLayout();
+              revalidate();
+              repaint();
+            } else if (config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_FOLD, e)
+                || config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_UNFOLD, e)
+                || config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_FOLD_ALL, e)
+                || config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_UNFOLD_ALL, e)) {
+              e.consume();
+              final List<AbstractElement> elements = new ArrayList<>();
+              for (final Topic t : getSelectedTopics()) {
+                final AbstractElement element = (AbstractElement) t.getPayload();
+                if (element != null) {
+                  elements.add(element);
+                }
+              }
+              if (!elements.isEmpty()) {
+                endEdit(false);
+                doFoldOrUnfoldTopic(elements,
+                    config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_FOLD, e) ||
+                        config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_FOLD_ALL, e),
+                    config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_FOLD, e) ||
+                        config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_UNFOLD, e)
+                );
+              }
             }
 
             if (!e.isConsumed()) {
-              if (e.getKeyCode() == KeyEvent.VK_CONTEXT_MENU) {
-                e.consume();
-                processContextMenuKey();
-              } else if (config.isKeyEvent(MindMapPanelConfig.KEY_SHOW_POPUP, e)) {
-                e.consume();
-                processPopUpForShortcut();
-              } else if (config.isKeyEvent(MindMapPanelConfig.KEY_DELETE_TOPIC, e)) {
-                e.consume();
-                focusTo(deleteSelectedTopics(false));
-              } else if (config.isKeyEventDetected(e,
-                  MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT,
-                  MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT,
-                  MindMapPanelConfig.KEY_FOCUS_MOVE_UP,
-                  MindMapPanelConfig.KEY_FOCUS_MOVE_DOWN,
-                  MindMapPanelConfig.KEY_FOCUS_MOVE_LEFT_ADD_FOCUSED,
-                  MindMapPanelConfig.KEY_FOCUS_MOVE_RIGHT_ADD_FOCUSED,
-                  MindMapPanelConfig.KEY_FOCUS_MOVE_UP_ADD_FOCUSED,
-                  MindMapPanelConfig.KEY_FOCUS_MOVE_DOWN_ADD_FOCUSED)) {
-                e.consume();
-                processMoveFocusByKey(e);
-              } else if (config.isKeyEvent(MindMapPanelConfig.KEY_ZOOM_IN, e)) {
-                e.consume();
-                setScale(Math.max(SCALE_MINIMUM, Math.min(getScale() + SCALE_STEP, SCALE_MAXIMUM)),
-                    false);
-                doLayout();
-                revalidate();
-                repaint();
-              } else if (config.isKeyEvent(MindMapPanelConfig.KEY_ZOOM_OUT, e)) {
-                e.consume();
-                setScale(Math.max(SCALE_MINIMUM, Math.min(getScale() - SCALE_STEP, SCALE_MAXIMUM)),
-                    false);
-                doLayout();
-                revalidate();
-                repaint();
-              } else if (config.isKeyEvent(MindMapPanelConfig.KEY_ZOOM_RESET, e)) {
-                e.consume();
-                setScale(1.0, false);
-                doLayout();
-                revalidate();
-                repaint();
-              } else if (config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_FOLD, e)
-                  || config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_UNFOLD, e)
-                  || config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_FOLD_ALL, e)
-                  || config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_UNFOLD_ALL, e)) {
-                e.consume();
-                final List<AbstractElement> elements = new ArrayList<>();
-                for (final Topic t : getSelectedTopics()) {
-                  final AbstractElement element = (AbstractElement) t.getPayload();
-                  if (element != null) {
-                    elements.add(element);
-                  }
-                }
-                if (!elements.isEmpty()) {
-                  endEdit(false);
-                  doFoldOrUnfoldTopic(elements,
-                      config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_FOLD, e) ||
-                          config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_FOLD_ALL, e),
-                      config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_FOLD, e) ||
-                          config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_UNFOLD, e)
-                  );
-                }
-              }
-
-              if (!e.isConsumed()) {
-                fireNotificationNonConsumedKeyEvent(e, KeyEventType.RELEASED);
-              }
+              fireNotificationNonConsumedKeyEvent(e, KeyEventType.RELEASED);
             }
-          } finally {
-            unlock();
           }
         }
       }
     };
 
     this.setFocusTraversalKeysEnabled(false);
-
-    final MindMapPanel theInstance = this;
 
     final MouseAdapter adapter = new MouseAdapter() {
 
@@ -464,153 +450,150 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
 
       @Override
       public void mouseMoved(final MouseEvent e) {
-        if (!e.isConsumed() && lockIfNotDisposed()) {
-          try {
-            if (!controller.isMouseMoveProcessingAllowed(theInstance)) {
-              return;
-            }
-            final AbstractElement element = findTopicUnderPoint(e.getPoint());
-            if (element == null) {
-              setCursor(Cursor.getDefaultCursor());
-              setToolTipText(null);
-            } else {
-              final ElementPart part = element.findPartForPoint(e.getPoint());
-              switch (part) {
-                case ICONS: {
-                  final Extra<?> extra = element.getIconBlock()
-                      .findExtraForPoint(e.getPoint().getX() - element.getBounds().getX(),
-                          e.getPoint().getY() - element.getBounds().getY());
-                  if (extra != null) {
-                    setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-                    setToolTipText(makeHtmlTooltipForExtra(extra));
-                  } else {
-                    setCursor(null);
-                    setToolTipText(null);
-                  }
-                }
-                break;
-                case VISUAL_ATTRIBUTES: {
-                  final VisualAttributePlugin plugin = element.getVisualAttributeImageBlock()
-                      .findPluginForPoint(e.getPoint().getX() - element.getBounds().getX(),
-                          e.getPoint().getY() - element.getBounds().getY());
-                  final PluginContext context = controller.makePluginContext(theInstance);
-                  if (plugin != null) {
-                    final Topic theTopic = element.getModel();
-                    if (plugin.isClickable(context, theTopic)) {
-                      setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-                    } else {
-                      setCursor(null);
-                    }
-                    setToolTipText(plugin.getToolTip(context, theTopic));
-                  } else {
-                    setCursor(null);
-                    setToolTipText(null);
-                  }
-                }
-                break;
-                case COLLAPSATOR: {
+        if (isDisposed()) {
+          return;
+        }
+        if (!e.isConsumed()) {
+          if (!controller.isMouseMoveProcessingAllowed(MindMapPanel.this)) {
+            return;
+          }
+          final AbstractElement element = findTopicUnderPoint(e.getPoint());
+          if (element == null) {
+            setCursor(Cursor.getDefaultCursor());
+            setToolTipText(null);
+          } else {
+            final ElementPart part = element.findPartForPoint(e.getPoint());
+            switch (part) {
+              case ICONS: {
+                final Extra<?> extra = element.getIconBlock()
+                    .findExtraForPoint(e.getPoint().getX() - element.getBounds().getX(),
+                        e.getPoint().getY() - element.getBounds().getY());
+                if (extra != null) {
                   setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                  setToolTipText(makeHtmlTooltipForExtra(extra));
+                } else {
+                  setCursor(null);
                   setToolTipText(null);
                 }
-                break;
-                default: {
-                  setCursor(Cursor.getDefaultCursor());
-                  setToolTipText(null);
-                }
-                break;
               }
+              break;
+              case VISUAL_ATTRIBUTES: {
+                final VisualAttributePlugin plugin = element.getVisualAttributeImageBlock()
+                    .findPluginForPoint(e.getPoint().getX() - element.getBounds().getX(),
+                        e.getPoint().getY() - element.getBounds().getY());
+                final PluginContext context = controller.makePluginContext(MindMapPanel.this);
+                if (plugin != null) {
+                  final Topic theTopic = element.getModel();
+                  if (plugin.isClickable(context, theTopic)) {
+                    setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                  } else {
+                    setCursor(null);
+                  }
+                  setToolTipText(plugin.getToolTip(context, theTopic));
+                } else {
+                  setCursor(null);
+                  setToolTipText(null);
+                }
+              }
+              break;
+              case COLLAPSATOR: {
+                setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                setToolTipText(null);
+              }
+              break;
+              default: {
+                setCursor(Cursor.getDefaultCursor());
+                setToolTipText(null);
+              }
+              break;
             }
-          } finally {
-            unlock();
           }
         }
       }
 
       @Override
       public void mousePressed(final MouseEvent e) {
-        if (!e.isConsumed() && lockIfNotDisposed()) {
+        if (isDisposed()) {
+          return;
+        }
+        if (!e.isConsumed()) {
           lastMousePressed = e.getPoint();
+          if (!controller.isMouseClickProcessingAllowed(MindMapPanel.this)) {
+            return;
+          }
           try {
-            if (!controller.isMouseClickProcessingAllowed(theInstance)) {
-              return;
-            }
-            try {
-              if (isPopupEvent(e)) {
-                mouseDragSelection = null;
-                MindMap theMap = model;
-                AbstractElement element = null;
-                if (theMap != null) {
-                  element = findTopicUnderPoint(e.getPoint());
-                }
-                processPopUp(e.getPoint(), element);
-                e.consume();
-              } else {
-                if (elementUnderEdit != null) {
-                  endEdit(!(textEditor.getText().isEmpty() && removeEditedTopicForRollback.get()));
-                }
-                mouseDragSelection = null;
+            if (isPopupEvent(e)) {
+              mouseDragSelection = null;
+              MindMap theMap = model;
+              AbstractElement element = null;
+              if (theMap != null) {
+                element = findTopicUnderPoint(e.getPoint());
               }
-            } catch (Exception ex) {
-              LOGGER.error("Error during mousePressed()", ex);
+              processPopUp(e.getPoint(), element);
+              e.consume();
+            } else {
+              if (elementUnderEdit != null) {
+                endEdit(!(textEditor.getText().isEmpty() && removeEditedTopicForRollback.get()));
+              }
+              mouseDragSelection = null;
             }
-          } finally {
-            unlock();
+          } catch (Exception ex) {
+            LOGGER.error("Error during mousePressed()", ex);
           }
         }
       }
 
       @Override
       public void mouseReleased(final MouseEvent e) {
-        if (!e.isConsumed() && lockIfNotDisposed()) {
+        if (isDisposed()) {
+          return;
+        }
+        if (!e.isConsumed()) {
+          if (!controller.isMouseClickProcessingAllowed(MindMapPanel.this)) {
+            return;
+          }
           try {
-            if (!controller.isMouseClickProcessingAllowed(theInstance)) {
-              return;
-            }
-            try {
-              if (draggedElement != null) {
-                draggedElement.updatePosition(e.getPoint());
-                if (endDragOfElement(draggedElement, destinationElement)) {
-                  doLayout();
-                  revalidate();
-                  repaint();
-                  fireNotificationMindMapChanged(true);
-                }
-              } else if (mouseDragSelection != null) {
-                final List<Topic> covered = mouseDragSelection.getAllSelectedElements(model);
-                if (e.isShiftDown()) {
-                  for (final Topic m : covered) {
-                    select(m, false);
-                  }
-                } else if (e.isControlDown()) {
-                  for (final Topic m : covered) {
-                    select(m, true);
-                  }
-                } else {
-                  removeAllSelection();
-                  for (final Topic m : covered) {
-                    select(m, false);
-                  }
-                }
-              } else if (isPopupEvent(e)) {
-                mouseDragSelection = null;
-                MindMap theMap = model;
-                AbstractElement element = null;
-                if (theMap != null) {
-                  element = findTopicUnderPoint(e.getPoint());
-                }
-                processPopUp(e.getPoint(), element);
-                e.consume();
+            if (draggedElement != null) {
+              draggedElement.updatePosition(e.getPoint());
+              if (endDragOfElement(draggedElement, destinationElement)) {
+                doLayout();
+                revalidate();
+                repaint();
+                fireNotificationMindMapChanged(true);
               }
-            } catch (Exception ex) {
-              LOGGER.error("Error during mouseReleased()", ex);
-            } finally {
+            } else if (mouseDragSelection != null) {
+              final List<Topic> covered = mouseDragSelection.getAllSelectedElements(model);
+              if (e.isShiftDown()) {
+                for (final Topic m : covered) {
+                  select(m, false);
+                }
+              } else if (e.isControlDown()) {
+                for (final Topic m : covered) {
+                  select(m, true);
+                }
+              } else {
+                removeAllSelection();
+                for (final Topic m : covered) {
+                  select(m, false);
+                }
+              }
+            } else if (isPopupEvent(e)) {
               mouseDragSelection = null;
-              draggedElement = null;
-              destinationElement = null;
-              repaint();
+              MindMap theMap = model;
+              AbstractElement element = null;
+              if (theMap != null) {
+                element = findTopicUnderPoint(e.getPoint());
+              }
+              processPopUp(e.getPoint(), element);
+              e.consume();
             }
+          } catch (Exception ex) {
+            LOGGER.error("Error during mouseReleased()", ex);
           } finally {
-            unlock();
+            mouseDragSelection = null;
+            draggedElement = null;
+            destinationElement = null;
+            repaint();
           }
         }
       }
@@ -634,52 +617,38 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
 
       @Override
       public void mouseDragged(final MouseEvent e) {
-        if (!e.isConsumed() && lockIfNotDisposed()) {
-          try {
-            if (!controller.isMouseMoveProcessingAllowed(theInstance)) {
-              return;
-            }
-            scrollRectToVisible(new Rectangle(e.getX(), e.getY(), 1, 1));
+        if (isDisposed()) {
+          return;
+        }
+        if (!e.isConsumed()) {
+          if (!controller.isMouseMoveProcessingAllowed(MindMapPanel.this)) {
+            return;
+          }
+          scrollRectToVisible(new Rectangle(e.getX(), e.getY(), 1, 1));
 
-            if (!popupMenuActive.get()) {
-              if (draggedElement == null && mouseDragSelection == null) {
-                final AbstractElement elementUnderMouse = findTopicUnderPoint(e.getPoint());
-                if (elementUnderMouse == null) {
-                  MindMap theMap = model;
-                  if (theMap != null) {
-                    final AbstractElement element = findTopicUnderPoint(e.getPoint());
-                    if (controller.isSelectionAllowed(theInstance) && element == null) {
-                      mouseDragSelection = new MouseSelectedArea(e.getPoint());
-                    }
+          if (!popupMenuActive.get()) {
+            if (draggedElement == null && mouseDragSelection == null) {
+              final AbstractElement elementUnderMouse = findTopicUnderPoint(e.getPoint());
+              if (elementUnderMouse == null) {
+                MindMap theMap = model;
+                if (theMap != null) {
+                  final AbstractElement element = findTopicUnderPoint(e.getPoint());
+                  if (controller.isSelectionAllowed(MindMapPanel.this) && element == null) {
+                    mouseDragSelection = new MouseSelectedArea(e.getPoint());
                   }
-                } else if (controller.isElementDragAllowed(theInstance)) {
-                  if (elementUnderMouse.isMoveable() &&
-                      isNonOverCollapsator(e, elementUnderMouse) && isDraggedDistanceReached(e)) {
-                    selectedTopics.clear();
+                }
+              } else if (controller.isElementDragAllowed(MindMapPanel.this)) {
+                if (elementUnderMouse.isMoveable() &&
+                    isNonOverCollapsator(e, elementUnderMouse) && isDraggedDistanceReached(e)) {
+                  selectedTopics.clear();
 
-                    final Point mouseOffset = new Point((int) Math.round(
-                        e.getPoint().getX() - elementUnderMouse.getBounds().getX()),
-                        (int) Math.round(
-                            e.getPoint().getY() - elementUnderMouse.getBounds().getY()));
-                    draggedElement = new DraggedElement(elementUnderMouse, config, mouseOffset,
-                        e.isControlDown() || e.isMetaDown() ? DraggedElement.Modifier.MAKE_JUMP :
-                            DraggedElement.Modifier.NONE, getConfiguration().getRenderQuality());
-                    draggedElement.updatePosition(e.getPoint());
-                    findDestinationElementForDragged();
-                  } else {
-                    draggedElement = null;
-                  }
-                  repaint();
-                }
-              } else if (mouseDragSelection != null) {
-                if (controller.isSelectionAllowed(theInstance)) {
-                  mouseDragSelection.update(e);
-                } else {
-                  mouseDragSelection = null;
-                }
-                repaint();
-              } else if (draggedElement != null) {
-                if (controller.isElementDragAllowed(theInstance)) {
+                  final Point mouseOffset = new Point((int) Math.round(
+                      e.getPoint().getX() - elementUnderMouse.getBounds().getX()),
+                      (int) Math.round(
+                          e.getPoint().getY() - elementUnderMouse.getBounds().getY()));
+                  draggedElement = new DraggedElement(elementUnderMouse, config, mouseOffset,
+                      e.isControlDown() || e.isMetaDown() ? DraggedElement.Modifier.MAKE_JUMP :
+                          DraggedElement.Modifier.NONE, getConfiguration().getRenderQuality());
                   draggedElement.updatePosition(e.getPoint());
                   findDestinationElementForDragged();
                 } else {
@@ -687,149 +656,163 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
                 }
                 repaint();
               }
-            } else {
-              mouseDragSelection = null;
+            } else if (mouseDragSelection != null) {
+              if (controller.isSelectionAllowed(MindMapPanel.this)) {
+                mouseDragSelection.update(e);
+              } else {
+                mouseDragSelection = null;
+              }
+              repaint();
+            } else if (draggedElement != null) {
+              if (controller.isElementDragAllowed(MindMapPanel.this)) {
+                draggedElement.updatePosition(e.getPoint());
+                findDestinationElementForDragged();
+              } else {
+                draggedElement = null;
+              }
+              repaint();
             }
-          } finally {
-            unlock();
+          } else {
+            mouseDragSelection = null;
           }
         }
       }
 
       @Override
       public void mouseWheelMoved(final MouseWheelEvent e) {
-        if (!e.isConsumed() && lockIfNotDisposed()) {
-          try {
-            if (controller.isMouseWheelProcessingAllowed(theInstance)) {
-              mouseDragSelection = null;
-              draggedElement = null;
+        if (isDisposed()) {
+          return;
+        }
+        if (!e.isConsumed()) {
+          if (controller.isMouseWheelProcessingAllowed(MindMapPanel.this)) {
+            mouseDragSelection = null;
+            draggedElement = null;
 
-              final MindMapPanelConfig theConfig = config;
+            final MindMapPanelConfig theConfig = config;
 
-              if (!e.isConsumed() && (theConfig != null &&
-                  ((e.getModifiers() & theConfig.getScaleModifiers()) ==
-                      theConfig.getScaleModifiers()))) {
-                endEdit(elementUnderEdit != null);
+            if (!e.isConsumed() && (theConfig != null &&
+                ((e.getModifiers() & theConfig.getScaleModifiers()) ==
+                    theConfig.getScaleModifiers()))) {
+              endEdit(elementUnderEdit != null);
 
-                final Dimension oldSize = mindMapImageSize.get();
+              final Dimension oldSize = mindMapImageSize.get();
 
-                final double oldScale = getScale();
-                final double curScale = ((long) (10.0d *
-                    (oldScale + (SCALE_STEP * -e.getWheelRotation()) + (SCALE_STEP / 2.0d)))) /
-                    10.0d;
-                final double newScale = Math.max(SCALE_MINIMUM, Math.min(curScale, SCALE_MAXIMUM));
+              final double oldScale = getScale();
+              final double curScale = ((long) (10.0d *
+                  (oldScale + (SCALE_STEP * -e.getWheelRotation()) + (SCALE_STEP / 2.0d)))) /
+                  10.0d;
+              final double newScale = Math.max(SCALE_MINIMUM, Math.min(curScale, SCALE_MAXIMUM));
 
-                setScale(newScale, false);
-                MindMapPanel.this.doLayout();
-                MindMapPanel.this.revalidate();
-                MindMapPanel.this.repaint();
+              setScale(newScale, false);
+              MindMapPanel.this.doLayout();
+              MindMapPanel.this.revalidate();
+              MindMapPanel.this.repaint();
 
-                final Dimension newSize = mindMapImageSize.get().getSize();
+              final Dimension newSize = mindMapImageSize.get().getSize();
 
-                fireNotificationScaledByMouse(e.getPoint(), oldScale, newScale, oldSize, newSize);
-                e.consume();
-              } else {
+              fireNotificationScaledByMouse(e.getPoint(), oldScale, newScale, oldSize, newSize);
+
+              e.consume();
+            } else {
+              if (!e.isConsumed()) {
                 sendToParent(e);
               }
             }
-          } finally {
-            unlock();
           }
         }
       }
 
       @Override
       public void mouseClicked(final MouseEvent e) {
-        if (!e.isConsumed() && lockIfNotDisposed() && !popupMenuActive.get()) {
+        if (isDisposed()) {
+          return;
+        }
+        if (!e.isConsumed() && !popupMenuActive.get()) {
           requestFocus();
-          try {
-            if (!controller.isMouseClickProcessingAllowed(theInstance)) {
-              return;
-            }
-            mouseDragSelection = null;
-            draggedElement = null;
+          if (!controller.isMouseClickProcessingAllowed(MindMapPanel.this)) {
+            return;
+          }
+          mouseDragSelection = null;
+          draggedElement = null;
 
-            MindMap theMap = model;
-            AbstractElement element = null;
-            if (theMap != null) {
-              element = findTopicUnderPoint(e.getPoint());
-            }
+          MindMap theMap = model;
+          AbstractElement element = null;
+          if (theMap != null) {
+            element = findTopicUnderPoint(e.getPoint());
+          }
 
-            final boolean isCtrlDown = e.isControlDown();
-            final boolean isShiftDown = e.isShiftDown();
+          final boolean isCtrlDown = e.isControlDown();
+          final boolean isShiftDown = e.isShiftDown();
 
-            if (element != null) {
-              final ElementPart part = element.findPartForPoint(e.getPoint());
-              if (part == ElementPart.COLLAPSATOR) {
-                fireNotificationTopicCollapsatorClick(element.getModel(), true);
-                doFoldOrUnfoldTopic(Collections.singletonList(element), !element.isCollapsed(),
-                    isCtrlDown);
-                if (selectedTopics.isEmpty() || selectedTopics.size() == 1) {
-                  removeAllSelection();
-                  select(element.getModel(), false);
-                }
-                fireNotificationTopicCollapsatorClick(element.getModel(), false);
-              } else if (!isCtrlDown) {
-                switch (part) {
-                  case VISUAL_ATTRIBUTES:
-                    final VisualAttributePlugin plugin = element.getVisualAttributeImageBlock()
-                        .findPluginForPoint(e.getPoint().getX() - element.getBounds().getX(),
-                            e.getPoint().getY() - element.getBounds().getY());
-                    boolean processedByPlugin = false;
-                    if (plugin != null) {
-                      final PluginContext context = controller.makePluginContext(theInstance);
-                      if (plugin.isClickable(context, element.getModel())) {
-                        processedByPlugin = true;
-                        try {
-                          if (plugin.onClick(context, element.getModel(),
-                              e.isShiftDown() || e.isControlDown(), e.getClickCount())) {
-                            doLayout();
-                            revalidate();
-                            repaint();
-                            fireNotificationMindMapChanged(true);
-                          }
-                        } catch (Exception ex) {
-                          LOGGER.error("Error during visual attribute processing", ex);
-                          controller.getDialogProvider(theInstance)
-                              .msgError(null, "Detectd critical error! See log!");
-                        }
-                      }
-                    }
-                    if (!processedByPlugin) {
-                      removeAllSelection();
-                      select(element.getModel(), false);
-                    }
-                    break;
-                  case ICONS:
-                    final Extra<?> extra = element.getIconBlock()
-                        .findExtraForPoint(e.getPoint().getX() - element.getBounds().getX(),
-                            e.getPoint().getY() - element.getBounds().getY());
-                    if (extra != null) {
-                      fireNotificationClickOnExtra(element.getModel(), e.getModifiers(),
-                          e.getClickCount(), extra);
-                    }
-                    break;
-                  default:
-                    if (isShiftDown) {
-                      // diapason
-                      selectSiblingDiapasone(element);
-                    } else {
-                      // only
-                      removeAllSelection();
-                      select(element.getModel(), false);
-                      if (e.getClickCount() > 1) {
-                        startEdit(element);
-                      }
-                    }
-                    break;
-                }
-              } else {
-                // group
-                select(element.getModel(), !selectedTopics.isEmpty());
+          if (element != null) {
+            final ElementPart part = element.findPartForPoint(e.getPoint());
+            if (part == ElementPart.COLLAPSATOR) {
+              fireNotificationTopicCollapsatorClick(element.getModel(), true);
+              doFoldOrUnfoldTopic(Collections.singletonList(element), !element.isCollapsed(),
+                  isCtrlDown);
+              if (selectedTopics.isEmpty() || selectedTopics.size() == 1) {
+                removeAllSelection();
+                select(element.getModel(), false);
               }
+              fireNotificationTopicCollapsatorClick(element.getModel(), false);
+            } else if (!isCtrlDown) {
+              switch (part) {
+                case VISUAL_ATTRIBUTES:
+                  final VisualAttributePlugin plugin = element.getVisualAttributeImageBlock()
+                      .findPluginForPoint(e.getPoint().getX() - element.getBounds().getX(),
+                          e.getPoint().getY() - element.getBounds().getY());
+                  boolean processedByPlugin = false;
+                  if (plugin != null) {
+                    final PluginContext context = controller.makePluginContext(MindMapPanel.this);
+                    if (plugin.isClickable(context, element.getModel())) {
+                      processedByPlugin = true;
+                      try {
+                        if (plugin.onClick(context, element.getModel(),
+                            e.isShiftDown() || e.isControlDown(), e.getClickCount())) {
+                          doLayout();
+                          revalidate();
+                          repaint();
+                          fireNotificationMindMapChanged(true);
+                        }
+                      } catch (Exception ex) {
+                        LOGGER.error("Error during visual attribute processing", ex);
+                        controller.getDialogProvider(MindMapPanel.this)
+                            .msgError(null, "Detectd critical error! See log!");
+                      }
+                    }
+                  }
+                  if (!processedByPlugin) {
+                    removeAllSelection();
+                    select(element.getModel(), false);
+                  }
+                  break;
+                case ICONS:
+                  final Extra<?> extra = element.getIconBlock()
+                      .findExtraForPoint(e.getPoint().getX() - element.getBounds().getX(),
+                          e.getPoint().getY() - element.getBounds().getY());
+                  if (extra != null) {
+                    fireNotificationClickOnExtra(element.getModel(), e.getModifiers(),
+                        e.getClickCount(), extra);
+                  }
+                  break;
+                default:
+                  if (isShiftDown) {
+                    // diapason
+                    selectSiblingDiapason(element);
+                  } else {
+                    // only
+                    removeAllSelection();
+                    select(element.getModel(), false);
+                    if (e.getClickCount() > 1) {
+                      startEdit(element);
+                    }
+                  }
+                  break;
+              }
+            } else {
+              // group
+              select(element.getModel(), !selectedTopics.isEmpty());
             }
-          } finally {
-            unlock();
           }
         }
       }
@@ -849,19 +832,13 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
       addMouseMotionListener(adapter);
       addKeyListener(keyAdapter);
 
-      if (lockIfNotDisposed()) {
-        try {
-          textEditorPanel.add(textEditor, BorderLayout.CENTER);
-          textEditorPanel.setVisible(false);
-          add(textEditorPanel);
+      textEditorPanel.add(textEditor, BorderLayout.CENTER);
+      textEditorPanel.setVisible(false);
+      add(textEditorPanel);
 
-          for (final PanelAwarePlugin p : MindMapPluginRegistry.getInstance()
-              .findFor(PanelAwarePlugin.class)) {
-            p.onPanelCreate(theInstance);
-          }
-        } finally {
-          unlock();
-        }
+      for (final PanelAwarePlugin p : MindMapPluginRegistry.getInstance()
+          .findFor(PanelAwarePlugin.class)) {
+        p.onPanelCreate(MindMapPanel.this);
       }
     });
   }
@@ -1306,7 +1283,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
     return this.uuid;
   }
 
-  private void selectSiblingDiapasone(AbstractElement element) {
+  private void selectSiblingDiapason(final AbstractElement element) {
     final AbstractElement parent = element.getParent();
     Topic selectedSibling = null;
 
@@ -1380,13 +1357,9 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
    * @since 1.4.2
    */
   public <T> T getSessionObject(final String key, final Class<T> klazz, final T def) {
-    this.lock();
-    try {
-      T result = klazz.cast(this.sessionObjects.get(key));
-      return result == null ? def : result;
-    } finally {
-      this.unlock();
-    }
+    assertNotDisposed();
+    T result = klazz.cast(this.sessionObjects.get(key));
+    return result == null ? def : result;
   }
 
   /**
@@ -1397,15 +1370,11 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
    * @since 1.4.2
    */
   public void putSessionObject(final String key, final Object obj) {
-    this.lock();
-    try {
-      if (obj == null) {
-        this.sessionObjects.remove(key);
-      } else {
-        this.sessionObjects.put(key, obj);
-      }
-    } finally {
-      this.unlock();
+    assertNotDisposed();
+    if (obj == null) {
+      this.sessionObjects.remove(key);
+    } else {
+      this.sessionObjects.put(key, obj);
     }
   }
 
@@ -1489,21 +1458,16 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   }
 
   public void refreshConfiguration() {
-    if (this.lockIfNotDisposed()) {
-      try {
-        final MindMapPanel theInstance = this;
-        final double scale = this.config.getScale();
-        this.config.makeAtomicChange(() -> {
-          config.makeFullCopyOf(controller.provideConfigForMindMapPanel(theInstance), false,
-              false);
-          config.setScale(scale);
-        });
-        invalidate();
-        repaint();
-      } finally {
-        this.unlock();
-      }
-    }
+    assertNotDisposed();
+    final MindMapPanel theInstance = this;
+    final double scale = this.config.getScale();
+    this.config.makeAtomicChange(() -> {
+      config.makeFullCopyOf(controller.provideConfigForMindMapPanel(theInstance), false,
+          false);
+      config.setScale(scale);
+    });
+    invalidate();
+    repaint();
   }
 
   private int calcDropPosition(final AbstractElement destination, final Point dropPoint) {
@@ -1740,14 +1704,8 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   }
 
   private boolean hasActiveEditor() {
-    if (lockIfNotDisposed()) {
-      try {
-        return this.elementUnderEdit != null;
-      } finally {
-        unlock();
-      }
-    }
-    return false;
+    assertNotDisposed();
+    return this.elementUnderEdit != null;
   }
 
   public boolean isShowJumps() {
@@ -1756,16 +1714,11 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   }
 
   public void setShowJumps(final boolean flag) {
-    if (lockIfNotDisposed()) {
-      try {
-        this.model.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_SHOW_JUMPS,
-            flag ? "true" : null);
-        repaint();
-        fireNotificationMindMapChanged(true);
-      } finally {
-        this.unlock();
-      }
-    }
+    assertNotDisposed();
+    this.model.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_SHOW_JUMPS,
+        flag ? "true" : null);
+    repaint();
+    fireNotificationMindMapChanged(true);
   }
 
   private Topic makeNewTopic(final Topic parent, final Topic afterTopic, final String text) {
@@ -1779,63 +1732,58 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   }
 
   public void makeNewChildAndStartEdit(final Topic parent, final Topic baseTopic) {
-    if (this.lockIfNotDisposed()) {
-      try {
-        if (parent != null) {
-          final Topic currentSelected = getFirstSelected();
-          this.pathToPrevTopicBeforeEdit =
-              currentSelected == null ? null : currentSelected.getPositionPath();
+    assertNotDisposed();
+    if (parent != null) {
+      final Topic currentSelected = getFirstSelected();
+      this.pathToPrevTopicBeforeEdit =
+          currentSelected == null ? null : currentSelected.getPositionPath();
 
-          removeAllSelection();
+      removeAllSelection();
 
-          final Topic newTopic = makeNewTopic(parent, baseTopic, "");
+      final Topic newTopic = makeNewTopic(parent, baseTopic, "");
 
-          if (this.controller.isCopyColorInfoFromParentToNewChildAllowed(this) &&
-              !parent.isRoot()) {
-            MindMapUtils.copyColorAttributes(parent, newTopic);
-          }
-
-          AbstractElement parentElement = (AbstractElement) parent.getPayload();
-          if (parentElement == null) {
-            doLayout();
-            parentElement = (AbstractElement) parent.getPayload();
-          }
-
-          if (parent.getChildren().size() != 1 && parent.getParent() == null && baseTopic == null) {
-            int numLeft = 0;
-            int numRight = 0;
-            for (final Topic t : parent.getChildren()) {
-              if (AbstractCollapsableElement.isLeftSidedTopic(t)) {
-                numLeft++;
-              } else {
-                numRight++;
-              }
-            }
-
-            AbstractCollapsableElement.makeTopicLeftSided(newTopic,
-                Utils.LTR_LANGUAGE ? numLeft < numRight : numLeft > numRight);
-          } else if (baseTopic != null && baseTopic.getPayload() != null) {
-            final AbstractElement element =
-                requireNonNull((AbstractElement) baseTopic.getPayload());
-            AbstractCollapsableElement.makeTopicLeftSided(newTopic, element.isLeftDirection());
-          }
-
-          if (parentElement instanceof AbstractCollapsableElement && parentElement.isCollapsed()) {
-            ((AbstractCollapsableElement) parentElement).setCollapse(false);
-          }
-
-          doLayout();
-          fireNotificationMindMapChanged(false);
-          removeEditedTopicForRollback.set(true);
-
-          fireNotificationEnsureTopicVisibility(newTopic);
-          select(newTopic, false);
-          startEdit((AbstractElement) newTopic.getPayload());
-          repaint();
-        }
-      } finally {
-        this.unlock();
+      if (this.controller.isCopyColorInfoFromParentToNewChildAllowed(this) &&
+          !parent.isRoot()) {
+        MindMapUtils.copyColorAttributes(parent, newTopic);
       }
+
+      AbstractElement parentElement = (AbstractElement) parent.getPayload();
+      if (parentElement == null) {
+        doLayout();
+        parentElement = (AbstractElement) parent.getPayload();
+      }
+
+      if (parent.getChildren().size() != 1 && parent.getParent() == null && baseTopic == null) {
+        int numLeft = 0;
+        int numRight = 0;
+        for (final Topic t : parent.getChildren()) {
+          if (AbstractCollapsableElement.isLeftSidedTopic(t)) {
+            numLeft++;
+          } else {
+            numRight++;
+          }
+        }
+
+        AbstractCollapsableElement.makeTopicLeftSided(newTopic,
+            Utils.LTR_LANGUAGE ? numLeft < numRight : numLeft > numRight);
+      } else if (baseTopic != null && baseTopic.getPayload() != null) {
+        final AbstractElement element =
+            requireNonNull((AbstractElement) baseTopic.getPayload());
+        AbstractCollapsableElement.makeTopicLeftSided(newTopic, element.isLeftDirection());
+      }
+
+      if (parentElement instanceof AbstractCollapsableElement && parentElement.isCollapsed()) {
+        ((AbstractCollapsableElement) parentElement).setCollapse(false);
+      }
+
+      doLayout();
+      fireNotificationMindMapChanged(false);
+      removeEditedTopicForRollback.set(true);
+
+      fireNotificationEnsureTopicVisibility(newTopic);
+      select(newTopic, false);
+      startEdit((AbstractElement) newTopic.getPayload());
+      repaint();
     }
   }
 
@@ -1906,262 +1854,197 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   }
 
   public void deleteTopics(final boolean force, final Topic... topics) {
-    if (lockIfNotDisposed()) {
-      try {
-        endEdit(false);
+    assertNotDisposed();
+    endEdit(false);
 
-        final List<ModelAwarePlugin> plugins =
-            MindMapPluginRegistry.getInstance().findFor(ModelAwarePlugin.class);
+    final List<ModelAwarePlugin> plugins =
+        MindMapPluginRegistry.getInstance().findFor(ModelAwarePlugin.class);
 
-        boolean allowed = true;
-        if (!force) {
-          for (final MindMapListener l : this.mindMapListeners) {
-            allowed &= l.allowedRemovingOfTopics(this, topics);
-          }
-        }
-
-        if (allowed) {
-          removeAllSelection();
-          for (final Topic t : topics) {
-            for (final ModelAwarePlugin p : plugins) {
-              p.onDeleteTopic(this, t);
-            }
-            this.model.removeTopic(t);
-          }
-          doLayout();
-          revalidate();
-          repaint();
-          fireNotificationMindMapChanged(true);
-        }
-      } finally {
-        unlock();
+    boolean allowed = true;
+    if (!force) {
+      for (final MindMapListener l : this.mindMapListeners) {
+        allowed &= l.allowedRemovingOfTopics(this, topics);
       }
+    }
+
+    if (allowed) {
+      removeAllSelection();
+      for (final Topic t : topics) {
+        for (final ModelAwarePlugin p : plugins) {
+          p.onDeleteTopic(this, t);
+        }
+        this.model.removeTopic(t);
+      }
+      doLayout();
+      revalidate();
+      repaint();
+      fireNotificationMindMapChanged(true);
     }
   }
 
   public void collapseOrExpandAll(final boolean collapse) {
-    if (this.lockIfNotDisposed()) {
-      try {
-        endEdit(false);
-        removeAllSelection();
+    assertNotDisposed();
+    endEdit(false);
+    removeAllSelection();
 
-        final Topic topic = this.model.getRoot();
+    final Topic topic = this.model.getRoot();
 
-        if (topic != null &&
-            MindMapUtils.foldOrUnfoldChildren(topic, collapse, Integer.MAX_VALUE)) {
-          doLayout();
-          revalidate();
-          repaint();
-          fireNotificationMindMapChanged(true);
-        }
-      } finally {
-        this.unlock();
-      }
+    if (topic != null &&
+        MindMapUtils.foldOrUnfoldChildren(topic, collapse, Integer.MAX_VALUE)) {
+      doLayout();
+      revalidate();
+      repaint();
+      fireNotificationMindMapChanged(true);
     }
   }
 
   public Topic deleteSelectedTopics(final boolean force) {
+    assertNotDisposed();
     Topic nextToFocus = null;
-    if (this.lockIfNotDisposed()) {
-      try {
-        if (!this.selectedTopics.isEmpty()) {
-          if (this.selectedTopics.size() == 1) {
-            nextToFocus = this.selectedTopics.get(0).getParent();
-          }
-
-          deleteTopics(force, this.selectedTopics.toArray(new Topic[0]));
-        }
-      } finally {
-        this.unlock();
+    if (!this.selectedTopics.isEmpty()) {
+      if (this.selectedTopics.size() == 1) {
+        nextToFocus = this.selectedTopics.get(0).getParent();
       }
+
+      deleteTopics(force, this.selectedTopics.toArray(new Topic[0]));
     }
     return nextToFocus;
   }
 
   public boolean hasSelectedTopics() {
-    if (this.lockIfNotDisposed()) {
-      try {
-        return !this.selectedTopics.isEmpty();
-      } finally {
-        this.unlock();
-      }
-    } else {
-      return false;
-    }
+    assertNotDisposed();
+    return !this.selectedTopics.isEmpty();
   }
 
   public boolean hasOnlyTopicSelected() {
-    if (this.lockIfNotDisposed()) {
-      try {
-        return this.selectedTopics.size() == 1;
-      } finally {
-        this.unlock();
-      }
-    } else {
-      return false;
-    }
+    assertNotDisposed();
+    return this.selectedTopics.size() == 1;
   }
 
   public void removeFromSelection(final Topic t) {
-    if (this.lockIfNotDisposed()) {
-      try {
-        if (this.selectedTopics.contains(t)) {
-          if (this.selectedTopics.remove(t)) {
-            fireNotificationSelectionChanged();
-          }
-          repaint();
-        }
-      } finally {
-        this.unlock();
+    assertNotDisposed();
+    if (this.selectedTopics.contains(t)) {
+      if (this.selectedTopics.remove(t)) {
+        fireNotificationSelectionChanged();
       }
+      repaint();
     }
   }
 
   public void select(final Topic t, final boolean removeIfPresented) {
-    if (this.lockIfNotDisposed()) {
-      try {
-        if (this.controller.isSelectionAllowed(this) && t != null) {
-          if (!this.selectedTopics.contains(t)) {
-            if (this.selectedTopics.add(t)) {
-              fireNotificationSelectionChanged();
-            }
-            fireNotificationEnsureTopicVisibility(t);
-            repaint();
-          } else if (removeIfPresented) {
-            removeFromSelection(t);
-          }
-        }
-      } finally {
-        this.unlock();
+    assertNotDisposed();
+    if (this.controller.isSelectionAllowed(this) && t != null) {
+      if (!this.selectedTopics.contains(t)) {
+        this.selectedTopics.add(t);
+        fireNotificationSelectionChanged();
+        fireNotificationEnsureTopicVisibility(t);
+        repaint();
+      } else if (removeIfPresented) {
+        removeFromSelection(t);
       }
     }
   }
 
   public Topic[] getSelectedTopics() {
-    this.lock();
-    try {
-      return this.selectedTopics.toArray(new Topic[0]);
-    } finally {
-      this.unlock();
-    }
+    assertNotDisposed();
+    return this.selectedTopics.toArray(new Topic[0]);
   }
 
   public void updateEditorAfterResizing() {
-    if (this.lockIfNotDisposed()) {
-      try {
-        if (this.elementUnderEdit != null) {
-          final AbstractElement element = this.elementUnderEdit;
-          final Dimension textBlockSize = new Dimension((int) element.getBounds().getWidth(),
-              (int) element.getBounds().getHeight());
-          this.textEditorPanel.setBounds((int) element.getBounds().getX(),
-              (int) element.getBounds().getY(), textBlockSize.width, textBlockSize.height);
-          this.textEditor.setMinimumSize(textBlockSize);
-          this.textEditorPanel.setVisible(true);
-          this.textEditor.requestFocus();
-        }
-      } finally {
-        this.unlock();
-      }
+    assertNotDisposed();
+    if (this.elementUnderEdit != null) {
+      final AbstractElement element = this.elementUnderEdit;
+      final Dimension textBlockSize = new Dimension((int) element.getBounds().getWidth(),
+          (int) element.getBounds().getHeight());
+      this.textEditorPanel.setBounds((int) element.getBounds().getX(),
+          (int) element.getBounds().getY(), textBlockSize.width, textBlockSize.height);
+      this.textEditor.setMinimumSize(textBlockSize);
+      this.textEditorPanel.setVisible(true);
+      this.textEditor.requestFocus();
     }
   }
 
   public void hideEditor() {
-    if (this.lockIfNotDisposed()) {
-      try {
-        this.textEditorPanel.setVisible(false);
-        this.elementUnderEdit = null;
-      } finally {
-        this.unlock();
-      }
-    }
+    assertNotDisposed();
+    this.textEditorPanel.setVisible(false);
+    this.elementUnderEdit = null;
   }
 
   public boolean endEdit(final boolean commit) {
-    boolean result = false;
-    if (this.lockIfNotDisposed()) {
-      result = this.elementUnderEdit != null;
-      try {
-        if (this.elementUnderEdit != null) {
-          final AbstractElement editedElement = this.elementUnderEdit;
-          Topic editedTopic = this.elementUnderEdit.getModel();
+    assertNotDisposed();
+    boolean result = this.elementUnderEdit != null;
+    try {
+      if (this.elementUnderEdit != null) {
+        final AbstractElement editedElement = this.elementUnderEdit;
+        Topic editedTopic = this.elementUnderEdit.getModel();
 
-          final int[] pathToEditedTopic = editedTopic.getPositionPath();
+        final int[] pathToEditedTopic = editedTopic.getPositionPath();
 
-          if (commit) {
-            this.pathToPrevTopicBeforeEdit = null;
+        if (commit) {
+          this.pathToPrevTopicBeforeEdit = null;
 
-            final String oldText = editedElement.getText();
-            String newText = this.textEditor.getText();
+          final String oldText = editedElement.getText();
+          String newText = this.textEditor.getText();
 
-            if (this.controller.isTrimTopicTextBeforeSet(this)) {
-              newText = newText.trim();
-            }
+          if (this.controller.isTrimTopicTextBeforeSet(this)) {
+            newText = newText.trim();
+          }
 
-            boolean contentChanged = false;
-            if (!oldText.equals(newText)) {
-              editedElement.setText(newText);
-              contentChanged = true;
-            }
-            this.textEditorPanel.setVisible(false);
+          boolean contentChanged = false;
+          if (!oldText.equals(newText)) {
+            editedElement.setText(newText);
+            contentChanged = true;
+          }
+          this.textEditorPanel.setVisible(false);
 
+          doLayout();
+          revalidate();
+          repaint();
+          fireNotificationEnsureTopicVisibility(editedTopic);
+
+          if (contentChanged) {
+            fireNotificationMindMapChanged(true);
+          }
+
+          editedTopic = this.model.findAtPosition(pathToEditedTopic);
+          this.focusTo(editedTopic);
+        } else {
+          if (this.removeEditedTopicForRollback.get()) {
+            this.selectedTopics.remove(editedTopic);
+            this.model.removeTopic(editedTopic);
             doLayout();
             revalidate();
             repaint();
-            fireNotificationEnsureTopicVisibility(editedTopic);
-
-            if (contentChanged) {
-              fireNotificationMindMapChanged(true);
-            }
-
-            editedTopic = this.model.findAtPosition(pathToEditedTopic);
-            this.focusTo(editedTopic);
-          } else {
-            if (this.removeEditedTopicForRollback.get()) {
-              this.selectedTopics.remove(editedTopic);
-              this.model.removeTopic(editedTopic);
-              doLayout();
-              revalidate();
-              repaint();
-            }
           }
         }
-      } finally {
-        try {
-          this.removeEditedTopicForRollback.set(false);
-          this.elementUnderEdit = null;
-          this.textEditorPanel.setVisible(false);
-          this.requestFocus();
-        } finally {
-          this.unlock();
-        }
       }
+    } finally {
+      this.removeEditedTopicForRollback.set(false);
+      this.elementUnderEdit = null;
+      this.textEditorPanel.setVisible(false);
+      this.requestFocus();
     }
     return result;
   }
 
   public void startEdit(final AbstractElement element) {
-    if (this.lockIfNotDisposed()) {
-      try {
-        if (element == null) {
-          this.elementUnderEdit = null;
-          this.textEditorPanel.setVisible(false);
-        } else {
-          this.elementUnderEdit = element;
-          element.fillByTextAndFont(this.textEditor);
-          ensureVisibility(this.elementUnderEdit);
+    assertNotDisposed();
+    if (element == null) {
+      this.elementUnderEdit = null;
+      this.textEditorPanel.setVisible(false);
+    } else {
+      this.elementUnderEdit = element;
+      element.fillByTextAndFont(this.textEditor);
+      ensureVisibility(this.elementUnderEdit);
 
-          final Dimension textBlockSize = new Dimension((int) element.getBounds().getWidth(),
-              (int) element.getBounds().getHeight());
-          textEditorPanel.setBounds((int) element.getBounds().getX(),
-              (int) element.getBounds().getY(), textBlockSize.width, textBlockSize.height);
-          textEditor.setMinimumSize(textBlockSize);
+      final Dimension textBlockSize = new Dimension((int) element.getBounds().getWidth(),
+          (int) element.getBounds().getHeight());
+      textEditorPanel.setBounds((int) element.getBounds().getX(),
+          (int) element.getBounds().getY(), textBlockSize.width, textBlockSize.height);
+      textEditor.setMinimumSize(textBlockSize);
 
-          textEditorPanel.setVisible(true);
-          textEditor.requestFocus();
-        }
-      } finally {
-        this.unlock();
-      }
+      textEditorPanel.setVisible(true);
+      textEditor.requestFocus();
     }
   }
 
@@ -2177,97 +2060,77 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   }
 
   protected void processPopUpForShortcut() {
-    if (this.lockIfNotDisposed()) {
-      try {
-        final Topic topic = this.selectedTopics.isEmpty() ? null : this.selectedTopics.get(0);
+    assertNotDisposed();
+    final Topic topic = this.selectedTopics.isEmpty() ? null : this.selectedTopics.get(0);
 
-        if (topic != null) {
-          fireNotificationEnsureTopicVisibility(topic);
-        }
+    if (topic != null) {
+      fireNotificationEnsureTopicVisibility(topic);
+    }
 
-        if (topic == null) {
-          select(getModel().getRoot(), false);
-        } else {
-          final AbstractElement element = (AbstractElement) topic.getPayload();
-          if (element != null) {
-            final Rectangle2D bounds = element.getBounds();
-            processPopUp(new Point((int) Math.round(bounds.getCenterX()),
-                (int) Math.round(bounds.getCenterY())), element);
-          }
-        }
-      } finally {
-        unlock();
+    if (topic == null) {
+      select(getModel().getRoot(), false);
+    } else {
+      final AbstractElement element = (AbstractElement) topic.getPayload();
+      if (element != null) {
+        final Rectangle2D bounds = element.getBounds();
+        processPopUp(new Point((int) Math.round(bounds.getCenterX()),
+            (int) Math.round(bounds.getCenterY())), element);
       }
     }
   }
 
   protected void processPopUp(final Point point, final AbstractElement elementUnderMouse) {
-    if (this.lockIfNotDisposed()) {
-      try {
-        if (this.controller != null) {
-          final ElementPart partUnderMouse =
-              elementUnderMouse == null ? null : elementUnderMouse.findPartForPoint(point);
+    assertNotDisposed();
+    if (this.controller != null) {
+      final ElementPart partUnderMouse =
+          elementUnderMouse == null ? null : elementUnderMouse.findPartForPoint(point);
 
-          if (elementUnderMouse != null &&
-              !this.selectedTopics.contains(elementUnderMouse.getModel())) {
-            this.selectedTopics.clear();
-            this.select(elementUnderMouse.getModel(), false);
+      if (elementUnderMouse != null &&
+          !this.selectedTopics.contains(elementUnderMouse.getModel())) {
+        this.selectedTopics.clear();
+        this.select(elementUnderMouse.getModel(), false);
+      }
+
+      final JPopupMenu menu =
+          this.controller.makePopUpForMindMapPanel(this, point, elementUnderMouse,
+              partUnderMouse);
+      if (menu != null) {
+
+        final MindMapPanel theInstance = this;
+
+        menu.addPopupMenuListener(new PopupMenuListener() {
+          @Override
+          public void popupMenuWillBecomeVisible(final PopupMenuEvent e) {
+            theInstance.mouseDragSelection = null;
+            theInstance.popupMenuActive.set(true);
           }
 
-          final JPopupMenu menu =
-              this.controller.makePopUpForMindMapPanel(this, point, elementUnderMouse,
-                  partUnderMouse);
-          if (menu != null) {
-
-            final MindMapPanel theInstance = this;
-
-            menu.addPopupMenuListener(new PopupMenuListener() {
-              @Override
-              public void popupMenuWillBecomeVisible(final PopupMenuEvent e) {
-                theInstance.mouseDragSelection = null;
-                theInstance.popupMenuActive.set(true);
-              }
-
-              @Override
-              public void popupMenuWillBecomeInvisible(final PopupMenuEvent e) {
-                theInstance.mouseDragSelection = null;
-                theInstance.popupMenuActive.set(false);
-              }
-
-              @Override
-              public void popupMenuCanceled(final PopupMenuEvent e) {
-                theInstance.mouseDragSelection = null;
-                theInstance.popupMenuActive.set(false);
-              }
-            });
-
-            menu.show(this, point.x, point.y);
+          @Override
+          public void popupMenuWillBecomeInvisible(final PopupMenuEvent e) {
+            theInstance.mouseDragSelection = null;
+            theInstance.popupMenuActive.set(false);
           }
-        }
-      } finally {
-        unlock();
+
+          @Override
+          public void popupMenuCanceled(final PopupMenuEvent e) {
+            theInstance.mouseDragSelection = null;
+            theInstance.popupMenuActive.set(false);
+          }
+        });
+
+        menu.show(this, point.x, point.y);
       }
     }
   }
 
   public void addMindMapListener(final MindMapListener l) {
-    if (this.lockIfNotDisposed()) {
-      try {
-        this.mindMapListeners.add(requireNonNull(l));
-      } finally {
-        this.unlock();
-      }
-    }
+    assertNotDisposed();
+    this.mindMapListeners.add(requireNonNull(l));
   }
 
   public void removeMindMapListener(final MindMapListener l) {
-    if (this.lockIfNotDisposed()) {
-      try {
-        this.mindMapListeners.remove(requireNonNull(l));
-      } finally {
-        this.unlock();
-      }
-    }
+    assertNotDisposed();
+    this.mindMapListeners.remove(requireNonNull(l));
   }
 
   /**
@@ -2279,7 +2142,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
    * @since 1.3.0
    */
   public void setModel(final MindMap model, final boolean notifyModelChangeListeners) {
-    this.lock();
+    assertNotDisposed();
     try {
       if (this.elementUnderEdit != null) {
         Utils.safeSwingBlockingCall(() -> endEdit(false));
@@ -2317,7 +2180,6 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
       }
       repaint();
     } finally {
-      this.unlock();
       if (notifyModelChangeListeners) {
         fireNotificationMindMapChanged(true);
       }
@@ -2330,12 +2192,8 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   }
 
   public MindMap getModel() {
-    this.lock();
-    try {
-      return requireNonNull(this.model, "Model is not provided, it must not be null!");
-    } finally {
-      this.unlock();
-    }
+    assertNotDisposed();
+    return requireNonNull(this.model, "Model is not provided, it must not be null!");
   }
 
   public void setModel(final MindMap model) {
@@ -2343,25 +2201,16 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   }
 
   public double getScale() {
-    this.lock();
-    try {
-      return this.config.getScale();
-    } finally {
-      this.unlock();
-    }
+    assertNotDisposed();
+    return this.config.getScale();
   }
 
   public void setScale(final double zoom, final boolean notifyListeners) {
-    if (this.lockIfNotDisposed()) {
-      try {
-        if (notifyListeners) {
-          this.config.setScale(zoom);
-        } else {
-          this.config.setScaleWithoutListenerNotification(zoom);
-        }
-      } finally {
-        this.unlock();
-      }
+    assertNotDisposed();
+    if (notifyListeners) {
+      this.config.setScale(zoom);
+    } else {
+      this.config.setScaleWithoutListenerNotification(zoom);
     }
   }
 
@@ -2452,16 +2301,12 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
 
   @Override
   public void doLayout() {
+    assertNotDisposed();
+
     final Runnable run = () -> {
-      if (lockIfNotDisposed()) {
-        try {
-          invalidate();
-          updateElementsAndSizeForCurrentGraphics(true, false);
-          repaint();
-        } finally {
-          unlock();
-        }
-      }
+      invalidate();
+      updateElementsAndSizeForCurrentGraphics(true, false);
+      repaint();
       MindMapPanel.super.doLayout();
     };
 
@@ -2480,35 +2325,30 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
 
   public boolean updateElementsAndSizeForGraphics(final Graphics2D graph, final boolean forceLayout,
                                                   final boolean doListenerNotification) {
+    assertNotDisposed();
     boolean result = false;
     if (forceLayout || !isValid()) {
-      if (lockIfNotDisposed()) {
-        try {
-          if (graph != null) {
-            final MMGraphics gfx = new MMGraphics2DWrapper(graph);
-            if (calculateElementSizes(gfx, this.model, this.config)) {
+      if (graph != null) {
+        final MMGraphics gfx = new MMGraphics2DWrapper(graph);
+        if (calculateElementSizes(gfx, this.model, this.config)) {
 
-              Dimension pageSize = getSize();
+          Dimension pageSize = getSize();
 
-              final Container parent = this.getParent();
-              if (parent != null) {
-                if (parent instanceof JViewport) {
-                  pageSize = ((JViewport) parent).getExtentSize();
-                }
-              }
-
-              changeSizeOfComponent(
-                  layoutFullDiagramWithCenteringToPaper(gfx, this.model, this.config, pageSize),
-                  doListenerNotification);
-              result = true;
-
-              if (doListenerNotification) {
-                fireNotificationComponentElementsLayouted(graph);
-              }
+          final Container parent = this.getParent();
+          if (parent != null) {
+            if (parent instanceof JViewport) {
+              pageSize = ((JViewport) parent).getExtentSize();
             }
           }
-        } finally {
-          unlock();
+
+          changeSizeOfComponent(
+              layoutFullDiagramWithCenteringToPaper(gfx, this.model, this.config, pageSize),
+              doListenerNotification);
+          result = true;
+
+          if (doListenerNotification) {
+            fireNotificationComponentElementsLayouted(graph);
+          }
         }
       }
     }
@@ -2535,31 +2375,27 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   }
 
   public void setErrorText(final String text) {
-    if (this.lockIfNotDisposed()) {
-      try {
-        this.errorText = text;
-        repaint();
-      } finally {
-        this.unlock();
-      }
-    }
+    assertNotDisposed();
+    this.errorText = text;
+    repaint();
   }
 
   @Override
   public boolean isValid() {
-    if (this.lockIfNotDisposed()) {
-      try {
-        if (this.model != null) {
-          final Topic root = this.model.getRoot();
-          AbstractElement rootElement = null;
-          if (root != null) {
-            rootElement = (AbstractElement) root.getPayload();
-          }
-          return rootElement != null;
-        }
-      } finally {
-        this.unlock();
+    if (this.disposed == null) {
+      // called in parent Object constructor before field is set by value!
+      return false;
+    }
+
+    if (this.isDisposed()) {
+      return false;
+    } else if (this.model != null) {
+      final Topic root = this.model.getRoot();
+      AbstractElement rootElement = null;
+      if (root != null) {
+        rootElement = (AbstractElement) root.getPayload();
       }
+      return rootElement != null;
     }
     return true;
   }
@@ -2571,141 +2407,108 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
 
   @Override
   public void invalidate() {
-    if (lockIfNotDisposed()) {
-      try {
-        super.invalidate();
-        if (this.model != null && this.model.getRoot() != null) {
-          this.model.clearAllPayloads();
-        }
-      } finally {
-        this.unlock();
-      }
+    super.invalidate();
+    if (!this.isDisposed() && this.model != null && this.model.getRoot() != null) {
+      this.model.clearAllPayloads();
     }
   }
 
   @Override
   @SuppressWarnings("unchecked")
   public void paintComponent(final Graphics g) {
-    if (this.lockIfNotDisposed()) {
-      try {
-        final Graphics2D gfx = (Graphics2D) g.create();
-        try {
-          final String error = this.errorText;
+    assertNotDisposed();
+    final Graphics2D gfx = (Graphics2D) g.create();
+    try {
+      final String error = this.errorText;
 
-          this.getConfiguration().getRenderQuality().prepare(gfx);
+      this.getConfiguration().getRenderQuality().prepare(gfx);
 
-          if (error != null) {
-            drawErrorText(gfx, this.getSize(), error);
-          } else {
-            if (this.model.getRoot().getPayload() == null) {
-              updateElementsAndSizeForGraphics(gfx, true, false);
-            }
-            drawOnGraphicsForConfiguration(new MMGraphics2DWrapper(gfx), this.config, this.model,
-                true, this.selectedTopics);
-            drawDestinationElement(gfx, this.config);
-          }
-
-          paintChildren(g);
-
-          if (this.draggedElement != null) {
-            this.draggedElement.draw(gfx);
-          } else if (this.mouseDragSelection != null) {
-            gfx.setColor(COLOR_MOUSE_DRAG_SELECTION);
-            gfx.fill(this.mouseDragSelection.asRectangle());
-          }
-        } finally {
-          gfx.dispose();
+      if (error != null) {
+        drawErrorText(gfx, this.getSize(), error);
+      } else {
+        if (this.model.getRoot().getPayload() == null) {
+          updateElementsAndSizeForGraphics(gfx, true, false);
         }
-      } finally {
-        this.unlock();
+        drawOnGraphicsForConfiguration(new MMGraphics2DWrapper(gfx), this.config, this.model,
+            true, this.selectedTopics);
+        drawDestinationElement(gfx, this.config);
       }
+
+      paintChildren(g);
+
+      if (this.draggedElement != null) {
+        this.draggedElement.draw(gfx);
+      } else if (this.mouseDragSelection != null) {
+        gfx.setColor(COLOR_MOUSE_DRAG_SELECTION);
+        gfx.fill(this.mouseDragSelection.asRectangle());
+      }
+    } finally {
+      gfx.dispose();
     }
   }
 
   public AbstractElement findTopicForContextMenu() {
-    if (this.lockIfNotDisposed()) {
-      try {
-        AbstractElement result = null;
-        if (this.selectedTopics.isEmpty()) {
-          if (this.model != null) {
-            final Topic root = this.model.getRoot();
-            if (root != null) {
-              result = (AbstractElement) root.getPayload();
-            }
-          }
-        } else {
-          result = (AbstractElement) this.selectedTopics.get(0).getPayload();
+    assertNotDisposed();
+    AbstractElement result = null;
+    if (this.selectedTopics.isEmpty()) {
+      if (this.model != null) {
+        final Topic root = this.model.getRoot();
+        if (root != null) {
+          result = (AbstractElement) root.getPayload();
         }
-        return result;
-      } finally {
-        this.unlock();
       }
+    } else {
+      result = (AbstractElement) this.selectedTopics.get(0).getPayload();
     }
-    return null;
+    return result;
   }
 
   public AbstractElement findTopicUnderPoint(final Point point) {
-    if (this.lockIfNotDisposed()) {
-      try {
-        AbstractElement result = null;
-        if (this.model != null) {
-          final Topic root = this.model.getRoot();
-          if (root != null) {
-            final AbstractElement rootWidget = (AbstractElement) root.getPayload();
-            if (rootWidget != null) {
-              result = rootWidget.findForPoint(point);
-            }
-          }
+    assertNotDisposed();
+    AbstractElement result = null;
+    if (this.model != null) {
+      final Topic root = this.model.getRoot();
+      if (root != null) {
+        final AbstractElement rootWidget = (AbstractElement) root.getPayload();
+        if (rootWidget != null) {
+          result = rootWidget.findForPoint(point);
         }
-
-        return result;
-      } finally {
-        this.unlock();
       }
     }
-    return null;
+
+    return result;
   }
 
   public void removeAllSelection() {
-    if (this.lockIfNotDisposed()) {
+    assertNotDisposed();
+    if (!this.selectedTopics.isEmpty()) {
       try {
-        if (!this.selectedTopics.isEmpty()) {
-          try {
-            this.selectedTopics.clear();
-            fireNotificationSelectionChanged();
-          } finally {
-            repaint();
-          }
-        }
+        this.selectedTopics.clear();
+        fireNotificationSelectionChanged();
       } finally {
-        this.unlock();
+        repaint();
       }
     }
   }
 
   public void focusTo(final Topic theTopic) {
-    if (this.lockIfNotDisposed()) {
-      try {
-        if (theTopic != null) {
-          final AbstractElement element = (AbstractElement) theTopic.getPayload();
-          if (element instanceof AbstractCollapsableElement) {
-            final AbstractCollapsableElement cel = (AbstractCollapsableElement) element;
-            if (MindMapUtils.ensureVisibility(cel.getModel())) {
-              doLayout();
-              revalidate();
-              repaint();
-              fireNotificationMindMapChanged(false);
-            }
-          }
-
-          removeAllSelection();
-
-          final int[] path = theTopic.getPositionPath();
-          this.select(this.model.findAtPosition(path), false);
+    assertNotDisposed();
+    if (theTopic != null) {
+      final AbstractElement element = (AbstractElement) theTopic.getPayload();
+      if (element instanceof AbstractCollapsableElement) {
+        final AbstractCollapsableElement cel = (AbstractCollapsableElement) element;
+        if (MindMapUtils.ensureVisibility(cel.getModel())) {
+          doLayout();
+          revalidate();
+          repaint();
+          fireNotificationMindMapChanged(false);
         }
-      } finally {
-        this.unlock();
       }
+
+      removeAllSelection();
+
+      final int[] path = theTopic.getPositionPath();
+      this.select(this.model.findAtPosition(path), false);
     }
   }
 
@@ -2714,110 +2517,43 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   }
 
   public boolean cloneTopic(final Topic topic, final boolean cloneSubtree) {
-    this.lock();
-    try {
-      if (topic == null || topic.getTopicLevel() == 0) {
-        return false;
-      }
-
-      final Topic cloned = this.model.cloneTopicInMap(topic, cloneSubtree);
-
-      if (cloned != null) {
-        cloned.moveAfter(topic);
-        doLayout();
-        revalidate();
-        repaint();
-        fireNotificationMindMapChanged(true);
-      }
-
-      return true;
-    } finally {
-      this.unlock();
+    assertNotDisposed();
+    if (topic == null || topic.getTopicLevel() == 0) {
+      return false;
     }
+
+    final Topic cloned = this.model.cloneTopicInMap(topic, cloneSubtree);
+
+    if (cloned != null) {
+      cloned.moveAfter(topic);
+      doLayout();
+      revalidate();
+      repaint();
+      fireNotificationMindMapChanged(true);
+    }
+
+    return true;
   }
 
   public MindMapPanelConfig getConfiguration() {
-    this.lock();
-    try {
-      return this.config;
-    } finally {
-      this.unlock();
-    }
+    assertNotDisposed();
+    return this.config;
   }
 
   public MindMapPanelController getController() {
-    this.lock();
-    try {
-      return this.controller;
-    } finally {
-      this.unlock();
+    assertNotDisposed();
+    return this.controller;
+  }
+
+  public void assertNotDisposed() {
+    if (this.isDisposed()) {
+      throw new IllegalStateException("Already disposed");
     }
   }
 
   public Topic getFirstSelected() {
-    if (this.lockIfNotDisposed()) {
-      try {
-        return this.selectedTopics.isEmpty() ? null : this.selectedTopics.get(0);
-      } finally {
-        this.unlock();
-      }
-    } else {
-      return null;
-    }
-  }
-
-  public boolean isLocked() {
-    return this.panelLocker != null && this.panelLocker.isLocked();
-  }
-
-  /**
-   * Try lock the panel if it is not disposed.
-   *
-   * @return true if the panel is locked successfully, false if the panel has
-   * been disposed.
-   */
-  public boolean lockIfNotDisposed() {
-    boolean result = false;
-    if (this.panelLocker != null) {
-      this.panelLocker.lock();
-      if (this.disposed.get()) {
-        this.panelLocker.unlock();
-      } else {
-        result = true;
-      }
-    }
-    return result;
-  }
-
-  /**
-   * Lock the panel.
-   *
-   * @return the panel
-   * @throws IllegalStateException it will be thrown if the panel is disposed
-   */
-  public MindMapPanel lock() {
-    if (this.panelLocker != null) {
-      this.panelLocker.lock();
-      if (this.isDisposed()) {
-        this.panelLocker.unlock();
-        throw new IllegalStateException("Mind map has been already disposed!");
-      }
-    }
-    return this;
-  }
-
-  /**
-   * Unlock the panel. it will not throw any exception if the panel is disposed.
-   *
-   * @throws AssertionError if the panel is locked by another thread
-   */
-  public void unlock() {
-    if (this.panelLocker != null) {
-      if (!this.panelLocker.isHeldByCurrentThread()) {
-        throw new IllegalStateException("Panel must be held by the current thread");
-      }
-      this.panelLocker.unlock();
-    }
+    assertNotDisposed();
+    return this.selectedTopics.isEmpty() ? null : this.selectedTopics.get(0);
   }
 
   @Override
@@ -2836,24 +2572,19 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
    * @since 1.3.1
    */
   public boolean copyTopicsToClipboard(final boolean cut, final Topic... topics) {
+    assertNotDisposed();
+
     boolean result = false;
+    this.endEdit(true);
+    if (topics.length > 0) {
+      final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+      clipboard.setContents(new MMDTopicsTransferable(topics), this);
 
-    if (this.lockIfNotDisposed()) {
-      try {
-        this.endEdit(true);
-        if (topics.length > 0) {
-          final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-          clipboard.setContents(new MMDTopicsTransferable(topics), this);
-
-          if (cut) {
-            deleteTopics(true, ensureNoRootInArray(topics));
-          }
-
-          result = true;
-        }
-      } finally {
-        this.unlock();
+      if (cut) {
+        deleteTopics(true, ensureNoRootInArray(topics));
       }
+
+      result = true;
     }
 
     return result;
@@ -2867,94 +2598,89 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
    * @since 1.3.1
    */
   public boolean pasteTopicsFromClipboard() {
+    assertNotDisposed();
     boolean result = false;
 
-    if (this.lockIfNotDisposed()) {
+    final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+    if (Utils.isDataFlavorAvailable(clipboard, MMDTopicsTransferable.MMD_DATA_FLAVOR)) {
       try {
-        final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-        if (Utils.isDataFlavorAvailable(clipboard, MMDTopicsTransferable.MMD_DATA_FLAVOR)) {
-          try {
-            final NBMindMapTopicsContainer container =
-                (NBMindMapTopicsContainer) clipboard.getData(MMDTopicsTransferable.MMD_DATA_FLAVOR);
-            if (container != null && !container.isEmpty()) {
-              this.endEdit(true);
+        final NBMindMapTopicsContainer container =
+            (NBMindMapTopicsContainer) clipboard.getData(MMDTopicsTransferable.MMD_DATA_FLAVOR);
+        if (container != null && !container.isEmpty()) {
+          this.endEdit(true);
 
-              final Topic[] selected = this.getSelectedTopics();
+          final Topic[] selected = this.getSelectedTopics();
 
-              for (final Topic s : selected) {
-                for (final Topic t : container.getTopics()) {
-                  final Topic newTopic = new Topic(this.model, t, true);
-                  newTopic.removeExtra(Extra.ExtraType.TOPIC);
-                  newTopic.moveToNewParent(s);
-                  MindMapUtils.ensureVisibility(newTopic);
-                }
-              }
-
-              doLayout();
-              revalidate();
-              repaint();
-
-              fireNotificationMindMapChanged(true);
-              result = true;
+          for (final Topic s : selected) {
+            for (final Topic t : container.getTopics()) {
+              final Topic newTopic = new Topic(this.model, t, true);
+              newTopic.removeExtra(Extra.ExtraType.TOPIC);
+              newTopic.moveToNewParent(s);
+              MindMapUtils.ensureVisibility(newTopic);
             }
-          } catch (final Exception ex) {
-            LOGGER.error("Can't get clipboard data", ex);
           }
-        } else if (Utils.isDataFlavorAvailable(clipboard, DataFlavor.stringFlavor)) {
-          try {
-            final int MAX_TEXT_LEN = 96;
-            String clipboardText =
-                (String) clipboard.getContents(null).getTransferData(DataFlavor.stringFlavor);
 
-            if (clipboardText != null) {
-              if (this.textEditor != null) {
-                this.textEditor.insert(clipboardText, this.textEditor.getCaretPosition());
-              } else {
-                if (this.getConfiguration().isSmartTextPaste()) {
-                  for (final Topic t : this.getSelectedTopics()) {
-                    MindMapUtils.makeSubTreeFromText(t, clipboardText);
-                  }
-                } else {
-                  clipboardText = clipboardText.trim();
+          doLayout();
+          revalidate();
+          repaint();
 
-                  final String topicText;
-                  final String extraNoteText;
-
-                  if (clipboardText.length() > MAX_TEXT_LEN) {
-                    topicText = clipboardText.substring(0, MAX_TEXT_LEN) + "...";
-                    extraNoteText = clipboardText;
-                  } else {
-                    topicText = clipboardText;
-                    extraNoteText = null;
-                  }
-
-                  final Topic[] selectedTopics = this.getSelectedTopics();
-
-                  for (final Topic s : selectedTopics) {
-                    final Topic newTopic;
-                    if (extraNoteText == null) {
-                      newTopic = new Topic(this.model, s, topicText);
-                    } else {
-                      newTopic =
-                          new Topic(this.model, s, topicText, new ExtraNote(extraNoteText));
-                    }
-                    MindMapUtils.ensureVisibility(newTopic);
-                  }
-                }
-              }
-              doLayout();
-              revalidate();
-              repaint();
-
-              fireNotificationMindMapChanged(true);
-              result = true;
-            }
-          } catch (Exception ex) {
-            LOGGER.error("Can't get clipboard text", ex);
-          }
+          fireNotificationMindMapChanged(true);
+          result = true;
         }
-      } finally {
-        this.unlock();
+      } catch (final Exception ex) {
+        LOGGER.error("Can't get clipboard data", ex);
+      }
+    } else if (Utils.isDataFlavorAvailable(clipboard, DataFlavor.stringFlavor)) {
+      try {
+        final int MAX_TEXT_LEN = 96;
+        String clipboardText =
+            (String) clipboard.getContents(null).getTransferData(DataFlavor.stringFlavor);
+
+        if (clipboardText != null) {
+          if (this.textEditor != null) {
+            this.textEditor.insert(clipboardText, this.textEditor.getCaretPosition());
+          } else {
+            if (this.getConfiguration().isSmartTextPaste()) {
+              for (final Topic t : this.getSelectedTopics()) {
+                MindMapUtils.makeSubTreeFromText(t, clipboardText);
+              }
+            } else {
+              clipboardText = clipboardText.trim();
+
+              final String topicText;
+              final String extraNoteText;
+
+              if (clipboardText.length() > MAX_TEXT_LEN) {
+                topicText = clipboardText.substring(0, MAX_TEXT_LEN) + "...";
+                extraNoteText = clipboardText;
+              } else {
+                topicText = clipboardText;
+                extraNoteText = null;
+              }
+
+              final Topic[] selectedTopics = this.getSelectedTopics();
+
+              for (final Topic s : selectedTopics) {
+                final Topic newTopic;
+                if (extraNoteText == null) {
+                  newTopic = new Topic(this.model, s, topicText);
+                } else {
+                  newTopic =
+                      new Topic(this.model, s, topicText, new ExtraNote(extraNoteText));
+                }
+                MindMapUtils.ensureVisibility(newTopic);
+              }
+            }
+          }
+          doLayout();
+          revalidate();
+          repaint();
+
+          fireNotificationMindMapChanged(true);
+          result = true;
+        }
+      } catch (Exception ex) {
+        LOGGER.error("Can't get clipboard text", ex);
       }
     }
     return result;
@@ -2965,19 +2691,13 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   }
 
   public void dispose() {
-    if (this.lockIfNotDisposed()) {
-      try {
-        if (this.disposed.compareAndSet(false, true)) {
-          this.selectedTopics.clear();
-          this.mindMapListeners.clear();
+    if (this.disposed.compareAndSet(false, true)) {
+      this.selectedTopics.clear();
+      this.mindMapListeners.clear();
 
-          for (final PanelAwarePlugin p : MindMapPluginRegistry.getInstance()
-              .findFor(PanelAwarePlugin.class)) {
-            p.onPanelDispose(this);
-          }
-        }
-      } finally {
-        this.unlock();
+      for (final PanelAwarePlugin p : MindMapPluginRegistry.getInstance()
+          .findFor(PanelAwarePlugin.class)) {
+        p.onPanelDispose(this);
       }
     }
   }

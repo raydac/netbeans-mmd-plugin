@@ -155,7 +155,6 @@ public final class MMDEditor extends AbstractTextEditor
     this.mindMapPanel.addMindMapListener(this);
 
     this.scrollPane = new JScrollPane(this.mindMapPanel);
-    this.scrollPane.putClientProperty("JScrollPane.smoothScrolling", true);
 
     this.scrollPane.getHorizontalScrollBar().setBlockIncrement(128);
     this.scrollPane.getHorizontalScrollBar().setUnitIncrement(16);
