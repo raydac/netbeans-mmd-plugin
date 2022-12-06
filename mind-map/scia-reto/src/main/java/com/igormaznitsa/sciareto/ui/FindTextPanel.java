@@ -198,8 +198,7 @@ public final class FindTextPanel extends javax.swing.JPanel implements FindTextS
 
         setLayout(new java.awt.GridBagLayout());
 
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
-        labelTitle.setText(bundle.getString("panelFindText.labelFind")); // NOI18N
+        labelTitle.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("panelFindText.labelFind")); // NOI18N
         labelTitle.setFocusable(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
@@ -222,7 +221,7 @@ public final class FindTextPanel extends javax.swing.JPanel implements FindTextS
         add(textFieldSearchText, gridBagConstraints);
 
         buttonPrev.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/resultset_previous.png"))); // NOI18N
-        buttonPrev.setToolTipText(bundle.getString("panelFindText.tooltipFindPrevious")); // NOI18N
+        buttonPrev.setToolTipText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("panelFindText.tooltipFindPrevious")); // NOI18N
         buttonPrev.setFocusable(false);
         buttonPrev.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -235,7 +234,7 @@ public final class FindTextPanel extends javax.swing.JPanel implements FindTextS
         add(buttonPrev, gridBagConstraints);
 
         buttonNext.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/resultset_next.png"))); // NOI18N
-        buttonNext.setToolTipText(bundle.getString("panelFindText.tooltipFindNext")); // NOI18N
+        buttonNext.setToolTipText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("panelFindText.tooltipFindNext")); // NOI18N
         buttonNext.setFocusable(false);
         buttonNext.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -250,7 +249,7 @@ public final class FindTextPanel extends javax.swing.JPanel implements FindTextS
 
         labelClose.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         labelClose.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/nimbusCloseFrame.png"))); // NOI18N
-        labelClose.setToolTipText(bundle.getString("panelFindText.tooltipClose")); // NOI18N
+        labelClose.setToolTipText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("panelFindText.tooltipClose")); // NOI18N
         labelClose.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         labelClose.setFocusable(false);
         labelClose.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -272,7 +271,7 @@ public final class FindTextPanel extends javax.swing.JPanel implements FindTextS
         add(filler1, gridBagConstraints);
 
         toggleButtonCaseSensitive.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/find/case16.png"))); // NOI18N
-        toggleButtonCaseSensitive.setToolTipText(bundle.getString("panelFindText.tooltipCaseSensetiveMode")); // NOI18N
+        toggleButtonCaseSensitive.setToolTipText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("panelFindText.tooltipCaseSensetiveMode")); // NOI18N
         toggleButtonCaseSensitive.setFocusable(false);
         toggleButtonCaseSensitive.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -289,7 +288,7 @@ public final class FindTextPanel extends javax.swing.JPanel implements FindTextS
         panelButtonsForMap.setLayout(new java.awt.GridBagLayout());
 
         toggleButtonTopicText.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/find/text16.png"))); // NOI18N
-        toggleButtonTopicText.setToolTipText(bundle.getString("panelFindText.tooltipFindInTitle")); // NOI18N
+        toggleButtonTopicText.setToolTipText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("panelFindText.tooltipFindInTitle")); // NOI18N
         toggleButtonTopicText.setFocusable(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -299,7 +298,7 @@ public final class FindTextPanel extends javax.swing.JPanel implements FindTextS
         panelButtonsForMap.add(toggleButtonTopicText, gridBagConstraints);
 
         toggleButtonNote.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/find/note16.png"))); // NOI18N
-        toggleButtonNote.setToolTipText(bundle.getString("panelFindText.tooltipFindInNotes")); // NOI18N
+        toggleButtonNote.setToolTipText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("panelFindText.tooltipFindInNotes")); // NOI18N
         toggleButtonNote.setFocusable(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -309,7 +308,7 @@ public final class FindTextPanel extends javax.swing.JPanel implements FindTextS
         panelButtonsForMap.add(toggleButtonNote, gridBagConstraints);
 
         toggleButtonFile.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/find/disk16.png"))); // NOI18N
-        toggleButtonFile.setToolTipText(bundle.getString("panelFindText.tooltipFindInFileLinks")); // NOI18N
+        toggleButtonFile.setToolTipText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("panelFindText.tooltipFindInFileLinks")); // NOI18N
         toggleButtonFile.setFocusable(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
@@ -319,7 +318,7 @@ public final class FindTextPanel extends javax.swing.JPanel implements FindTextS
         panelButtonsForMap.add(toggleButtonFile, gridBagConstraints);
 
         toggleButtonURI.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/find/url16.png"))); // NOI18N
-        toggleButtonURI.setToolTipText(bundle.getString("panelFindText.tooltipFindInUrl")); // NOI18N
+        toggleButtonURI.setToolTipText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("panelFindText.tooltipFindInUrl")); // NOI18N
         toggleButtonURI.setFocusable(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;

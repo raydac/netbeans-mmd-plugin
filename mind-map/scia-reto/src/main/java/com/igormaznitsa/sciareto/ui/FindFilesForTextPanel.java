@@ -27,6 +27,8 @@ import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.ui.misc.FileExaminator;
 import com.igormaznitsa.sciareto.ui.misc.NodeListRenderer;
 import com.igormaznitsa.sciareto.ui.tree.NodeFileOrFolder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import org.apache.commons.io.FilenameUtils;
 
 import javax.annotation.Nonnull;
@@ -64,8 +66,7 @@ public final class FindFilesForTextPanel extends javax.swing.JPanel {
 
     private final NodeFileOrFolder folder;
 
-    private static volatile String CHARSET = "UTF-8";
-    private static final Charset UTF8_CHARSET = Charset.forName("UTF-8");
+    private static volatile String LAST_SELECTED_CHARSET = StandardCharsets.UTF_8.name();
 
     private static final class TheLocale implements Comparable<TheLocale> {
 
@@ -157,7 +158,7 @@ public final class FindFilesForTextPanel extends javax.swing.JPanel {
         });
 
         this.listOfFoundElements.setCellRenderer(new NodeListRenderer());
-        this.listOfFoundElements.setModel(new ListModel<NodeFileOrFolder>() {
+        this.listOfFoundElements.setModel(new ListModel<>() {
             @Override
             public int getSize() {
                 return foundFiles.size();
@@ -183,7 +184,7 @@ public final class FindFilesForTextPanel extends javax.swing.JPanel {
 
         final ComboBoxModel<String> charsets = new DefaultComboBoxModel<>(Charset.availableCharsets().keySet().toArray(new String[0]));
         this.comboCharsets.setModel(charsets);
-        this.comboCharsets.setSelectedItem(CHARSET);
+        this.comboCharsets.setSelectedItem(LAST_SELECTED_CHARSET);
         this.comboCharsets.revalidate();
 
         final Locale[] allLocales = Locale.getAvailableLocales();
@@ -197,9 +198,7 @@ public final class FindFilesForTextPanel extends javax.swing.JPanel {
         this.comboLocale.setModel(locales);
         this.comboLocale.setSelectedItem(LOCALE);
 
-        this.comboCharsets.addActionListener((ActionEvent e) -> {
-            CHARSET = comboCharsets.getSelectedItem().toString();
-        });
+        this.comboCharsets.addActionListener((ActionEvent e) -> LAST_SELECTED_CHARSET = comboCharsets.getSelectedItem().toString());
 
         this.comboLocale.addActionListener((ActionEvent e) -> {
             LOCALE = (TheLocale) comboLocale.getSelectedItem();
@@ -267,12 +266,15 @@ public final class FindFilesForTextPanel extends javax.swing.JPanel {
             private void processFile(final NodeFileOrFolder file) {
                 value++;
                 final File f = file.makeFileForNode();
-
                 boolean alreadyProcessed = false;
 
-                if (findInFilenames 
+                if (f == null) {
+                    return;
+                }
+
+                if (findInFilenames
                         && f.isFile() 
-                        && searchPatternForMmd.matcher(f.getName()).find()) {
+                        && (searchPatternForMmd == null || searchPatternForMmd.matcher(f.getName()).find())) {
                     alreadyProcessed = true;
                     addFileIntoList(file);
                 }
@@ -283,7 +285,7 @@ public final class FindFilesForTextPanel extends javax.swing.JPanel {
                         && "mmd".equalsIgnoreCase(FilenameUtils.getExtension(f.getName()))
                         ) {
                     MindMap mindMap;
-                    try (Reader reader = new InputStreamReader(new FileInputStream(f), UTF8_CHARSET)) {
+                    try (Reader reader = new InputStreamReader(Files.newInputStream(f.toPath()), StandardCharsets.UTF_8)) {
                         mindMap = new MindMap(reader);
                     } catch (Exception ex) {
                         mindMap = null;
@@ -410,7 +412,7 @@ public final class FindFilesForTextPanel extends javax.swing.JPanel {
         jPanel3 = new javax.swing.JPanel();
         filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
         labelCharset = new javax.swing.JLabel();
-        comboCharsets = new javax.swing.JComboBox();
+        comboCharsets = new javax.swing.JComboBox<>();
         labelLocale = new javax.swing.JLabel();
         comboLocale = new javax.swing.JComboBox<>();
         checkboxFindInFilenames = new javax.swing.JCheckBox();
@@ -423,15 +425,15 @@ public final class FindFilesForTextPanel extends javax.swing.JPanel {
 
         jPanel1.setLayout(new java.awt.BorderLayout());
 
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
-        jLabel1.setText(bundle.getString("panelFindFilesForText.labelTextToSearch")); // NOI18N
+        jLabel1.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("panelFindFilesForText.labelTextToSearch")); // NOI18N
         jPanel1.add(jLabel1, java.awt.BorderLayout.WEST);
 
         fieldText.setToolTipText("Press 'Enter' or the 'Find' button for search");
         jPanel1.add(fieldText, java.awt.BorderLayout.CENTER);
 
         buttonFind.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/find16.png"))); // NOI18N
-        buttonFind.setText(bundle.getString("panelFindFilesForText.buttonFind")); // NOI18N
+        buttonFind.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("panelFindFilesForText.buttonFind")); // NOI18N
+        buttonFind.setActionCommand(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("panelFindFilesForText.buttonFind.text")); // NOI18N
         buttonFind.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonFindActionPerformed(evt);
@@ -447,7 +449,7 @@ public final class FindFilesForTextPanel extends javax.swing.JPanel {
         gridBagConstraints.weightx = 1000.0;
         jPanel3.add(filler1, gridBagConstraints);
 
-        labelCharset.setText(bundle.getString("panelFindFilesForText.labelCharset")); // NOI18N
+        labelCharset.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("panelFindFilesForText.labelCharset")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -457,7 +459,7 @@ public final class FindFilesForTextPanel extends javax.swing.JPanel {
         gridBagConstraints.gridy = 0;
         jPanel3.add(comboCharsets, gridBagConstraints);
 
-        labelLocale.setText(bundle.getString("panelFindFilesForText.labelLocale")); // NOI18N
+        labelLocale.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("panelFindFilesForText.labelLocale")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 0;
@@ -469,7 +471,7 @@ public final class FindFilesForTextPanel extends javax.swing.JPanel {
         gridBagConstraints.weighty = 100.0;
         jPanel3.add(comboLocale, gridBagConstraints);
 
-        checkboxFindInFilenames.setText(bundle.getString("panelFindFilesForText.checkboxFindInFileNames")); // NOI18N
+        checkboxFindInFilenames.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("panelFindFilesForText.checkboxFindInFileNames")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 4;
         gridBagConstraints.gridy = 0;
@@ -553,7 +555,7 @@ public final class FindFilesForTextPanel extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonFind;
     private javax.swing.JCheckBox checkboxFindInFilenames;
-    private javax.swing.JComboBox comboCharsets;
+    private javax.swing.JComboBox<java.lang.String> comboCharsets;
     private javax.swing.JComboBox<TheLocale> comboLocale;
     private javax.swing.JTextField fieldText;
     private javax.swing.Box.Filler filler1;
