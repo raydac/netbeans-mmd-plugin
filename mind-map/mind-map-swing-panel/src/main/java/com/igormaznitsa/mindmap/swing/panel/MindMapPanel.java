@@ -693,6 +693,8 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
             if (!e.isConsumed() && (theConfig != null &&
                 ((e.getModifiers() & theConfig.getScaleModifiers()) ==
                     theConfig.getScaleModifiers()))) {
+              e.consume();
+
               endEdit(elementUnderEdit != null);
 
               final Dimension oldSize = mindMapImageSize.get();
@@ -711,8 +713,6 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
               final Dimension newSize = mindMapImageSize.get().getSize();
 
               fireNotificationScaledByMouse(e.getPoint(), oldScale, newScale, oldSize, newSize);
-
-              e.consume();
             } else {
               if (!e.isConsumed()) {
                 sendToParent(e);

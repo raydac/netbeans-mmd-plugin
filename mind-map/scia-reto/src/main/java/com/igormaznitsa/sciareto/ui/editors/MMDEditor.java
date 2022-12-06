@@ -623,7 +623,6 @@ public final class MMDEditor extends AbstractTextEditor
       @Nonnull final Dimension newSize
   ) {
     if (Double.compare(oldScale, newScale) != 0) {
-      this.scrollPane.setViewportView(source);
       final JViewport viewport = this.scrollPane.getViewport();
 
       final Rectangle viewPos = viewport.getViewRect();
@@ -644,7 +643,6 @@ public final class MMDEditor extends AbstractTextEditor
 
         viewPos.x = Math.max(0, newMouseX - dx);
         viewPos.y = Math.max(0, newMouseY - dy);
-        viewport.setView(source);
 
         source.scrollRectToVisible(viewPos);
       } else {
