@@ -55,9 +55,6 @@
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
               <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="panelFindFilesForText.buttonFind" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
             </Property>
-            <Property name="actionCommand" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="panelFindFilesForText.buttonFind.text" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
-            </Property>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonFindActionPerformed"/>

@@ -433,7 +433,6 @@ public final class FindFilesForTextPanel extends javax.swing.JPanel {
 
         buttonFind.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/find16.png"))); // NOI18N
         buttonFind.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("panelFindFilesForText.buttonFind")); // NOI18N
-        buttonFind.setActionCommand(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("panelFindFilesForText.buttonFind.text")); // NOI18N
         buttonFind.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonFindActionPerformed(evt);
