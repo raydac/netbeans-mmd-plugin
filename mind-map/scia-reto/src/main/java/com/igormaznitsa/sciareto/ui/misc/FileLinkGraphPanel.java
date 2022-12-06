@@ -21,6 +21,7 @@ import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.ui.MapUtils;
 import com.igormaznitsa.sciareto.ui.SrI18n;
 import com.igormaznitsa.sciareto.ui.UiUtils;
@@ -47,7 +48,6 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Paint;
-import java.awt.Rectangle;
 import java.awt.Window;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -65,6 +65,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import net.sourceforge.plantuml.bpm.Col;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -76,10 +77,6 @@ public final class FileLinkGraphPanel extends JPanel {
   private static final Logger LOGGER = LoggerFactory.getLogger(FileLinkGraphPanel.class);
 
   private FileVertex selectedVertex;
-
-  private static final Color COLOR_BACKGROUND = Color.WHITE;
-  private static final Color COLOR_ARROW = Color.ORANGE.darker();
-  private static final Color COLOR_LABELS = Color.BLACK;
 
   private static final Icon RELAYOUT_ICON = new ImageIcon(UiUtils.loadIcon("graph16.png")); //NOI18N
 
@@ -278,6 +275,10 @@ public final class FileLinkGraphPanel extends JPanel {
 
     final Graph<FileVertex, Number> graph = makeGraph(projectFolder, startMindMap);
 
+    final Color colorBackground = Utils.isDarkTheme() ? Color.DARK_GRAY : Color.WHITE;
+    final Color colorArrow = Utils.isDarkTheme() ? Color.ORANGE : Color.ORANGE.darker();
+    final Color colorLabels = Utils.isDarkTheme() ? Color.LIGHT_GRAY : Color.BLACK;
+
     if (graph.getVertexCount() == 0) {
       this.add(new JLabel(SrI18n.getInstance().findBundle().getString("panelFileLinkGraph.labelNotAnyMindMap")), BorderLayout.CENTER);
     } else {
@@ -302,15 +303,16 @@ public final class FileLinkGraphPanel extends JPanel {
 
       graphViewer.getRenderContext().setVertexIconTransformer(f -> f.getType().getIcon());
 
-      graphViewer.setBackground(COLOR_BACKGROUND);
+      graphViewer.setBackground(colorBackground);
+      graphViewer.setForeground(colorLabels);
       graphViewer.getRenderContext().setVertexLabelTransformer(new ToStringLabeller());
 
-      final DefaultVertexLabelRenderer labelRenderer = new DefaultVertexLabelRenderer(COLOR_LABELS);
+      final DefaultVertexLabelRenderer labelRenderer = new DefaultVertexLabelRenderer(colorLabels);
 
       graphViewer.getRenderContext().setVertexLabelRenderer(labelRenderer);
       graphViewer.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.S);
 
-      final java.util.function.Function<Number, Paint> edgePaintTransformer = input -> COLOR_ARROW;
+      final java.util.function.Function<Number, Paint> edgePaintTransformer = input -> colorArrow;
 
       graphViewer.getRenderContext().setEdgeDrawPaintTransformer(edgePaintTransformer::apply);
       graphViewer.getRenderContext().setArrowFillPaintTransformer(edgePaintTransformer::apply);
