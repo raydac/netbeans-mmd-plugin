@@ -88,7 +88,7 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
     props.setProperty("format.version", formatVersion); //NOI18N
     props.setProperty("ideversion", SciaRetoStarter.IDE_VERSION.toString()); //NOI18N
 
-    this.thirdParts.add(new ThirdPartLicense("FiraCode fonts", "https://github.com/tonsky/FiraCode",  "OFL 1.1", "https://opensource.org/licenses/OFL-1.1"));
+    this.thirdParts.add(new ThirdPartLicense("JetBrains Mono fonts", "https://github.com/JetBrains/JetBrainsMono",  "OFL 1.1", "https://opensource.org/licenses/OFL-1.1"));
     this.thirdParts.add(new ThirdPartLicense("FatCow Farm-Fresh Web Icons", "http://www.fatcow.com/free-icons",  "CC BY 3.0", "https://creativecommons.org/licenses/by/3.0/"));
     this.thirdParts.add(new ThirdPartLicense("Java Universal Network/Graph Framework", "https://github.com/jrtom/jung", "BSD 3", "https://raw.githubusercontent.com/jrtom/jung/master/LICENSE"));
     this.thirdParts.add(new ThirdPartLicense("RSynaxTextArea", "https://github.com/bobbylight/RSyntaxTextArea", "modified BSD license", "https://raw.githubusercontent.com/bobbylight/RSyntaxTextArea/master/src/main/dist/RSyntaxTextArea.License.txt"));

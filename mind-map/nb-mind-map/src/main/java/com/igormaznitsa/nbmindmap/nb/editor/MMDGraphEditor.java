@@ -535,7 +535,8 @@ public final class MMDGraphEditor extends CloneableEditor
             topicToCentre(mindMapPanel.getFirstSelected());
           } else if (root != null) {
             mindMapPanel.select(root, false);
-            mindMapPanel.getModel().clearAllPayloads();;
+            mindMapPanel.getModel().clearAllPayloads();
+            ;
             topicToCentre(root);
           }
         }
@@ -618,8 +619,9 @@ public final class MMDGraphEditor extends CloneableEditor
             LOGGER.warn(
                 "Detected empty text document as mind map, the default mind map will be created");
             final MindMap map = new MindMap(true);
-            map.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID, IDEBridgeFactory.findInstance()
-                .getIDEGeneratorId());
+            map.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID,
+                IDEBridgeFactory.findInstance()
+                    .getIDEGeneratorId());
             this.mindMapPanel.setModel(map, false);
           } else {
             this.mindMapPanel.setModel(new MindMap(new StringReader(text)), false);
@@ -689,7 +691,7 @@ public final class MMDGraphEditor extends CloneableEditor
 
   @Override
   public void onComponentElementsLayout(@Nonnull final MindMapPanel source,
-                                          @Nonnull final Graphics2D g) {
+                                        @Nonnull final Graphics2D g) {
   }
 
   @Override
@@ -1083,8 +1085,9 @@ public final class MMDGraphEditor extends CloneableEditor
       final MMapURI mmapUri;
       try {
         mmapUri = new MMapURI(uri);
-      } catch (URISyntaxException ex){
-        DialogProviderManager.getInstance().getDialogProvider().msgError(null, "Malformed URI: "+ uri);
+      } catch (URISyntaxException ex) {
+        DialogProviderManager.getInstance().getDialogProvider()
+            .msgError(null, "Malformed URI: " + uri);
         return;
       }
       if (topic.getExtras().containsKey(Extra.ExtraType.LINK)) {
@@ -1432,7 +1435,8 @@ public final class MMDGraphEditor extends CloneableEditor
             }
           } catch (final URISyntaxException ex) {
             LOGGER.error(
-                String.format("Can't convert Path %s to uri", dataContainer.getFilePathWithLine()), ex); //NOI18N
+                String.format("Can't convert Path %s to uri", dataContainer.getFilePathWithLine()),
+                ex); //NOI18N
             NbUtils.msgError(null, String.format(
                 BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorMalformedURI"),
                 dataContainer.getFilePathWithLine()));
@@ -1563,7 +1567,8 @@ public final class MMDGraphEditor extends CloneableEditor
               new PasswordPanel("", note.getHint() == null ? "" : note.getHint(), false);
           if (DialogProviderManager.getInstance().getDialogProvider()
               .msgOkCancel(this,
-                  MmdI18n.getInstance().findBundle().getString("PasswordPanel.dialogPassword.enter.title"),
+                  MmdI18n.getInstance().findBundle()
+                      .getString("PasswordPanel.dialogPassword.enter.title"),
                   passwordPanel)) {
             final StringBuilder decrypted = new StringBuilder();
             final String pass = new String(passwordPanel.getPassword()).trim();
@@ -1808,18 +1813,10 @@ public final class MMDGraphEditor extends CloneableEditor
 
   private void updateConfigFromPreferences() {
     SwingUtilities.invokeLater(() -> {
-      if (mindMapPanel.lockIfNotDisposed()) {
-        try {
-          mindMapPanel.refreshConfiguration();
-          mindMapPanel.invalidate();
-          mindMapPanel.revalidate();
-          mindMapPanel.repaint();
-        } finally {
-          mindMapPanel.unlock();
-        }
-      } else {
-        LOGGER.warn("Attempt tp update disposed panel : " + mindMapPanel);
-      }
+      mindMapPanel.refreshConfiguration();
+      mindMapPanel.invalidate();
+      mindMapPanel.revalidate();
+      mindMapPanel.repaint();
     });
   }
 

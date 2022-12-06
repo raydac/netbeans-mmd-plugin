@@ -20,6 +20,7 @@ import static com.igormaznitsa.mindmap.swing.panel.MindMapPanel.calculateSizeOfM
 import static com.igormaznitsa.mindmap.swing.panel.MindMapPanel.drawOnGraphicsForConfiguration;
 import static com.igormaznitsa.mindmap.swing.panel.MindMapPanel.layoutFullDiagramWithCenteringToPaper;
 import static java.lang.Long.toHexString;
+import static java.util.Objects.requireNonNull;
 
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
@@ -86,7 +87,9 @@ import org.apache.commons.text.StringEscapeUtils;
 
 public class SVGImageExporter extends AbstractExporter {
 
-  protected static final String FONT_CLASS_NAME = "mmdTitleFont";
+  public static final String LOOKUP_PARAM_REQ_FONT = "mmd.exporter.svg.font";
+  public static final String LOOKUP_PARAM_RESP_FONT_DATA = "mmd.exporter.svg.font.data";
+  public static final String LOOKUP_PARAM_RESP_FONT_MIME = "mmd.exporter.svg.font.mime";
   private static final Map<String, String[]> LOCAL_FONT_MAP = new HashMap<String, String[]>() {
     {
       put("dialog", new String[] {"sans-serif", "SansSerif"});
@@ -112,18 +115,21 @@ public class SVGImageExporter extends AbstractExporter {
   private static final String KEY_PARAMETER_UNFOLD_ALL = "mmd.exporter.svg.unfold.all";
   private static final String KEY_PARAMETER_DRAW_BACKGROUND = "mmd.exporter.svg.background.draw";
 
-  public static final String LOOKUP_PARAM_REQ_FONT = "mmd.exporter.svg.font";
-  public static final String LOOKUP_PARAM_RESP_WOFF_FONT_AS_ARRAY = "mmd.exporter.svg.font.woff";
-
   static {
     DOUBLE = new DecimalFormat("#.###", DecimalFormatSymbols.getInstance(Locale.US));
   }
 
-  private static Optional<byte[]> findWoffFont(final Font font) {
-    final Map<String,Object> map = new HashMap<>();
+  private static Optional<EmbeddedFont> findEmbeddedFont(final Font font) {
+    final Map<String, Object> map = new HashMap<>();
     map.put(LOOKUP_PARAM_REQ_FONT, font);
-    final Map<String,Object> result = IDEBridgeFactory.findInstance().lookup(map);
-    return Optional.ofNullable((byte[]) result.get(LOOKUP_PARAM_RESP_WOFF_FONT_AS_ARRAY));
+    final Map<String, Object> result = IDEBridgeFactory.findInstance().lookup(map);
+    final byte[] fontData = (byte[]) result.get(LOOKUP_PARAM_RESP_FONT_DATA);
+    final String fontMime = (String) result.get(LOOKUP_PARAM_RESP_FONT_MIME);
+    if (fontMime != null && fontData != null) {
+      return Optional.of(new EmbeddedFont(fontData, fontMime));
+    } else {
+      return Optional.empty();
+    }
   }
 
   private static String dbl2str(final double value) {
@@ -136,7 +142,7 @@ public class SVGImageExporter extends AbstractExporter {
     if (logicalFontFamily != null) {
       fontFamilyStr = logicalFontFamily[0];
     } else {
-      fontFamilyStr = String.format("'%s'", fontFamilyStr);
+      fontFamilyStr = String.format("%s", fontFamilyStr);
     }
     return fontFamilyStr;
   }
@@ -144,19 +150,15 @@ public class SVGImageExporter extends AbstractExporter {
   private static String font2style(final Font font) {
     final StringBuilder result = new StringBuilder();
 
-    final String fontStyle = font.isItalic() ? "italic" : "normal";
-    final String fontWeight = font.isBold() ? "bold" : "normal";
-    final String fontSize = DOUBLE.format(font.getSize2D()) + "px";
     final String fontFamily = fontFamilyToSVG(font);
+    result.append("font-family: '").append(fontFamily).append("';").append(NEXT_LINE);
 
-    result.append("font-family: ").append(fontFamily).append(';').append(NEXT_LINE);
-    result.append("font-size: ").append(fontSize).append(';').append(NEXT_LINE);
-    result.append("font-style: ").append(fontStyle).append(';').append(NEXT_LINE);
-    result.append("font-weight: ").append(fontWeight).append(';').append(NEXT_LINE);
-
-    findWoffFont(font).ifPresent(
-        woff -> result.append("src: url(\"data:application/font-woff;base64,")
-            .append(Utils.base64encode(woff)).append("\") format(woff);").append(NEXT_LINE));
+    findEmbeddedFont(font).ifPresent(
+        fontData -> result.append("src:url(data:").append(fontData.mimeType)
+            .append(";charset=utf-8;base64,")
+            .append(Utils.base64encode(fontData.data)).append(") format(\"")
+            .append(fontData.asFormat()).append("\");")
+            .append(NEXT_LINE));
 
     return result.toString();
   }
@@ -231,14 +233,12 @@ public class SVGImageExporter extends AbstractExporter {
     try {
       layoutFullDiagramWithCenteringToPaper(gfx, workMap, newConfig, blockSize);
       drawOnGraphicsForConfiguration(gfx, newConfig, workMap, false, null);
-      buffer.insert(0, imageCache);
+      buffer.insert(0, imageCache.asString(prepareStylePart(newConfig)));
     } finally {
       gfx.dispose();
       imageCache.reset();
     }
 
-    buffer.insert(0, NEXT_LINE);
-    buffer.insert(0, prepareStylePart(newConfig));
     buffer.insert(0, NEXT_LINE);
     buffer.insert(0, String.format(SVG_HEADER, 100, 100, dbl2str(blockSize.getWidth()),
         dbl2str(blockSize.getHeight())));
@@ -293,9 +293,9 @@ public class SVGImageExporter extends AbstractExporter {
   }
 
   private String prepareStylePart(final MindMapPanelConfig config) {
-    return "<style type=\"text/css\">" + NEXT_LINE +
-        '.' + FONT_CLASS_NAME + " {" + NEXT_LINE + font2style(config.getFont()) + "}" + NEXT_LINE +
-        "</style>";
+    return "<style type=\"text/css\">" + NEXT_LINE
+        + "  @font-face { " + NEXT_LINE + font2style(config.getFont()) + "}" + NEXT_LINE
+        + "</style>";
   }
 
   @Override
@@ -318,6 +318,29 @@ public class SVGImageExporter extends AbstractExporter {
     return 5;
   }
 
+  private static final class EmbeddedFont {
+    private final byte[] data;
+    private final String mimeType;
+
+    EmbeddedFont(final byte[] data, final String mimeType) {
+      this.data = requireNonNull(data);
+      this.mimeType = requireNonNull(mimeType);
+    }
+
+    String asFormat() {
+      if (this.mimeType.endsWith("woff")) {
+        return "woff";
+      }
+      if (this.mimeType.endsWith("woff2")) {
+        return "woff2";
+      }
+      if (this.mimeType.endsWith("opentype")) {
+        return "otf";
+      }
+      return "ttf";
+    }
+  }
+
   private static final class ImageCache {
     private final AtomicLong counter = new AtomicLong(1L);
 
@@ -334,10 +357,12 @@ public class SVGImageExporter extends AbstractExporter {
       }
     }
 
-    @Override
-    public String toString() {
+    public String asString(final String css) {
       final StringWriter writer = new StringWriter(4096);
       writer.write("<defs>");
+      writer.write(NEXT_LINE);
+
+      writer.write(css);
       writer.write(NEXT_LINE);
 
       this.map.entrySet().stream()
@@ -451,8 +476,16 @@ public class SVGImageExporter extends AbstractExporter {
       }
     }
 
-    private void printFontData() {
-      this.buffer.append("class=\"" + FONT_CLASS_NAME + '\"');
+    private void printFontData(final Font font) {
+      final String fontStyle = font.isItalic() ? "italic" : "normal";
+      final String fontWeight = font.isBold() ? "bold" : "normal";
+      final String fontFamily = fontFamilyToSVG(font);
+
+      this.buffer
+          .append("font-family=\"").append(fontFamily).append("\" ")
+          .append("font-size=\"").append(DOUBLE.format(font.getSize2D())).append("px\" ")
+          .append("font-style=\"").append(fontStyle).append("\" ")
+          .append("font-weight=\"").append(fontWeight).append('"');
     }
 
     private void printStrokeData(final Color color) {
@@ -578,7 +611,7 @@ public class SVGImageExporter extends AbstractExporter {
         printFillOpacity(color);
       }
       this.buffer.append(' ');
-      printFontData();
+      printFontData(this.context.getFont());
       this.buffer.append('>').append(StringEscapeUtils.escapeXml10(text)).append("</text>")
           .append(NEXT_LINE);
     }

@@ -460,12 +460,22 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   private static void registerApplicationFonts() {
     LOGGER.info("Registering application fonts");
     final String[] fontFiles = new String[] {
-        "FiraCode-Bold.ttf",
-        "FiraCode-Light.ttf",
-        "FiraCode-Medium.ttf",
-        "FiraCode-Regular.ttf",
-        "FiraCode-Retina.ttf",
-        "FiraCode-SemiBold.ttf"
+        "JetBrainsMono-BoldItalic.ttf",
+        "JetBrainsMono-Bold.ttf",
+        "JetBrainsMono-ExtraBoldItalic.ttf",
+        "JetBrainsMono-ExtraBold.ttf",
+        "JetBrainsMono-ExtraLightItalic.ttf",
+        "JetBrainsMono-ExtraLight.ttf",
+        "JetBrainsMono-Italic.ttf",
+        "JetBrainsMono-LightItalic.ttf",
+        "JetBrainsMono-Light.ttf",
+        "JetBrainsMono-MediumItalic.ttf",
+        "JetBrainsMono-Medium.ttf",
+        "JetBrainsMono-Regular.ttf",
+        "JetBrainsMono-SemiBoldItalic.ttf",
+        "JetBrainsMono-SemiBold.ttf",
+        "JetBrainsMono-ThinItalic.ttf",
+        "JetBrainsMono-Thin.ttf"
     };
     final GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
     for (final String fontFileName : fontFiles) {

@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
@@ -110,13 +111,15 @@ public final class MindMapPanelConfig implements Serializable {
   private boolean dropShadow = true;
   private RenderQuality renderQuality = Utils.getDefaultRenderQialityForOs();
   private transient volatile boolean notificationEnabled = true;
+
   public MindMapPanelConfig(final MindMapPanelConfig cfg, final boolean copyListeners) {
     this();
     this.makeFullCopyOf(cfg, copyListeners, false);
   }
 
   public MindMapPanelConfig() {
-    this.font = findDefaultFont(Font.PLAIN, 18);
+    this.font =
+        findDefaultFont(Font.PLAIN, 18, Font.MONOSPACED, new String[] {"JetBrains Mono SemiBold"});
     if (SystemUtils.IS_OS_MAC) {
       // key map for MAC
       this.mapShortCut.put(KEY_ADD_CHILD_AND_START_EDIT,
@@ -212,13 +215,36 @@ public final class MindMapPanelConfig implements Serializable {
     }
   }
 
-  public static Font findDefaultFont(final int style, final int size) {
-    return Stream.of(
-            GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames())
-        .filter(x -> x.startsWith("Fira Code Semi"))
-        .map(x -> new Font(x, style, size))
-        .findFirst()
-        .orElse(new Font(Font.SERIF, style, size));
+  private static boolean isPreferDefaultFont() {
+    final String hostLang = Locale.getDefault().getLanguage();
+    return !(Locale.ENGLISH.getLanguage().equalsIgnoreCase(hostLang)
+        || Locale.GERMAN.getLanguage().equalsIgnoreCase(hostLang)
+        || Locale.FRENCH.getLanguage().equalsIgnoreCase(hostLang)
+        || "ru".equalsIgnoreCase(hostLang)
+        || "ua".equalsIgnoreCase(hostLang)
+        || "es".equalsIgnoreCase(hostLang));
+  }
+
+  public static Font findDefaultFont(final int style, final int size,
+                                     final String defaultFontFamily,
+                                     final String[] fontNameStartsWith) {
+    if (isPreferDefaultFont()) {
+      return new Font(defaultFontFamily, style, size);
+    } else {
+      return Stream.of(
+              GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames())
+          .filter(x -> {
+            for (final String s : fontNameStartsWith) {
+              if (x.startsWith(s)) {
+                return true;
+              }
+            }
+            return false;
+          })
+          .map(x -> new Font(x, style, size))
+          .findFirst()
+          .orElse(new Font(defaultFontFamily, style, size));
+    }
   }
 
   public boolean isKeyEvent(final String id, final KeyEvent event,

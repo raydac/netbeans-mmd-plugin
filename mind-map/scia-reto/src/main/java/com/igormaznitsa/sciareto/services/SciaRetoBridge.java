@@ -147,13 +147,16 @@ public class SciaRetoBridge implements IDEBridge {
     final Map<String, Object> result = new HashMap<>();
     if (properties.containsKey(SVGImageExporter.LOOKUP_PARAM_REQ_FONT)) {
       final Font font = (Font) properties.get(SVGImageExporter.LOOKUP_PARAM_REQ_FONT);
-      if (font.getName().startsWith("Fira Code")) {
-        final String fileName = "FiraCode-" + font.getName().substring(9).trim() + ".woff";
+      final String normalized = font.getName().replace(" ", "");
+
+      if (normalized.startsWith("JetBrainsMono")) {
+        final String fileName = "JetBrainsMono-" + normalized.substring(13).trim() + ".woff2";
         try {
           final byte[] resource = IOUtils.resourceToByteArray("/fonts/woff/" + fileName);
-          result.put(SVGImageExporter.LOOKUP_PARAM_RESP_WOFF_FONT_AS_ARRAY, resource);
+          result.put(SVGImageExporter.LOOKUP_PARAM_RESP_FONT_DATA, resource);
+          result.put(SVGImageExporter.LOOKUP_PARAM_RESP_FONT_MIME, "font/woff2");
         } catch (IOException ex) {
-          LOGGER.error("Can't read WOFF resource for " + font.getName(), ex);
+          LOGGER.error("Can't read WOFF2 resource for " + font.getName(), ex);
         }
       }
     }

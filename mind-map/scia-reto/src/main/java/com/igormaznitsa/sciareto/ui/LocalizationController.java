@@ -37,11 +37,18 @@ public final class LocalizationController implements SpecificKeys {
   private Language currentLanguage;
 
   private LocalizationController() {
+    final Language hostLanguage;
+    if (!"ru".equalsIgnoreCase(Locale.getDefault().getLanguage())) {
+      hostLanguage = Language.ENGLISH;
+    } else {
+      hostLanguage = Language.RUSSIAN;
+    }
+
     final String language = PreferencesManager.getInstance().getPreferences()
-        .get(PROPERTY_LANGUAGE, Language.ENGLISH.name());
+        .get(PROPERTY_LANGUAGE, hostLanguage.name());
     final Language selectedLanguage =
         Stream.of(Language.values()).filter(x -> x.name().equalsIgnoreCase(language)).findFirst()
-            .orElse(Language.ENGLISH);
+            .orElse(hostLanguage);
     this.currentLanguage = selectedLanguage;
     LOGGER.info("Initial set language: " + selectedLanguage.name());
     selectedLanguage.activate();
