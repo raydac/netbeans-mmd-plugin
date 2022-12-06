@@ -23,6 +23,7 @@ import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.api.MindMapPlugin;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.SciaRetoStarter;
+import com.igormaznitsa.sciareto.ui.SrI18n;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 
 import javax.annotation.Nonnull;
@@ -98,7 +99,6 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
     this.thirdParts.add(new ThirdPartLicense("Apache Batik", "https://xmlgraphics.apache.org/batik/", "Apache License, Version 2.0", "https://xmlgraphics.apache.org/batik/license.html"));
     
     this.tableThirdPartLibraries.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    final java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
 
     this.tableThirdPartLibraries.setModel(new TableModel() {
       @Override
@@ -115,8 +115,8 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
       @Nonnull
       public String getColumnName(final int columnIndex) {
         switch(columnIndex) {
-          case 0 : return bundle.getString("AboutPanel.grid.title.component");
-          case 1 : return bundle.getString("AboutPanel.grid.title.license");
+          case 0 : return SrI18n.getInstance().findBundle().getString("AboutPanel.grid.title.component");
+          case 1 : return SrI18n.getInstance().findBundle().getString("AboutPanel.grid.title.license");
           default:return "<unknown>";
         }
       }
