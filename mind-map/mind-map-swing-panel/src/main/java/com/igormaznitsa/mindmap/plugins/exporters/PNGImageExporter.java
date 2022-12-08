@@ -23,6 +23,8 @@ import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.api.parameters.AbstractParameter;
 import com.igormaznitsa.mindmap.plugins.api.parameters.BooleanParameter;
+import com.igormaznitsa.mindmap.plugins.api.parameters.FileParameter;
+import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.utils.ImageSelection;
@@ -37,10 +39,12 @@ import java.awt.image.RenderedImage;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
@@ -51,6 +55,8 @@ public final class PNGImageExporter extends AbstractExporter {
 
   private static final String KEY_PARAMETER_UNFOLD_ALL = "mmd.exporter.png.unfold.all";
   private static final String KEY_PARAMETER_DRAW_BACKGROUND = "mmd.exporter.png.background.draw";
+  private static final String KEY_PARAMETER_CUSTOM_CONFIG_FILE =
+      "mmd.exporter.png.custom.config.file";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PNGImageExporter.class);
   private static final Icon ICO =
@@ -63,17 +69,59 @@ public final class PNGImageExporter extends AbstractExporter {
   @Override
   public Set<AbstractParameter<?>> makeDefaultParameters() {
     return new HashSet<AbstractParameter<?>>() {{
-      add(new BooleanParameter(KEY_PARAMETER_UNFOLD_ALL, getResourceBundle().getString("PNGImageExporter.optionUnfoldAll"),
+      add(new BooleanParameter(KEY_PARAMETER_UNFOLD_ALL,
+          getResourceBundle().getString("PNGImageExporter.optionUnfoldAll"),
           getResourceBundle().getString("PNGImageExporter.optionUnfoldAll.comment"),
-          true));
+          true, 1));
       add(new BooleanParameter(KEY_PARAMETER_DRAW_BACKGROUND,
-          getResourceBundle().getString("PNGImageExporter.optionDrawBackground"), getResourceBundle().getString("PNGImageExporter.optionDrawBackground.comment"),
-          true));
+          getResourceBundle().getString("PNGImageExporter.optionDrawBackground"),
+          getResourceBundle().getString("PNGImageExporter.optionDrawBackground.comment"),
+          true, 2));
+      add(new FileParameter(KEY_PARAMETER_CUSTOM_CONFIG_FILE,
+          getResourceBundle().getString("PNGImageExporter.customConfigFile"),
+          getResourceBundle().getString("PNGImageExporter.optionCustomConfigFile.comment"),
+          null, new FileParameter.FileChooserParamsProvider() {
+        @Override
+        public String getTitle() {
+          return MmdI18n.getInstance().findBundle()
+              .getString("PNGImageExporter.preferences.fileChooser.title");
+        }
+
+        @Override
+        public FileFilter[] getFileFilters() {
+          return new FileFilter[] {
+              new FileFilter() {
+                @Override
+                public String toString() {
+                  return MmdI18n.getInstance().findBundle()
+                      .getString("PNGImageExporter.preferences.fileChooser.filter");
+                }
+
+                @Override
+                public boolean accept(File file) {
+                  return file.isDirectory() ||
+                      file.getName().toLowerCase(Locale.ENGLISH).endsWith(".properties");
+                }
+              }
+          };
+        }
+
+        @Override
+        public String getApproveText() {
+          return MmdI18n.getInstance().findBundle()
+              .getString("PNGImageExporter.preferences.fileChooser.approve");
+        }
+
+        @Override
+        public boolean isFilesOnly() {
+          return true;
+        }
+      }, 0));
     }};
   }
 
   private BufferedImage makeImage(final PluginContext context,
-                                  final Set<AbstractParameter<?>> options) {
+                                  final Set<AbstractParameter<?>> options) throws IOException {
     final boolean flagExpandAllNodes = options.stream()
         .filter(x -> KEY_PARAMETER_UNFOLD_ALL.equals(x.getId()))
         .findFirst()
@@ -86,11 +134,25 @@ public final class PNGImageExporter extends AbstractExporter {
         .map(x -> ((BooleanParameter) x).getValue())
         .orElse(true);
 
-    final MindMapPanelConfig newConfig = new MindMapPanelConfig(context.getPanelConfig(), false);
-    newConfig.setDrawBackground(flagDrawBackground);
-    newConfig.setScale(1.0f);
+    final File customPreferencesFile = options.stream()
+        .filter(x -> KEY_PARAMETER_CUSTOM_CONFIG_FILE.equals(x.getId()))
+        .findFirst()
+        .map(x -> ((FileParameter) x).getValue())
+        .orElse(null);
 
-    return MindMapPanel.renderMindMapAsImage(context.getPanel().getModel(), newConfig,
+
+    final MindMapPanelConfig panelConfig;
+    if (customPreferencesFile == null) {
+      panelConfig = new MindMapPanelConfig(context.getPanelConfig(), false);
+    } else {
+      LOGGER.info("Loading custom preferences file: " + customPreferencesFile);
+      panelConfig = this.loadPreferencesFile(customPreferencesFile);
+    }
+
+    panelConfig.setDrawBackground(flagDrawBackground);
+    panelConfig.setScale(1.0f);
+
+    return MindMapPanel.renderMindMapAsImage(context.getPanel().getModel(), panelConfig,
         flagExpandAllNodes, RenderQuality.QUALITY);
   }
 
@@ -118,7 +180,8 @@ public final class PNGImageExporter extends AbstractExporter {
       if (out == null) {
         LOGGER.error("Can't render map as image");
         context.getDialogProvider()
-            .msgError(null, this.getResourceBundle().getString("PNGImageExporter.msgErrorDuringRendering"));
+            .msgError(null,
+                this.getResourceBundle().getString("PNGImageExporter.msgErrorDuringRendering"));
         return;
       } else {
         throw new IOException("Can't render image");

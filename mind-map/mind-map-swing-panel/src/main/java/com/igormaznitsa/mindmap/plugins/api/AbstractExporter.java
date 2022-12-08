@@ -22,10 +22,14 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.api.parameters.AbstractParameter;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
+import com.igormaznitsa.mindmap.swing.panel.utils.PropertiesPreferences;
 import com.igormaznitsa.mindmap.swing.services.DefaultParametersPanelFactory;
 import java.awt.event.ActionEvent;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
@@ -33,6 +37,7 @@ import java.util.Set;
 import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
+import org.apache.commons.io.FileUtils;
 
 /**
  * Abstract auxiliary class automates way to implement an abstract exporter.
@@ -47,6 +52,13 @@ public abstract class AbstractExporter extends AbstractPopupMenuItem implements 
 
   public Set<AbstractParameter<?>> makeDefaultParameters() {
     return Collections.emptySet();
+  }
+
+  protected MindMapPanelConfig loadPreferencesFile(final File file) throws IOException {
+    final MindMapPanelConfig result = new MindMapPanelConfig();
+    result.loadFrom(new PropertiesPreferences("SciaReto",
+        FileUtils.readFileToString(file, StandardCharsets.UTF_8)));
+    return result;
   }
 
   @Override
@@ -64,9 +76,10 @@ public abstract class AbstractExporter extends AbstractPopupMenuItem implements 
         } else {
           final Set<AbstractParameter<?>> parameters = this.makeDefaultParameters();
           if (!parameters.isEmpty()) {
-            final JComponent options = DefaultParametersPanelFactory.getInstance().make(parameters);
+            final JComponent options = DefaultParametersPanelFactory.getInstance()
+                .make(context.getDialogProvider(), parameters);
             if (options != null && !context.getDialogProvider()
-                .msgOkCancel(null, getName(context, activeTopic), options)) {
+                .msgOkCancel(context.getPanel(), getName(context, activeTopic), options)) {
               return;
             }
           }
@@ -81,7 +94,8 @@ public abstract class AbstractExporter extends AbstractPopupMenuItem implements 
       } catch (Exception ex) {
         LOGGER.error("Error during map export", ex);
         context.getDialogProvider()
-            .msgError(null, this.getResourceBundle().getString("MMDGraphEditor.makePopUp.errMsgCantExport"));
+            .msgError(context.getPanel(),
+                String.format(this.getResourceBundle().getString("MMDGraphEditor.makePopUp.errMsgCantExport"),  ex.getMessage()));
       }
     });
     return result;
@@ -114,13 +128,15 @@ public abstract class AbstractExporter extends AbstractPopupMenuItem implements 
 
   /**
    * Export into output stream.
+   *
    * @param context plugin context, must not be null
    * @param options set of parameters to be used during export, must not be null
-   * @param out target output stream, must not be null
+   * @param out     target output stream, must not be null
    * @throws IOException thrown if any error
    * @since 1.6.0
    */
-  public abstract void doExport(final PluginContext context, final Set<AbstractParameter<?>> options,
+  public abstract void doExport(final PluginContext context,
+                                final Set<AbstractParameter<?>> options,
                                 final OutputStream out) throws IOException;
 
   /**
@@ -131,7 +147,8 @@ public abstract class AbstractExporter extends AbstractPopupMenuItem implements 
    * @throws IOException it will be thrown if any error
    * @since 1.6.0
    */
-  public abstract void doExportToClipboard(final PluginContext context, final Set<AbstractParameter<?>> options)
+  public abstract void doExportToClipboard(final PluginContext context,
+                                           final Set<AbstractParameter<?>> options)
       throws IOException;
 
   public abstract String getName(final PluginContext context, final Topic activeTopic);

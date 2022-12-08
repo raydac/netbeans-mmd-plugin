@@ -74,7 +74,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
 
     @Override
     public String getDescription() {
-      return "Java properties file (*.properties)";
+      return SrI18n.getInstance().findBundle().getString("PreferencesPanel.fileChooser.filter.text");  //NOI18N
     }
 
   }

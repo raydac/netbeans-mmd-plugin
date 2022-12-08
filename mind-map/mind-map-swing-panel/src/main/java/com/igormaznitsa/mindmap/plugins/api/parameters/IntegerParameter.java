@@ -21,11 +21,27 @@ public class IntegerParameter extends AbstractParameter<Long> {
   private final long min;
   private final long max;
 
-  public IntegerParameter(final String id, final String title, final String comment, final long min, final long max,
-                          final long defaultValue) {
-    super(id, title, comment, defaultValue);
+  public IntegerParameter(
+      final String id,
+      final String title,
+      final String comment,
+      final long min,
+      final long max,
+      final long defaultValue,
+      final int order) {
+    super(id, title, comment, defaultValue, order);
     this.min = min;
     this.max = max;
+  }
+
+  public IntegerParameter(
+      final String id,
+      final String title,
+      final String comment,
+      final long min,
+      final long max,
+      final long defaultValue) {
+    this(id, title, comment, min, max, defaultValue, 0);
   }
 
   public long getMin() {
@@ -46,6 +62,10 @@ public class IntegerParameter extends AbstractParameter<Long> {
 
   @Override
   public void setValue(final Long value) {
-    super.setValue(Math.min(this.max, Math.max(this.min, value)));
+    if (value == null) {
+      super.setValue(this.min);
+    } else {
+      super.setValue(Math.min(this.max, Math.max(this.min, value)));
+    }
   }
 }

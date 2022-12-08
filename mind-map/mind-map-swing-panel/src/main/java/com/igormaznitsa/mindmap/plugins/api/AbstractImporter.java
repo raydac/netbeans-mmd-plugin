@@ -82,7 +82,8 @@ public abstract class AbstractImporter extends AbstractPopupMenuItem implements 
         }
       } catch (Exception ex) {
         LOGGER.error("Error during map import", ex);
-        context.getDialogProvider().msgError(null, this.getResourceBundle().getString("MMDGraphEditor.makePopUp.errMsgCantImport"));
+        context.getDialogProvider().msgError(context.getPanel(),
+            String.format(this.getResourceBundle().getString("MMDGraphEditor.makePopUp.errMsgCantImport"), ex.getMessage()));
       }
     });
     return result;

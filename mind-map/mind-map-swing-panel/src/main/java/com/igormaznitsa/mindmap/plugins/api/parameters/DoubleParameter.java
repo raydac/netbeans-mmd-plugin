@@ -22,7 +22,19 @@ public class DoubleParameter extends AbstractParameter<Double>{
   private final double max;
 
   public DoubleParameter(final String id, final String title, final String comment, final double min, final double max, final double defaultValue) {
-    super(id, title, comment, defaultValue);
+    this(id, title, comment, min, max, defaultValue, 0);
+  }
+
+  public DoubleParameter(
+      final String id,
+      final String title,
+      final String comment,
+      final double min,
+      final double max,
+      final double defaultValue,
+      final int order
+  ) {
+    super(id, title, comment, defaultValue, order);
     this.min = min;
     this.max = max;
   }
@@ -46,6 +58,10 @@ public class DoubleParameter extends AbstractParameter<Double>{
 
   @Override
   public void setValue(final Double value) {
-    super.setValue(Math.min(this.max, Math.max(this.min, value)));
+    if (value == null) {
+      super.setValue(this.min);
+    } else {
+      super.setValue(Math.min(this.max, Math.max(this.min, value)));
+    }
   }
 }

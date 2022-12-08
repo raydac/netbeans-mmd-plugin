@@ -16,6 +16,7 @@
 
 package com.igormaznitsa.ideamindmap.utils;
 
+import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.plugins.api.parameters.AbstractParameter;
 import com.igormaznitsa.mindmap.swing.services.DefaultParametersPanelFactory;
@@ -68,8 +69,8 @@ public class IdeaUIComponentFactory implements UIComponentFactory {
 
   @Nonnull
   @Override
-  public JPanel makePanelWithOptions(@Nonnull Set<AbstractParameter<?>> parameters) {
-    return DefaultParametersPanelFactory.getInstance().make(parameters);
+  public JPanel makePanelWithOptions(@Nonnull DialogProvider dialogProvider, @Nonnull Set<AbstractParameter<?>> parameters) {
+    return DefaultParametersPanelFactory.getInstance().make(dialogProvider, parameters);
   }
 
   @Nonnull

@@ -20,30 +20,56 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Objects;
 
-public abstract class AbstractParameter<T> {
+public abstract class AbstractParameter<T> implements Comparable<AbstractParameter<T>>{
   private final String id;
   private final String title;
   private final String comment;
   private T value;
 
+  private final int order;
+
+  public int getOrder() {
+    return this.order;
+  }
+
   public String getTitle() {
     return this.title;
   }
 
+  @Override
+  public int compareTo(final AbstractParameter<T> that) {
+    int compareResult = Integer.compare(this.order, that.order);
+    if (compareResult == 0) {
+      compareResult = this.id.compareTo(that.id);
+    }
+    return compareResult;
+  }
+
   public void setValue(final T value) {
-    this.value = requireNonNull(value);
+    this.value = value;
   }
 
   public T getValue() {
     return this.value;
   }
 
-  public AbstractParameter(final String id, final String title, final String comment,
-                           final T defaultValue) {
+  public AbstractParameter(final String id,
+                           final String title,
+                           final String comment,
+                           final T defaultValue,
+                           final int order) {
     this.id = requireNonNull(id);
     this.comment = requireNonNull(comment);
     this.title = requireNonNull(title);
-    this.value = requireNonNull(defaultValue);
+    this.value = defaultValue;
+    this.order = order;
+  }
+
+  public AbstractParameter(final String id,
+                           final String title,
+                           final String comment,
+                           final T defaultValue) {
+    this(id, title, comment, defaultValue, 0);
   }
 
   public String getComment() {
@@ -68,9 +94,9 @@ public abstract class AbstractParameter<T> {
   @Override
   public String toString() {
     return this.getClass().getSimpleName() + '{' +
-        "id='" + id + '\'' +
-        ", title='" + title + '\'' +
-        ", value=" + value +
+        "id='" + this.id + '\'' +
+        ", title='" + this.title + '\'' +
+        ", value=" + this.value +
         '}';
   }
 

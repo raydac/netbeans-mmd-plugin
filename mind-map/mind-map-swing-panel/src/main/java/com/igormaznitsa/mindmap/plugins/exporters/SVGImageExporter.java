@@ -30,6 +30,8 @@ import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.api.parameters.AbstractParameter;
 import com.igormaznitsa.mindmap.plugins.api.parameters.BooleanParameter;
+import com.igormaznitsa.mindmap.plugins.api.parameters.FileParameter;
+import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.ide.IDEBridgeFactory;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
@@ -65,6 +67,7 @@ import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -114,6 +117,8 @@ public class SVGImageExporter extends AbstractExporter {
   private static final DecimalFormat DOUBLE;
   private static final String KEY_PARAMETER_UNFOLD_ALL = "mmd.exporter.svg.unfold.all";
   private static final String KEY_PARAMETER_DRAW_BACKGROUND = "mmd.exporter.svg.background.draw";
+  private static final String KEY_PARAMETER_CUSTOM_CONFIG_FILE =
+      "mmd.exporter.svg.custom.config.file";
 
   static {
     DOUBLE = new DecimalFormat("#.###", DecimalFormatSymbols.getInstance(Locale.US));
@@ -174,15 +179,55 @@ public class SVGImageExporter extends AbstractExporter {
       add(new BooleanParameter(KEY_PARAMETER_UNFOLD_ALL,
           getResourceBundle().getString("SvgExporter.optionUnfoldAll"),
           getResourceBundle().getString("SvgExporter.optionUnfoldAll.comment"),
-          true));
+          true, 1));
       add(new BooleanParameter(KEY_PARAMETER_DRAW_BACKGROUND,
           getResourceBundle().getString("SvgExporter.optionDrawBackground"),
           getResourceBundle().getString("SvgExporter.optionDrawBackground.comment"),
-          true));
+          true, 2));
+      add(new FileParameter(KEY_PARAMETER_CUSTOM_CONFIG_FILE,
+          getResourceBundle().getString("SvgExporter.customConfigFile"),
+          getResourceBundle().getString("SvgExporter.optionCustomConfigFile.comment"),
+          null, new FileParameter.FileChooserParamsProvider() {
+        @Override
+        public String getTitle() {
+          return MmdI18n.getInstance().findBundle()
+              .getString("SvgExporter.preferences.fileChooser.title");
+        }
+
+        @Override
+        public FileFilter[] getFileFilters() {
+          return new FileFilter[] {
+              new FileFilter() {
+                @Override
+                public String toString() {
+                  return MmdI18n.getInstance().findBundle()
+                      .getString("SvgExporter.preferences.fileChooser.filter");
+                }
+
+                @Override
+                public boolean accept(File file) {
+                  return file.isDirectory() ||
+                      file.getName().toLowerCase(Locale.ENGLISH).endsWith(".properties");
+                }
+              }
+          };
+        }
+
+        @Override
+        public String getApproveText() {
+          return MmdI18n.getInstance().findBundle()
+              .getString("SvgExporter.preferences.fileChooser.approve");
+        }
+
+        @Override
+        public boolean isFilesOnly() {
+          return true;
+        }
+      }, 0));
     }};
   }
 
-  private String makeContent(final PluginContext context, final Set<AbstractParameter<?>> options) {
+  private String makeContent(final PluginContext context, final Set<AbstractParameter<?>> options) throws IOException {
     final boolean flagExpandAllNodes = options.stream()
         .filter(x -> KEY_PARAMETER_UNFOLD_ALL.equals(x.getId()))
         .findFirst()
@@ -195,7 +240,6 @@ public class SVGImageExporter extends AbstractExporter {
         .map(x -> ((BooleanParameter) x).getValue())
         .orElse(true);
 
-
     final MindMap workMap = context.getPanel().getModel().makeCopy();
     workMap.clearAllPayloads();
 
@@ -203,20 +247,34 @@ public class SVGImageExporter extends AbstractExporter {
       MindMapUtils.removeCollapseAttr(workMap);
     }
 
-    final MindMapPanelConfig newConfig = new MindMapPanelConfig(context.getPanelConfig(), false);
-    final String[] mappedFont =
-        LOCAL_FONT_MAP.get(newConfig.getFont().getFamily().toLowerCase(Locale.ENGLISH));
-    if (mappedFont != null) {
-      final Font adaptedFont =
-          new Font(mappedFont[1], newConfig.getFont().getStyle(), newConfig.getFont().getSize());
-      newConfig.setFont(adaptedFont);
+    final File customPreferencesFile = options.stream()
+        .filter(x -> KEY_PARAMETER_CUSTOM_CONFIG_FILE.equals(x.getId()))
+        .findFirst()
+        .map(x -> ((FileParameter) x).getValue())
+        .orElse(null);
+
+
+    final MindMapPanelConfig drawConfig;
+    if (customPreferencesFile == null) {
+      drawConfig = new MindMapPanelConfig(context.getPanelConfig(), false);
+    } else {
+      LOGGER.info("Loading custom preferences file: " + customPreferencesFile);
+      drawConfig = this.loadPreferencesFile(customPreferencesFile);
     }
 
-    newConfig.setDrawBackground(flagDrawBackground);
-    newConfig.setScale(1.0f);
+    final String[] mappedFont =
+        LOCAL_FONT_MAP.get(drawConfig.getFont().getFamily().toLowerCase(Locale.ENGLISH));
+    if (mappedFont != null) {
+      final Font adaptedFont =
+          new Font(mappedFont[1], drawConfig.getFont().getStyle(), drawConfig.getFont().getSize());
+      drawConfig.setFont(adaptedFont);
+    }
+
+    drawConfig.setDrawBackground(flagDrawBackground);
+    drawConfig.setScale(1.0f);
 
     final Dimension2D blockSize =
-        calculateSizeOfMapInPixels(workMap, null, newConfig, flagExpandAllNodes,
+        calculateSizeOfMapInPixels(workMap, null, drawConfig, flagExpandAllNodes,
             RenderQuality.DEFAULT);
     if (blockSize == null) {
       return SVG_HEADER + "</svg>";
@@ -231,9 +289,9 @@ public class SVGImageExporter extends AbstractExporter {
     gfx.setClip(0, 0, (int) Math.round(blockSize.getWidth()),
         (int) Math.round(blockSize.getHeight()));
     try {
-      layoutFullDiagramWithCenteringToPaper(gfx, workMap, newConfig, blockSize);
-      drawOnGraphicsForConfiguration(gfx, newConfig, workMap, false, null);
-      buffer.insert(0, imageCache.asString(prepareStylePart(newConfig)));
+      layoutFullDiagramWithCenteringToPaper(gfx, workMap, drawConfig, blockSize);
+      drawOnGraphicsForConfiguration(gfx, drawConfig, workMap, false, null);
+      buffer.insert(0, imageCache.asString(prepareStylePart(drawConfig)));
     } finally {
       gfx.dispose();
       imageCache.reset();

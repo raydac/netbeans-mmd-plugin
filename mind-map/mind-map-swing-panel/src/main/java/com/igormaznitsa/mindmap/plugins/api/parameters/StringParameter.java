@@ -17,8 +17,13 @@
 package com.igormaznitsa.mindmap.plugins.api.parameters;
 
 public class StringParameter extends AbstractParameter<String> {
-  public StringParameter(final String id, final String title, final String comment, final String defaultValue) {
-    super(id, title, comment, defaultValue);
+  public StringParameter(final String id, final String title, final String comment, final String defaultValue, final int order) {
+    super(id, title, comment, defaultValue, order);
+  }
+
+  public StringParameter(final String id, final String title, final String comment,
+                         final String defaultValue) {
+    this(id, title, comment, defaultValue, 0);
   }
 
   @Override

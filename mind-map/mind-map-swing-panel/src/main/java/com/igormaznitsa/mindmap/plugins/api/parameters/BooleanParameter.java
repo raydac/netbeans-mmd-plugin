@@ -21,6 +21,11 @@ public class BooleanParameter extends AbstractParameter<Boolean>{
     super(id, title, comment, defaultValue);
   }
 
+  public BooleanParameter(String id, String title, String comment,
+                          Boolean defaultValue, int order) {
+    super(id, title, comment, defaultValue, order);
+  }
+
   @Override
   public void fromString(final String value) {
     this.setValue(value != null && Boolean.parseBoolean(value.trim()));

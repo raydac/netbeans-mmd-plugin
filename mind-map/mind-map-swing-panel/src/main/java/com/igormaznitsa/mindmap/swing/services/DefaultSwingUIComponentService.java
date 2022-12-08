@@ -17,6 +17,9 @@
 package com.igormaznitsa.mindmap.swing.services;
 
 import com.igormaznitsa.mindmap.plugins.api.parameters.AbstractParameter;
+import com.igormaznitsa.mindmap.swing.ide.IDEBridge;
+import com.igormaznitsa.mindmap.swing.ide.IDEBridgeFactory;
+import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import java.util.Set;
 import javax.swing.ButtonGroup;
 import javax.swing.Icon;
@@ -50,8 +53,8 @@ public class DefaultSwingUIComponentService implements UIComponentFactory {
   }
 
   @Override
-  public JPanel makePanelWithOptions(final Set<AbstractParameter<?>> parameters) {
-    return DefaultParametersPanelFactory.getInstance().make(parameters);
+  public JPanel makePanelWithOptions(final DialogProvider dialogProvider, final Set<AbstractParameter<?>> parameters) {
+    return DefaultParametersPanelFactory.getInstance().make(dialogProvider, parameters);
   }
 
   @Override

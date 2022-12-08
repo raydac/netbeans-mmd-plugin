@@ -19,15 +19,21 @@ package com.igormaznitsa.mindmap.swing.services;
 import com.igormaznitsa.mindmap.plugins.api.parameters.AbstractParameter;
 import com.igormaznitsa.mindmap.plugins.api.parameters.BooleanParameter;
 import com.igormaznitsa.mindmap.plugins.api.parameters.DoubleParameter;
+import com.igormaznitsa.mindmap.plugins.api.parameters.FileParameter;
 import com.igormaznitsa.mindmap.plugins.api.parameters.IntegerParameter;
 import com.igormaznitsa.mindmap.plugins.api.parameters.StringParameter;
+import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
+import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
+import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.util.Comparator;
+import java.io.File;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -37,6 +43,7 @@ import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.text.Document;
 
 public class DefaultParametersPanelFactory extends JPanel {
@@ -47,11 +54,14 @@ public class DefaultParametersPanelFactory extends JPanel {
     return INSTANCE;
   }
 
-  public JPanel make(final Set<AbstractParameter<?>> parameters) {
-    return this.makeParametersPanelFactory(UIComponentFactoryProvider.findInstance(), parameters);
+  public JPanel make(final DialogProvider dialogProvider,
+                     final Set<AbstractParameter<?>> parameters) {
+    return this.makeParametersPanelFactory(UIComponentFactoryProvider.findInstance(),
+        dialogProvider, parameters);
   }
 
   private JPanel makeParametersPanelFactory(final UIComponentFactory uiComponentFactory,
+                                            final DialogProvider dialogProvider,
                                             final Set<AbstractParameter<?>> parameters) {
     final JPanel panel = uiComponentFactory.makePanel();
     panel.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
@@ -60,10 +70,10 @@ public class DefaultParametersPanelFactory extends JPanel {
     final AtomicInteger layoutY = new AtomicInteger(0);
 
     parameters.stream()
-        .sorted(Comparator.comparing(AbstractParameter::getId))
+        .sorted()
         .forEach(p -> {
           final JLabel label = uiComponentFactory.makeLabel();
-          label.setText(p.getTitle()+":");
+          label.setText(p.getTitle() + ":");
           final JComponent changer;
           if (p instanceof IntegerParameter) {
             final IntegerParameter integerParameter = (IntegerParameter) p;
@@ -79,6 +89,10 @@ public class DefaultParametersPanelFactory extends JPanel {
             final JCheckBox checkBox = (JCheckBox) changer;
             checkBox.setSelected(booleanParameter.getValue());
             checkBox.addChangeListener(x -> booleanParameter.setValue(checkBox.isSelected()));
+          } else if (p instanceof FileParameter) {
+            final FileParameter fileParameter = (FileParameter) p;
+            changer = new FileChooserCombo(uiComponentFactory, fileParameter,
+                dialogProvider).asComponent();
           } else if (p instanceof StringParameter) {
             final StringParameter stringParameter = (StringParameter) p;
             changer = uiComponentFactory.makeTextField();
@@ -125,7 +139,7 @@ public class DefaultParametersPanelFactory extends JPanel {
           changer.setToolTipText(p.getComment());
 
           final GridBagConstraints constraints = new GridBagConstraints();
-          constraints.insets = new Insets(0,4,8,4);
+          constraints.insets = new Insets(0, 4, 8, 4);
 
           constraints.gridy = layoutY.getAndIncrement();
           constraints.gridx = 0;
@@ -139,5 +153,104 @@ public class DefaultParametersPanelFactory extends JPanel {
         });
 
     return panel;
+  }
+
+  private static final class FileChooserCombo {
+    private final JPanel panel;
+    private final JTextField textField;
+    private final JButton buttonReset;
+    private final JButton buttonSelect;
+
+    private final FileParameter parameter;
+
+    private FileChooserCombo(
+        final UIComponentFactory uiComponentFactory,
+        final FileParameter fileParameter,
+        final DialogProvider dialogProvider) {
+      this.parameter = fileParameter;
+
+      this.panel = uiComponentFactory.makePanel();
+      this.panel.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
+      this.buttonReset = uiComponentFactory.makeButton();
+      this.buttonReset.setText("X");
+      this.buttonReset.setToolTipText(MmdI18n.getInstance().findBundle().getString("DefaultParametersPanelFactory.menuItem.buttonResetValue.tooltip"));
+
+      this.buttonSelect = uiComponentFactory.makeButton();
+      this.buttonSelect.setText("...");
+      this.buttonSelect.setToolTipText(MmdI18n.getInstance().findBundle().getString("DefaultParametersPanelFactory.menuItem.buttonSelectFile.tooltip"));
+
+      this.textField = uiComponentFactory.makeTextField();
+      this.textField.setColumns(16);
+
+      this.panel.add(this.textField);
+      this.panel.add(this.buttonReset);
+      this.panel.add(this.buttonSelect);
+
+      this.textField.setText(
+          fileParameter.getValue() == null ? "" : fileParameter.getValue().getAbsolutePath());
+
+      this.textField.getDocument().addDocumentListener(new DocumentListener() {
+        private void updateFileForDocument(final Document document) {
+          try {
+            parameter.setValue(new File(document.getText(0, document.getLength()).trim()));
+          }catch (Exception ex){
+            // ignore
+          }
+        }
+
+        @Override
+        public void insertUpdate(final DocumentEvent documentEvent) {
+          this.updateFileForDocument(documentEvent.getDocument());
+        }
+
+        @Override
+        public void removeUpdate(final DocumentEvent documentEvent) {
+          this.updateFileForDocument(documentEvent.getDocument());
+        }
+
+        @Override
+        public void changedUpdate(final DocumentEvent documentEvent) {
+          this.updateFileForDocument(documentEvent.getDocument());
+        }
+      });
+
+      this.buttonReset.addActionListener(x -> {
+        this.textField.setText("");
+        this.parameter.setValue(null);
+      });
+
+      this.buttonSelect.addActionListener(e -> {
+        final File file = dialogProvider.msgOpenFileDialog(
+            this.panel,
+            null,
+            "pngexporter.filechooser.preferences.file",
+            fileParameter.getFileChooserParamsProvider().getTitle(),
+            this.parameter.getValue(),
+            fileParameter.getFileChooserParamsProvider().isFilesOnly(),
+            Stream.of(fileParameter.getFileChooserParamsProvider().getFileFilters())
+                .map(x -> new FileFilter() {
+                  @Override
+                  public boolean accept(File file) {
+                    return x.accept(file);
+                  }
+
+                  @Override
+                  public String getDescription() {
+                    return x.toString();
+                  }
+                })
+                .toArray(FileFilter[]::new),
+            fileParameter.getFileChooserParamsProvider().getApproveText()
+        );
+        if (file != null) {
+          this.parameter.setValue(file);
+          this.textField.setText(file.getAbsolutePath());
+        }
+      });
+    }
+
+    public JComponent asComponent() {
+      return this.panel;
+    }
   }
 }
