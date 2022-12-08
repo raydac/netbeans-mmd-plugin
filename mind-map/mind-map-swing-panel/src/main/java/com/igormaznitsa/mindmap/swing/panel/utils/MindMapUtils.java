@@ -20,12 +20,12 @@ import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_B
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_COLLAPSED;
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_FILL_COLOR;
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_TEXT_COLOR;
-import static javax.swing.SwingUtilities.windowForComponent;
 
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
+import com.igormaznitsa.mindmap.swing.ide.IDEBridgeFactory;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import java.awt.Color;
@@ -245,7 +245,7 @@ public final class MindMapUtils {
                                                    final String approveButtonText) {
     final String lcExtension = dottedFileExtension.toLowerCase(Locale.ENGLISH);
     return panel.getController().getDialogProvider(panel).msgSaveFileDialog(
-        windowForComponent(panel),
+        IDEBridgeFactory.findInstance().findApplicationComponent(),
         pluginContext,
         dialogId,
         title,
@@ -275,7 +275,7 @@ public final class MindMapUtils {
     final String lcExtension = dottedFileExtension.toLowerCase(Locale.ENGLISH);
 
     return panel.getController().getDialogProvider(panel).msgOpenFileDialog(
-        windowForComponent(panel),
+        IDEBridgeFactory.findInstance().findApplicationComponent(),
         pluginContext,
         dialogId,
         title,
@@ -301,22 +301,31 @@ public final class MindMapUtils {
       return null;
     }
     if (file.isDirectory()) {
-      panel.getController().getDialogProvider(panel).msgError(null,
-          String.format(MmdI18n.getInstance().findBundle().getString("AbstractMindMapExporter.msgErrorItIsDirectory"),
-              file.getAbsolutePath()));
+      panel.getController().getDialogProvider(panel)
+          .msgError(IDEBridgeFactory.findInstance().findApplicationComponent(),
+              String.format(MmdI18n.getInstance().findBundle()
+                      .getString("AbstractMindMapExporter.msgErrorItIsDirectory"),
+                  file.getAbsolutePath()));
       return null;
     }
     if (file.isFile()) {
       if (!panel.getController().getDialogProvider(panel)
-          .msgConfirmOkCancel(null, MmdI18n.getInstance().findBundle().getString("AbstractMindMapExporter.titleSaveAs"),
+          .msgConfirmOkCancel(IDEBridgeFactory.findInstance().findApplicationComponent(),
+              MmdI18n.getInstance().findBundle().getString("AbstractMindMapExporter.titleSaveAs"),
               String.format(
-                  MmdI18n.getInstance().findBundle().getString("AbstractMindMapExporter.msgAlreadyExistsWantToReplace"),
+                  MmdI18n.getInstance().findBundle()
+                      .getString("AbstractMindMapExporter.msgAlreadyExistsWantToReplace"),
                   file.getAbsolutePath()))) {
         return null;
       }
     } else if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(dottedExtension.toLowerCase(Locale.ENGLISH))) {
-      if (panel.getController().getDialogProvider(panel).msgConfirmYesNo(null, MmdI18n.getInstance().findBundle().getString("AbstractMindMapExporter.msgTitleAddExtension"), String.format(
-          MmdI18n.getInstance().findBundle().getString("AbstractMindMapExporter.msgAddExtensionQuestion"), dottedExtension))) {
+      if (panel.getController().getDialogProvider(panel)
+          .msgConfirmYesNo(IDEBridgeFactory.findInstance().findApplicationComponent(),
+              MmdI18n.getInstance().findBundle()
+                  .getString("AbstractMindMapExporter.msgTitleAddExtension"), String.format(
+                  MmdI18n.getInstance().findBundle()
+                      .getString("AbstractMindMapExporter.msgAddExtensionQuestion"),
+                  dottedExtension))) {
         return new File(file.getParent(), file.getName() + dottedExtension);
       }
     }

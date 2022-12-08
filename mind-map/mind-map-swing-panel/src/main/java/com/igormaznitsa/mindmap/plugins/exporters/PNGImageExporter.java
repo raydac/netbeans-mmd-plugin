@@ -25,6 +25,7 @@ import com.igormaznitsa.mindmap.plugins.api.parameters.AbstractParameter;
 import com.igormaznitsa.mindmap.plugins.api.parameters.BooleanParameter;
 import com.igormaznitsa.mindmap.plugins.api.parameters.FileParameter;
 import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
+import com.igormaznitsa.mindmap.swing.ide.IDEBridgeFactory;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.utils.ImageSelection;
@@ -180,7 +181,7 @@ public final class PNGImageExporter extends AbstractExporter {
       if (out == null) {
         LOGGER.error("Can't render map as image");
         context.getDialogProvider()
-            .msgError(null,
+            .msgError(IDEBridgeFactory.findInstance().findApplicationComponent(),
                 this.getResourceBundle().getString("PNGImageExporter.msgErrorDuringRendering"));
         return;
       } else {

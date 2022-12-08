@@ -22,6 +22,7 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.api.parameters.AbstractParameter;
+import com.igormaznitsa.mindmap.swing.ide.IDEBridgeFactory;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.utils.PropertiesPreferences;
 import com.igormaznitsa.mindmap.swing.services.DefaultParametersPanelFactory;
@@ -79,7 +80,8 @@ public abstract class AbstractExporter extends AbstractPopupMenuItem implements 
             final JComponent options = DefaultParametersPanelFactory.getInstance()
                 .make(context.getDialogProvider(), parameters);
             if (options != null && !context.getDialogProvider()
-                .msgOkCancel(context.getPanel(), getName(context, activeTopic), options)) {
+                .msgOkCancel(IDEBridgeFactory.findInstance().findApplicationComponent(),
+                    getName(context, activeTopic), options)) {
               return;
             }
           }
@@ -94,8 +96,10 @@ public abstract class AbstractExporter extends AbstractPopupMenuItem implements 
       } catch (Exception ex) {
         LOGGER.error("Error during map export", ex);
         context.getDialogProvider()
-            .msgError(context.getPanel(),
-                String.format(this.getResourceBundle().getString("MMDGraphEditor.makePopUp.errMsgCantExport"),  ex.getMessage()));
+            .msgError(IDEBridgeFactory.findInstance().findApplicationComponent(),
+                String.format(
+                    this.getResourceBundle().getString("MMDGraphEditor.makePopUp.errMsgCantExport"),
+                    ex.getMessage()));
       }
     });
     return result;

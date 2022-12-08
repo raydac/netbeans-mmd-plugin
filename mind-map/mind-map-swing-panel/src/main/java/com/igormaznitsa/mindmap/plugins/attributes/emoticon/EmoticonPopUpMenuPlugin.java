@@ -22,6 +22,7 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.api.AbstractPopupMenuItem;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
+import com.igormaznitsa.mindmap.swing.ide.IDEBridgeFactory;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 import javax.swing.Icon;
@@ -41,7 +42,9 @@ public class EmoticonPopUpMenuPlugin extends AbstractPopupMenuItem {
     result.addActionListener(e -> {
       final IconPanel iconPanel = new IconPanel();
       if (context.getDialogProvider()
-          .msgOkCancel(null, this.getResourceBundle().getString("Emoticons.DialogTitle"),
+          .msgOkCancel(
+              IDEBridgeFactory.findInstance().findApplicationComponent(),
+              this.getResourceBundle().getString("Emoticons.DialogTitle"),
               iconPanel)) {
         final String emoticonName = iconPanel.getSelectedName();
         if (emoticonName != null) {

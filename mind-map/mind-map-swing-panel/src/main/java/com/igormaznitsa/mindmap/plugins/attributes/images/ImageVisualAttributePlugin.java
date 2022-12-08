@@ -26,6 +26,7 @@ import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.api.Renderable;
 import com.igormaznitsa.mindmap.plugins.api.VisualAttributePlugin;
 import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
+import com.igormaznitsa.mindmap.swing.ide.IDEBridgeFactory;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import java.awt.Image;
@@ -115,7 +116,7 @@ public class ImageVisualAttributePlugin implements VisualAttributePlugin {
           context.openFile(new MMapURI(imageFilePathUri).asFile(context.getProjectFolder()), false);
         } catch (URISyntaxException ex) {
           context.getDialogProvider()
-              .msgWarn(context.getPanel(), String.format(
+              .msgWarn(IDEBridgeFactory.findInstance().findApplicationComponent(), String.format(
                   this.resourceBundle.getString("pluginImageVisualAttr.warn.uriSyntaxError"),
                   imageFilePathUri));
         }

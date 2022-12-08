@@ -74,7 +74,9 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
       return this.doImportFile(file);
     } catch (final IllegalArgumentException ex) {
       LOGGER.error("Can't parse", ex);
-      context.getDialogProvider().msgError(null, this.getResourceBundle().getString("MMDImporters.Mindmup2MindMap.Error.WrongFormat"));
+      context.getDialogProvider()
+          .msgError(IDEBridgeFactory.findInstance().findApplicationComponent(),
+              this.getResourceBundle().getString("MMDImporters.Mindmup2MindMap.Error.WrongFormat"));
       return null;
     }
   }

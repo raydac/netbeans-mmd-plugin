@@ -36,6 +36,7 @@ import com.igormaznitsa.mindmap.plugins.api.PanelAwarePlugin;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.api.VisualAttributePlugin;
 import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
+import com.igormaznitsa.mindmap.swing.ide.IDEBridgeFactory;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.ElementLevelFirst;
@@ -777,7 +778,8 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
                       } catch (Exception ex) {
                         LOGGER.error("Error during visual attribute processing", ex);
                         controller.getDialogProvider(MindMapPanel.this)
-                            .msgError(null, "Detectd critical error! See log!");
+                            .msgError(IDEBridgeFactory.findInstance().findApplicationComponent(),
+                                "Detectd unexpected critical error! See log!\n" + ex.getMessage());
                       }
                     }
                   }

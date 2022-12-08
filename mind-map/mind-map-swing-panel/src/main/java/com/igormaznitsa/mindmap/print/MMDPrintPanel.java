@@ -82,7 +82,6 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
                        final PrintableObject printableObject) {
     super(new BorderLayout());
     this.dialogProvider = dialogProvider;
-    final MMDPrintPanel theInstance = this;
 
     this.theAdaptor = adaptor == null ? new DefaultMMDPrintPanelAdaptor() : adaptor;
     this.printableObject = printableObject;
@@ -154,7 +153,8 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
         });
 
         if (printerJob.printDialog()) {
-          theAdaptor.startBackgroundTask(theInstance, resourceBundle.getString("MMDPrintPanel.JobTitle"),
+          theAdaptor.startBackgroundTask(MMDPrintPanel.this,
+              resourceBundle.getString("MMDPrintPanel.JobTitle"),
               () -> {
                 try {
                   LOGGER.info("Start print job");
@@ -164,7 +164,7 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
                   throw new RuntimeException("Error during print job", ex);
                 }
               });
-          theAdaptor.onPrintTaskStarted(theInstance);
+          theAdaptor.onPrintTaskStarted(MMDPrintPanel.this);
         }
       }
     });
@@ -187,7 +187,8 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
     buttonPrintOptions.setIcon(ICO_OPTIONS);
     buttonPrintOptions.addActionListener(e -> {
       final MMDPrintOptionsPanel panel = new MMDPrintOptionsPanel(options);
-      if (dialogProvider.msgOkCancel(theInstance, this.resourceBundle.getString("MMDPrintOptionsPanel.Title"),
+      if (dialogProvider.msgOkCancel(MMDPrintPanel.this,
+          this.resourceBundle.getString("MMDPrintOptionsPanel.Title"),
           panel)) {
         options = panel.getOptions();
         splitToPagesForCurrentFormat();

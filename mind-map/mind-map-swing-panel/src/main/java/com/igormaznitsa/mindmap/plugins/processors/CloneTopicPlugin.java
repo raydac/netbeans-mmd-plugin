@@ -20,6 +20,7 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.api.AbstractFocusedTopicPlugin;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
+import com.igormaznitsa.mindmap.swing.ide.IDEBridgeFactory;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 import javax.swing.Icon;
@@ -53,7 +54,9 @@ public class CloneTopicPlugin extends AbstractFocusedTopicPlugin {
     if (toClone != null) {
 
       final Boolean cloneSubtree = !toClone.isEmpty() ? context.getDialogProvider()
-          .msgConfirmYesNoCancel(null, this.getResourceBundle().getString("MindMapPanel.titleCloneTopicRequest"),
+          .msgConfirmYesNoCancel(
+              IDEBridgeFactory.findInstance().findApplicationComponent(),
+              this.getResourceBundle().getString("MindMapPanel.titleCloneTopicRequest"),
               this.getResourceBundle().getString("MindMapPanel.cloneTopicSubtreeRequestMsg")) : Boolean.FALSE;
       if (cloneSubtree == null) {
         return;

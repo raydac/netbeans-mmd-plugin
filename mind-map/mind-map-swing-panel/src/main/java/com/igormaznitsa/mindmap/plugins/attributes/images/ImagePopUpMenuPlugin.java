@@ -23,6 +23,7 @@ import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.PopUpSection;
 import com.igormaznitsa.mindmap.plugins.api.AbstractPopupMenuItem;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
+import com.igormaznitsa.mindmap.swing.ide.IDEBridgeFactory;
 import com.igormaznitsa.mindmap.swing.panel.utils.PathStore;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.mindmap.swing.services.IconID;
@@ -41,7 +42,6 @@ import javax.swing.Icon;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 import org.apache.commons.io.FilenameUtils;
 
@@ -79,7 +79,7 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
           this.getResourceBundle().getString("Images.Plugin.MenuTitle.Remove.Tooltip"));
       result.addActionListener(e -> {
         if (context.getDialogProvider()
-            .msgConfirmYesNo(null,
+            .msgConfirmYesNo(IDEBridgeFactory.findInstance().findApplicationComponent(),
                 this.getResourceBundle().getString("Images.Plugin.Remove.Dialog.Title"),
                 this.getResourceBundle().getString("Images.Plugin.Remove.Dialog.Text"))) {
           setAttribute(context, activeTopic, null, null, null);
@@ -101,10 +101,13 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
         if (transferable != null && transferable.isDataFlavorSupported(DataFlavor.imageFlavor)) {
           final AtomicInteger selectedItem = new AtomicInteger(-1);
           if (context.getDialogProvider()
-              .msgOkCancel(SwingUtilities.windowForComponent(context.getPanel()),
-                  this.getResourceBundle().getString("Images.Plugin.Select.DialogTitle"), makeSelectPanel(
-                      new String[] {this.getResourceBundle().getString("Images.Plugin.Select.FromClipboard"),
-                          this.getResourceBundle().getString("Images.Plugin.Select.FromFile")}, selectedItem))) {
+              .msgOkCancel(IDEBridgeFactory.findInstance().findApplicationComponent(),
+                  this.getResourceBundle().getString("Images.Plugin.Select.DialogTitle"),
+                  makeSelectPanel(
+                      new String[] {
+                          this.getResourceBundle().getString("Images.Plugin.Select.FromClipboard"),
+                          this.getResourceBundle().getString("Images.Plugin.Select.FromFile")},
+                      selectedItem))) {
             lastSelectedImportIndex = selectedItem.get();
 
             if (selectedItem.get() == 0) {
@@ -116,12 +119,14 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
                 setAttribute(context, activeTopic, rescaledImageAsBase64, filePath, null);
                 context.getPanel().doNotifyModelChanged(true);
               } catch (final IllegalArgumentException ex) {
-                context.getDialogProvider().msgError(null,
-                    this.getResourceBundle().getString("Images.Plugin.Error"));
+                context.getDialogProvider()
+                    .msgError(IDEBridgeFactory.findInstance().findApplicationComponent(),
+                        this.getResourceBundle().getString("Images.Plugin.Error"));
                 LOGGER.error("Can't import from clipboard image", ex);
               } catch (final Exception ex) {
-                context.getDialogProvider().msgError(null,
-                    this.getResourceBundle().getString("Images.Plugin.Error"));
+                context.getDialogProvider()
+                    .msgError(IDEBridgeFactory.findInstance().findApplicationComponent(),
+                        this.getResourceBundle().getString("Images.Plugin.Error"));
                 LOGGER.error("Unexpected error during image import from clipboard", ex);
               }
               loadFromFile = false;
@@ -133,11 +138,13 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
 
         if (loadFromFile) {
           final File selected = PATH_STORE.put(context.getPanel().getUuid().toString(),
-              context.getDialogProvider().msgOpenFileDialog(context.getPanel(), context,
-                  ImagePopUpMenuPlugin.class.getName(),
-                  this.getResourceBundle().getString("Images.Plugin.Load.DialogTitle"),
-                  PATH_STORE.find(context, context.getPanel().getUuid().toString()), true,
-                  new FileFilter[] {imageFileFilter},
+              context.getDialogProvider()
+                  .msgOpenFileDialog(IDEBridgeFactory.findInstance().findApplicationComponent(),
+                      context,
+                      ImagePopUpMenuPlugin.class.getName(),
+                      this.getResourceBundle().getString("Images.Plugin.Load.DialogTitle"),
+                      PATH_STORE.find(context, context.getPanel().getUuid().toString()), true,
+                      new FileFilter[] {imageFileFilter},
                       this.getResourceBundle().getString("Images.Plugin.Load.Dialog.Button.Open")));
           if (selected != null) {
             try {
@@ -146,8 +153,9 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
               final String fileName = FilenameUtils.getBaseName(selected.getName());
               final String filePath;
               if (context.getDialogProvider()
-                  .msgConfirmYesNo(SwingUtilities.windowForComponent(context.getPanel()),
-                      this.getResourceBundle().getString("Images.Plugin.Question.AddFilePath.Title"),
+                  .msgConfirmYesNo(IDEBridgeFactory.findInstance().findApplicationComponent(),
+                      this.getResourceBundle()
+                          .getString("Images.Plugin.Question.AddFilePath.Title"),
                       this.getResourceBundle().getString("Images.Plugin.Question.AddFilePath"))) {
                 filePath =
                     MMapURI.makeFromFilePath(context.getProjectFolder(), selected.getAbsolutePath(),
@@ -158,12 +166,14 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
               setAttribute(context, activeTopic, rescaledImageAsBase64, filePath, fileName);
               context.getPanel().doNotifyModelChanged(true);
             } catch (final IllegalArgumentException ex) {
-              context.getDialogProvider().msgError(null,
-                  this.getResourceBundle().getString("Images.Plugin.Error"));
+              context.getDialogProvider()
+                  .msgError(IDEBridgeFactory.findInstance().findApplicationComponent(),
+                      this.getResourceBundle().getString("Images.Plugin.Error"));
               LOGGER.warn("Can't load image file : " + selected);
             } catch (final Exception ex) {
-              context.getDialogProvider().msgError(null,
-                  this.getResourceBundle().getString("Images.Plugin.Error"));
+              context.getDialogProvider()
+                  .msgError(IDEBridgeFactory.findInstance().findApplicationComponent(),
+                      this.getResourceBundle().getString("Images.Plugin.Error"));
               LOGGER.error("Unexpected error during loading of image file : " + selected,
                   ex);
             }

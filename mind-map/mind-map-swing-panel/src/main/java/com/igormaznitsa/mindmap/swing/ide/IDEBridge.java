@@ -17,10 +17,17 @@
 package com.igormaznitsa.mindmap.swing.ide;
 
 import com.igormaznitsa.commons.version.Version;
+import java.awt.Frame;
+import java.awt.Window;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Stream;
+import javax.swing.FocusManager;
 import javax.swing.Icon;
+import javax.swing.JComponent;
+import javax.swing.JWindow;
+import javax.swing.SwingUtilities;
 
 /**
  * It describes some bridge to internal features of IDEs.
@@ -80,12 +87,27 @@ public interface IDEBridge {
 
   /**
    * Allows to make some communication with IDE for request custom objects.
+   *
    * @param properties properties for requested object, must not be null
    * @return requested object map, must not be null but can be empty.
-   * @since 1.6.0
    * @see com.igormaznitsa.mindmap.plugins.exporters.SVGImageExporter
+   * @since 1.6.0
    */
-  default Map<String, Object> lookup(final Map<String,Object> properties) {
+  default Map<String, Object> lookup(final Map<String, Object> properties) {
     return Collections.emptyMap();
+  }
+
+  /**
+   * Method allows to get IDE application component if provided.
+   *
+   * @return IDE application component or component to be recognized as main one for application, can be null.
+   * @since 1.6.0
+   */
+  default JComponent findApplicationComponent() {
+    final Window window = FocusManager.getCurrentManager().getActiveWindow();
+    if (window instanceof JWindow) {
+      return SwingUtilities.getRootPane(window);
+    }
+    return Stream.of(Frame.getFrames()).findFirst().map(SwingUtilities::getRootPane).orElse(null);
   }
 }

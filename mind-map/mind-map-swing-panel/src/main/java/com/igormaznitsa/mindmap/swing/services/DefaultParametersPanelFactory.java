@@ -23,6 +23,7 @@ import com.igormaznitsa.mindmap.plugins.api.parameters.FileParameter;
 import com.igormaznitsa.mindmap.plugins.api.parameters.IntegerParameter;
 import com.igormaznitsa.mindmap.plugins.api.parameters.StringParameter;
 import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
+import com.igormaznitsa.mindmap.swing.ide.IDEBridgeFactory;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
@@ -221,7 +222,7 @@ public class DefaultParametersPanelFactory extends JPanel {
 
       this.buttonSelect.addActionListener(e -> {
         final File file = dialogProvider.msgOpenFileDialog(
-            this.panel,
+            IDEBridgeFactory.findInstance().findApplicationComponent(),
             null,
             "pngexporter.filechooser.preferences.file",
             fileParameter.getFileChooserParamsProvider().getTitle(),
