@@ -597,7 +597,7 @@ public enum MmdColor {
   private final int argb;
 
   MmdColor() {
-    this.htmlColor = "";
+    this.htmlColor = "#FFFFFF";
     this.argb = 0x00FFFFFF;
   }
 
