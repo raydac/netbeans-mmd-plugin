@@ -12,7 +12,7 @@
     <artifactId>mind-map-annotations</artifactId>
     <packaging>jar</packaging>
 
-    <name>MMD Annotations</name>
+    <name>MMD Mind Map Annotations</name>
     <description>Set of annotations to mark sources to generate MMD maps</description>
 
     <profiles>
@@ -84,6 +84,20 @@
             </build>
         </profile>
     </profiles>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.igormaznitsa</groupId>
+            <artifactId>mind-map-swing-panel</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>
