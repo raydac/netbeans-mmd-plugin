@@ -26,7 +26,7 @@ import org.junit.Test;
 
 public class MmdEmoticonTest {
   @Test
-  public void testAllEmoticonsInMindMapPanel() {
+  public void testAllEmoticonsProvidedByMindMapPanel() {
     final Set<String> panelIconNames = Stream.of(MiscIcons.getNames()).collect(Collectors.toSet());
     final Set<String> emoticonNames = Stream.of(MmdEmoticon.values())
         .filter(x -> x != MmdEmoticon.EMPTY)
