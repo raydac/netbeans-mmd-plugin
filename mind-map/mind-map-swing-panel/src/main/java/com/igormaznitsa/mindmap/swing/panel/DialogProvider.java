@@ -22,6 +22,11 @@ import java.io.File;
 import javax.swing.JComponent;
 import javax.swing.filechooser.FileFilter;
 
+/**
+ * Interface describes abstract dialog provider to be used for mind map panel and its plugin dialogs and notifications.
+ *
+ * @see MindMapPanel
+ */
 public interface DialogProvider {
 
   void msgError(Component parentComponent, String text);

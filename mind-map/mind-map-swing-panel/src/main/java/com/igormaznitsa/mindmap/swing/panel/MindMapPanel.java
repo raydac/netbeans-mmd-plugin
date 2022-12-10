@@ -113,7 +113,9 @@ import javax.swing.event.PopupMenuListener;
 import org.apache.commons.text.StringEscapeUtils;
 
 /**
+ * Swing component allows to visualize and edit MMD Mind Map model.
  *
+ * @see MindMap
  */
 public class MindMapPanel extends JComponent implements ClipboardOwner {
 
