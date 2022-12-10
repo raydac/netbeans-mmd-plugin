@@ -15,13 +15,16 @@
  */
 package com.igormaznitsa.nbmindmap.nb.swing;
 
+import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.panel.utils.KeyShortcut;
-import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
@@ -36,12 +39,38 @@ public class KeyShortCutEditPanel extends javax.swing.JPanel implements TableMod
 
   private static final long serialVersionUID = -8892558469392323517L;
 
-  private final List<KeyShortcut> listOfKeys;
+  private static class KeyShortCutValue {
+
+      private final String text;
+      private KeyShortcut shortcut;
+
+      public KeyShortCutValue(@Nonnull final KeyShortcut shortcut) {
+          this.shortcut = Objects.requireNonNull(shortcut);
+          this.text = MmdI18n.getInstance().findBundle().getString("KeyShortcut." + shortcut.getID());
+      }
+
+      @Nonnull
+      @Override
+      public String toString() {
+          return this.text;
+      }
+
+      @Nonnull
+      public KeyShortcut getShortcut() {
+          return this.shortcut;
+      }
+
+      public void setShortcut(@Nonnull final KeyShortcut shortcut) {
+          this.shortcut = Objects.requireNonNull(shortcut);
+      }
+  }
+  
+  private final List<KeyShortCutValue> listOfKeys;
   private final List<TableModelListener> listeners = new ArrayList<TableModelListener>();
   
   public KeyShortCutEditPanel (final List<KeyShortcut> startList) {
     initComponents();
-    this.listOfKeys = new ArrayList<KeyShortcut>(startList);
+    this.listOfKeys = startList.stream().map(KeyShortCutValue::new).collect(Collectors.toList());
     this.tableKeyShortcuts.setModel(this);
     this.tableKeyShortcuts.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
       @Override
@@ -66,33 +95,30 @@ public class KeyShortCutEditPanel extends javax.swing.JPanel implements TableMod
   
     final KeyShortCutEditPanel theInstance = this;
     
-    final ActionListener actionCheckBox = new ActionListener() {
-      @Override
-      public void actionPerformed (final ActionEvent e) {
-        final int selectedRow = tableKeyShortcuts.getSelectedRow();
-        if (selectedRow>=0){
-          final KeyShortcut oldShortCut = listOfKeys.get(selectedRow);
-          
-          int modifiers = oldShortCut.getModifiers();
-          final JCheckBox source = (JCheckBox) e.getSource();
-          if (e.getSource() == checkBoxALT){
-            modifiers = source.isSelected() ? modifiers | KeyEvent.ALT_MASK : modifiers & ~KeyEvent.ALT_MASK;
-          } else if (e.getSource() == checkBoxCTRL){
-            modifiers = source.isSelected() ? modifiers | KeyEvent.CTRL_MASK : modifiers & ~KeyEvent.CTRL_MASK;
-          } else if (e.getSource() == checkBoxMeta) {
-            modifiers = source.isSelected() ? modifiers | KeyEvent.META_MASK : modifiers & ~KeyEvent.META_MASK;
-          } else if (e.getSource() == checkBoxSHIFT) {
-            modifiers = source.isSelected() ? modifiers | KeyEvent.SHIFT_MASK : modifiers & ~KeyEvent.SHIFT_MASK;
-          }
-          
-          listOfKeys.set(selectedRow, new KeyShortcut(oldShortCut.getID(), oldShortCut.getKeyCode(), modifiers));
-          
-          for(final TableModelListener l : listeners){
-            l.tableChanged(new TableModelEvent(theInstance,selectedRow));
-          }
-          
-          updateForSelected();
+    final ActionListener actionCheckBox = (final ActionEvent e) -> {
+      final int selectedRow = tableKeyShortcuts.getSelectedRow();
+      if (selectedRow>=0){
+        final KeyShortCutValue oldShortCut = listOfKeys.get(selectedRow);
+        
+        int modifiers = oldShortCut.getShortcut().getModifiers();
+        final JCheckBox source = (JCheckBox) e.getSource();
+        if (e.getSource() == checkBoxALT){
+          modifiers = source.isSelected() ? modifiers | KeyEvent.ALT_MASK : modifiers & ~KeyEvent.ALT_MASK;
+        } else if (e.getSource() == checkBoxCTRL){
+          modifiers = source.isSelected() ? modifiers | KeyEvent.CTRL_MASK : modifiers & ~KeyEvent.CTRL_MASK;
+        } else if (e.getSource() == checkBoxMeta) {
+          modifiers = source.isSelected() ? modifiers | KeyEvent.META_MASK : modifiers & ~KeyEvent.META_MASK;
+        } else if (e.getSource() == checkBoxSHIFT) {
+          modifiers = source.isSelected() ? modifiers | KeyEvent.SHIFT_MASK : modifiers & ~KeyEvent.SHIFT_MASK;
         }
+        
+        oldShortCut.setShortcut(new KeyShortcut(oldShortCut.getShortcut().getID(), oldShortCut.getShortcut().getKeyCode(), modifiers));
+        
+        for(final TableModelListener l : listeners){
+          l.tableChanged(new TableModelEvent(theInstance,selectedRow));
+        }
+        
+        updateForSelected();
       }
     };
     
@@ -105,26 +131,25 @@ public class KeyShortCutEditPanel extends javax.swing.JPanel implements TableMod
   private void updateCurrentSelectedForKey (final KeyEvent evt) {
     final int index = this.tableKeyShortcuts.getSelectedRow();
     if (index>=0){
-      final KeyShortcut oldShortcut = this.listOfKeys.get(index);
+      final KeyShortCutValue oldShortcut = this.listOfKeys.get(index);
       final int keyCode = evt.getKeyCode();
       final int modifiers = evt.getModifiers() & (KeyEvent.META_MASK | KeyEvent.SHIFT_MASK | KeyEvent.CTRL_MASK | KeyEvent.ALT_MASK);
-      final KeyShortcut newShortCut = new KeyShortcut(oldShortcut.getID(),keyCode,modifiers);
-      this.listOfKeys.set(index, newShortCut);
+      final KeyShortcut newShortCut = new KeyShortcut(oldShortcut.getShortcut().getID(),keyCode,modifiers);
+      oldShortcut.setShortcut(newShortCut);
       for(final TableModelListener l:this.listeners){
         l.tableChanged(new TableModelEvent(this,index));
       }
     }
-    
     updateForSelected();
   }  
   
-  private KeyShortcut getSelectedRow(){
+  private KeyShortCutValue getSelectedRow(){
     final int index = this.tableKeyShortcuts.getSelectedRow();
     return index < 0 ? null : this.listOfKeys.get(index);
   }
   
   private void updateForSelected(){
-    final KeyShortcut shortcut = getSelectedRow();
+    final KeyShortCutValue shortcut = getSelectedRow();
     if (shortcut == null){
       this.buttonEditKeyCode.setEnabled(false);
       this.buttonEditKeyCode.setSelected(false);
@@ -151,16 +176,16 @@ public class KeyShortCutEditPanel extends javax.swing.JPanel implements TableMod
       this.checkBoxMeta.setEnabled(true);
       this.checkBoxSHIFT.setEnabled(true);
       
-      this.textFieldKeyCode.setText(shortcut.getKeyCodeName());
-      this.checkBoxALT.setSelected(shortcut.isAlt());
-      this.checkBoxSHIFT.setSelected(shortcut.isShift());
-      this.checkBoxMeta.setSelected(shortcut.isMeta());
-      this.checkBoxCTRL.setSelected(shortcut.isCtrl());
+      this.textFieldKeyCode.setText(shortcut.getShortcut().getKeyCodeName());
+      this.checkBoxALT.setSelected(shortcut.getShortcut().isAlt());
+      this.checkBoxSHIFT.setSelected(shortcut.getShortcut().isShift());
+      this.checkBoxMeta.setSelected(shortcut.getShortcut().isMeta());
+      this.checkBoxCTRL.setSelected(shortcut.getShortcut().isCtrl());
     }
   }
   
   public List<KeyShortcut> getResult(){
-    return this.listOfKeys;
+    return this.listOfKeys.stream().map(KeyShortCutValue::getShortcut).collect(Collectors.toList());
   }
   
   /**
@@ -361,10 +386,12 @@ public class KeyShortCutEditPanel extends javax.swing.JPanel implements TableMod
 
   @Override
   public Object getValueAt (int rowIndex, int columnIndex) {
-    final KeyShortcut key = this.listOfKeys.get(rowIndex);
+    final KeyShortCutValue key = this.listOfKeys.get(rowIndex);
     switch(columnIndex){
-      case 0 : return Utils.convertCamelCasedToHumanForm(key.getID(),true);
-      case 1 : return key.toString();
+        case 0:
+            return key.toString();
+        case 1:
+            return key.getShortcut().toString();
       default: return null;
     }
   }
