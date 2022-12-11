@@ -311,7 +311,7 @@ public final class ExplorerTree extends JScrollPane {
       item.addActionListener((@Nonnull final ActionEvent e) -> addChildTo(node, null));
       makeNew.add(item);
 
-      item = new JMenuItem("Mind map");
+      item = new JMenuItem(this.bundle.getString("explorerTree.menuItemMindMapText.text"));
       item.addActionListener((@Nonnull final ActionEvent e) -> {
         addChildTo(node, "mmd"); //NOI18N
       });
