@@ -42,6 +42,7 @@ public final class MindMapTreePanel extends javax.swing.JPanel implements Compar
   
   public MindMapTreePanel(final MindMap map, final ExtraTopic selectedTopicUid, final boolean expandAll, final ActionListener listener) {
     initComponents();
+    this.toolBar.setFloatable(false);
     this.treeMindMap.setCellRenderer(this.cellRenderer);
     this.treeMindMap.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
     if (map != null) {
@@ -108,6 +109,7 @@ public final class MindMapTreePanel extends javax.swing.JPanel implements Compar
 
         add(treeScrollPane, java.awt.BorderLayout.CENTER);
 
+        toolBar.setBorder(null);
         toolBar.setRollover(true);
 
         buttonExpandAll.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/toggle_expand16.png"))); // NOI18N
