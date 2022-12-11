@@ -109,7 +109,7 @@ public final class MindMapTreePanel extends javax.swing.JPanel implements Compar
 
         add(treeScrollPane, java.awt.BorderLayout.CENTER);
 
-        toolBar.setBorder(null);
+        toolBar.setBorder(javax.swing.BorderFactory.createEmptyBorder(4, 4, 4, 4));
         toolBar.setRollover(true);
 
         buttonExpandAll.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/toggle_expand16.png"))); // NOI18N

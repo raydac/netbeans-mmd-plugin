@@ -196,6 +196,7 @@ public final class FindTextPanel extends javax.swing.JPanel implements FindTextS
         toggleButtonFile = new javax.swing.JToggleButton();
         toggleButtonURI = new javax.swing.JToggleButton();
 
+        setBorder(javax.swing.BorderFactory.createEmptyBorder(4, 4, 4, 4));
         setLayout(new java.awt.GridBagLayout());
 
         labelTitle.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("panelFindText.labelFind")); // NOI18N
