@@ -2047,11 +2047,11 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
   private void menuHelpPLantUmpManualActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuHelpPLantUmpManualActionPerformed
     UiUtils.openLocalResourceInDesktop(String.format("help/PlantUML_Language_Reference_Guide_%s.pdf",
-        LocalizationController.getInstance().getLanguage().getLocale().getLanguage()));
+        LocalizationController.getInstance().getLanguage().getLocalePlantUmlManual().getLanguage()));
   }//GEN-LAST:event_menuHelpPLantUmpManualActionPerformed
 
   private void menuHelpHelpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuHelpHelpActionPerformed
-    UiUtils.openLocalResourceInDesktop(String.format("help/index_%s.html", LocalizationController.getInstance().getLanguage().getLocale().getLanguage()));
+    UiUtils.openLocalResourceInDesktop(String.format("help/SciaReto_manual_%s.pdf", LocalizationController.getInstance().getLanguage().getLocaleManual().getLanguage()));
   }//GEN-LAST:event_menuHelpHelpActionPerformed
 
   private void menuViewMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_menuViewMenuSelected

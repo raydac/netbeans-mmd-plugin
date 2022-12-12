@@ -74,7 +74,7 @@ public final class PlantUmlTextEditor extends AbstractPlUmlEditor {
                                          @Nonnull final GridBagConstraints constraints) {
     menuPanel.add(makeLinkLabel(bundle.getString("editorPlantUml.buttonPlantUmlManual.title"),
         () -> UiUtils.openLocalResourceInDesktop(String.format("help/PlantUML_Language_Reference_Guide_%s.pdf",
-            LocalizationController.getInstance().getLanguage().getLocale().getLanguage())),
+            LocalizationController.getInstance().getLanguage().getLocalePlantUmlManual().getLanguage())),
         bundle.getString("editorPlantUml.buttonPlantUmlManual.tooltip"), ICON_INFO), constraints);
     menuPanel.add(makeLinkLabel(bundle.getString("editorPlantUml.buttonAsciiMathManual.title"),
         "http://asciimath.org/", bundle.getString("editorPlantUml.buttonAsciiMathManual.tooltip"),

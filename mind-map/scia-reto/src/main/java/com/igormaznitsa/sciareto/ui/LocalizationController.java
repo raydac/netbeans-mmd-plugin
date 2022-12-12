@@ -82,47 +82,93 @@ public final class LocalizationController implements SpecificKeys {
       updateUiForBundle(SrI18n.getInstance().findBundle(e.locale));
     });
 
-    private static void updateUiForBundle(final ResourceBundle resourceBundle) {
-      UIManager.put("OptionPane.okButtonText", resourceBundle.getString("messageDialog.button.ok"));
-      UIManager.put("OptionPane.cancelButtonText", resourceBundle.getString("messageDialog.button.cancel"));
-      UIManager.put("OptionPane.yesButtonText", resourceBundle.getString("messageDialog.button.yes"));
-      UIManager.put("OptionPane.noButtonText", resourceBundle.getString("messageDialog.button.no"));
-      
-      UIManager.put("FileChooser.openButtonText", resourceBundle.getString("fileChooser.button.open"));
-      UIManager.put("FileChooser.saveButtonText", resourceBundle.getString("fileChooser.button.save"));
-      UIManager.put("FileChooser.cancelButtonText", resourceBundle.getString("fileChooser.cancelButtonText"));
-      UIManager.put("FileChooser.fileNameLabelText",resourceBundle.getString("fileChooser.fileNameLabelText"));
-      UIManager.put("FileChooser.filesOfTypeLabelText",resourceBundle.getString("fileChooser.filesOfTypeLabelText"));
-      UIManager.put("FileChooser.lookInLabelText", resourceBundle.getString("fileChooser.lookInLabelText"));
-      UIManager.put("FileChooser.newFolderButtonText",resourceBundle.getString("fileChooser.newFolderButtonText"));
-      UIManager.put("FileChooser.newFolderToolTipText",resourceBundle.getString("fileChooser.newFolderButtonText"));
-
-      UIManager.put("FileChooser.openDialogTitleText", resourceBundle.getString("fileChooser.openDialogTitleText"));
-      UIManager.put("FileChooser.openButtonToolTipText", resourceBundle.getString("fileChooser.openButtonToolTipText"));
-      UIManager.put("FileChooser.cancelButtonToolTipText", resourceBundle.getString("fileChooser.cancelButtonText"));
-      UIManager.put("FileChooser.fileNameHeaderText",  resourceBundle.getString("fileChooser.fileNameHeaderText"));
-      UIManager.put("FileChooser.upFolderToolTipText", resourceBundle.getString("fileChooser.upFolderToolTipText"));
-      UIManager.put("FileChooser.homeFolderToolTipText", resourceBundle.getString("fileChooser.homeFolderToolTipText"));
-      UIManager.put("FileChooser.listViewButtonToolTipText", resourceBundle.getString("fileChooser.listViewButtonToolTipText"));
-      UIManager.put("FileChooser.renameFileButtonText", resourceBundle.getString("fileChooser.renameFileButtonText"));
-      UIManager.put("FileChooser.deleteFileButtonText", resourceBundle.getString("fileChooser.deleteFileButtonText"));
-      UIManager.put("FileChooser.filterLabelText", resourceBundle.getString("fileChooser.filterLabelText"));
-      UIManager.put("FileChooser.detailsViewButtonToolTipText", resourceBundle.getString("fileChooser.detailsViewButtonToolTipText"));
-      UIManager.put("FileChooser.fileSizeHeaderText", resourceBundle.getString("fileChooser.fileSizeHeaderText"));
-      UIManager.put("FileChooser.fileDateHeaderText", resourceBundle.getString("fileChooser.fileDateHeaderText"));
-      UIManager.put("FileChooser.acceptAllFileFilterText",resourceBundle.getString("fileChooser.acceptAllFileFilterText"));
-    }
-
     private final String title;
     private final Locale locale;
-
+    private final Locale localePlantUmlManual;
+    private final Locale localeManual;
     private final Consumer<Language> activator;
 
-    Language(@Nonnull final String title, @Nonnull final Locale locale,
-             @Nonnull final Consumer<Language> activator) {
+    Language(@Nonnull final String title,
+             @Nonnull final Locale locale,
+             @Nonnull final Consumer<Language> activator
+    ) {
+      this(title, locale, locale, locale, activator);
+    }
+
+    Language(@Nonnull final String title,
+             @Nonnull final Locale locale,
+             @Nonnull final Locale localePlantUmlManual,
+             @Nonnull final Locale localeManual,
+             @Nonnull final Consumer<Language> activator
+    ) {
       this.title = title;
       this.locale = locale;
       this.activator = activator;
+      this.localePlantUmlManual = localePlantUmlManual;
+      this.localeManual = localeManual;
+    }
+
+    private static void updateUiForBundle(final ResourceBundle resourceBundle) {
+      UIManager.put("OptionPane.okButtonText", resourceBundle.getString("messageDialog.button.ok"));
+      UIManager.put("OptionPane.cancelButtonText",
+          resourceBundle.getString("messageDialog.button.cancel"));
+      UIManager.put("OptionPane.yesButtonText",
+          resourceBundle.getString("messageDialog.button.yes"));
+      UIManager.put("OptionPane.noButtonText", resourceBundle.getString("messageDialog.button.no"));
+
+      UIManager.put("FileChooser.openButtonText",
+          resourceBundle.getString("fileChooser.button.open"));
+      UIManager.put("FileChooser.saveButtonText",
+          resourceBundle.getString("fileChooser.button.save"));
+      UIManager.put("FileChooser.cancelButtonText",
+          resourceBundle.getString("fileChooser.cancelButtonText"));
+      UIManager.put("FileChooser.fileNameLabelText",
+          resourceBundle.getString("fileChooser.fileNameLabelText"));
+      UIManager.put("FileChooser.filesOfTypeLabelText",
+          resourceBundle.getString("fileChooser.filesOfTypeLabelText"));
+      UIManager.put("FileChooser.lookInLabelText",
+          resourceBundle.getString("fileChooser.lookInLabelText"));
+      UIManager.put("FileChooser.newFolderButtonText",
+          resourceBundle.getString("fileChooser.newFolderButtonText"));
+      UIManager.put("FileChooser.newFolderToolTipText",
+          resourceBundle.getString("fileChooser.newFolderButtonText"));
+
+      UIManager.put("FileChooser.openDialogTitleText",
+          resourceBundle.getString("fileChooser.openDialogTitleText"));
+      UIManager.put("FileChooser.openButtonToolTipText",
+          resourceBundle.getString("fileChooser.openButtonToolTipText"));
+      UIManager.put("FileChooser.cancelButtonToolTipText",
+          resourceBundle.getString("fileChooser.cancelButtonText"));
+      UIManager.put("FileChooser.fileNameHeaderText",
+          resourceBundle.getString("fileChooser.fileNameHeaderText"));
+      UIManager.put("FileChooser.upFolderToolTipText",
+          resourceBundle.getString("fileChooser.upFolderToolTipText"));
+      UIManager.put("FileChooser.homeFolderToolTipText",
+          resourceBundle.getString("fileChooser.homeFolderToolTipText"));
+      UIManager.put("FileChooser.listViewButtonToolTipText",
+          resourceBundle.getString("fileChooser.listViewButtonToolTipText"));
+      UIManager.put("FileChooser.renameFileButtonText",
+          resourceBundle.getString("fileChooser.renameFileButtonText"));
+      UIManager.put("FileChooser.deleteFileButtonText",
+          resourceBundle.getString("fileChooser.deleteFileButtonText"));
+      UIManager.put("FileChooser.filterLabelText",
+          resourceBundle.getString("fileChooser.filterLabelText"));
+      UIManager.put("FileChooser.detailsViewButtonToolTipText",
+          resourceBundle.getString("fileChooser.detailsViewButtonToolTipText"));
+      UIManager.put("FileChooser.fileSizeHeaderText",
+          resourceBundle.getString("fileChooser.fileSizeHeaderText"));
+      UIManager.put("FileChooser.fileDateHeaderText",
+          resourceBundle.getString("fileChooser.fileDateHeaderText"));
+      UIManager.put("FileChooser.acceptAllFileFilterText",
+          resourceBundle.getString("fileChooser.acceptAllFileFilterText"));
+    }
+
+    public Locale getLocalePlantUmlManual() {
+      return this.localePlantUmlManual;
+    }
+
+    public Locale getLocaleManual() {
+      return this.localeManual;
     }
 
     @Nonnull
