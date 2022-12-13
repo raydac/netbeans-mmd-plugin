@@ -19,42 +19,43 @@ package com.igormaznitsa.mindmap.model.logger.impl;
 import static java.util.Objects.requireNonNull;
 
 import com.igormaznitsa.mindmap.model.logger.Logger;
+import java.util.logging.Level;
 
 /**
- * Base java.util.logging.Logger implementation.
+ * Logger implementation wrapping java.util.logging.Logger.
  */
 public class JavaLogger extends Logger {
 
-  private final java.util.logging.Logger wrappedLogger;
+  private final java.util.logging.Logger delegate;
 
   public JavaLogger(final Class<?> klazz) {
     super(requireNonNull(klazz));
-    this.wrappedLogger = java.util.logging.Logger.getLogger(klazz.getName());
+    this.delegate = java.util.logging.Logger.getLogger(klazz.getName());
   }
 
   public JavaLogger(final String name) {
     super(requireNonNull(name));
-    this.wrappedLogger = java.util.logging.Logger.getLogger(name);
+    this.delegate = java.util.logging.Logger.getLogger(name);
   }
 
   @Override
   public void info(final String message) {
-    this.wrappedLogger.info(message);
+    this.delegate.log(Level.INFO, message);
   }
 
   @Override
   public void warn(final String message) {
-    this.wrappedLogger.warning(message);
+    this.delegate.log(Level.WARNING, message);
   }
 
   @Override
   public void error(final String message) {
-    this.wrappedLogger.log(java.util.logging.Level.WARNING, message);
+    this.delegate.log(Level.SEVERE, message);
   }
 
   @Override
   public void error(final String message, final Throwable error) {
-    this.wrappedLogger.log(java.util.logging.Level.WARNING, message, error);
+    this.delegate.log(Level.SEVERE, message, error);
   }
 
   /**
@@ -63,6 +64,6 @@ public class JavaLogger extends Logger {
    * @return wrapped logger, must not be null
    */
   public java.util.logging.Logger getWrappedLogger() {
-    return this.wrappedLogger;
+    return this.delegate;
   }
 }
