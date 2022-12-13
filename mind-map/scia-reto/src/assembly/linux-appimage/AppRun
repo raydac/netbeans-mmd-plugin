@@ -1,0 +1,6 @@
+#!/bin/sh
+JAVA_FLAGS="-client -XX:+IgnoreUnrecognizedVMOptions -Xmx2G --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED -Dsun.java2d.dpiaware=true -Dswing.aatext=true -Dawt.useSystemAAFontSettings=on"
+JAVA_RUN=$APPDIR/jre/bin/java
+JAVA_LOG_CONFIG=$APPDIR/logger.properties
+$JAVA_RUN $JAVA_FLAGS $JAVA_EXTRA_GFX_FLAGS "-Djava.util.logging.config.file=$JAVA_LOG_CONFIG" -jar $APPDIR/sciareto-*.jar $@
+

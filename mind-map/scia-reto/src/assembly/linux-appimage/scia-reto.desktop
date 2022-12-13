@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.1
+Type=Application
+Name=Scia-Reto editor
+GenericName=Scia-Reto mind-map editor
+Comment=Free open source mind-map editor with PlantUML support
+Icon=icon
+Categories=Office;FlowChart;
+Keywords=mind;map;scia;reto;uml;plant;kstream;kafka;
+Terminal=false
+StartupWMClass=scia.reto.editor
