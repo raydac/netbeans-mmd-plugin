@@ -195,6 +195,15 @@ public final class PictureViewer extends AbstractEditor {
   }
 
   @Override
+  public boolean isSelectCommandAllowed(@Nonnull SelectCommand command) {
+      return false;
+  }
+
+  @Override
+  public void doSelectCommand(@Nonnull SelectCommand command) {
+  }
+  
+  @Override
   public void doZoomOut() {
     this.scaleLabel.doZoomOut();
   }

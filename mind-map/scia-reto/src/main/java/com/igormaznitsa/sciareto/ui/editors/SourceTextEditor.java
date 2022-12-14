@@ -326,6 +326,19 @@ public final class SourceTextEditor extends AbstractTextEditor {
     gotoLine(line);
   }
 
+    @Override
+    public boolean isSelectCommandAllowed(@Nonnull final SelectCommand command) {
+        return true;
+    }
+
+    @Override
+    public void doSelectCommand(@Nonnull final SelectCommand command) {
+        switch(command) {
+            case SELECT_ALL: this.editor.selectAll();break;
+            case SELECT_NONE: this.editor.select(0, 0);break;
+        }
+    }
+  
   @Nonnull
   public static FileFilter makeFileFilter() {
     return new FileFilter() {

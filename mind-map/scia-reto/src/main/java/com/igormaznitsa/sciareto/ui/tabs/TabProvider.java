@@ -26,6 +26,7 @@ import javax.swing.filechooser.FileFilter;
 import com.igormaznitsa.meta.annotation.Weight;
 import com.igormaznitsa.sciareto.ui.FindTextScopeProvider;
 import com.igormaznitsa.sciareto.ui.editors.AbstractEditor;
+import com.igormaznitsa.sciareto.ui.editors.SelectCommand;
 import javax.swing.JPanel;
 
 public interface TabProvider {
@@ -66,6 +67,9 @@ public interface TabProvider {
   boolean isCopyAllowed();
   boolean isPasteAllowed();
   boolean isCutAllowed();
+  
+  boolean isSelectCommandAllowed(@Nonnull SelectCommand command);
+  void doSelectCommand(@Nonnull SelectCommand command);
   
   boolean doCopy();
   boolean doCut();

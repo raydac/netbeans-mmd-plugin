@@ -508,6 +508,25 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
   }
 
   @Override
+  public boolean isSelectCommandAllowed(@Nonnull final SelectCommand command) {
+      return this.isTextEditorVisible();
+  }
+
+  @Override
+  public void doSelectCommand(@Nonnull final SelectCommand command) {
+      if (this.isTextEditorVisible()) {
+        switch (command) {
+            case SELECT_ALL: {
+                this.editor.selectAll();
+            } break;
+            case SELECT_NONE: {
+                this.editor.select(0,0);
+            } break;
+        }
+      }
+  }
+
+  @Override
   public void doZoomReset() {
     if (this.isTextEditorVisible()) {
       this.editor.doZoomReset();

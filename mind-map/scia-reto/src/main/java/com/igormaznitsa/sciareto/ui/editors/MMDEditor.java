@@ -106,6 +106,7 @@ import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
@@ -114,6 +115,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.JComponent;
@@ -190,6 +192,24 @@ public final class MMDEditor extends AbstractTextEditor
     this.currentModelState.set(this.mindMapPanel.getModel().asString());
   }
 
+    @Override
+    public boolean isSelectCommandAllowed(@Nonnull final SelectCommand command) {
+        return this.mindMapPanel.getController().isSelectionAllowed(this.mindMapPanel);
+    }
+
+    @Override
+    public void doSelectCommand(@Nonnull final SelectCommand command) {
+        switch (command) {
+            case SELECT_ALL: {
+                this.mindMapPanel.setSelectedTopics(this.mindMapPanel.getModel().stream().collect(Collectors.toList()));
+            } break;
+            case SELECT_NONE:{
+                this.mindMapPanel.setSelectedTopics(Collections.emptyList());
+            } break;
+        }
+    }
+
+  
   @Nonnull
   public static FileFilter makeFileFilter() {
     return new FileFilter() {

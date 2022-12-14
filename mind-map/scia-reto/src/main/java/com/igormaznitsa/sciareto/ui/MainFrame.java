@@ -45,6 +45,7 @@ import com.igormaznitsa.sciareto.ui.editors.KsTplTextEditor;
 import com.igormaznitsa.sciareto.ui.editors.MMDEditor;
 import com.igormaznitsa.sciareto.ui.editors.PictureViewer;
 import com.igormaznitsa.sciareto.ui.editors.PlantUmlTextEditor;
+import com.igormaznitsa.sciareto.ui.editors.SelectCommand;
 import com.igormaznitsa.sciareto.ui.editors.SourceTextEditor;
 import com.igormaznitsa.sciareto.ui.editors.TextFileBackup;
 import com.igormaznitsa.sciareto.ui.misc.AboutPanel;
@@ -371,8 +372,10 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       this.menuEditPaste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 
       this.menuEditShowTreeContextMenu.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, KeyEvent.CTRL_MASK | KeyEvent.SHIFT_MASK));
-      this.menuFullScreen.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | KeyEvent.CTRL_MASK));
+      this.menuFullScreen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | KeyEvent.CTRL_MASK));
 
+      this.menuEditSelectAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+      this.menuEditSelectNone.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.SHIFT_MASK | Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
     } else {
 
       this.menuOpenProject.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | KeyEvent.SHIFT_MASK));
@@ -391,7 +394,10 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       this.menuEditPaste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 
       this.menuEditShowTreeContextMenu.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | KeyEvent.SHIFT_MASK));
-      this.menuFullScreen.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F11, 0));
+      this.menuFullScreen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F11, 0));
+
+      this.menuEditSelectAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.CTRL_MASK));
+      this.menuEditSelectNone.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.SHIFT_MASK | KeyEvent.CTRL_MASK));
     }
 
     SwingUtilities.invokeLater(() -> {
@@ -520,6 +526,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       this.menuEditPaste.setEnabled(false);
       this.menuEditCut.setEnabled(false);
       this.menuFindText.setEnabled(false);
+      this.menuEditSelectAll.setEnabled(false);
+      this.menuEditSelectNone.setEnabled(false);
     } else {
       if (provider.doesSupportCutCopyPaste()) {
         this.menuEditCopy.setEnabled(provider.isCopyAllowed());
@@ -531,6 +539,9 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         this.menuEditCut.setEnabled(false);
       }
 
+      this.menuEditSelectAll.setEnabled(provider.isSelectCommandAllowed(SelectCommand.SELECT_ALL));
+      this.menuEditSelectNone.setEnabled(provider.isSelectCommandAllowed(SelectCommand.SELECT_NONE));
+      
       this.menuFindText.setEnabled(provider.doesSupportPatternSearch());
 
       this.menuRedo.setEnabled(provider.isRedo());
@@ -1047,6 +1058,9 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         menuUndo = new javax.swing.JMenuItem();
         menuRedo = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
+        menuEditSelectAll = new javax.swing.JMenuItem();
+        menuEditSelectNone = new javax.swing.JMenuItem();
+        jSeparator8 = new javax.swing.JPopupMenu.Separator();
         menuEditCut = new javax.swing.JMenuItem();
         menuEditCopy = new javax.swing.JMenuItem();
         menuEditPaste = new javax.swing.JMenuItem();
@@ -1226,6 +1240,25 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         });
         menuEdit.add(menuRedo);
         menuEdit.add(jSeparator1);
+
+        menuEditSelectAll.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/selectall16.png"))); // NOI18N
+        menuEditSelectAll.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("mainMenu.itemEdit.itemSelectAll")); // NOI18N
+        menuEditSelectAll.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuEditSelectAllActionPerformed(evt);
+            }
+        });
+        menuEdit.add(menuEditSelectAll);
+
+        menuEditSelectNone.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/selectnone16.png"))); // NOI18N
+        menuEditSelectNone.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("mainMenu.itemEdit.itemSelectNone")); // NOI18N
+        menuEditSelectNone.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuEditSelectNoneActionPerformed(evt);
+            }
+        });
+        menuEdit.add(menuEditSelectNone);
+        menuEdit.add(jSeparator8);
 
         menuEditCut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/cut16.png"))); // NOI18N
         menuEditCut.setMnemonic('t');
@@ -2078,6 +2111,28 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     }
   }//GEN-LAST:event_menuViewZoomResetActionPerformed
 
+    private void menuEditSelectAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuEditSelectAllActionPerformed
+        final TabTitle title = this.getFocusedTab();
+        if (title != null) {
+            if (title.getProvider().isSelectCommandAllowed(SelectCommand.SELECT_ALL)) {
+                title.getProvider().doSelectCommand(SelectCommand.SELECT_ALL);
+            } else {
+                this.menuEditSelectAll.setEnabled(false);
+            }
+        }
+    }//GEN-LAST:event_menuEditSelectAllActionPerformed
+
+    private void menuEditSelectNoneActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuEditSelectNoneActionPerformed
+        final TabTitle title = this.getFocusedTab();
+        if (title != null) {
+            if (title.getProvider().isSelectCommandAllowed(SelectCommand.SELECT_NONE)) {
+                title.getProvider().doSelectCommand(SelectCommand.SELECT_NONE);
+            } else {
+                this.menuEditSelectAll.setEnabled(false);
+            }
+        }
+    }//GEN-LAST:event_menuEditSelectNoneActionPerformed
+
   private void enableMenu(final JMenu menu) {
     menu.setEnabled(true);
     for (final Component c : menu.getMenuComponents()) {
@@ -2187,12 +2242,15 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     private javax.swing.JPopupMenu.Separator jSeparator5;
     private javax.swing.JPopupMenu.Separator jSeparator6;
     private javax.swing.JPopupMenu.Separator jSeparator7;
+    private javax.swing.JPopupMenu.Separator jSeparator8;
     private javax.swing.JMenuBar mainMenu;
     private javax.swing.JMenuItem menuAbout;
     private javax.swing.JMenu menuEdit;
     private javax.swing.JMenuItem menuEditCopy;
     private javax.swing.JMenuItem menuEditCut;
     private javax.swing.JMenuItem menuEditPaste;
+    private javax.swing.JMenuItem menuEditSelectAll;
+    private javax.swing.JMenuItem menuEditSelectNone;
     private javax.swing.JMenuItem menuEditShowTreeContextMenu;
     private javax.swing.JMenuItem menuExit;
     private javax.swing.JMenu menuFile;
