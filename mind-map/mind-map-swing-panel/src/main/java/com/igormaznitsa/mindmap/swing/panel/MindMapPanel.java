@@ -1935,17 +1935,27 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
     }
   }
 
-  public void select(final Topic t, final boolean removeIfPresented) {
+  public void select(final Topic topic, final boolean removeIfPresented) {
     assertNotDisposed();
-    if (this.controller.isSelectionAllowed(this) && t != null) {
-      if (!this.selectedTopics.contains(t)) {
-        this.selectedTopics.add(t);
+    if (this.controller.isSelectionAllowed(this) && topic != null) {
+      if (!this.selectedTopics.contains(topic)) {
+        this.selectedTopics.add(topic);
         fireNotificationSelectionChanged();
-        fireNotificationEnsureTopicVisibility(t);
+        fireNotificationEnsureTopicVisibility(topic);
         repaint();
       } else if (removeIfPresented) {
-        removeFromSelection(t);
+        removeFromSelection(topic);
       }
+    }
+  }
+
+  public void setSelectedTopics(final List<Topic> topics) {
+    assertNotDisposed();
+    if (this.controller.isSelectionAllowed(this)) {
+      this.selectedTopics.clear();
+      this.selectedTopics.addAll(topics);
+      fireNotificationSelectionChanged();
+      repaint();
     }
   }
 
