@@ -17,8 +17,6 @@
 package com.igormaznitsa.mindmap.swing.services;
 
 import com.igormaznitsa.mindmap.plugins.api.parameters.AbstractParameter;
-import com.igormaznitsa.mindmap.swing.ide.IDEBridge;
-import com.igormaznitsa.mindmap.swing.ide.IDEBridgeFactory;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import java.util.Set;
 import javax.swing.ButtonGroup;
@@ -58,8 +56,8 @@ public class DefaultSwingUIComponentService implements UIComponentFactory {
   }
 
   @Override
-  public JComboBox<?> makeComboBox() {
-    return new JComboBox<>();
+  public <T> JComboBox<T> makeComboBox(final Class<T> type) {
+    return new JComboBox<T>();
   }
 
   @Override

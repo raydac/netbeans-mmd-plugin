@@ -51,7 +51,7 @@ public final class MMDPrintOptionsPanel extends JPanel {
   private final JRadioButton radioFitWidthTo = UIComponentFactoryProvider.findInstance().makeRadioButton();
   private final JRadioButton radioFitHeightTo = UIComponentFactoryProvider.findInstance().makeRadioButton();
   private final JRadioButton radioFitToPage = UIComponentFactoryProvider.findInstance().makeRadioButton();
-  private final JComboBox comboZoom = UIComponentFactoryProvider.findInstance().makeComboBox();
+  private final JComboBox<String> comboZoom = UIComponentFactoryProvider.findInstance().makeComboBox(String.class);
   private final JSpinner spinnerFitWidth = UIComponentFactoryProvider.findInstance().makeSpinner();
   private final JSpinner spinnerFitHeight = UIComponentFactoryProvider.findInstance().makeSpinner();
 
@@ -72,7 +72,7 @@ public final class MMDPrintOptionsPanel extends JPanel {
     for (int i = 25; i <= 500; i += 25) {
       zoom.add(i + " %");
     }
-    this.comboZoom.setModel(new DefaultComboBoxModel(zoom.toArray()));
+    this.comboZoom.setModel(new DefaultComboBoxModel<>(zoom.toArray(new String[0])));
 
     final GridBagConstraints gbc = new GridBagConstraints();
 

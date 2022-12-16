@@ -48,7 +48,7 @@ public interface UIComponentFactory {
 
   JPanel makePanelWithOptions(DialogProvider dialogProvider, Set<AbstractParameter<?>> parameters);
 
-  JComboBox<?> makeComboBox();
+  <T> JComboBox<T> makeComboBox(Class<T> type);
 
   JSpinner makeSpinner();
 

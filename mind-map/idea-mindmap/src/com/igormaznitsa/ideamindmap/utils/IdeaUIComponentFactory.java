@@ -87,8 +87,8 @@ public class IdeaUIComponentFactory implements UIComponentFactory {
 
   @Override
   @Nonnull
-  public JComboBox makeComboBox() {
-    return new ComboBox();
+  public <T> JComboBox<T> makeComboBox(final Class<T> type) {
+    return new ComboBox<T>();
   }
 
   @Override
