@@ -97,7 +97,6 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
@@ -145,9 +144,9 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   private final MindMapPanelConfig config;
   private final AtomicBoolean popupMenuActive = new AtomicBoolean();
   private final AtomicBoolean removeEditedTopicForRollback = new AtomicBoolean();
-  private final AtomicReference<Dimension> mindMapImageSize =
-      new AtomicReference<>(new Dimension());
   private final UUID uuid = UUID.randomUUID();
+  private final ResourceBundle bundle = MmdI18n.getInstance().findBundle();
+  private Dimension mindMapImageSize = new Dimension();
   private volatile MindMap model;
   private volatile String errorText;
   private transient AbstractElement elementUnderEdit = null;
@@ -156,8 +155,6 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   private transient DraggedElement draggedElement = null;
   private transient AbstractElement destinationElement = null;
   private Point lastMousePressed = null;
-
-  private final ResourceBundle bundle = MmdI18n.getInstance().findBundle();
 
   public MindMapPanel(final MindMapPanelController controller) {
     super();
@@ -666,7 +663,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
                 mouseDragSelection = null;
               }
               repaint();
-            } else if (draggedElement != null) {
+            } else {
               if (controller.isElementDragAllowed(MindMapPanel.this)) {
                 draggedElement.updatePosition(e.getPoint());
                 findDestinationElementForDragged();
@@ -691,16 +688,15 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
             mouseDragSelection = null;
             draggedElement = null;
 
-            final MindMapPanelConfig theConfig = config;
+            final MindMapPanelConfig finalConfig = config;
 
-            if (!e.isConsumed() && (theConfig != null &&
-                ((e.getModifiers() & theConfig.getScaleModifiers()) ==
-                    theConfig.getScaleModifiers()))) {
+            if (!e.isConsumed() && (e.getModifiers() & finalConfig.getScaleModifiers()) ==
+                finalConfig.getScaleModifiers()) {
               e.consume();
 
               endEdit(elementUnderEdit != null);
 
-              final Dimension oldSize = mindMapImageSize.get();
+              final Dimension oldSize = MindMapPanel.this.mindMapImageSize;
 
               final double oldScale = getScale();
               final double curScale = ((long) (10.0d *
@@ -713,7 +709,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
               MindMapPanel.this.revalidate();
               MindMapPanel.this.repaint();
 
-              final Dimension newSize = mindMapImageSize.get().getSize();
+              final Dimension newSize = MindMapPanel.this.mindMapImageSize;
 
               fireNotificationScaledByMouse(e.getPoint(), oldScale, newScale, oldSize, newSize);
             } else {
@@ -1054,34 +1050,6 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
     final AbstractElement element = (AbstractElement) topic.getPayload();
     if (element != null) {
       element.doPaint(gfx, cfg, true);
-
-// -------------- DRAW BORDERS ABOUND COMPONENT AREAS ---------------------------
-//
-//      final Dimension2D elementAreaSize = element.getBlockSize();
-//      final Rectangle2D elementPosition = element.getBounds();
-//
-//      if (element instanceof ElementRoot) {
-//        final ElementRoot root = (ElementRoot) element;
-//        final Dimension2D leftSubblock = root.getLeftBlockSize();
-//        final Dimension2D rightSubblock = root.getRightBlockSize();
-//
-//        if (leftSubblock.getWidth()>0) {
-//          gfx.draw(new Rectangle2D.Double(elementPosition.getX() - leftSubblock.getWidth(), elementPosition.getY() - (leftSubblock.getHeight() - elementPosition.getHeight()) / 2d, leftSubblock.getWidth(), leftSubblock.getHeight()), Color.RED, null);
-//        }
-//
-//        if (rightSubblock.getWidth()>0) {
-//          gfx.draw(new Rectangle2D.Double(elementPosition.getX() + elementPosition.getWidth(), elementPosition.getY() - (rightSubblock.getHeight() - elementPosition.getHeight()) / 2d, rightSubblock.getWidth(), rightSubblock.getHeight()), Color.RED, null);
-//        }
-//
-//        gfx.draw(new Rectangle2D.Double(elementPosition.getX() - leftSubblock.getWidth(), elementPosition.getY() - (elementAreaSize.getHeight() - elementPosition.getHeight()) / 2d, elementAreaSize.getWidth(), elementAreaSize.getHeight()), Color.CYAN, null);
-//
-//      }else
-//      if (element.isLeftDirection()){
-//        gfx.draw(new Rectangle2D.Double(elementPosition.getX()-(elementAreaSize.getWidth()-elementPosition.getWidth()),elementPosition.getY()-(elementAreaSize.getHeight()-elementPosition.getHeight())/2d,elementAreaSize.getWidth(),elementAreaSize.getHeight()), Color.GREEN, null);
-//      } else {
-//        gfx.draw(new Rectangle2D.Double(elementPosition.getX(), elementPosition.getY() - (elementAreaSize.getHeight() - elementPosition.getHeight()) / 2d, elementAreaSize.getWidth(), elementAreaSize.getHeight()), Color.YELLOW, null);
-//      }
-// ------------------------------------------------------------------------------
     }
   }
 
@@ -1116,7 +1084,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
     boolean result = false;
 
     final Topic root = model == null ? null : model.getRoot();
-    if (root != null && model != null) {
+    if (root != null) {
       model.clearAllPayloads();
       setElementSizesForElementAndChildren(gfx, cfg, root, 0);
       result = true;
@@ -1949,6 +1917,11 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
     }
   }
 
+  public Topic[] getSelectedTopics() {
+    assertNotDisposed();
+    return this.selectedTopics.toArray(new Topic[0]);
+  }
+
   public void setSelectedTopics(final List<Topic> topics) {
     assertNotDisposed();
     if (this.controller.isSelectionAllowed(this)) {
@@ -1957,11 +1930,6 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
       fireNotificationSelectionChanged();
       repaint();
     }
-  }
-
-  public Topic[] getSelectedTopics() {
-    assertNotDisposed();
-    return this.selectedTopics.toArray(new Topic[0]);
   }
 
   public void updateEditorAfterResizing() {
@@ -2289,7 +2257,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
 
   @Override
   public Dimension getPreferredSize() {
-    return this.mindMapImageSize.get().getSize();
+    return this.mindMapImageSize;
   }
 
   @Override
@@ -2300,7 +2268,8 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   private void changeSizeOfComponent(final Dimension size,
                                      final boolean doNotificationThatRealigned) {
     if (size != null) {
-      final Dimension oldSize = this.mindMapImageSize.getAndSet(size);
+      final Dimension oldSize = this.mindMapImageSize;
+      this.mindMapImageSize = size;
 
       if (doNotificationThatRealigned) {
         this.firePropertyChange("preferredSize", oldSize, size);
@@ -2397,7 +2366,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   @Override
   public boolean isValid() {
     if (this.disposed == null) {
-      // called in parent Object constructor before field is set by value!
+      // called in parent Object constructor before field init!
       return false;
     }
 
@@ -2428,7 +2397,6 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public void paintComponent(final Graphics g) {
     assertNotDisposed();
     final Graphics2D gfx = (Graphics2D) g.create();
