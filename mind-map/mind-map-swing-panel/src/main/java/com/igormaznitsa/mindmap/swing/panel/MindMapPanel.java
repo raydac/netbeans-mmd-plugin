@@ -113,6 +113,7 @@ import org.apache.commons.text.StringEscapeUtils;
 
 /**
  * Swing component allows to visualize and edit MMD Mind Map model.
+ * <b>It is not thread safe one and as a swing component, it should be used from swing thread!</b>
  *
  * @see MindMap
  */
@@ -156,6 +157,12 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   private transient AbstractElement destinationElement = null;
   private Point lastMousePressed = null;
 
+  /**
+   * COnstructor.
+   *
+   * @param controller object providing information for panel which operations allowed and take part in some functions, must not be null
+   * @throws NullPointerException if controller is null
+   */
   public MindMapPanel(final MindMapPanelController controller) {
     super();
 
@@ -867,16 +874,16 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
             if (x < minX) {
               continue;
             }
-            final int intx = Math.round(x);
-            g.drawLine(intx, (int) minY, intx, (int) maxY, gridColor);
+            final int roundedX = Math.round(x);
+            g.drawLine(roundedX, (int) minY, roundedX, (int) maxY, gridColor);
           }
 
           for (float y = 0.0f; y < maxY; y += scaledGridStep) {
             if (y < minY) {
               continue;
             }
-            final int inty = Math.round(y);
-            g.drawLine((int) minX, inty, (int) maxX, inty, gridColor);
+            final int roundedY = Math.round(y);
+            g.drawLine((int) minX, roundedY, (int) maxX, roundedY, gridColor);
           }
         }
       }

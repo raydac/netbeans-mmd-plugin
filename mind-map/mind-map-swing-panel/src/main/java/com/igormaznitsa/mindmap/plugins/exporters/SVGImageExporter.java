@@ -573,12 +573,12 @@ public class SVGImageExporter extends AbstractExporter {
     }
 
     @Override
-    public Rectangle2D getStringBounds(final String str) {
-      if (str.isEmpty()) {
+    public Rectangle2D getStringBounds(final String text) {
+      if (text.isEmpty()) {
         return this.context.getFontMetrics().getStringBounds("", this.context);
       } else {
         final TextLayout textLayout =
-            new TextLayout(str, this.context.getFont(), this.context.getFontRenderContext());
+            new TextLayout(text, this.context.getFont(), this.context.getFontRenderContext());
         return new Rectangle2D.Float(0, -textLayout.getAscent(), textLayout.getAdvance(),
             textLayout.getAscent() + textLayout.getDescent() + textLayout.getLeading());
       }

@@ -29,41 +29,41 @@ import java.awt.geom.Rectangle2D;
 
 public class MMGraphics2DWrapper implements MMGraphics {
 
-  private final Graphics2D wrapped;
+  private final Graphics2D delegate;
   private StrokeType strokeType = StrokeType.SOLID;
   private float strokeWidth = 1.0f;
 
-  public MMGraphics2DWrapper(final Graphics2D wrapped) {
-    this.wrapped = wrapped;
-    this.wrapped.setStroke(new BasicStroke(this.strokeWidth));
+  public MMGraphics2DWrapper(final Graphics2D delegate) {
+    this.delegate = delegate;
+    this.delegate.setStroke(new BasicStroke(this.strokeWidth));
   }
 
   public Graphics2D getWrappedGraphics() {
-    return this.wrapped;
+    return this.delegate;
   }
 
   @Override
   public void setClip(final int x, final int y, final int w, final int h) {
-    this.wrapped.setClip(x, y, w, h);
+    this.delegate.setClip(x, y, w, h);
   }
 
   @Override
   public void drawRect(final int x, final int y, final int width, final int height,
                        final Color border, final Color fill) {
     if (fill != null) {
-      this.wrapped.setColor(fill);
-      this.wrapped.fillRect(x, y, width, height);
+      this.delegate.setColor(fill);
+      this.delegate.fillRect(x, y, width, height);
     }
 
     if (border != null) {
-      this.wrapped.setColor(border);
-      this.wrapped.drawRect(x, y, width, height);
+      this.delegate.setColor(border);
+      this.delegate.drawRect(x, y, width, height);
     }
   }
 
   @Override
   public MMGraphics copy() {
-    final MMGraphics2DWrapper result = new MMGraphics2DWrapper((Graphics2D) wrapped.create());
+    final MMGraphics2DWrapper result = new MMGraphics2DWrapper((Graphics2D) delegate.create());
     result.strokeType = this.strokeType;
     result.strokeWidth = this.strokeWidth;
     return result;
@@ -71,17 +71,17 @@ public class MMGraphics2DWrapper implements MMGraphics {
 
   @Override
   public void dispose() {
-    this.wrapped.dispose();
+    this.delegate.dispose();
   }
 
   @Override
   public void translate(final double x, final double y) {
-    this.wrapped.translate(x, y);
+    this.delegate.translate(x, y);
   }
 
   @Override
   public Rectangle getClipBounds() {
-    return this.wrapped.getClipBounds();
+    return this.delegate.getClipBounds();
   }
 
   @Override
@@ -105,7 +105,7 @@ public class MMGraphics2DWrapper implements MMGraphics {
         default:
           throw new Error("Unexpected stroke type : " + type);
       }
-      this.wrapped.setStroke(stroke);
+      this.delegate.setStroke(stroke);
     }
   }
 
@@ -113,21 +113,21 @@ public class MMGraphics2DWrapper implements MMGraphics {
   public void drawLine(final int startX, final int startY, final int endX, final int endY,
                        final Color color) {
     if (color != null) {
-      this.wrapped.setColor(color);
-      this.wrapped.drawLine(startX, startY, endX, endY);
+      this.delegate.setColor(color);
+      this.delegate.drawLine(startX, startY, endX, endY);
     }
   }
 
   @Override
   public void draw(final Shape shape, final Color border, final Color fill) {
     if (fill != null) {
-      this.wrapped.setColor(fill);
-      this.wrapped.fill(shape);
+      this.delegate.setColor(fill);
+      this.delegate.fill(shape);
     }
 
     if (border != null) {
-      this.wrapped.setColor(border);
-      this.wrapped.draw(shape);
+      this.delegate.setColor(border);
+      this.delegate.draw(shape);
     }
   }
 
@@ -138,52 +138,54 @@ public class MMGraphics2DWrapper implements MMGraphics {
     path.moveTo(startX, startY);
     path.curveTo(startX, endY, startX, endY, endX, endY);
     if (color != null) {
-      this.wrapped.setColor(color);
+      this.delegate.setColor(color);
     }
-    this.wrapped.draw(path);
+    this.delegate.draw(path);
   }
 
   @Override
   public void drawOval(final int x, final int y, final int w, final int h, final Color border,
                        final Color fill) {
     if (fill != null) {
-      this.wrapped.setColor(fill);
-      this.wrapped.fillOval(x, y, w, h);
+      this.delegate.setColor(fill);
+      this.delegate.fillOval(x, y, w, h);
     }
 
     if (border != null) {
-      this.wrapped.setColor(border);
-      this.wrapped.drawOval(x, y, w, h);
+      this.delegate.setColor(border);
+      this.delegate.drawOval(x, y, w, h);
     }
   }
 
   @Override
   public void drawImage(final Image image, final int x, final int y) {
     if (image != null) {
-      this.wrapped.drawImage(image, x, y, null);
+      this.delegate.drawImage(image, x, y, null);
     }
   }
 
   @Override
   public float getFontMaxAscent() {
-    return this.wrapped.getFontMetrics().getMaxAscent();
+    return this.delegate.getFontMetrics().getMaxAscent();
   }
 
   @Override
-  public Rectangle2D getStringBounds(final String str) {
-    return this.wrapped.getFont().getStringBounds(str, this.wrapped.getFontRenderContext());
+  public Rectangle2D getStringBounds(final String text) {
+    return this.delegate.getFont().getStringBounds(text, this.delegate.getFontRenderContext());
   }
 
   @Override
   public void setFont(final Font font) {
-    this.wrapped.setFont(font);
+    this.delegate.setFont(font);
   }
 
   @Override
   public void drawString(final String text, final int x, final int y, final Color color) {
-    if (color != null && this.wrapped.getFont().getSize2D() > 1.0f) {
-      this.wrapped.setColor(color);
-      this.wrapped.drawString(text, x, y);
+    if (color != null) {
+      this.delegate.setColor(color);
+    }
+    if (this.delegate.getFont().getSize2D() > 1.0f) {
+      this.delegate.drawString(text, x, y);
     }
   }
 
