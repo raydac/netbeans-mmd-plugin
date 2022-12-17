@@ -78,6 +78,9 @@ public final class LocalizationController implements SpecificKeys {
     ENGLISH("English", Locale.ENGLISH, e -> {
       updateUiForBundle(SrI18n.getInstance().findBundle(e.locale));
     }),
+    ESPERANTO("Esperanto", new Locale("eo"), Locale.ENGLISH, Locale.ENGLISH, e -> {
+      updateUiForBundle(SrI18n.getInstance().findBundle(e.locale));
+    }),
     RUSSIAN("Русский", new Locale("ru"), e -> {
       updateUiForBundle(SrI18n.getInstance().findBundle(e.locale));
     });
