@@ -66,12 +66,12 @@ public class TopicItem extends AbstractItem {
     if (topicAnnotation != null && StringUtils.isNotBlank(topicAnnotation.fileUid())) {
       return Optional.of(topicAnnotation.fileUid());
     } else {
-      final List<Pair<MmdFileRef, Element>> foundMmdFileLinks =
+      final List<Pair<MmdFileRef, Element>> foundMmdFileRefs =
           findFirstWithAncestors(element, MmdFileRef.class, typeUtils, true);
-      if (foundMmdFileLinks.isEmpty()) {
+      if (foundMmdFileRefs.isEmpty()) {
         return findFileUidAmongParentTopics(typeUtils, element.getEnclosingElement());
       } else {
-        final MmdFileRef fileLink = foundMmdFileLinks.get(0).getKey();
+        final MmdFileRef fileLink = foundMmdFileRefs.get(0).getKey();
         return ofNullable(isBlank(fileLink.uid()) ? null : fileLink.uid());
       }
     }
