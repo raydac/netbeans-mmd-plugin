@@ -23,7 +23,7 @@ import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import com.igormaznitsa.mindmap.annotations.MmdFile;
-import com.igormaznitsa.mindmap.annotations.MmdFileLink;
+import com.igormaznitsa.mindmap.annotations.MmdFileRef;
 import com.igormaznitsa.mindmap.annotations.MmdFiles;
 import com.igormaznitsa.mindmap.annotations.MmdTopic;
 import com.igormaznitsa.mindmap.annotations.processor.MmdAnnotationWrapper;
@@ -66,13 +66,13 @@ public class TopicItem extends AbstractItem {
     if (topicAnnotation != null && StringUtils.isNotBlank(topicAnnotation.fileUid())) {
       return Optional.of(topicAnnotation.fileUid());
     } else {
-      final List<Pair<MmdFileLink, Element>> foundMmdFileLinks =
-          findFirstWithAncestors(element, MmdFileLink.class, typeUtils, true);
+      final List<Pair<MmdFileRef, Element>> foundMmdFileLinks =
+          findFirstWithAncestors(element, MmdFileRef.class, typeUtils, true);
       if (foundMmdFileLinks.isEmpty()) {
         return findFileUidAmongParentTopics(typeUtils, element.getEnclosingElement());
       } else {
-        final MmdFileLink fileLink = foundMmdFileLinks.get(0).getKey();
-        return ofNullable(fileLink.uid().isEmpty() ? null : fileLink.uid());
+        final MmdFileRef fileLink = foundMmdFileLinks.get(0).getKey();
+        return ofNullable(isBlank(fileLink.uid()) ? null : fileLink.uid());
       }
     }
   }
@@ -90,8 +90,8 @@ public class TopicItem extends AbstractItem {
           findFirstWithAncestors(typeElement, MmdFile.class, typeUtils, true);
       final List<Pair<MmdFiles, Element>> filesAnnotation =
           findFirstWithAncestors(typeElement, MmdFiles.class, typeUtils, true);
-      final List<Pair<MmdFileLink, Element>> fileLinkAnnotation =
-          findFirstWithAncestors(typeElement, MmdFileLink.class, typeUtils, true);
+      final List<Pair<MmdFileRef, Element>> fileLinkAnnotation =
+          findFirstWithAncestors(typeElement, MmdFileRef.class, typeUtils, true);
 
       final List<Pair<MmdFile, Element>> listOfFiles = Stream.concat(
           fileAnnotation.stream(),

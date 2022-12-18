@@ -23,7 +23,7 @@ import static javax.tools.Diagnostic.Kind.NOTE;
 import static javax.tools.Diagnostic.Kind.WARNING;
 
 import com.igormaznitsa.mindmap.annotations.MmdFile;
-import com.igormaznitsa.mindmap.annotations.MmdFileLink;
+import com.igormaznitsa.mindmap.annotations.MmdFileRef;
 import com.igormaznitsa.mindmap.annotations.MmdFiles;
 import com.igormaznitsa.mindmap.annotations.MmdTopic;
 import com.igormaznitsa.mindmap.annotations.processor.builder.AnnotationUtils;
@@ -96,7 +96,7 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
           MmdTopic.class.getName(), MmdTopic.class,
           MmdFiles.class.getName(), MmdFiles.class,
           MmdFile.class.getName(), MmdFile.class,
-          MmdFileLink.class.getName(), MmdFileLink.class);
+          MmdFileRef.class.getName(), MmdFileRef.class);
   private Trees trees;
   private SourcePositions sourcePositions;
   private Messager messager;

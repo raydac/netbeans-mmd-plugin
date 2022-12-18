@@ -19,7 +19,7 @@ package com.igormaznitsa.mindmap.annotations.processor.builder;
 import static java.util.Objects.requireNonNull;
 
 import com.igormaznitsa.mindmap.annotations.MmdFile;
-import com.igormaznitsa.mindmap.annotations.MmdFileLink;
+import com.igormaznitsa.mindmap.annotations.MmdFileRef;
 import com.igormaznitsa.mindmap.annotations.MmdFiles;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.util.SourcePositions;
@@ -59,14 +59,14 @@ public final class AnnotationUtils {
    * @see MmdFiles
    */
   public static List<Pair<MmdFile, Element>> findByTargetFile(final Types typeUtils,
-                                                              final Pair<MmdFileLink, Element> fileLinkElement) {
+                                                              final Pair<MmdFileRef, Element> fileLinkElement) {
     try {
       requireNonNull(fileLinkElement.getKey().target());
       throw new IllegalStateException(
           "Can't get expected MirroredTypeException for element field access");
     } catch (final MirroredTypeException ex) {
       final TypeElement element = (TypeElement) typeUtils.asElement(ex.getTypeMirror());
-      if (element.getQualifiedName().toString().equals(MmdFileLink.class.getCanonicalName())) {
+      if (element.getQualifiedName().toString().equals(MmdFileRef.class.getCanonicalName())) {
         return Collections.emptyList();
       } else {
         final List<Pair<MmdFile, Element>> fileAnnotation =

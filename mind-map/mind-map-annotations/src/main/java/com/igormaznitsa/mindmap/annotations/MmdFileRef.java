@@ -22,9 +22,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation allows to link type to some MMD file UID defined for another type.
+ * Annotation allows to make a reference to a some marked {@link MmdFile}
+ * or {@link MmdFiles} class through MMD file UID or a class object.
  *
  * @see MmdFile
+ * @see MmdFiles
  */
 @Retention(RetentionPolicy.SOURCE)
 @Target({
@@ -38,21 +40,21 @@ import java.lang.annotation.Target;
     ElementType.PARAMETER,
     ElementType.TYPE_USE
 })
-public @interface MmdFileLink {
+public @interface MmdFileRef {
   /**
-   * UID defined through a MmdFile. <b>Defined non-empty UID has higher priority than the target attribute</b>.
+   * UID of some defined MmdFile. <b>Defined non-empty UID has higher priority than the target attribute</b>.
    *
-   * @return UID which should be defined in a MmdFile annotation of a project class. If empty string then undefined.
+   * @return UID which should be defined in a MmdFile annotation of a project class. Default value is empty one what means undefined.
    * @see MmdFile
    */
   String uid() default "";
 
   /**
-   * Target class which should be used as path to target MmdFile annotation.
-   * <b>If provided {@link MmdFileLink#uid()} then uid has higher priority</b>.
+   * Target class which should be marked ether by {@link MmdFile} or {@link @MmdFiles} annotation. First found one in class hierarchy will be used.
+   * <b>Keep in mind that if provided {@link MmdFileRef#uid()} attribute then UID has higher priority</b>.
    *
-   * @return a project class to be used as target for search MmdFile topic
+   * @return a class to be used as target to search target mmd file.
    * @see MmdFile
    */
-  Class<?> target() default MmdFileLink.class;
+  Class<?> target() default MmdFileRef.class;
 }
