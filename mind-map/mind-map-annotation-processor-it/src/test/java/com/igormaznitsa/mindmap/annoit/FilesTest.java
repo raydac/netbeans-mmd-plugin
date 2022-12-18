@@ -1,6 +1,7 @@
 package com.igormaznitsa.mindmap.annoit;
 
 import com.igormaznitsa.mindmap.model.MindMap;
+import org.junit.Assert;
 import org.junit.Test;
 
 public class FilesTest extends AbstractMmdTest {
@@ -15,5 +16,8 @@ public class FilesTest extends AbstractMmdTest {
     findForTitle(klass1map, "klass4_method_class1");
     findForTitle(klass3map, "a");
     findForTitle(klass3_1map, "b");
+    Assert.assertEquals(2, findForTitle(klass2map, "Controller Start-Stop").size());
+    findForPath(klass2map, "Klass2", "Controller Start-Stop", "start");
+    findForPath(klass2map, "Klass2", "Controller Start-Stop", "stop");
   }
 }

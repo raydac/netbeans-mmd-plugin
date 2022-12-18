@@ -18,6 +18,9 @@ package com.igormaznitsa.mindmap.annotations.processor.builder;
 
 import static java.util.Objects.requireNonNull;
 
+import com.igormaznitsa.mindmap.annotations.MmdFile;
+import com.igormaznitsa.mindmap.annotations.MmdFileLink;
+import com.igormaznitsa.mindmap.annotations.MmdFiles;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.util.SourcePositions;
 import com.sun.source.util.TreePath;
@@ -26,12 +29,15 @@ import java.lang.annotation.Annotation;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.util.Types;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -41,6 +47,40 @@ import org.apache.commons.lang3.tuple.Pair;
 public final class AnnotationUtils {
 
   private AnnotationUtils() {
+  }
+
+  /**
+   * Find all corresponding file annotations pointed by file link annotation if target class defined.
+   *
+   * @param typeUtils       type utilities, can't be null
+   * @param fileLinkElement processing file link element, can't be null
+   * @return list of found file elements marked by {@link MmdFile}
+   * @see MmdFile
+   * @see MmdFiles
+   */
+  public static List<Pair<MmdFile, Element>> findByTargetFile(final Types typeUtils,
+                                                              final Pair<MmdFileLink, Element> fileLinkElement) {
+    try {
+      requireNonNull(fileLinkElement.getKey().target());
+      throw new IllegalStateException(
+          "Can't get expected MirroredTypeException for element field access");
+    } catch (final MirroredTypeException ex) {
+      final TypeElement element = (TypeElement) typeUtils.asElement(ex.getTypeMirror());
+      if (element.getQualifiedName().toString().equals(MmdFileLink.class.getCanonicalName())) {
+        return Collections.emptyList();
+      } else {
+        final List<Pair<MmdFile, Element>> fileAnnotation =
+            findFirstWithAncestors(element, MmdFile.class, typeUtils, true);
+        final List<Pair<MmdFiles, Element>> filesAnnotation =
+            findFirstWithAncestors(element, MmdFiles.class, typeUtils, true);
+        return Stream.concat(
+                fileAnnotation.stream(),
+                filesAnnotation.stream().flatMap(
+                    x -> Arrays.stream(x.getKey().value()).map(file -> Pair.of(file, x.getRight()))))
+            .collect(
+                Collectors.toList());
+      }
+    }
   }
 
   /**

@@ -19,6 +19,8 @@ package com.igormaznitsa.mindmap.annotations.processor.builder.elements;
 import static com.igormaznitsa.mindmap.annotations.processor.builder.AnnotationUtils.findAllTypeElements;
 import static com.igormaznitsa.mindmap.annotations.processor.builder.AnnotationUtils.findFirstWithAncestors;
 import static java.lang.String.format;
+import static java.util.Optional.ofNullable;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import com.igormaznitsa.mindmap.annotations.MmdFile;
 import com.igormaznitsa.mindmap.annotations.MmdFileLink;
@@ -29,12 +31,12 @@ import com.igormaznitsa.mindmap.annotations.processor.builder.AnnotationUtils;
 import com.igormaznitsa.mindmap.annotations.processor.builder.exceptions.MmdAnnotationProcessorException;
 import com.igormaznitsa.mindmap.annotations.processor.builder.exceptions.MmdElementException;
 import com.igormaznitsa.mindmap.annotations.processor.builder.exceptions.MultipleFileVariantsForTopicException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.lang.model.element.Element;
 import javax.lang.model.util.Types;
 import org.apache.commons.io.FilenameUtils;
@@ -65,17 +67,18 @@ public class TopicItem extends AbstractItem {
       return Optional.of(topicAnnotation.fileUid());
     } else {
       final List<Pair<MmdFileLink, Element>> foundMmdFileLinks =
-          AnnotationUtils.findFirstWithAncestors(element, MmdFileLink.class, typeUtils, true);
+          findFirstWithAncestors(element, MmdFileLink.class, typeUtils, true);
       if (foundMmdFileLinks.isEmpty()) {
         return findFileUidAmongParentTopics(typeUtils, element.getEnclosingElement());
       } else {
-        return Optional.of(foundMmdFileLinks.get(0).getKey().uid());
+        final MmdFileLink fileLink = foundMmdFileLinks.get(0).getKey();
+        return ofNullable(fileLink.uid().isEmpty() ? null : fileLink.uid());
       }
     }
   }
 
   private static List<Pair<MmdFile, Element>> findTargetFileAnnotations(
-      final Types types,
+      final Types typeUtils,
       final Element element)
       throws MmdElementException {
     if (element == null) {
@@ -84,31 +87,22 @@ public class TopicItem extends AbstractItem {
 
     for (final Element typeElement : findAllTypeElements(element)) {
       final List<Pair<MmdFile, Element>> fileAnnotation =
-          findFirstWithAncestors(typeElement, MmdFile.class, types, true);
+          findFirstWithAncestors(typeElement, MmdFile.class, typeUtils, true);
       final List<Pair<MmdFiles, Element>> filesAnnotation =
-          findFirstWithAncestors(typeElement, MmdFiles.class, types, true);
+          findFirstWithAncestors(typeElement, MmdFiles.class, typeUtils, true);
       final List<Pair<MmdFileLink, Element>> fileLinkAnnotation =
-          findFirstWithAncestors(typeElement, MmdFileLink.class, types, true);
+          findFirstWithAncestors(typeElement, MmdFileLink.class, typeUtils, true);
 
-      if (!(filesAnnotation.isEmpty()
-          && fileAnnotation.isEmpty()
-          && fileLinkAnnotation.isEmpty())) {
+      final List<Pair<MmdFile, Element>> listOfFiles = Stream.concat(
+          fileAnnotation.stream(),
+          Stream.concat(filesAnnotation.stream()
+                  .flatMap(x -> Stream.of(x.getKey().value()).map(file -> Pair.of(file, x.getRight()))),
+              fileLinkAnnotation.stream()
+                  .flatMap(x -> AnnotationUtils.findByTargetFile(typeUtils, x).stream()))
+      ).collect(Collectors.toList());
 
-        final List<Pair<MmdFile, Element>> result = new ArrayList<>(fileAnnotation);
-
-        for (final Pair<MmdFiles, Element> files : filesAnnotation) {
-          for (final MmdFile f : files.getLeft().value()) {
-            result.add(Pair.of(f, files.getRight()));
-          }
-        }
-
-        for (final Pair<MmdFileLink, Element> link : fileLinkAnnotation) {
-          final String uid = link.getKey().uid();
-          if (StringUtils.isBlank(uid)) {
-            throw new MmdElementException("Element has blank file link UID", element);
-          }
-        }
-        return result;
+      if (!listOfFiles.isEmpty()) {
+        return listOfFiles;
       }
     }
     throw new MmdElementException(
@@ -117,12 +111,12 @@ public class TopicItem extends AbstractItem {
   }
 
   public Optional<FileItem> findTargetFileItem(
-      final Types types,
+      final Types typeUtils,
       final Map<String, FileItem> fileMap,
       final BiConsumer<String, Element> logWarning)
       throws MmdElementException, MmdAnnotationProcessorException {
-    final Optional<String> fileUid = this.findFileUidAttribute(types);
-    if (StringUtils.isBlank(this.asMmdTopicAnnotation().fileUid())) {
+    final Optional<String> fileUid = this.findFileUidAttribute(typeUtils);
+    if (isBlank(this.asMmdTopicAnnotation().fileUid())) {
       if (fileUid.isPresent()) {
         // find for file uid
         final Optional<FileItem> foundForUid = fileUid.stream()
@@ -166,7 +160,7 @@ public class TopicItem extends AbstractItem {
                 .flatMap(
                     x -> fileMap.entrySet().stream()
                         .filter(
-                            y -> StringUtils.isBlank(y.getValue().asMmdFileAnnotation().fileName())
+                            y -> isBlank(y.getValue().asMmdFileAnnotation().fileName())
                         )
                         .filter(y -> y.getValue().getBaseName().equals(x))
                 )
@@ -191,7 +185,7 @@ public class TopicItem extends AbstractItem {
         }
       } else {
         final List<Pair<MmdFile, Element>> directFileMarks =
-            findTargetFileAnnotations(types, this.getElement());
+            findTargetFileAnnotations(typeUtils, this.getElement());
 
         final List<FileItem> fileItems =
             directFileMarks.stream()
@@ -213,7 +207,7 @@ public class TopicItem extends AbstractItem {
           throw new MultipleFileVariantsForTopicException(this, fileItems);
         } else {
           throw new MmdAnnotationProcessorException(
-              this, "There is no any defined MMD file for element");
+              this, "There is not any defined MMD file for element");
         }
       }
     } else {
@@ -228,7 +222,7 @@ public class TopicItem extends AbstractItem {
                 .findFirst()
                 .orElse(null);
       }
-      return Optional.ofNullable(found);
+      return ofNullable(found);
     }
   }
 

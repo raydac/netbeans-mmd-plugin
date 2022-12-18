@@ -39,5 +39,20 @@ import java.lang.annotation.Target;
     ElementType.TYPE_USE
 })
 public @interface MmdFileLink {
-  String uid();
+  /**
+   * UID defined through a MmdFile. <b>Defined non-empty UID has higher priority than the target attribute</b>.
+   *
+   * @return UID which should be defined in a MmdFile annotation of a project class. If empty string then undefined.
+   * @see MmdFile
+   */
+  String uid() default "";
+
+  /**
+   * Target class which should be used as path to target MmdFile annotation.
+   * <b>If provided {@link MmdFileLink#uid()} then uid has higher priority</b>.
+   *
+   * @return a project class to be used as target for search MmdFile topic
+   * @see MmdFile
+   */
+  Class<?> target() default MmdFileLink.class;
 }
