@@ -21,6 +21,7 @@ import static java.util.Objects.requireNonNull;
 import static javax.tools.Diagnostic.Kind.ERROR;
 import static javax.tools.Diagnostic.Kind.NOTE;
 import static javax.tools.Diagnostic.Kind.WARNING;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import com.igormaznitsa.mindmap.annotations.MmdFile;
 import com.igormaznitsa.mindmap.annotations.MmdFileRef;
@@ -29,6 +30,7 @@ import com.igormaznitsa.mindmap.annotations.MmdTopic;
 import com.igormaznitsa.mindmap.annotations.processor.builder.AnnotationUtils;
 import com.igormaznitsa.mindmap.annotations.processor.builder.AnnotationUtils.UriLine;
 import com.igormaznitsa.mindmap.annotations.processor.builder.MmdFileBuilder;
+import com.igormaznitsa.mindmap.annotations.processor.builder.exceptions.MmdElementException;
 import com.sun.source.util.SourcePositions;
 import com.sun.source.util.Trees;
 import java.io.File;
@@ -51,6 +53,7 @@ import javax.annotation.processing.SupportedOptions;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.util.Types;
 import org.apache.commons.io.FilenameUtils;
 
@@ -221,6 +224,19 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
             final UriLine position =
                 AnnotationUtils.findPosition(this.sourcePositions, this.trees, element);
 
+            if (annotationClass == MmdFileRef.class) {
+              Arrays.stream(annotationInstances)
+                  .map(ref -> (MmdFileRef) ref)
+                  .forEach(ref -> {
+                    try {
+                      assertValidMmdFileRef(element, ref);
+                    } catch (final MmdElementException ex) {
+                      this.messager.printMessage(
+                          ERROR, ex.getMessage(), ex.getSource());
+                    }
+                  });
+            }
+
             if (annotationClass == MmdFiles.class) {
               Arrays.stream(annotationInstances)
                   .map(x -> (MmdFiles) x)
@@ -236,7 +252,9 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
                       instance -> foundAnnotationList.add(
                           new MmdAnnotationWrapper(
                               element, instance, new File(position.getUri()).toPath(),
-                              position.getLine(), startPosition)));
+                              position.getLine(), startPosition)
+                      )
+                  );
             }
           });
     }
@@ -277,6 +295,26 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
     }
 
     return true;
+  }
+
+  private void assertValidMmdFileRef(final Element element, final MmdFileRef fileRef)
+      throws MmdElementException {
+    if (isBlank(fileRef.uid())) {
+      try {
+        requireNonNull(fileRef.target());
+        throw new MmdElementException(
+            "Internal error! Unexpectedly can't get exception for access to type mirror! Contact developer!",
+            element);
+      } catch (final MirroredTypeException ex) {
+        final TypeElement typeElement = (TypeElement) types.asElement(ex.getTypeMirror());
+        if (MmdFileRef.class.getCanonicalName().equals(typeElement.getQualifiedName().toString())) {
+          throw new MmdElementException(
+              String.format(
+                  "Found element marked by %s annotation contains only default values for attributes",
+                  MmdFileRef.class.getSimpleName()), element);
+        }
+      }
+    }
   }
 
 }
