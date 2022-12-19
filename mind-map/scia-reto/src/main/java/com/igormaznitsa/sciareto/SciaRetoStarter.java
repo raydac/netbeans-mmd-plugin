@@ -45,6 +45,8 @@ import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMaterialDarker
 import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMaterialDeepOceanContrastIJTheme;
 import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMaterialPalenightIJTheme;
 import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatSolarizedLightIJTheme;
+import com.formdev.flatlaf.themes.FlatMacDarkLaf;
+import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import com.igormaznitsa.commons.version.Version;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.Assertions;
@@ -439,6 +441,11 @@ public class SciaRetoStarter {
   }
 
   private static void registerExtraLF() {
+    if (SystemUtils.isMac()) {
+      FlatMacLightLaf.installLafInfo();
+      FlatMacDarkLaf.installLafInfo();
+    }
+
     FlatLightLaf.installLafInfo();
     FlatDarculaLaf.installLafInfo();
 
