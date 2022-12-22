@@ -440,6 +440,7 @@
                   <jar>scia-reto.jar</jar>
                   <jre>
                     <minVersion>9</minVersion>
+                    <path>%VAR%</path>
                     <opts>
                       <opt>-Xmx2G</opt>
                     </opts>
