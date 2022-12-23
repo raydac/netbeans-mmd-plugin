@@ -13,6 +13,9 @@ public class Klazz2 extends Klazz1 {
 
   }
 
+  @MmdTopic(title = "multi1")
+  @MmdTopic(title = "multi2")
+  @MmdTopic(title = "multi3")
   private void someMethod2(@MmdTopic int a, @MmdTopic int b) {
 
   }
