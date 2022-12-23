@@ -580,6 +580,20 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
     }
   }
 
+  /**
+   * Sort child topics by provided comparator.
+   *
+   * @param topicComparator comparator to be used for sort, must not be null.
+   * @param sortChildren    flag if true then child elements also must be sorted
+   * @since 1.6.0
+   */
+  public void sortChildren(final Comparator<Topic> topicComparator, final boolean sortChildren) {
+    this.children.sort(topicComparator);
+    if (sortChildren) {
+      this.children.forEach(x -> x.sortChildren(topicComparator, true));
+    }
+  }
+
   @Override
   public int hashCode() {
     return (int) ((this.localUID >>> 32) ^ (this.localUID & 0xFFFFFFFFL));
