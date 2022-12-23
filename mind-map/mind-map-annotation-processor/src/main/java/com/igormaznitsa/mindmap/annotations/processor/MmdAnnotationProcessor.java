@@ -27,6 +27,7 @@ import com.igormaznitsa.mindmap.annotations.MmdFile;
 import com.igormaznitsa.mindmap.annotations.MmdFileRef;
 import com.igormaznitsa.mindmap.annotations.MmdFiles;
 import com.igormaznitsa.mindmap.annotations.MmdTopic;
+import com.igormaznitsa.mindmap.annotations.MmdTopics;
 import com.igormaznitsa.mindmap.annotations.processor.builder.AnnotationUtils;
 import com.igormaznitsa.mindmap.annotations.processor.builder.AnnotationUtils.UriLine;
 import com.igormaznitsa.mindmap.annotations.processor.builder.MmdFileBuilder;
@@ -97,6 +98,7 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
   private static final Map<String, Class<? extends Annotation>> ANNOTATIONS =
       Map.of(
           MmdTopic.class.getName(), MmdTopic.class,
+          MmdTopics.class.getName(), MmdTopics.class,
           MmdFiles.class.getName(), MmdFiles.class,
           MmdFile.class.getName(), MmdFile.class,
           MmdFileRef.class.getName(), MmdFileRef.class);
@@ -235,9 +237,16 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
                           ERROR, ex.getMessage(), ex.getSource());
                     }
                   });
-            }
-
-            if (annotationClass == MmdFiles.class) {
+            } else if (annotationClass == MmdTopics.class) {
+              Arrays.stream(annotationInstances)
+                  .map(x -> (MmdTopics) x)
+                  .flatMap(x -> Stream.of(x.value()))
+                  .forEach(
+                      file -> foundAnnotationList.add(
+                          new MmdAnnotationWrapper(
+                              element, file, new File(position.getUri()).toPath(),
+                              position.getLine(), startPosition)));
+            } else if (annotationClass == MmdFiles.class) {
               Arrays.stream(annotationInstances)
                   .map(x -> (MmdFiles) x)
                   .flatMap(x -> Stream.of(x.value()))

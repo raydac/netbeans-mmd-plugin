@@ -38,7 +38,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -179,9 +178,6 @@ public class FileItem extends AbstractItem {
       final boolean dryStart)
       throws IOException, MmdAnnotationProcessorException {
 
-    this.layoutBlocks.sort(Comparator.comparing(InternalLayoutBlock::asTextWithoutControl)
-        .thenComparingLong(a -> a.getAnnotationItem().getStartPosition()));
-
     final Path targetFile = this.getTargetFile().normalize();
 
     final MindMap map;
@@ -222,6 +218,20 @@ public class FileItem extends AbstractItem {
     fillAttributesWithoutFileAndTopicLinks(
         map.getRoot(), this.getElement(), this.asMmdFileAnnotation().rootTopic());
     this.doTopicLayout(fileLinkBaseFolder, map, types);
+
+    final Topic root = map.getRoot();
+    if (root != null) {
+      root.sortChildren((a, b) -> {
+        int result = a.getText().compareTo(b.getText());
+        if (result == 0) {
+          final InternalLayoutBlock ba = (InternalLayoutBlock) a.getPayload();
+          final InternalLayoutBlock bb = (InternalLayoutBlock) b.getPayload();
+          result = Long.compare(ba.getAnnotationItem().getStartPosition(),
+              bb.getAnnotationItem().getStartPosition());
+        }
+        return result;
+      }, true);
+    }
 
     return map;
   }

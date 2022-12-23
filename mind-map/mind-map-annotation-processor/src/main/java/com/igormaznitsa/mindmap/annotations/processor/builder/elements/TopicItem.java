@@ -26,6 +26,7 @@ import com.igormaznitsa.mindmap.annotations.MmdFile;
 import com.igormaznitsa.mindmap.annotations.MmdFileRef;
 import com.igormaznitsa.mindmap.annotations.MmdFiles;
 import com.igormaznitsa.mindmap.annotations.MmdTopic;
+import com.igormaznitsa.mindmap.annotations.MmdTopics;
 import com.igormaznitsa.mindmap.annotations.processor.MmdAnnotationWrapper;
 import com.igormaznitsa.mindmap.annotations.processor.builder.AnnotationUtils;
 import com.igormaznitsa.mindmap.annotations.processor.builder.exceptions.MmdAnnotationProcessorException;
@@ -63,17 +64,26 @@ public class TopicItem extends AbstractItem {
       return Optional.empty();
     }
     final MmdTopic topicAnnotation = element.getAnnotation(MmdTopic.class);
+    final MmdTopics topicsAnnotation = element.getAnnotation(MmdTopics.class);
     if (topicAnnotation != null && StringUtils.isNotBlank(topicAnnotation.fileUid())) {
       return Optional.of(topicAnnotation.fileUid());
-    } else {
-      final List<Pair<MmdFileRef, Element>> foundMmdFileRefs =
-          findFirstWithAncestors(element, MmdFileRef.class, typeUtils, true);
-      if (foundMmdFileRefs.isEmpty()) {
-        return findFileUidAmongParentTopics(typeUtils, element.getEnclosingElement());
-      } else {
-        final MmdFileRef fileLink = foundMmdFileRefs.get(0).getKey();
-        return ofNullable(isBlank(fileLink.uid()) ? null : fileLink.uid());
+    }
+
+    if (topicsAnnotation != null) {
+      final Optional<MmdTopic> topic = Stream.of(topicsAnnotation.value())
+          .filter(x -> StringUtils.isNotBlank(x.fileUid()))
+          .findFirst();
+      if (topic.isPresent()) {
+        return Optional.of(topic.get().fileUid());
       }
+    }
+    final List<Pair<MmdFileRef, Element>> foundMmdFileRefs =
+        findFirstWithAncestors(element, MmdFileRef.class, typeUtils, true);
+    if (foundMmdFileRefs.isEmpty()) {
+      return findFileUidAmongParentTopics(typeUtils, element.getEnclosingElement());
+    } else {
+      final MmdFileRef fileLink = foundMmdFileRefs.get(0).getKey();
+      return ofNullable(isBlank(fileLink.uid()) ? null : fileLink.uid());
     }
   }
 
