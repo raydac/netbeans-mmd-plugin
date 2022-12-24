@@ -12,10 +12,11 @@
     ]]></description>
 
     <change-notes><![CDATA[
-        <p>1.6.0 (SNAPSHOT)</p>
+        <p>1.6.0 (25-dec-2022)</p>
         <ul>
           <li>improved SVG exporter to prevent image duplication</li>
-          <li>refactoring of base components and internal API</li>
+          <li>minor refactoring</li>
+          <li>deep refactoring of base components and internal API</li>
         </ul>
         <p>1.5.2 (11-sep-2022)</p>
         <ul>

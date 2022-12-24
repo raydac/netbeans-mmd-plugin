@@ -1,7 +1,7 @@
-__1.6.0 (SNAPSHOT)__
+__1.6.0 (25-dec-2022)__
 
 - ALL: improved SVG exporter to prevent image duplication
-- SR:  updated PlantUML to 1.2022.13
+- SR:  updated PlantUML to 1.2022.14
 - SR:  embedded JDK updated to 19.0.1+11
 - SR:  added support of SVG images in viewer
 - ALL: rework Base64, now JDK API in use

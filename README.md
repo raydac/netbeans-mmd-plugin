@@ -15,9 +15,9 @@ Initially I developed plugin for NetBeans IDE but because in companies, where I 
 
 # Changelog
 
-__1.6.0 (SNAPSHOT)__
+__1.6.0 (25-dec-2022)__
 - ALL: improved SVG exporter to prevent image duplication
-- SR:  updated PlantUML to 1.2022.13
+- SR:  updated PlantUML to 1.2022.14
 - SR:  embedded JDK updated to 19.0.1+11
 - SR:  added support of SVG images in viewer
 - ALL: rework Base64, now JDK API in use
@@ -29,16 +29,6 @@ __1.5.2 (11-sep-2022)__
 - SR:  updated PlantUML to 1.2022.7
 - ALL: fixed use Insert key as shortcut #100
 - SR:  embedded JDK version updated to 17.0.4.1+1
-
-__1.5.1 (15-apr-2022)__
-
-- ALL: fixed wrong decimal separator in SVG exporter #95
-- IJ:  fixed save settings for key shortcut #96
-- IJ:  changed weight of KnowledgeViewPane #94
-- SR:  embedded JDK version updated to 17.0.2+9
-- ALL: added support for context menu button #90
-- SR:  updated PlantUML to 1.2022.4
-
 
 [Full changelog](https://github.com/raydac/netbeans-mmd-plugin/blob/master/changelog.txt)   
 
