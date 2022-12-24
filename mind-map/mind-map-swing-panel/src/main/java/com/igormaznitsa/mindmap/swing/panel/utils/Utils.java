@@ -212,7 +212,7 @@ public final class Utils {
 
     try {
       factory.setFeature("http://apache.org/xml/features/validation/schema", false);
-      factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false);
+      factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
       factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
       factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
       factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
