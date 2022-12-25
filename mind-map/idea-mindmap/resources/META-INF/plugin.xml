@@ -2,7 +2,7 @@
 <idea-plugin version="2">
     <id>nb-mind-map-idea</id>
     <name>IDEA Mind Map</name>
-    <version>1.6.0.1</version>
+    <version>1.6.0.2</version>
     <vendor url="https://www.igormaznitsa.com">Igor Maznitsa</vendor>
 
     <category>Knowledge management</category>
@@ -12,8 +12,9 @@
     ]]></description>
 
     <change-notes><![CDATA[
-        <p>1.6.0 (25-dec-2022)</p>
+        <p>1.6.0.2 (25-dec-2022)</p>
         <ul>
+          <li>improved compatibility with new Intellij API</li>
           <li>improved SVG exporter to prevent image duplication</li>
           <li>minor refactoring</li>
           <li>deep refactoring of base components and internal API</li>
