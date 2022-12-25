@@ -36,7 +36,6 @@ import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
@@ -137,8 +136,29 @@ public final class IdeaUtils {
   }
 
   @Nullable
+  private static VirtualFile findModuleRoot(@Nullable final Module module) {
+    if (module == null) {
+      return null;
+    }
+    try {
+      final Class<?> projectUtil = Class.forName("com.intellij.openapi.project.ProjectUtil");
+      return (VirtualFile) projectUtil.getMethod("guessModuleDir", Module.class)
+          .invoke(null, module);
+    } catch (Exception ex) {
+      try {
+        return (VirtualFile) Module.class.getMethod("getModuleFile").invoke(module);
+      } catch (Exception exx) {
+        LOGGER.error(
+            "Can't get module folder for API calls: ProjectUtils returns " + ex.getMessage() +
+                ", Module returns " + exx.getMessage(), ex);
+        return null;
+      }
+    }
+  }
+
+  @Nullable
   public static VirtualFile findPotentialRootFolderForModule(@Nullable final Module module) {
-    VirtualFile moduleRoot = module == null ? null : module.getModuleFile();
+    VirtualFile moduleRoot = module == null ? null : findModuleRoot(module);
     if (moduleRoot != null) {
       moduleRoot = moduleRoot.isDirectory() ? moduleRoot : moduleRoot.getParent();
       if (moduleRoot.getName().equals(".idea")) {
