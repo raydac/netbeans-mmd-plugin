@@ -51,6 +51,7 @@ import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedOptions;
+import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
@@ -114,7 +115,7 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
 
   @Override
   public SourceVersion getSupportedSourceVersion() {
-    return SourceVersion.RELEASE_8;
+    return SourceVersion.latest();
   }
 
   @Override
