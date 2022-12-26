@@ -22,6 +22,7 @@ __1.6.0 (25-dec-2022)__
 - SR:  added support of SVG images in viewer
 - ALL: rework Base64, now JDK API in use
 - ALL: __refactoring of base components, changes in plugin API__
+- ALL: [added annotation processing to generate MMD files from sources](https://github.com/raydac/netbeans-mmd-plugin/wiki/Mind-Map-annotation-processor)
 
 __1.5.2 (11-sep-2022)__
 - SR:  added way to set PlantUML security profile through preferences
