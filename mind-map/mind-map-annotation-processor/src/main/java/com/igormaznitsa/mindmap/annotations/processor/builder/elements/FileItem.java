@@ -210,7 +210,7 @@ public class FileItem extends AbstractItem {
     final MindMap map = new MindMap(true);
     map.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_SHOW_JUMPS, "true");
     map.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID,
-        "com.igormaznitsa:mind-map-annotation-processor:1.6.0");
+        "com.igormaznitsa:mind-map-annotation-processor:1.6.1");
     if (fileLinkBaseFolder == null) {
       map.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_NO_BASE_FOLDER, "true");
     }
