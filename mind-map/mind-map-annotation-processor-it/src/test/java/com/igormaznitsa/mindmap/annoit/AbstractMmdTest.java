@@ -7,6 +7,7 @@ import static com.igormaznitsa.mindmap.model.StandardTopicAttributes.MMD_TOPIC_A
 import static com.igormaznitsa.mindmap.model.StandardTopicAttributes.MMD_TOPIC_ATTRIBUTE_EMOTICON;
 import static com.igormaznitsa.mindmap.model.StandardTopicAttributes.MMD_TOPIC_ATTRIBUTE_LINK_UID;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Objects.requireNonNull;
 import static org.apache.commons.io.FileUtils.readFileToString;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -55,7 +56,7 @@ public abstract class AbstractMmdTest {
       }
       assertNotNull("Can't find for path: " + Arrays.toString(path), topic);
     }
-    return topic;
+    return requireNonNull(topic);
   }
 
   protected static void assertTopicPath(final Topic topic, final String... path) {
