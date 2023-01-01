@@ -8,7 +8,7 @@ public class Class2 extends Class1 {
 
   }
 
-  @MmdTopic(path = "$ROOT$")
+  @MmdTopic(path = RootFile.ROOT_ID)
   public void Class3Method() {
 
   }

@@ -26,12 +26,12 @@ public class Class1 {
 
   }
 
-  @MmdTopic(path = "$ROOT$")
+  @MmdTopic(path = RootFile.ROOT_ID)
   public void classABC1() {
 
   }
 
-  @MmdTopic(path = "$ROOT$")
+  @MmdTopic(path = RootFile.ROOT_ID)
   public void classABC2() {
 
   }
