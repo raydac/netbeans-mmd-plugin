@@ -2,6 +2,7 @@ package com.igormaznitsa.mindmap.annoit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.MindMap;
@@ -28,6 +29,11 @@ public class PathTest extends AbstractMmdTest {
     final Topic pathTopic = findForPath(map, "root", "path");
     assertEquals(1, pathTopic.getChildren().size());
     assertNotNull(pathTopic.getChildren().get(0).getExtras().get(Extra.ExtraType.FILE));
+
+    final Topic gooseTopic = findForPath(map, "root", "goose");
+    assertEquals(4, gooseTopic.getChildren().size());
+    assertTrue(gooseTopic.getChildren().stream()
+        .allMatch(x -> x.getExtras().get(Extra.ExtraType.FILE) != null));
   }
 
 }
