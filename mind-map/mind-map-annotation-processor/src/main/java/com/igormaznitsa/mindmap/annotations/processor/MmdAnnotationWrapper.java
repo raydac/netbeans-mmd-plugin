@@ -98,6 +98,7 @@ public class MmdAnnotationWrapper {
       final MmdAnnotationWrapper thatInstance = (MmdAnnotationWrapper) that;
       return this.annotation.equals(thatInstance.annotation)
           && this.line == thatInstance.line
+          && this.startPositionInsideFile == thatInstance.startPositionInsideFile
           && this.path.equals(thatInstance.path);
     }
     return false;

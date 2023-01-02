@@ -42,6 +42,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -277,8 +278,7 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
               foundAnnotationList.size()));
 
       foundAnnotationList.sort(
-          (o1, o2) ->
-              o1.getElement().getSimpleName().toString().compareTo(o2.getElement().toString()));
+          Comparator.comparing(o -> o.getElement().getSimpleName().toString()));
 
       final MmdFileBuilder fileBuilder = MmdFileBuilder.builder()
           .setMessager(this.messager)
