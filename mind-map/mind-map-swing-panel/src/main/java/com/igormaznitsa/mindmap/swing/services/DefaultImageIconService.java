@@ -45,6 +45,7 @@ public class DefaultImageIconService implements ImageIconService {
     MAP.put(IconID.POPUP_EXPORT_MINDMUP, loadIcon("mup16.png"));
     MAP.put(IconID.POPUP_EXPORT_PNG, loadIcon("png16.png"));
     MAP.put(IconID.POPUP_EXPORT_TEXT, loadIcon("txt16.png"));
+    MAP.put(IconID.POPUP_EXPORT_PUML, loadIcon("puml16.png"));
     MAP.put(IconID.ICON_PRINTER, loadIcon("printer16.png"));
     MAP.put(IconID.ICON_EMOTICONS, loadIcon("emoticons16.png"));
     MAP.put(IconID.ICON_IMAGES, loadIcon("pictures16.png"));

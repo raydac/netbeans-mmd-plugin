@@ -373,7 +373,7 @@ public class SVGImageExporter extends AbstractExporter {
 
   @Override
   public int getOrder() {
-    return 5;
+    return 6;
   }
 
   private static final class EmbeddedFont {

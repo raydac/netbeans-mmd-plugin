@@ -16,18 +16,22 @@
 
 package com.igormaznitsa.mindmap.swing.panel.ui;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 public enum TextAlign {
   LEFT, RIGHT, CENTER;
+
+  public static final List<TextAlign> VALUES = Collections.unmodifiableList(Arrays.asList(TextAlign.values()));
 
   public static TextAlign findForName(final String text) {
     if (text == null) {
       return CENTER;
     }
-    for (final TextAlign t : values()) {
-      if (t.name().equalsIgnoreCase(text)) {
-        return t;
-      }
-    }
-    return CENTER;
+    return VALUES.stream()
+        .filter(x -> x.name().equalsIgnoreCase(text))
+        .findFirst()
+        .orElse(CENTER);
   }
 }

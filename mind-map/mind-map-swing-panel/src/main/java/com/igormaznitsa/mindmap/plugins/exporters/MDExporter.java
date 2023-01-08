@@ -298,7 +298,7 @@ public class MDExporter extends AbstractExporter {
 
   @Override
   public int getOrder() {
-    return 3;
+    return 4;
   }
 
   private static class State {

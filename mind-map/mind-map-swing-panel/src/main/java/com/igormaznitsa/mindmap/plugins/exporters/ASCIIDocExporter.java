@@ -212,7 +212,7 @@ public class ASCIIDocExporter extends AbstractExporter {
 
   @Override
   public int getOrder() {
-    return 8;
+    return 9;
   }
 
   private static class State {

@@ -288,7 +288,7 @@ public class TextExporter extends AbstractExporter {
 
   @Override
   public int getOrder() {
-    return 6;
+    return 7;
   }
 
   private static class State {

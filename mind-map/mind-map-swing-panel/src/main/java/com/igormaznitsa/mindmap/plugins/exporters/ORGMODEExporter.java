@@ -380,7 +380,7 @@ public class ORGMODEExporter extends AbstractExporter {
 
   @Override
   public int getOrder() {
-    return 7;
+    return 8;
   }
 
   private static final class State {

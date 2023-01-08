@@ -34,6 +34,7 @@ import com.igormaznitsa.mindmap.plugins.exporters.MDExporter;
 import com.igormaznitsa.mindmap.plugins.exporters.MindmupExporter;
 import com.igormaznitsa.mindmap.plugins.exporters.ORGMODEExporter;
 import com.igormaznitsa.mindmap.plugins.exporters.PNGImageExporter;
+import com.igormaznitsa.mindmap.plugins.exporters.PUMLExporter;
 import com.igormaznitsa.mindmap.plugins.exporters.SVGImageExporter;
 import com.igormaznitsa.mindmap.plugins.exporters.TextExporter;
 import com.igormaznitsa.mindmap.plugins.importers.CoggleMM2MindMapImporter;
@@ -82,6 +83,7 @@ public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {
     registerPlugin(new ORGMODEExporter());
     registerPlugin(new TextExporter());
     registerPlugin(new SVGImageExporter());
+    registerPlugin(new PUMLExporter());
 
     registerPlugin(new ExtraFilePlugin());
     registerPlugin(new ExtraNotePlugin());

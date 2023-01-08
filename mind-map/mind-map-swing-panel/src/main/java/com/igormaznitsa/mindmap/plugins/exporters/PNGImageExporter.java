@@ -244,6 +244,6 @@ public final class PNGImageExporter extends AbstractExporter {
 
   @Override
   public int getOrder() {
-    return 4;
+    return 5;
   }
 }
