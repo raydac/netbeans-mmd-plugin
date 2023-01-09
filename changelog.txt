@@ -1,3 +1,7 @@
+__1.6.1 (SNAPSHOT)__
+- ALL: added export into PlantUML mind map
+- SR:  PlantUML updated to 1.2023.0
+
 __1.6.0 (25-dec-2022)__
 
 - ALL: improved SVG exporter to prevent image duplication
