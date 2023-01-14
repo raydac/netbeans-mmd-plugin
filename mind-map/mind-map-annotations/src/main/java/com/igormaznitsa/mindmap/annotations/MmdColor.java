@@ -610,6 +610,12 @@ public enum MmdColor {
     this.htmlColor = '#' + hexColor;
   }
 
+  /**
+   * Find value for value in html color format, '#RRGGBB'
+   *
+   * @param htmlColor html color value, can be null
+   * @return found value or {@link #Default} if not found
+   */
   public static MmdColor findForHtmlColor(final String htmlColor) {
     if (htmlColor == null || htmlColor.isEmpty()) {
       return Default;
@@ -622,10 +628,20 @@ public enum MmdColor {
     throw new NoSuchElementException("There is no color enum value for " + htmlColor);
   }
 
+  /**
+   * Get ARGB value in format AARRGGBB.
+   *
+   * @return value of argb color
+   */
   public int getArgb() {
     return this.argb;
   }
 
+  /**
+   * Get HTML color in format #RRGGBB
+   *
+   * @return value in html color format
+   */
   public String getHtmlColor() {
     return this.htmlColor;
   }

@@ -55,7 +55,7 @@ public final class MiscUtils {
         throw new NullPointerException("Unexpected null element at " + i + " index");
       }
     }
-    return objects;
+    return (T[]) objects;
   }
 
 }
