@@ -1155,7 +1155,9 @@ public enum MmdEmoticon {
    */
   SCRIPT("script"),
   /**
-   * Icon 'certificate'
+   * Icon 'certificate', it has typo in ID as 'sertificate' but it kept for back compatibility
+   *
+   * @since 1.6.1
    */
   CERTIFICATE("sertificate"),
   /**
@@ -1661,6 +1663,11 @@ public enum MmdEmoticon {
     this.id = id;
   }
 
+  /**
+   * Get ID as string value.
+   *
+   * @return id as string name
+   */
   public String getId() {
     return this.id;
   }
