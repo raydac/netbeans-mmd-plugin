@@ -15,8 +15,10 @@ Initially I developed plugin for NetBeans IDE but because in companies, where I 
 
 # Changelog
 
-__1.6.1 (SNAPSHOT)__
-- ALL: added export into PlantUML mind map
+__1.6.1 (15-jan-2023)__
+- ALL: added export into PlantUML mind map script
+- AP:  fixes in annotation processor
+- SR:  updated dependencies
 - SR:  PlantUML updated to 1.2023.0
 
 __1.6.0 (25-dec-2022)__

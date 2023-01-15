@@ -12,8 +12,9 @@
     ]]></description>
 
     <change-notes><![CDATA[
-        <p>1.6.1 (SNAPSHOT)</p>
+        <p>1.6.1 (15-jan-2023)</p>
         <ul>
+          <li>added export into PlantUML mind map script</li>
         </ul>
         <p>1.6.0.2 (25-dec-2022)</p>
         <ul>
