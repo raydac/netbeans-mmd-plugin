@@ -105,7 +105,6 @@ import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
@@ -137,7 +136,7 @@ public class SciaRetoStarter {
   public static final String APP_TITLE = "Scia Reto";
   public static final Image APP_ICON = UiUtils.loadIcon("logo256x256.png");
   public static final long UPSTART = currentTimeMillis();
-  public static final Version IDE_VERSION = new Version("sciareto", new long[] {1L, 6L, 1L}, null);
+  public static final Version IDE_VERSION = new Version("sciareto", new long[] {1L, 6L, 2L}, null);
   public static final String PROPERTY_LOOKANDFEEL = "selected.look.and.feel"; //NOI18N
   public static final String PROPERTY_SCALE_GUI = "general.gui.scale"; //NOI18N
   //NOI18N

@@ -2,7 +2,7 @@
 <idea-plugin version="2">
     <id>nb-mind-map-idea</id>
     <name>IDEA Mind Map</name>
-    <version>1.6.1</version>
+    <version>1.6.2</version>
     <vendor url="https://www.igormaznitsa.com">Igor Maznitsa</vendor>
 
     <category>Knowledge management</category>
@@ -12,6 +12,10 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <p>1.6.2 (SNAPSHOT)</p>
+        <ul>
+          <li></li>
+        </ul>
         <p>1.6.1 (15-jan-2023)</p>
         <ul>
           <li>added export into PlantUML mind map script</li>
