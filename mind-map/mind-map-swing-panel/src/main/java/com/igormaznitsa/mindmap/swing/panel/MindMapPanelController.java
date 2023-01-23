@@ -156,4 +156,14 @@ public interface MindMapPanelController {
    */
   boolean processDropTopicToAnotherTopic(MindMapPanel source, Point dropPoint, Topic draggedTopic,
                                          Topic destinationTopic);
+
+  /**
+   * Is Bird's eye view allowed for mind map view.
+   *
+   * @return true if it is allowed, false otherwise
+   * @since 1.6.2
+   */
+  default boolean isBirdsEyeAllowed() {
+    return false;
+  }
 }

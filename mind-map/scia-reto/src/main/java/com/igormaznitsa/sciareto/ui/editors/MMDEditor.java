@@ -25,6 +25,7 @@ import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_F
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_TEXT_COLOR;
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.doesContainOnlyStandardAttributes;
 import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispatchThread;
+import static javax.swing.JViewport.SIMPLE_SCROLL_MODE;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.annotation.UiThread;
@@ -157,6 +158,7 @@ public final class MMDEditor extends AbstractTextEditor
     this.mindMapPanel.addMindMapListener(this);
 
     this.scrollPane = new JScrollPane(this.mindMapPanel);
+    this.scrollPane.getViewport().setScrollMode(SIMPLE_SCROLL_MODE);
 
     this.scrollPane.getHorizontalScrollBar().setBlockIncrement(128);
     this.scrollPane.getHorizontalScrollBar().setUnitIncrement(16);
@@ -1583,5 +1585,10 @@ public final class MMDEditor extends AbstractTextEditor
   @Override
   public PluginContext makePluginContext(@Nonnull MindMapPanel source) {
     return this;
+  }
+
+  @Override
+  public boolean isBirdsEyeAllowed() {
+    return true;
   }
 }

@@ -141,6 +141,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   private final List<MindMapListener> mindMapListeners = new CopyOnWriteArrayList<>();
   private final JTextArea textEditor = UI_COMPO_FACTORY.makeTextArea();
   private final JPanel textEditorPanel = UI_COMPO_FACTORY.makePanel();
+  private boolean birdsEyeMode;
   private final List<Topic> selectedTopics = new ArrayList<>();
   private final MindMapPanelConfig config;
   private final AtomicBoolean popupMenuActive = new AtomicBoolean();
@@ -183,7 +184,9 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
         if (isDisposed()) {
           return;
         }
-        if (!e.isConsumed()) {
+        if (birdsEyeMode) {
+          e.consume();
+        } else if (!e.isConsumed()) {
           switch (e.getKeyCode()) {
             case KeyEvent.VK_ENTER: {
               e.consume();
@@ -538,6 +541,10 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
               }
               processPopUp(e.getPoint(), element);
               e.consume();
+            } else if (isBirdsEyeEvent(e) && elementUnderEdit == null) {
+              birdsEyeMode = true;
+              e.consume();
+              repaint();
             } else {
               if (elementUnderEdit != null) {
                 endEdit(!(textEditor.getText().isEmpty() && removeEditedTopicForRollback.get()));
@@ -560,6 +567,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
             return;
           }
           try {
+            birdsEyeMode = false;
             if (draggedElement != null) {
               draggedElement.updatePosition(e.getPoint());
               if (endDragOfElement(draggedElement, destinationElement)) {
@@ -633,7 +641,12 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
           }
           scrollRectToVisible(new Rectangle(e.getX(), e.getY(), 1, 1));
 
-          if (!popupMenuActive.get()) {
+          if (birdsEyeMode) {
+            processMouseEventInBirdsEyeMode(e);
+            e.consume();
+          } else if (popupMenuActive.get()) {
+            mouseDragSelection = null;
+          } else {
             if (draggedElement == null && mouseDragSelection == null) {
               final AbstractElement elementUnderMouse = findTopicUnderPoint(e.getPoint());
               if (elementUnderMouse == null) {
@@ -679,8 +692,6 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
               }
               repaint();
             }
-          } else {
-            mouseDragSelection = null;
           }
         }
       }
@@ -1260,6 +1271,11 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
 
   public UUID getUuid() {
     return this.uuid;
+  }
+
+  private void processMouseEventInBirdsEyeMode(final MouseEvent mouseEvent) {
+    this.findBirdEyeVisualizer()
+        .onPanelMouseDragging(this, mouseEvent, r -> this.scrollRectToVisible(r.getBounds()));
   }
 
   private void selectSiblingDiapason(final AbstractElement element) {
@@ -2403,6 +2419,10 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
     }
   }
 
+  protected BirdsEyeVisualizer findBirdEyeVisualizer() {
+    return new EmbeddedBirdsEye(this);
+  }
+
   @Override
   public void paintComponent(final Graphics g) {
     assertNotDisposed();
@@ -2430,6 +2450,10 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
       } else if (this.mouseDragSelection != null) {
         gfx.setColor(COLOR_MOUSE_DRAG_SELECTION);
         gfx.fill(this.mouseDragSelection.asRectangle());
+      }
+
+      if (this.birdsEyeMode) {
+        this.findBirdEyeVisualizer().draw(this, gfx);
       }
     } finally {
       gfx.dispose();
@@ -2778,6 +2802,12 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
       NONE,
       MAKE_JUMP
     }
+  }
+
+  public boolean isBirdsEyeEvent(final MouseEvent mouseEvent) {
+    return mouseEvent != null
+        && this.controller.isBirdsEyeAllowed()
+        && mouseEvent.getButton() == MouseEvent.BUTTON2;
   }
 
 }
