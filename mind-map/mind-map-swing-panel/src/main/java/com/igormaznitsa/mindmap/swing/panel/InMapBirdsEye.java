@@ -28,13 +28,13 @@ import java.awt.geom.Rectangle2D;
 import java.util.function.Consumer;
 import javax.swing.JViewport;
 
-public class EmbeddedBirdsEye implements BirdsEyeVisualizer {
+public class InMapBirdsEye implements BirdsEyeVisualizer {
   private final Rectangle2D page;
   private final Rectangle2D view;
   private final double scale;
   private final MindMapPanel panel;
 
-  public EmbeddedBirdsEye(final MindMapPanel panel) {
+  public InMapBirdsEye(final MindMapPanel panel) {
     this.panel = panel;
 
     final Rectangle viewRectangle;
@@ -71,21 +71,22 @@ public class EmbeddedBirdsEye implements BirdsEyeVisualizer {
 
     final Color back = this.panel.getConfiguration().getPaperColor();
 
-    final Color backColor =
+    final Color backInverseColor =
         new Color(back.getRed() ^ 0xFF, back.getGreen() ^ 0xFF, back.getBlue() ^ 0xFF, 128);
-    final Color backColorDarker = backColor.darker().darker().darker();
+
+    final Color borderColor = this.panel.getConfiguration().getElementBorderColor();
 
     panelGraphics.setStroke(new BasicStroke(1.0f));
-    panelGraphics.setColor(backColor);
+    panelGraphics.setColor(backInverseColor);
     panelGraphics.fill(page);
 
-    panelGraphics.setColor(backColorDarker);
+    panelGraphics.setColor(borderColor);
 
     this.drawTopicsTree(this.panel.getModel().getRoot(), panelGraphics);
 
-    panelGraphics.setColor(backColor);
+    panelGraphics.setColor(backInverseColor);
     panelGraphics.fill(view);
-    panelGraphics.setColor(backColorDarker);
+    panelGraphics.setColor(borderColor);
     panelGraphics.draw(view);
   }
 

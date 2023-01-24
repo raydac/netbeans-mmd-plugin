@@ -2420,7 +2420,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   }
 
   protected BirdsEyeVisualizer findBirdEyeVisualizer() {
-    return new EmbeddedBirdsEye(this);
+    return new InMapBirdsEye(this);
   }
 
   @Override
@@ -2805,8 +2805,9 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   }
 
   public boolean isBirdsEyeEvent(final MouseEvent mouseEvent) {
-    return mouseEvent != null
-        && this.controller.isBirdsEyeAllowed()
+    return this.controller.isBirdsEyeAllowed()
+        && this.model != null
+        && mouseEvent != null
         && mouseEvent.getButton() == MouseEvent.BUTTON2;
   }
 
