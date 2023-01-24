@@ -277,6 +277,7 @@ public final class MMDGraphEditor extends CloneableEditor
     this.editorSupport = support;
 
     this.mainScrollPane = UI_COMPO_FACTORY.makeScrollPane();
+    this.mainScrollPane.getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
 
     this.mindMapPanel = new MindMapPanel(this);
     this.mindMapPanel.addMindMapListener(this);
@@ -1864,5 +1865,10 @@ public final class MMDGraphEditor extends CloneableEditor
   public boolean canTopicBeDeleted(@Nonnull MindMapPanel source, @Nonnull Topic topic) {
     return topic.getText().isEmpty() && topic.getExtras().isEmpty() &&
         doesContainOnlyStandardAttributes(topic);
+  }
+
+  @Override
+  public boolean isBirdsEyeAllowed() {
+    return true;
   }
 }

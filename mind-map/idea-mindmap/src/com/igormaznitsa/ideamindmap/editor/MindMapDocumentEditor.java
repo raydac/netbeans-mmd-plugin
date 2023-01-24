@@ -160,6 +160,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
 
     this.mindMapPanel.addMindMapListener(this);
     this.mainScrollPane = new JBScrollPane(this.mindMapPanel, JBScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JBScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED); // NB! JBScrollPane sometime doesn't show scrollbars so that it replaced by swing panel
+    this.mainScrollPane.getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
 
     this.mainScrollPane.getVerticalScrollBar().setUnitIncrement(16);
     this.mainScrollPane.getVerticalScrollBar().setBlockIncrement(128);

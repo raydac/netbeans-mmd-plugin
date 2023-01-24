@@ -94,6 +94,11 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
     return this.dialogProvider;
   }
 
+  @Override
+  public boolean isBirdsEyeAllowed() {
+    return true;
+  }
+
   @Nullable
   @Override
   public File getMindMapFile() {
