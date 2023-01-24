@@ -1868,7 +1868,7 @@ public final class MMDGraphEditor extends CloneableEditor
   }
 
   @Override
-  public boolean isBirdsEyeAllowed() {
+  public boolean isBirdsEyeAllowed(@Nonnull MindMapPanel source) {
     return true;
   }
 }

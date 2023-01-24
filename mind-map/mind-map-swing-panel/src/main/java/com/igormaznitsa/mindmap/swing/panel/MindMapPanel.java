@@ -76,6 +76,8 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -755,7 +757,8 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
         if (!birdsEyeMode) {
           if (!e.isConsumed() && !popupMenuActive.get()) {
             requestFocus();
-            if (!controller.isMouseClickProcessingAllowed(MindMapPanel.this)) {
+            if (!controller.isMouseClickProcessingAllowed(MindMapPanel.this)
+              || (controller.isBirdsEyeAllowed(MindMapPanel.this) && MindMapPanel.this.isBirdsEyeCombination(e))) {
               return;
             }
             mouseDragSelection = null;
@@ -868,6 +871,16 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
       for (final PanelAwarePlugin p : MindMapPluginRegistry.getInstance()
           .findFor(PanelAwarePlugin.class)) {
         p.onPanelCreate(MindMapPanel.this);
+      }
+    });
+
+    this.addFocusListener(new FocusAdapter() {
+      @Override
+      public void focusLost(final FocusEvent e) {
+        if (MindMapPanel.this.birdsEyeMode) {
+          MindMapPanel.this.birdsEyeMode = false;
+          MindMapPanel.this.repaint();
+        }
       }
     });
   }
@@ -2816,7 +2829,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   }
 
   private boolean isBirdsEyeCombination(final MouseEvent mouseEvent) {
-    return this.controller.isBirdsEyeAllowed()
+    return this.controller.isBirdsEyeAllowed(this)
         && this.model != null
         && mouseEvent != null
         && this.isBirdsEyeModeMouseButton(mouseEvent);

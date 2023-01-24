@@ -160,10 +160,11 @@ public interface MindMapPanelController {
   /**
    * Is Bird's eye view allowed for mind map view.
    *
+   * @param source source mind map panel must not be null
    * @return true if it is allowed, false otherwise
    * @since 1.6.2
    */
-  default boolean isBirdsEyeAllowed() {
+  default boolean isBirdsEyeAllowed(MindMapPanel source) {
     return false;
   }
 }

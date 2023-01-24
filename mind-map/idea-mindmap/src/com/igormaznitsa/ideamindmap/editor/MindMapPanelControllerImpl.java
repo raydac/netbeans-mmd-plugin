@@ -95,7 +95,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
   }
 
   @Override
-  public boolean isBirdsEyeAllowed() {
+  public boolean isBirdsEyeAllowed(@Nonnull MindMapPanel source) {
     return true;
   }
 
