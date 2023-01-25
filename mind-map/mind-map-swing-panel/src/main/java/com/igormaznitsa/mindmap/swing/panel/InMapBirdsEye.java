@@ -69,31 +69,40 @@ public class InMapBirdsEye implements BirdsEyeVisualizer {
   public void draw(final MindMapPanel panel, final Graphics2D panelGraphics) {
     panelGraphics.setColor(Color.WHITE);
 
-    final Color back = this.panel.getConfiguration().getPaperColor();
+    final Color back = this.panel.getConfiguration().getBirdseyeBackground();
 
-    final Color backInverseColor =
-        new Color(back.getRed() ^ 0xFF, back.getGreen() ^ 0xFF, back.getBlue() ^ 0xFF, 128);
-
-    final Color borderColor = this.panel.getConfiguration().getElementBorderColor();
+    final Color front = this.panel.getConfiguration().getBirdseyeFront();
 
     panelGraphics.setStroke(new BasicStroke(1.0f));
-    panelGraphics.setColor(backInverseColor);
+
+    if (this.panel.getConfiguration().isDropShadow()) {
+      panelGraphics.setColor(this.panel.getConfiguration().getShadowColor());
+      panelGraphics.fill(
+          new Rectangle2D.Double(this.page.getX() + 16, this.page.getY() + 16, this.page.getWidth(),
+              this.page.getHeight()));
+    }
+
+    panelGraphics.setColor(back);
     panelGraphics.fill(page);
 
-    panelGraphics.setColor(borderColor);
+    panelGraphics.setColor(front);
 
     this.drawTopicsTree(this.panel.getModel().getRoot(), panelGraphics);
 
-    panelGraphics.setColor(backInverseColor);
+    panelGraphics.setColor(back);
     panelGraphics.fill(view);
-    panelGraphics.setColor(borderColor);
+    panelGraphics.setColor(front);
     panelGraphics.draw(view);
+  }
+
+  private boolean isMouseOverPageThumbnail(final MouseEvent mouseEvent) {
+    return this.page.contains(mouseEvent.getX(), mouseEvent.getY());
   }
 
   @Override
   public void onPanelMouseDragging(final MindMapPanel panel, final MouseEvent mouseEvent,
                                    final Consumer<Rectangle2D> calculatedRectangleConsumer) {
-    if (calculatedRectangleConsumer != null) {
+    if (calculatedRectangleConsumer != null && this.isMouseOverPageThumbnail(mouseEvent)) {
       double dx = Math.max(0.0d, (mouseEvent.getX() - this.page.getX()) - this.view.getWidth() / 2);
       double dy =
           Math.max(0.0d, (mouseEvent.getY() - this.page.getY()) - this.view.getHeight() / 2);

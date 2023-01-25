@@ -535,7 +535,11 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
           }
           if (!birdsEyeMode) {
             try {
-              if (isPopupEvent(e)) {
+              if (isBirdsEyeActivationEvent(e) && elementUnderEdit == null) {
+                birdsEyeMode = true;
+                e.consume();
+                repaint();
+              } else if (isPopupEvent(e)) {
                 mouseDragSelection = null;
                 MindMap theMap = model;
                 AbstractElement element = null;
@@ -544,10 +548,6 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
                 }
                 processPopUp(e.getPoint(), element);
                 e.consume();
-              } else if (isBirdsEyeCombination(e) && elementUnderEdit == null) {
-                birdsEyeMode = true;
-                e.consume();
-                repaint();
               } else {
                 if (elementUnderEdit != null) {
                   endEdit(!(textEditor.getText().isEmpty() && removeEditedTopicForRollback.get()));
@@ -758,7 +758,8 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
           if (!e.isConsumed() && !popupMenuActive.get()) {
             requestFocus();
             if (!controller.isMouseClickProcessingAllowed(MindMapPanel.this)
-              || (controller.isBirdsEyeAllowed(MindMapPanel.this) && MindMapPanel.this.isBirdsEyeCombination(e))) {
+                || (controller.isBirdsEyeAllowed(MindMapPanel.this) &&
+                MindMapPanel.this.isBirdsEyeActivationEvent(e))) {
               return;
             }
             mouseDragSelection = null;
@@ -2828,15 +2829,16 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
     }
   }
 
-  private boolean isBirdsEyeCombination(final MouseEvent mouseEvent) {
+  private boolean isBirdsEyeActivationEvent(final MouseEvent mouseEvent) {
     return this.controller.isBirdsEyeAllowed(this)
         && this.model != null
         && mouseEvent != null
+        && this.config.isModifiers(MindMapPanelConfig.KEY_BIRDSEYE_MODIFIERS, mouseEvent)
         && this.isBirdsEyeModeMouseButton(mouseEvent);
   }
 
   private boolean isBirdsEyeModeMouseButton(final MouseEvent mouseEvent) {
-    return mouseEvent.getButton() == MouseEvent.BUTTON2;
+    return this.config.getBirdseyeMouseButton().match(mouseEvent);
   }
 
 }

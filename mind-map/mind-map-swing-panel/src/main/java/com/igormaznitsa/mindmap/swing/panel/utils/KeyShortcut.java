@@ -16,6 +16,7 @@
 
 package com.igormaznitsa.mindmap.swing.panel.utils;
 
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.Locale;
 import javax.swing.KeyStroke;
@@ -35,6 +36,15 @@ public final class KeyShortcut {
     this.modifiers = (int) code;
   }
 
+  /**
+   * Create key shortcut only for modifiers, as fake key char will be Intgeer.MAX_VALUE.
+   * @param id identifier, must not be null
+   * @param modifiers modifiers mask
+   * @since 1.6.2
+   */
+  public KeyShortcut(final String id, final int modifiers) {
+    this(id, Integer.MAX_VALUE, modifiers);
+  }
   public KeyShortcut(final String id, final int keyCode, final int modifiers) {
     if (id.contains("*")) {
       throw new IllegalArgumentException("ID can't contain '*'");
@@ -44,7 +54,7 @@ public final class KeyShortcut {
     this.keyCode = keyCode;
   }
 
-  private static int preprocessCharKeyCode(final int modifiers, char keyChar) {
+  private static int preprocessCharKeyCode(final char keyChar) {
     final int result;
     switch (keyChar) {
       case 0xA0: {
@@ -112,16 +122,30 @@ public final class KeyShortcut {
     return this.id;
   }
 
+  /**
+   * Match only modifiers mask for input event. No any check for key code.
+   * @param event input event, can be null
+   * @return true if event id not null and modifiers mask matches.
+   * @since 1.6.2
+   */
+  public boolean matchModifiers(final InputEvent event) {
+    return event != null && (this.modifiers & event.getModifiers()) == this.modifiers;
+  }
+
   public boolean isEvent(final KeyEvent event) {
     return this.isEvent(event, ALL_MODIFIERS_MASK);
   }
 
-  public boolean isEvent(final KeyEvent event, final int modifiersPlayingRole) {
-    final int code =
-        event.getKeyCode() == 0 ? preprocessCharKeyCode(event.getModifiers(), event.getKeyChar()) :
-            event.getKeyCode();
-    return code == this.keyCode &&
-        (event.getModifiers() & modifiersPlayingRole) == (this.modifiers & modifiersPlayingRole);
+  public boolean isEvent(final KeyEvent event, final int modifiersMask) {
+    if (this.isModifiersOnly()) {
+      return (event.getModifiers() & modifiersMask) == (this.modifiers & modifiersMask);
+    } else {
+      final int code =
+          event.getKeyCode() == 0 ? preprocessCharKeyCode(event.getKeyChar()) :
+              event.getKeyCode();
+      return code == this.keyCode &&
+          (event.getModifiers() & modifiersMask) == (this.modifiers & modifiersMask);
+    }
   }
 
   @Override
@@ -147,10 +171,19 @@ public final class KeyShortcut {
     return this.id + '*' + Long.toHexString(packed).toUpperCase(Locale.ENGLISH);
   }
 
+  /**
+   * Check that the shortcut plays only for modifiers.
+   * @return true if only modifiers processed, false otherwise.
+   * @since 1.6.2
+   */
+  public boolean isModifiersOnly() {
+    return this.keyCode == Integer.MAX_VALUE;
+  }
+
   @Override
   public String toString() {
     final String modifierText = KeyEvent.getKeyModifiersText(this.modifiers);
-    final String keyText = KeyEvent.getKeyText(this.keyCode);
+    final String keyText = this.isModifiersOnly() ? "" : KeyEvent.getKeyText(this.keyCode);
 
     final StringBuilder builder = new StringBuilder(modifierText);
 
@@ -164,7 +197,7 @@ public final class KeyShortcut {
 
   public boolean doesConflictWith(final KeyStroke stroke) {
     boolean result = false;
-    if (stroke != null) {
+    if (stroke != null && !this.isModifiersOnly()) {
       result = stroke.getKeyCode() == this.keyCode &&
           (this.modifiers & stroke.getModifiers()) == this.modifiers;
     }

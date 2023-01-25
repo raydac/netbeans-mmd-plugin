@@ -50,7 +50,11 @@ public class KeyShortCutEditPanel extends javax.swing.JPanel implements TableMod
           this.shortcut = Objects.requireNonNull(shortcut);
           this.text = MmdI18n.getInstance().findBundle().getString("KeyShortcut."+shortcut.getID());
       }
-    
+
+      public boolean isModifiersOnly() {
+        return this.shortcut.isModifiersOnly();
+      }
+
       @Nonnull
       @Override
       public String toString() {
@@ -128,7 +132,12 @@ public class KeyShortCutEditPanel extends javax.swing.JPanel implements TableMod
       final KeyShortCutValue oldShortcut = this.listOfKeys.get(index);
       final int keyCode = evt.getKeyCode();
       final int modifiers = evt.getModifiers() & (KeyEvent.META_MASK | KeyEvent.SHIFT_MASK | KeyEvent.CTRL_MASK | KeyEvent.ALT_MASK);
-      final KeyShortcut newShortCut = new KeyShortcut(oldShortcut.getShortcut().getID(),keyCode,modifiers);
+      final KeyShortcut newShortCut;
+      if (oldShortcut.isModifiersOnly()) {
+        newShortCut =new KeyShortcut(oldShortcut.getShortcut().getID(), modifiers);
+      } else {
+        newShortCut =new KeyShortcut(oldShortcut.getShortcut().getID(), keyCode, modifiers);
+      }
       oldShortcut.setShortcut(newShortCut);
       for(final TableModelListener l:this.listeners){
         l.tableChanged(new TableModelEvent(this,index));
@@ -162,16 +171,16 @@ public class KeyShortCutEditPanel extends javax.swing.JPanel implements TableMod
       this.textFieldKeyCode.setText(""); //NOI18N
       this.textFieldKeyCode.setEnabled(false);
     }else{
-      this.buttonEditKeyCode.setEnabled(true);
+      this.buttonEditKeyCode.setEnabled(!shortcut.isModifiersOnly());
       this.buttonEditKeyCode.setSelected(false);
       
-      this.textFieldKeyCode.setEnabled(true);
+      this.textFieldKeyCode.setEnabled(!shortcut.isModifiersOnly());
       this.checkBoxALT.setEnabled(true);
       this.checkBoxCTRL.setEnabled(true);
       this.checkBoxMeta.setEnabled(true);
       this.checkBoxSHIFT.setEnabled(true);
-      
-      this.textFieldKeyCode.setText(shortcut.getShortcut().getKeyCodeName());
+
+      this.textFieldKeyCode.setText(shortcut.isModifiersOnly() ? "..." : shortcut.getShortcut().getKeyCodeName());
       this.checkBoxALT.setSelected(shortcut.getShortcut().isAlt());
       this.checkBoxSHIFT.setSelected(shortcut.getShortcut().isShift());
       this.checkBoxMeta.setSelected(shortcut.getShortcut().isMeta());

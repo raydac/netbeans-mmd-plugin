@@ -20,11 +20,13 @@ import static java.util.Objects.requireNonNull;
 
 import com.igormaznitsa.mindmap.model.MiscUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.KeyShortcut;
+import com.igormaznitsa.mindmap.swing.panel.utils.MouseButton;
 import com.igormaznitsa.mindmap.swing.panel.utils.RenderQuality;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
@@ -66,6 +68,7 @@ public final class MindMapPanelConfig implements Serializable {
   public static final String KEY_ZOOM_OUT = "zoomOut";
   public static final String KEY_ZOOM_RESET = "zoomReset";
   public static final String KEY_SHOW_POPUP = "showPopupMenu";
+  public static final String KEY_BIRDSEYE_MODIFIERS = "birdsEyeModifiers";
 
   private static final long serialVersionUID = -4273687011484460064L;
   private transient final List<WeakReference<MindMapConfigListener>> listeners =
@@ -99,6 +102,8 @@ public final class MindMapPanelConfig implements Serializable {
   private Color collapsatorBackgroundColor = Color.WHITE;
   private Color selectLineColor = Color.ORANGE;
   private Color jumpLinkColor = Color.CYAN;
+  private Color birdseyeBackground = new Color(0x9090C8FF, true);
+  private Color birdseyeFront = new Color(0x90004A94, true);
   private float shadowOffset = 5.0f;
   private float elementBorderWidth = 1.0f;
   private float collapsatorBorderWidth = 1.0f;
@@ -110,6 +115,7 @@ public final class MindMapPanelConfig implements Serializable {
   private double scale = 1.0d;
   private boolean dropShadow = true;
   private RenderQuality renderQuality = Utils.getDefaultRenderQialityForOs();
+  private MouseButton birdseyeMouseButton = MouseButton.BUTTON_3;
   private transient volatile boolean notificationEnabled = true;
 
   public MindMapPanelConfig(final MindMapPanelConfig cfg, final boolean copyListeners) {
@@ -166,6 +172,8 @@ public final class MindMapPanelConfig implements Serializable {
           .put(KEY_ZOOM_RESET, new KeyShortcut(KEY_ZOOM_RESET, KeyEvent.VK_0, KeyEvent.CTRL_MASK));
       this.mapShortCut.put(KEY_SHOW_POPUP, new KeyShortcut(KEY_SHOW_POPUP, KeyEvent.VK_SPACE,
           KeyEvent.CTRL_MASK | KeyEvent.ALT_MASK));
+      this.mapShortCut.put(KEY_BIRDSEYE_MODIFIERS, new KeyShortcut(KEY_BIRDSEYE_MODIFIERS,
+          KeyEvent.CTRL_MASK | KeyEvent.SHIFT_MASK));
     } else {
       // key map for Linux and Windows
       this.mapShortCut.put(KEY_ADD_CHILD_AND_START_EDIT,
@@ -212,6 +220,8 @@ public final class MindMapPanelConfig implements Serializable {
           .put(KEY_ZOOM_RESET, new KeyShortcut(KEY_ZOOM_RESET, KeyEvent.VK_0, KeyEvent.CTRL_MASK));
       this.mapShortCut.put(KEY_SHOW_POPUP, new KeyShortcut(KEY_SHOW_POPUP, KeyEvent.VK_SPACE,
           KeyEvent.CTRL_MASK | KeyEvent.ALT_MASK));
+      this.mapShortCut.put(KEY_BIRDSEYE_MODIFIERS, new KeyShortcut(KEY_BIRDSEYE_MODIFIERS,
+          KeyEvent.CTRL_MASK | KeyEvent.SHIFT_MASK));
     }
   }
 
@@ -251,6 +261,18 @@ public final class MindMapPanelConfig implements Serializable {
                             final int modifiersMask) {
     final KeyShortcut shortCut = this.mapShortCut.get(id);
     return shortCut != null && shortCut.isEvent(event, modifiersMask);
+  }
+
+  /**
+   * Check that modifiers match input event.
+   * @param id identifier of shortcut
+   * @param event event, can be null
+   * @return true if event is not null and modifiers match
+   * @since 1.6.2
+   */
+  public boolean isModifiers(final String id, final InputEvent event) {
+    final KeyShortcut shortCut = this.mapShortCut.get(id);
+    return shortCut != null && shortCut.matchModifiers(event);
   }
 
   public boolean isKeyEvent(final String id, final KeyEvent event) {
@@ -349,6 +371,8 @@ public final class MindMapPanelConfig implements Serializable {
             prefs.put(fieldName, (String) f.get(this));
           } else if (fieldClass == RenderQuality.class) {
             prefs.put(fieldName, ((RenderQuality) f.get(this)).name());
+          } else if (fieldClass == MouseButton.class) {
+            prefs.put(fieldName, ((MouseButton) f.get(this)).name());
           } else {
             throw new Error("Unexpected field type " + fieldClass.getName());
           }
@@ -405,6 +429,9 @@ public final class MindMapPanelConfig implements Serializable {
           } else if (fieldClass == RenderQuality.class) {
             final String name = prefs.get(fieldName, ((RenderQuality) f.get(etalon)).name());
             f.set(this, RenderQuality.valueOf(name));
+          } else if (fieldClass == MouseButton.class) {
+            final String name = prefs.get(fieldName, ((MouseButton) f.get(etalon)).name());
+            f.set(this, MouseButton.valueOf(name));
           } else {
             throw new Error("Unexpected field type " + fieldClass.getName());
           }
@@ -586,6 +613,28 @@ public final class MindMapPanelConfig implements Serializable {
   @SettingsAccessor(name = "jumpLinkColor")
   public void setJumpLinkColor(final Color color) {
     this.jumpLinkColor = color;
+    notifyCfgListenersAboutChange();
+  }
+
+  @SettingsAccessor(name = "birdseyeBackground")
+  public Color getBirdseyeBackground() {
+    return this.birdseyeBackground;
+  }
+
+  @SettingsAccessor(name = "birdseyeBackground")
+  public void setBirdseyeBackground(final Color color) {
+    this.birdseyeBackground = color;
+    notifyCfgListenersAboutChange();
+  }
+
+  @SettingsAccessor(name = "birdseyeFront")
+  public Color getBirdseyeFront() {
+    return this.birdseyeFront;
+  }
+
+  @SettingsAccessor(name = "birdseyeFront")
+  public void setBirdseyeFront(final Color color) {
+    this.birdseyeFront = color;
     notifyCfgListenersAboutChange();
   }
 
@@ -941,6 +990,17 @@ public final class MindMapPanelConfig implements Serializable {
   @SettingsAccessor(name = "renderQuality")
   public void setRenderQuality(final RenderQuality value) {
     this.renderQuality = MiscUtils.ensureNotNull(value, Utils.getDefaultRenderQialityForOs());
+    notifyCfgListenersAboutChange();
+  }
+
+  @SettingsAccessor(name = "birdseyeMouseButton")
+  public MouseButton getBirdseyeMouseButton() {
+    return this.birdseyeMouseButton;
+  }
+
+  @SettingsAccessor(name = "birdseyeMouseButton")
+  public void setBirdseyeMouseButton(final MouseButton value) {
+    this.birdseyeMouseButton = MiscUtils.ensureNotNull(value, MouseButton.BUTTON_3);
     notifyCfgListenersAboutChange();
   }
 
