@@ -24,6 +24,7 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.utils.KeyShortcut;
+import com.igormaznitsa.mindmap.swing.panel.utils.MouseButton;
 import com.igormaznitsa.mindmap.swing.panel.utils.PropertiesPreferences;
 import com.igormaznitsa.mindmap.swing.panel.utils.RenderQuality;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
@@ -74,7 +75,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
 
     @Override
     public String getDescription() {
-      return SrI18n.getInstance().findBundle().getString("PreferencesPanel.fileChooser.filter.text");  //NOI18N
+        return SrI18n.getInstance().findBundle().getString("PreferencesPanel.fileChooser.filter.text");  //NOI18N
     }
 
   }
@@ -135,6 +136,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
+        jLabel8 = new javax.swing.JLabel();
         MainScrollPanel = new javax.swing.JScrollPane();
         jPanel6 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
@@ -210,6 +212,17 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         checkBoxScalingALT = new javax.swing.JCheckBox();
         checkBoxScalingSHIFT = new javax.swing.JCheckBox();
         checkBoxScalingMETA = new javax.swing.JCheckBox();
+        filler8 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
+        jPanel14 = new javax.swing.JPanel();
+        jPanel20 = new javax.swing.JPanel();
+        labelBirdseyeMouse = new javax.swing.JLabel();
+        comboBirdseyeMouse = new javax.swing.JComboBox<>();
+        jPanel21 = new javax.swing.JPanel();
+        checkBoxBirdsCTRL = new javax.swing.JCheckBox();
+        checkBoxBirdsALT = new javax.swing.JCheckBox();
+        checkBoxBirdsSHIFT = new javax.swing.JCheckBox();
+        checkBoxBirdsMETA = new javax.swing.JCheckBox();
+        filler9 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
         checkboxMetricsAllowed = new javax.swing.JCheckBox();
         checkboxTrimTopicText = new javax.swing.JCheckBox();
         checkBoxShowHiddenFiles = new javax.swing.JCheckBox();
@@ -226,6 +239,8 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         buttonExtensionsOpenInSystem = new javax.swing.JButton();
         filler6 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 16), new java.awt.Dimension(0, 16), new java.awt.Dimension(32767, 16));
         filler7 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
+
+        jLabel8.setText("jLabel8");
 
         setLayout(new java.awt.BorderLayout());
 
@@ -909,7 +924,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         jPanel1.add(jPanel7, gridBagConstraints);
 
         jPanel8.setBorder(javax.swing.BorderFactory.createTitledBorder(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("MMDCfgPanel.ShortCutsTitle"))); // NOI18N
-        jPanel8.setLayout(new java.awt.BorderLayout());
+        jPanel8.setLayout(new java.awt.GridBagLayout());
 
         buttonOpenShortcutEditor.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("MMDCfgPanel.ShortCutsButtonText")); // NOI18N
         buttonOpenShortcutEditor.addActionListener(new java.awt.event.ActionListener() {
@@ -917,7 +932,9 @@ public final class PreferencesPanel extends javax.swing.JPanel {
                 buttonOpenShortcutEditorActionPerformed(evt);
             }
         });
-        jPanel8.add(buttonOpenShortcutEditor, java.awt.BorderLayout.NORTH);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        jPanel8.add(buttonOpenShortcutEditor, gridBagConstraints);
 
         panelScalingModifiers.setBorder(javax.swing.BorderFactory.createTitledBorder(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("PreferencesPanel.panelScaleWithWheel.title"))); // NOI18N
         panelScalingModifiers.setLayout(new java.awt.GridLayout(1, 0));
@@ -954,7 +971,67 @@ public final class PreferencesPanel extends javax.swing.JPanel {
         });
         panelScalingModifiers.add(checkBoxScalingMETA);
 
-        jPanel8.add(panelScalingModifiers, java.awt.BorderLayout.SOUTH);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        jPanel8.add(panelScalingModifiers, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.weightx = 1999.0;
+        jPanel8.add(filler8, gridBagConstraints);
+
+        jPanel14.setBorder(javax.swing.BorderFactory.createTitledBorder(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("PreferencesPanel.panelBirdsEye.title"))); // NOI18N
+        jPanel14.setLayout(new java.awt.GridBagLayout());
+
+        jPanel20.setLayout(new java.awt.BorderLayout());
+
+        labelBirdseyeMouse.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("PreferencesPanel.panelBirdsEye.labelMouseButton")); // NOI18N
+        jPanel20.add(labelBirdseyeMouse, java.awt.BorderLayout.LINE_START);
+
+        comboBirdseyeMouse.setModel(new DefaultComboBoxModel<MouseButton>(MouseButton.values())
+        );
+        jPanel20.add(comboBirdseyeMouse, java.awt.BorderLayout.CENTER);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanel14.add(jPanel20, gridBagConstraints);
+
+        jPanel21.setLayout(new java.awt.GridLayout(1, 4));
+
+        checkBoxBirdsCTRL.setText("CTRL");
+        jPanel21.add(checkBoxBirdsCTRL);
+
+        checkBoxBirdsALT.setText("ALT");
+        jPanel21.add(checkBoxBirdsALT);
+
+        checkBoxBirdsSHIFT.setText("SHIFT");
+        jPanel21.add(checkBoxBirdsSHIFT);
+
+        checkBoxBirdsMETA.setText("META");
+        jPanel21.add(checkBoxBirdsMETA);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        jPanel14.add(jPanel21, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1000.0;
+        jPanel14.add(filler9, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        jPanel8.add(jPanel14, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -1526,7 +1603,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
       this.checkBoxUnfoldCollapsedTarget.setSelected(preferences.getBoolean("unfoldCollapsedTarget", true)); //NOI18N
       this.checkBoxCopyColorInfoToNewAllowed.setSelected(preferences.getBoolean("copyColorInfoToNewChildAllowed", true)); //NOI18N
       this.checkBoxKnowledgeFolderAutogenerationAllowed.setSelected(preferences.getBoolean(PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED, false));
-
+      
       // third part options
       final String pathToGraphViz = preferences.get(PROPERTY_PLANTUML_DOT_PATH, null);
       this.textFieldPathToGraphvizDot.setText(pathToGraphViz == null ? "" : pathToGraphViz);
@@ -1586,7 +1663,9 @@ public final class PreferencesPanel extends javax.swing.JPanel {
       this.mapKeyShortCuts.putAll(config.getKeyShortcutMap());
 
       this.comboBoxRenderQuality.setSelectedItem(config.getRenderQuality());
+      this.comboBirdseyeMouse.setSelectedItem(config.getBirdseyeMouseButton());
 
+      setBirdsEyeModifiers(config.getKeyShortCut(MindMapPanelConfig.KEY_BIRDSEYE_MODIFIERS).getModifiers());
       setScalingModifiers(config.getScaleModifiers());
 
       this.fontMindMapEditor = config.getFont();
@@ -1635,12 +1714,17 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     config.setFont(this.fontMindMapEditor);
 
     config.setRenderQuality(GetUtils.ensureNonNull((RenderQuality) this.comboBoxRenderQuality.getSelectedItem(), Utils.getDefaultRenderQialityForOs()));
+    config.setBirdseyeMouseButton(GetUtils.ensureNonNull((MouseButton)this.comboBirdseyeMouse.getSelectedItem(), MouseButton.BUTTON_3));
 
     for (final Map.Entry<String, KeyShortcut> e : this.mapKeyShortCuts.entrySet()) {
       config.setKeyShortCut(e.getValue());
     }
+    final KeyShortcut birdsEyeModifiers = config.getKeyShortCut(MindMapPanelConfig.KEY_BIRDSEYE_MODIFIERS);
+    config.setKeyShortCut(new KeyShortcut(birdsEyeModifiers.getID(), getBirdsModifiers()));
 
     config.setScaleModifiers(getScalingModifiers());
+    
+    
     config.saveTo(preferences);
 
     // Common behaviour options
@@ -1692,8 +1776,23 @@ public final class PreferencesPanel extends javax.swing.JPanel {
   private int getScalingModifiers() {
     return (this.checkBoxScalingALT.isSelected() ? KeyEvent.ALT_MASK : 0)
             | (this.checkBoxScalingCTRL.isSelected() ? KeyEvent.CTRL_MASK : 0)
-            | (this.checkBoxScalingMETA.isSelected() ? KeyEvent.ALT_MASK : 0)
+            | (this.checkBoxScalingMETA.isSelected() ? KeyEvent.META_MASK : 0)
             | (this.checkBoxScalingSHIFT.isSelected() ? KeyEvent.SHIFT_MASK : 0);
+    }
+
+
+  private void setBirdsEyeModifiers(final int value) {
+    this.checkBoxBirdsALT.setSelected((value & KeyEvent.ALT_MASK) != 0);
+    this.checkBoxBirdsCTRL.setSelected((value & KeyEvent.CTRL_MASK) != 0);
+    this.checkBoxBirdsMETA.setSelected((value & KeyEvent.META_MASK) != 0);
+    this.checkBoxBirdsSHIFT.setSelected((value & KeyEvent.SHIFT_MASK) != 0);
+  }
+
+  private int getBirdsModifiers() {
+    return (this.checkBoxBirdsALT.isSelected() ? KeyEvent.ALT_MASK : 0)
+            | (this.checkBoxBirdsCTRL.isSelected() ? KeyEvent.CTRL_MASK : 0)
+            | (this.checkBoxBirdsMETA.isSelected() ? KeyEvent.META_MASK : 0)
+            | (this.checkBoxBirdsSHIFT.isSelected() ? KeyEvent.SHIFT_MASK : 0);
   }
 
 
@@ -1709,6 +1808,10 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     private javax.swing.JButton buttonOpenShortcutEditor;
     private javax.swing.JButton buttonResetToDefault;
     private javax.swing.JCheckBox checkBoxBackupLastEdit;
+    private javax.swing.JCheckBox checkBoxBirdsALT;
+    private javax.swing.JCheckBox checkBoxBirdsCTRL;
+    private javax.swing.JCheckBox checkBoxBirdsMETA;
+    private javax.swing.JCheckBox checkBoxBirdsSHIFT;
     private javax.swing.JCheckBox checkBoxCopyColorInfoToNewAllowed;
     private javax.swing.JCheckBox checkBoxDropShadow;
     private javax.swing.JCheckBox checkBoxKnowledgeFolderAutogenerationAllowed;
@@ -1737,6 +1840,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     private com.igormaznitsa.sciareto.ui.misc.ColorChooserButton colorChooserRootBackground;
     private com.igormaznitsa.sciareto.ui.misc.ColorChooserButton colorChooserRootText;
     private com.igormaznitsa.sciareto.ui.misc.ColorChooserButton colorChooserSelectLine;
+    private javax.swing.JComboBox<MouseButton> comboBirdseyeMouse;
     private javax.swing.JComboBox<PlantUmlSecurityProfile> comboBoxPlantUmlSecurityProfile;
     private javax.swing.JComboBox<RenderQuality> comboBoxRenderQuality;
     private com.igormaznitsa.sciareto.ui.misc.DonateButton donateButton1;
@@ -1747,6 +1851,8 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     private javax.swing.Box.Filler filler5;
     private javax.swing.Box.Filler filler6;
     private javax.swing.Box.Filler filler7;
+    private javax.swing.Box.Filler filler8;
+    private javax.swing.Box.Filler filler9;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -1754,17 +1860,21 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel12;
     private javax.swing.JPanel jPanel13;
+    private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel15;
     private javax.swing.JPanel jPanel16;
     private javax.swing.JPanel jPanel17;
     private javax.swing.JPanel jPanel18;
     private javax.swing.JPanel jPanel19;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel20;
+    private javax.swing.JPanel jPanel21;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
@@ -1772,6 +1882,7 @@ public final class PreferencesPanel extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
+    private javax.swing.JLabel labelBirdseyeMouse;
     private javax.swing.JLabel labelBorderWidth;
     private javax.swing.JPanel panelGraphvizDot;
     private javax.swing.JPanel panelPlantUmlSecurityProfile;
