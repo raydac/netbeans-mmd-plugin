@@ -310,6 +310,7 @@ public abstract class AbstractPreferencesPanel {
 
     final GridBagConstraints constraints = new GridBagConstraints();
     constraints.gridx = 0;
+    constraints.weightx = 1;
     constraints.anchor = GridBagConstraints.CENTER;
     constraints.fill = GridBagConstraints.HORIZONTAL;
 
@@ -330,24 +331,49 @@ public abstract class AbstractPreferencesPanel {
 
     panel.setLayout(new GridBagLayout());
     final GridBagConstraints constraints = new GridBagConstraints();
+    constraints.weightx = 1;
     constraints.gridy = 0;
     constraints.anchor = GridBagConstraints.NORTHWEST;
     constraints.fill = GridBagConstraints.BOTH;
 
-    panel.add(makeColumn(
-            makePaperOptions(bundle),
-            makeConnectorAndCollapsatorOptions(bundle),
-            makeFontAndKeyboardPanel(bundle),
-            makeFeaturesOptions(bundle)
-        ), constraints
-    );
+    final JPanel features = this.makeFeaturesOptions(bundle);
+    final JPanel misc = this.makeMiscOptions(bundle);
+    final boolean featuresAndMiscAsSeparated = this.isFeatureAndMiscAsNewColumn();
 
-    panel.add(makeColumn(
-            makeElementOptions(bundle),
-            makeSelectionFrameOptions(bundle),
-            makeMiscOptions(bundle)
-        ), constraints
-    );
+    if (featuresAndMiscAsSeparated) {
+      panel.add(makeColumn(
+              this.makePaperOptions(bundle),
+              this.makeConnectorAndCollapsatorOptions(bundle),
+              this.makeFontAndKeyboardPanel(bundle)
+          ), constraints
+      );
+
+      panel.add(makeColumn(
+              makeElementOptions(bundle),
+              makeSelectionFrameOptions(bundle)
+          ), constraints
+      );
+
+      panel.add(makeColumn(
+          features,
+          misc
+      ), constraints);
+    } else {
+      panel.add(makeColumn(
+              this.makePaperOptions(bundle),
+              this.makeConnectorAndCollapsatorOptions(bundle),
+              this.makeFontAndKeyboardPanel(bundle),
+              features
+          ), constraints
+      );
+
+      panel.add(makeColumn(
+              makeElementOptions(bundle),
+              makeSelectionFrameOptions(bundle),
+              misc
+          ), constraints
+      );
+    }
 
     constraints.weightx = 1000.0d;
     panel.add(Box.createHorizontalGlue(), constraints);
@@ -355,9 +381,14 @@ public abstract class AbstractPreferencesPanel {
     return panel;
   }
 
+  protected boolean isFeatureAndMiscAsNewColumn() {
+    return false;
+  }
+
   private JPanel makePaperOptions(final ResourceBundle bundle) {
     final JPanel panel = this.uiComponentFactory.makePanel();
-    panel.setBorder(BorderFactory.createTitledBorder(bundle.getString("PreferencesPanel.paperOptions.title")));
+    panel.setBorder(
+        BorderFactory.createTitledBorder(bundle.getString("PreferencesPanel.paperOptions.title")));
 
     panel.setLayout(new GridBagLayout());
     final GridBagConstraints constraints = new GridBagConstraints();

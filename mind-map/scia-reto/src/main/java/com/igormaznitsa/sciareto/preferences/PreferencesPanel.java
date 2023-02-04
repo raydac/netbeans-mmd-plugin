@@ -93,6 +93,11 @@ public final class PreferencesPanel extends AbstractPreferencesPanel
   }
 
   @Override
+  protected boolean isFeatureAndMiscAsNewColumn() {
+    return true;
+  }
+
+  @Override
   protected void beforePanelsCreate(@Nonnull final UIComponentFactory uiComponentFactory) {
     final ResourceBundle bundle = SrI18n.getInstance().findBundle();
     this.fontSelectPanelTextEditor = new FontSelectPanel(this::getPanel,
