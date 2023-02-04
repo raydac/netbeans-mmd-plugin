@@ -26,9 +26,11 @@ import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
+import java.awt.event.ActionEvent;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.function.Supplier;
+import javax.swing.DefaultButtonModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -61,15 +63,20 @@ public class FontSelectPanel {
     final ResourceBundle bundle = MmcI18n.getInstance().findBundle();
     this.buttonSelect = componentFactory.makeButton();
     this.buttonSelect.setHorizontalAlignment(JButton.CENTER);
-    this.buttonSelect.addActionListener(e -> {
-      final Font old = this.value;
-      if (!dialogProvider.msgOkCancel(dialogParentSupplier.get(), String.format(
-              bundle.getString("panelFontSelector.title"), description),
-          this.asPanel())) {
-        this.value = old;
+
+    this.buttonSelect.setModel(new DefaultButtonModel() {
+      @Override
+      protected void fireActionPerformed(final ActionEvent e) {
+        final Font old = FontSelectPanel.this.value;
+        if (!dialogProvider.msgOkCancel(dialogParentSupplier.get(), String.format(
+                bundle.getString("panelFontSelector.title"), description),
+            FontSelectPanel.this.asPanel())) {
+          FontSelectPanel.this.value = old;
+        }
+        updateFontForParameters();
+        buttonSelect.setText(asString(value));
+        super.fireActionPerformed(e);
       }
-      this.updateFontForParameters();
-      this.buttonSelect.setText(asString(this.value));
     });
 
     this.panel = componentFactory.makePanel();

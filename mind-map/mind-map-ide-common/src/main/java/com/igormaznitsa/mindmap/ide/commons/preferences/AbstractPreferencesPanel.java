@@ -34,6 +34,8 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.ItemSelectable;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
@@ -45,9 +47,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
+import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
+import javax.swing.DefaultButtonModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -61,14 +66,15 @@ import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.text.JTextComponent;
 import org.apache.commons.io.FileUtils;
 
 public abstract class AbstractPreferencesPanel {
-  private static final int GRID_GAP = 2;
-
   protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractPreferencesPanel.class);
-
+  private static final int GRID_GAP = 2;
   protected final DialogProvider dialogProvider;
   private final UIComponentFactory uiComponentFactory;
   private final JSpinner spinnerGridStep;
@@ -110,10 +116,12 @@ public abstract class AbstractPreferencesPanel {
   private final JButton buttonKeyShortcutEditor;
 
   private final JCheckBox checkBoxSmartTextPaste;
-  private final Map<String,KeyShortcut> keyShortcutMap = new HashMap<>();
+  private final Map<String, KeyShortcut> keyShortcutMap = new HashMap<>();
+  protected MindMapPanelConfig lastLoadedConfig;
+  private boolean trapChangeAllowed;
 
   public AbstractPreferencesPanel(final UIComponentFactory uiComponentFactory,
-                                   final DialogProvider dialogProvider) {
+                                  final DialogProvider dialogProvider) {
     final ResourceBundle bundle = MmcI18n.getInstance().findBundle();
 
     this.dialogProvider = dialogProvider;
@@ -121,8 +129,12 @@ public abstract class AbstractPreferencesPanel {
     this.panel = this.uiComponentFactory.makePanel();
     this.panel.setLayout(new BorderLayout());
 
-    this.buttonFastNavigationPaper = new ColorSelectButton(this.panel, this.uiComponentFactory, dialogProvider, c -> new Color(0x90000000 | (c.getRGB() & 0xFFFFFF), true));
-    this.buttonFastNavigationInk = new ColorSelectButton(this.panel, this.uiComponentFactory, dialogProvider, c -> new Color(0x90000000 | (c.getRGB() & 0xFFFFFF), true));
+    this.buttonFastNavigationPaper =
+        new ColorSelectButton(this.panel, this.uiComponentFactory, dialogProvider,
+            c -> new Color(0x90000000 | (c.getRGB() & 0xFFFFFF), true));
+    this.buttonFastNavigationInk =
+        new ColorSelectButton(this.panel, this.uiComponentFactory, dialogProvider,
+            c -> new Color(0x90000000 | (c.getRGB() & 0xFFFFFF), true));
 
     this.spinnerGridStep = this.uiComponentFactory.makeSpinner();
     this.spinnerGridStep.setModel(new SpinnerNumberModel(32, 8, 1024, 8));
@@ -152,9 +164,9 @@ public abstract class AbstractPreferencesPanel {
     this.spinnerJumpLinkWidth = this.uiComponentFactory.makeSpinner();
     this.spinnerJumpLinkWidth.setModel(new SpinnerNumberModel(1.5d, 0.1d, 5.0d, 0.01d));
     this.spinnerCollapsatorSize = this.uiComponentFactory.makeSpinner();
-    this.spinnerCollapsatorSize.setModel(new SpinnerNumberModel(16, 3, 1024, 1));
+    this.spinnerCollapsatorSize.setModel(new SpinnerNumberModel(16, 1, 1024, 1));
     this.spinnerCollapsatorWidth = this.uiComponentFactory.makeSpinner();
-    this.spinnerCollapsatorWidth.setModel(new SpinnerNumberModel(16, 3, 1024, 1));
+    this.spinnerCollapsatorWidth.setModel(new SpinnerNumberModel(16, 1, 1024, 1));
     this.buttonColorCollapsatorFill =
         new ColorSelectButton(this.panel, this.uiComponentFactory, dialogProvider);
     this.buttonColorCollapsatorBorder =
@@ -164,7 +176,9 @@ public abstract class AbstractPreferencesPanel {
     this.buttonColorJumpLink =
         new ColorSelectButton(this.panel, this.uiComponentFactory, dialogProvider);
     this.fontChooserPanelMindMapTopicTitleFont =
-        new FontSelectPanel(()->this.panel, bundle.getString("PreferencesPanel.fontSelectPanel.description"), this.uiComponentFactory, dialogProvider,
+        new FontSelectPanel(() -> this.panel,
+            bundle.getString("PreferencesPanel.fontSelectPanel.description"),
+            this.uiComponentFactory, dialogProvider,
             this.panel.getFont());
 
     this.checkBoxSmartTextPaste = this.uiComponentFactory.makeCheckBox();
@@ -218,14 +232,23 @@ public abstract class AbstractPreferencesPanel {
     this.spinnerSelectionFrameGap.setModel(new SpinnerNumberModel(1, 1, 54, 1));
 
     this.buttonKeyShortcutEditor = this.uiComponentFactory.makeButton();
-    this.buttonKeyShortcutEditor.setText(bundle.getString("PreferencesPanel.buttonEditKeyShortcuts.text"));
-    this.buttonKeyShortcutEditor.addActionListener(a -> {
-      final KeyShortCutEditor shortCutEditor = new KeyShortCutEditor(this.uiComponentFactory,
-          new ArrayList<>(this.keyShortcutMap.values()),
-          false);
-      if (this.dialogProvider.msgOkCancel(this.panel, bundle.getString("PreferencesPanel.ShortcutEditor.title"), shortCutEditor.asPanel())) {
-        for (final KeyShortcut s : shortCutEditor.getResult()) {
-          this.keyShortcutMap.put(s.getID(), s);
+    this.buttonKeyShortcutEditor.setText(
+        bundle.getString("PreferencesPanel.buttonEditKeyShortcuts.text"));
+
+    this.buttonKeyShortcutEditor.setModel(new DefaultButtonModel() {
+      @Override
+      protected void fireActionPerformed(final ActionEvent e) {
+        final KeyShortCutEditor shortCutEditor =
+            new KeyShortCutEditor(AbstractPreferencesPanel.this.uiComponentFactory,
+                new ArrayList<>(AbstractPreferencesPanel.this.keyShortcutMap.values()),
+                false);
+        if (AbstractPreferencesPanel.this.dialogProvider.msgOkCancel(
+            AbstractPreferencesPanel.this.panel,
+            bundle.getString("PreferencesPanel.ShortcutEditor.title"), shortCutEditor.asPanel())) {
+          for (final KeyShortcut s : shortCutEditor.getResult()) {
+            AbstractPreferencesPanel.this.keyShortcutMap.put(s.getID(), s);
+          }
+          super.fireActionPerformed(e);
         }
       }
     });
@@ -241,6 +264,60 @@ public abstract class AbstractPreferencesPanel {
     if (!buttons.isEmpty()) {
       this.panel.add(makeButtonPanel(buttons), BorderLayout.EAST);
     }
+
+    this.registerChangeListenerForAll(this.panel, e -> {
+      if (this.trapChangeAllowed) {
+        this.onPossibleChangeNotify(e);
+      }
+    });
+
+    this.trapChangeAllowed = true;
+  }
+
+  protected void onPossibleChangeNotify(final Component source) {
+
+  }
+
+  private void registerChangeListenerForAll(final Component component,
+                                            final Consumer<Component> change) {
+    if (component == null) {
+      return;
+    }
+    if (component instanceof JPanel) {
+      final JPanel panel = (JPanel) component;
+      for (final Component c : panel.getComponents()) {
+        if (c instanceof JComponent) {
+          this.registerChangeListenerForAll(c, change);
+        }
+      }
+    } else if (component instanceof AbstractButton) {
+      ((AbstractButton) component).addActionListener(e -> change.accept(component));
+    } else if (component instanceof ItemSelectable) {
+      ((ItemSelectable) component).addItemListener(e -> change.accept(component));
+    } else if (component instanceof JSlider) {
+      ((JSlider) component).addChangeListener(e -> change.accept(component));
+    } else if (component instanceof JSpinner) {
+      ((JSpinner) component).addChangeListener(e -> change.accept(component));
+    } else if (component instanceof JScrollPane) {
+      this.registerChangeListenerForAll(((JScrollPane) component).getViewport().getView(), change);
+    } else if (component instanceof JTextComponent) {
+      ((JTextComponent) component).getDocument().addDocumentListener(new DocumentListener() {
+        @Override
+        public void insertUpdate(final DocumentEvent e) {
+          change.accept(component);
+        }
+
+        @Override
+        public void removeUpdate(final DocumentEvent e) {
+          change.accept(component);
+        }
+
+        @Override
+        public void changedUpdate(final DocumentEvent e) {
+          change.accept(component);
+        }
+      });
+    }
   }
 
   protected void beforePanelsCreate(final UIComponentFactory uiComponentFactory) {
@@ -249,9 +326,9 @@ public abstract class AbstractPreferencesPanel {
 
   public abstract List<ButtonInfo> findButtonInfo();
 
-  private JPanel makeButtonPanel(final List<ButtonInfo> buttons){
+  private JPanel makeButtonPanel(final List<ButtonInfo> buttons) {
     final JPanel panel = this.uiComponentFactory.makePanel();
-    panel.setBorder(BorderFactory.createEmptyBorder(16,16,16,16));
+    panel.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
     panel.setLayout(new GridBagLayout());
     final GridBagConstraints constraints = new GridBagConstraints();
     constraints.insets = new Insets(GRID_GAP, GRID_GAP, GRID_GAP, GRID_GAP);
@@ -262,16 +339,17 @@ public abstract class AbstractPreferencesPanel {
 
     buttons.forEach(x -> {
       if (x.splitter) {
-        panel.add(Box.createVerticalStrut(16),constraints);
+        panel.add(Box.createVerticalStrut(16), constraints);
       } else {
-        final JButton button = x.supplier == null ? this.uiComponentFactory.makeButton() : x.supplier.get();
+        final JButton button =
+            x.supplier == null ? this.uiComponentFactory.makeButton() : x.supplier.get();
         button.setHorizontalAlignment(JButton.LEFT);
         button.setText(x.title);
         button.setToolTipText(x.tooltip);
         if (x.actionListener != null) {
           button.addActionListener(x.actionListener);
         }
-        if (x.icon!=null) {
+        if (x.icon != null) {
           button.setIcon(new ImageIcon(x.icon));
         }
         panel.add(button, constraints);
@@ -283,7 +361,6 @@ public abstract class AbstractPreferencesPanel {
 
     return panel;
   }
-
 
   private void addGridBagRow(final JPanel panel, final String text,
                              final JComponent component) {
@@ -410,12 +487,17 @@ public abstract class AbstractPreferencesPanel {
     panel.add(this.checkBoxShowGrid, constraints);
 
     constraints.gridx = 1;
-    panel.add(this.buttonColorGrid.setText(bundle.getString("PreferencesPanel.paperOptions.gridColor")).asButton(), constraints);
-    panel.add(this.buttonColorPaper.setText(bundle.getString("PreferencesPanel.paperOptions.backColor")).asButton(), constraints);
+    panel.add(
+        this.buttonColorGrid.setText(bundle.getString("PreferencesPanel.paperOptions.gridColor"))
+            .asButton(), constraints);
+    panel.add(
+        this.buttonColorPaper.setText(bundle.getString("PreferencesPanel.paperOptions.backColor"))
+            .asButton(), constraints);
 
     final JPanel panelRenderQuality = this.uiComponentFactory.makePanel();
     panelRenderQuality.setLayout(new BorderLayout());
-    panelRenderQuality.setBorder(BorderFactory.createTitledBorder(bundle.getString("PreferencesPanel.paperOptions.renderQuality")));
+    panelRenderQuality.setBorder(BorderFactory.createTitledBorder(
+        bundle.getString("PreferencesPanel.paperOptions.renderQuality")));
     panelRenderQuality.add(this.comboBoxRenderQuality, BorderLayout.CENTER);
 
     constraints.gridx = 0;
@@ -427,20 +509,29 @@ public abstract class AbstractPreferencesPanel {
 
   private JPanel makeConnectorAndCollapsatorOptions(final ResourceBundle bundle) {
     final JPanel panel = this.uiComponentFactory.makePanel();
-    panel.setBorder(BorderFactory.createTitledBorder(bundle.getString("PreferencesPanel.conAndColOptions.title")));
+    panel.setBorder(BorderFactory.createTitledBorder(
+        bundle.getString("PreferencesPanel.conAndColOptions.title")));
     panel.setLayout(new GridBagLayout());
 
-    addGridBagRow(panel, bundle.getString("PreferencesPanel.conAndColOptions.connectorWidth"), this.spinnerConnectorWidth);
-    addGridBagRow(panel, bundle.getString("PreferencesPanel.conAndColOptions.jumpLinkWidth"), this.spinnerJumpLinkWidth);
-    addGridBagRow(panel, bundle.getString("PreferencesPanel.conAndColOptions.collapsatorSize"), this.spinnerCollapsatorSize);
-    addGridBagRow(panel, bundle.getString("PreferencesPanel.conAndColOptions.collapsatorWidth"), this.spinnerCollapsatorWidth);
+    addGridBagRow(panel, bundle.getString("PreferencesPanel.conAndColOptions.connectorWidth"),
+        this.spinnerConnectorWidth);
+    addGridBagRow(panel, bundle.getString("PreferencesPanel.conAndColOptions.jumpLinkWidth"),
+        this.spinnerJumpLinkWidth);
+    addGridBagRow(panel, bundle.getString("PreferencesPanel.conAndColOptions.collapsatorSize"),
+        this.spinnerCollapsatorSize);
+    addGridBagRow(panel, bundle.getString("PreferencesPanel.conAndColOptions.collapsatorWidth"),
+        this.spinnerCollapsatorWidth);
 
     final JPanel colorButtons = this.uiComponentFactory.makePanel();
     colorButtons.setLayout(new GridLayout(2, 2, GRID_GAP, GRID_GAP));
-    colorButtons.add(this.buttonColorCollapsatorFill.setText(bundle.getString("PreferencesPanel.conAndColOptions.collapsatorFill")).asButton());
-    colorButtons.add(this.buttonColorCollapsatorBorder.setText(bundle.getString("PreferencesPanel.conAndColOptions.collapsatorBorder")).asButton());
-    colorButtons.add(this.buttonColorJumpLink.setText(bundle.getString("PreferencesPanel.conAndColOptions.jumpLink")).asButton());
-    colorButtons.add(this.buttonColorConnector.setText(bundle.getString("PreferencesPanel.conAndColOptions.connectorColor")).asButton());
+    colorButtons.add(this.buttonColorCollapsatorFill.setText(
+        bundle.getString("PreferencesPanel.conAndColOptions.collapsatorFill")).asButton());
+    colorButtons.add(this.buttonColorCollapsatorBorder.setText(
+        bundle.getString("PreferencesPanel.conAndColOptions.collapsatorBorder")).asButton());
+    colorButtons.add(this.buttonColorJumpLink.setText(
+        bundle.getString("PreferencesPanel.conAndColOptions.jumpLink")).asButton());
+    colorButtons.add(this.buttonColorConnector.setText(
+        bundle.getString("PreferencesPanel.conAndColOptions.connectorColor")).asButton());
 
     final GridBagConstraints constraints = new GridBagConstraints();
     constraints.insets = new Insets(GRID_GAP, GRID_GAP, GRID_GAP, GRID_GAP);
@@ -460,7 +551,8 @@ public abstract class AbstractPreferencesPanel {
 
     if (!components.isEmpty()) {
       final JPanel panel = this.uiComponentFactory.makePanel();
-      panel.setBorder(BorderFactory.createTitledBorder(bundle.getString("PreferencesPanel.panelMisc.title")));
+      panel.setBorder(
+          BorderFactory.createTitledBorder(bundle.getString("PreferencesPanel.panelMisc.title")));
       panel.setLayout(new GridBagLayout());
 
       final GridBagConstraints constraints = new GridBagConstraints();
@@ -481,7 +573,8 @@ public abstract class AbstractPreferencesPanel {
 
   private JPanel makeFeaturesOptions(final ResourceBundle bundle) {
     final JPanel panel = this.uiComponentFactory.makePanel();
-    panel.setBorder(BorderFactory.createTitledBorder(bundle.getString("PreferencesPanel.features.title")));
+    panel.setBorder(
+        BorderFactory.createTitledBorder(bundle.getString("PreferencesPanel.features.title")));
     panel.setLayout(new GridBagLayout());
 
     final GridBagConstraints constraints = new GridBagConstraints();
@@ -498,11 +591,13 @@ public abstract class AbstractPreferencesPanel {
     return panel;
   }
 
-  public abstract List<JComponent> findFeaturesComponents(final UIComponentFactory componentFactory);
+  public abstract List<JComponent> findFeaturesComponents(
+      final UIComponentFactory componentFactory);
 
   private JPanel makeFontAndKeyboardPanel(final ResourceBundle bundle) {
     final JPanel panel = this.uiComponentFactory.makePanel();
-    panel.setBorder(BorderFactory.createTitledBorder(bundle.getString("PreferencesPanel.fontsandshorcuts.title")));
+    panel.setBorder(BorderFactory.createTitledBorder(
+        bundle.getString("PreferencesPanel.fontsandshorcuts.title")));
 
     panel.setLayout(new GridBagLayout());
     final GridBagConstraints constraints = new GridBagConstraints();
@@ -514,18 +609,21 @@ public abstract class AbstractPreferencesPanel {
     panel.add(this.buttonKeyShortcutEditor, constraints);
 
     JPanel panelInternal = this.uiComponentFactory.makePanel();
-    panelInternal.setBorder(new TitledBorder(bundle.getString("PreferencesPanel.topictextfont.title")));
+    panelInternal.setBorder(
+        new TitledBorder(bundle.getString("PreferencesPanel.topictextfont.title")));
     panelInternal.setLayout(new BorderLayout());
     panelInternal.add(this.fontChooserPanelMindMapTopicTitleFont.asButton(), BorderLayout.CENTER);
 
     panel.add(panelInternal, constraints);
 
     panelInternal = this.keyModifiersWheelScale.asPanel();
-    panelInternal.setBorder(new TitledBorder(bundle.getString("PreferencesPanel.activatorwheelscale.title")));
+    panelInternal.setBorder(
+        new TitledBorder(bundle.getString("PreferencesPanel.activatorwheelscale.title")));
     panel.add(panelInternal, constraints);
 
     panelInternal = this.uiComponentFactory.makePanel();
-    panelInternal.setBorder(new TitledBorder(bundle.getString("PreferencesPanel.fastnavigation.title")));
+    panelInternal.setBorder(
+        new TitledBorder(bundle.getString("PreferencesPanel.fastnavigation.title")));
     panelInternal.setLayout(new BorderLayout());
     panelInternal.add(this.comboBoxFastNavigationMouse, BorderLayout.NORTH);
     panelInternal.add(this.keyModifiersFastNavigation.asPanel(), BorderLayout.CENTER);
@@ -547,14 +645,16 @@ public abstract class AbstractPreferencesPanel {
     return panel;
   }
 
-  protected List<JComponent> findFontAndKeyboardExtras(final UIComponentFactory uiComponentFactory) {
+  protected List<JComponent> findFontAndKeyboardExtras(
+      final UIComponentFactory uiComponentFactory) {
     return Collections.emptyList();
   }
 
   private JPanel makeElementOptions(final ResourceBundle bundle) {
     final JPanel panel = this.uiComponentFactory.makePanel();
     panel.setLayout(new GridBagLayout());
-    panel.setBorder(BorderFactory.createTitledBorder(bundle.getString("PreferencesPanel.elementioptions.title")));
+    panel.setBorder(BorderFactory.createTitledBorder(
+        bundle.getString("PreferencesPanel.elementioptions.title")));
 
     final GridBagConstraints constraints = new GridBagConstraints();
     constraints.gridx = 0;
@@ -575,38 +675,50 @@ public abstract class AbstractPreferencesPanel {
 
     JPanel intPanel = this.uiComponentFactory.makePanel();
     intPanel.setLayout(new GridLayout(3, 2, GRID_GAP, GRID_GAP));
-    intPanel.add(this.buttonColorRootFill.setText(bundle.getString("PreferencesPanel.buttonRootFill.text")).asButton());
-    intPanel.add(this.buttonColorRootText.setText(bundle.getString("PreferencesPanel.buttonRootText.text")).asButton());
-    intPanel.add(this.buttonColorLevel1Fill.setText(bundle.getString("PreferencesPanel.button1levelFill.text")).asButton());
-    intPanel.add(this.buttonColorLevel1Text.setText(bundle.getString("PreferencesPanel.button1levelText.text")).asButton());
-    intPanel.add(this.buttonColorLevel2Fill.setText(bundle.getString("PreferencesPanel.button2levelFill.text")).asButton());
-    intPanel.add(this.buttonColorLevel2Text.setText(bundle.getString("PreferencesPanel.button2levelText.text")).asButton());
+    intPanel.add(
+        this.buttonColorRootFill.setText(bundle.getString("PreferencesPanel.buttonRootFill.text"))
+            .asButton());
+    intPanel.add(
+        this.buttonColorRootText.setText(bundle.getString("PreferencesPanel.buttonRootText.text"))
+            .asButton());
+    intPanel.add(this.buttonColorLevel1Fill.setText(
+        bundle.getString("PreferencesPanel.button1levelFill.text")).asButton());
+    intPanel.add(this.buttonColorLevel1Text.setText(
+        bundle.getString("PreferencesPanel.button1levelText.text")).asButton());
+    intPanel.add(this.buttonColorLevel2Fill.setText(
+        bundle.getString("PreferencesPanel.button2levelFill.text")).asButton());
+    intPanel.add(this.buttonColorLevel2Text.setText(
+        bundle.getString("PreferencesPanel.button2levelText.text")).asButton());
 
     panel.add(intPanel, constraints);
 
     intPanel = this.uiComponentFactory.makePanel();
-    intPanel.setBorder(BorderFactory.createTitledBorder(bundle.getString("PreferencesPanel.gap1levelHorz.title")));
+    intPanel.setBorder(
+        BorderFactory.createTitledBorder(bundle.getString("PreferencesPanel.gap1levelHorz.title")));
     intPanel.setLayout(new BorderLayout());
     intPanel.add(this.sliderLevel1HorzGap, BorderLayout.CENTER);
 
     panel.add(intPanel, constraints);
 
     intPanel = this.uiComponentFactory.makePanel();
-    intPanel.setBorder(BorderFactory.createTitledBorder(bundle.getString("PreferencesPanel.gap1levelVert.title")));
+    intPanel.setBorder(
+        BorderFactory.createTitledBorder(bundle.getString("PreferencesPanel.gap1levelVert.title")));
     intPanel.setLayout(new BorderLayout());
     intPanel.add(this.sliderLevel1VertGap, BorderLayout.CENTER);
 
     panel.add(intPanel, constraints);
 
     intPanel = this.uiComponentFactory.makePanel();
-    intPanel.setBorder(BorderFactory.createTitledBorder(bundle.getString("PreferencesPanel.gap2levelHorz.title")));
+    intPanel.setBorder(
+        BorderFactory.createTitledBorder(bundle.getString("PreferencesPanel.gap2levelHorz.title")));
     intPanel.setLayout(new BorderLayout());
     intPanel.add(this.sliderLevel2HorzGap, BorderLayout.CENTER);
 
     panel.add(intPanel, constraints);
 
     intPanel = this.uiComponentFactory.makePanel();
-    intPanel.setBorder(BorderFactory.createTitledBorder(bundle.getString("PreferencesPanel.gap2levelVert.title")));
+    intPanel.setBorder(
+        BorderFactory.createTitledBorder(bundle.getString("PreferencesPanel.gap2levelVert.title")));
     intPanel.setLayout(new BorderLayout());
     intPanel.add(this.sliderLevel2VertGap, BorderLayout.CENTER);
 
@@ -618,7 +730,8 @@ public abstract class AbstractPreferencesPanel {
   private JPanel makeSelectionFrameOptions(final ResourceBundle bundle) {
     final JPanel panel = this.uiComponentFactory.makePanel();
     panel.setLayout(new GridBagLayout());
-    panel.setBorder(BorderFactory.createTitledBorder(bundle.getString("PreferencesPanel.selectionFrameOptions.title")));
+    panel.setBorder(BorderFactory.createTitledBorder(
+        bundle.getString("PreferencesPanel.selectionFrameOptions.title")));
 
     final GridBagConstraints constraints = new GridBagConstraints();
     constraints.insets = new Insets(GRID_GAP, GRID_GAP, GRID_GAP, GRID_GAP);
@@ -629,7 +742,9 @@ public abstract class AbstractPreferencesPanel {
     constraints.gridx = 0;
     panel.add(Box.createHorizontalGlue());
     constraints.gridx = 1;
-    panel.add(this.buttonColorSelectFrame.setText(bundle.getString("PreferencesPanel.selectionFrameOptions.colorSelectFrame")).asButton(), constraints);
+    panel.add(this.buttonColorSelectFrame.setText(
+            bundle.getString("PreferencesPanel.selectionFrameOptions.colorSelectFrame")).asButton(),
+        constraints);
 
     constraints.gridx = 0;
     JLabel label = this.uiComponentFactory.makeLabel();
@@ -660,12 +775,13 @@ public abstract class AbstractPreferencesPanel {
     config.setBirdseyeBackground(this.buttonFastNavigationPaper.getValue());
 
     config.setShowGrid(this.checkBoxShowGrid.isSelected());
-    config.setGridStep(((Number)this.spinnerGridStep.getValue()).intValue());
+    config.setGridStep(((Number) this.spinnerGridStep.getValue()).intValue());
     config.setRenderQuality((RenderQuality) this.comboBoxRenderQuality.getSelectedItem());
-    config.setConnectorWidth(((Number)this.spinnerConnectorWidth.getValue()).floatValue());
-    config.setJumpLinkWidth(((Number)this.spinnerJumpLinkWidth.getValue()).floatValue());
-    config.setCollapsatorBorderWidth(((Number)this.spinnerCollapsatorWidth.getValue()).floatValue());
-    config.setCollapsatorSize(((Number)this.spinnerCollapsatorSize.getValue()).intValue());
+    config.setConnectorWidth(((Number) this.spinnerConnectorWidth.getValue()).floatValue());
+    config.setJumpLinkWidth(((Number) this.spinnerJumpLinkWidth.getValue()).floatValue());
+    config.setCollapsatorBorderWidth(
+        ((Number) this.spinnerCollapsatorWidth.getValue()).floatValue());
+    config.setCollapsatorSize(((Number) this.spinnerCollapsatorSize.getValue()).intValue());
     config.setCollapsatorBackgroundColor(this.buttonColorCollapsatorFill.getValue());
     config.setCollapsatorBorderColor(this.buttonColorCollapsatorBorder.getValue());
     config.setJumpLinkColor(this.buttonColorJumpLink.getValue());
@@ -677,10 +793,11 @@ public abstract class AbstractPreferencesPanel {
 
     config.setScaleModifiers(this.keyModifiersWheelScale.getModifiers());
     config.setBirdseyeMouseButton((MouseButton) this.comboBoxFastNavigationMouse.getSelectedItem());
-    config.setKeyShortCut(new KeyShortcut(MindMapPanelConfig.KEY_BIRDSEYE_MODIFIERS, this.keyModifiersFastNavigation.getModifiers()));
+    config.setKeyShortCut(new KeyShortcut(MindMapPanelConfig.KEY_BIRDSEYE_MODIFIERS,
+        this.keyModifiersFastNavigation.getModifiers()));
 
     config.setDropShadow(this.checkBoxDropShadow.isSelected());
-    config.setElementBorderWidth(((Number)this.spinnerBorderWidth.getValue()).floatValue());
+    config.setElementBorderWidth(((Number) this.spinnerBorderWidth.getValue()).floatValue());
 
     config.setRootBackgroundColor(this.buttonColorRootFill.getValue());
     config.setRootTextColor(this.buttonColorRootText.getValue());
@@ -698,8 +815,8 @@ public abstract class AbstractPreferencesPanel {
     config.setOtherLevelVerticalInset(this.sliderLevel2VertGap.getValue());
 
     config.setSelectLineColor(this.buttonColorSelectFrame.getValue());
-    config.setSelectLineGap(((Number)this.spinnerSelectionFrameGap.getValue()).intValue());
-    config.setSelectLineWidth(((Number)this.spinnerSelectionFrameWidth.getValue()).floatValue());
+    config.setSelectLineGap(((Number) this.spinnerSelectionFrameGap.getValue()).intValue());
+    config.setSelectLineWidth(((Number) this.spinnerSelectionFrameWidth.getValue()).floatValue());
 
     this.onSave(config);
 
@@ -708,65 +825,78 @@ public abstract class AbstractPreferencesPanel {
 
   public abstract void onSave(MindMapPanelConfig config);
 
-  public AbstractPreferencesPanel load(final MindMapPanelConfig config) {
-    this.buttonColorPaper.setValue(config.getPaperColor());
-    this.buttonColorGrid.setValue(config.getGridColor());
-    this.buttonFastNavigationInk.setValue(config.getBirdseyeFront());
-    this.buttonFastNavigationPaper.setValue(config.getBirdseyeBackground());
-    this.checkBoxShowGrid.setSelected(config.isShowGrid());
-    this.spinnerGridStep.setValue(config.getGridStep());
-    this.comboBoxRenderQuality.setSelectedItem(config.getRenderQuality());
-    this.spinnerConnectorWidth.setValue(config.getConnectorWidth());
-    this.spinnerJumpLinkWidth.setValue(config.getJumpLinkWidth());
-    this.spinnerCollapsatorWidth.setValue(config.getCollapsatorBorderWidth());
-    this.spinnerCollapsatorSize.setValue(config.getCollapsatorSize());
-    this.buttonColorCollapsatorFill.setValue(config.getCollapsatorBackgroundColor());
-    this.buttonColorCollapsatorBorder.setValue(config.getCollapsatorBorderColor());
-    this.buttonColorJumpLink.setValue(config.getJumpLinkColor());
-    this.buttonColorConnector.setValue(config.getConnectorColor());
-    this.fontChooserPanelMindMapTopicTitleFont.setValue(config.getFont());
+  public boolean isChanged() {
+    if (this.lastLoadedConfig == null) {
+      return false;
+    } else {
+      final MindMapPanelConfig newConfig = this.save();
+      return this.lastLoadedConfig.hasDifferenceInParameters(newConfig);
+    }
+  }
 
-    this.checkBoxSmartTextPaste.setSelected(config.isSmartTextPaste());
+  public final AbstractPreferencesPanel load(final MindMapPanelConfig config) {
+    this.lastLoadedConfig = new MindMapPanelConfig(config, false);
 
-    this.keyShortcutMap.clear();
-    this.keyShortcutMap.putAll(config.getKeyShortcutMap());
+    this.trapChangeAllowed = false;
+    try {
+      this.buttonColorPaper.setValue(config.getPaperColor());
+      this.buttonColorGrid.setValue(config.getGridColor());
+      this.buttonFastNavigationInk.setValue(config.getBirdseyeFront());
+      this.buttonFastNavigationPaper.setValue(config.getBirdseyeBackground());
+      this.checkBoxShowGrid.setSelected(config.isShowGrid());
+      this.spinnerGridStep.setValue(config.getGridStep());
+      this.comboBoxRenderQuality.setSelectedItem(config.getRenderQuality());
+      this.spinnerConnectorWidth.setValue(config.getConnectorWidth());
+      this.spinnerJumpLinkWidth.setValue(config.getJumpLinkWidth());
+      this.spinnerCollapsatorWidth.setValue(config.getCollapsatorBorderWidth());
+      this.spinnerCollapsatorSize.setValue(config.getCollapsatorSize());
+      this.buttonColorCollapsatorFill.setValue(config.getCollapsatorBackgroundColor());
+      this.buttonColorCollapsatorBorder.setValue(config.getCollapsatorBorderColor());
+      this.buttonColorJumpLink.setValue(config.getJumpLinkColor());
+      this.buttonColorConnector.setValue(config.getConnectorColor());
+      this.fontChooserPanelMindMapTopicTitleFont.setValue(config.getFont());
 
-    this.keyModifiersWheelScale.setModifiers(config.getScaleModifiers());
-    this.comboBoxFastNavigationMouse.setSelectedItem(config.getBirdseyeMouseButton());
-    this.keyModifiersFastNavigation.setModifiers(config.getKeyShortcutMap().get(MindMapPanelConfig.KEY_BIRDSEYE_MODIFIERS).getModifiers());
+      this.checkBoxSmartTextPaste.setSelected(config.isSmartTextPaste());
 
-    this.checkBoxDropShadow.setSelected(config.isDropShadow());
-    this.spinnerBorderWidth.setValue(config.getElementBorderWidth());
+      this.keyShortcutMap.clear();
+      this.keyShortcutMap.putAll(config.getKeyShortcutMap());
 
-    this.buttonColorRootFill.setValue(config.getRootBackgroundColor());
-    this.buttonColorRootText.setValue(config.getRootTextColor());
+      this.keyModifiersWheelScale.setModifiers(config.getScaleModifiers());
+      this.comboBoxFastNavigationMouse.setSelectedItem(config.getBirdseyeMouseButton());
+      this.keyModifiersFastNavigation.setModifiers(
+          config.getKeyShortcutMap().get(MindMapPanelConfig.KEY_BIRDSEYE_MODIFIERS).getModifiers());
 
-    this.buttonColorLevel1Fill.setValue(config.getFirstLevelBackgroundColor());
-    this.buttonColorLevel1Text.setValue(config.getFirstLevelTextColor());
+      this.checkBoxDropShadow.setSelected(config.isDropShadow());
+      this.spinnerBorderWidth.setValue(config.getElementBorderWidth());
 
-    this.buttonColorLevel2Fill.setValue(config.getOtherLevelBackgroundColor());
-    this.buttonColorLevel2Text.setValue(config.getOtherLevelTextColor());
+      this.buttonColorRootFill.setValue(config.getRootBackgroundColor());
+      this.buttonColorRootText.setValue(config.getRootTextColor());
 
-    this.sliderLevel1HorzGap.setValue(config.getFirstLevelHorizontalInset());
-    this.sliderLevel1VertGap.setValue(config.getFirstLevelVerticalInset());
+      this.buttonColorLevel1Fill.setValue(config.getFirstLevelBackgroundColor());
+      this.buttonColorLevel1Text.setValue(config.getFirstLevelTextColor());
 
-    this.sliderLevel2HorzGap.setValue(config.getOtherLevelHorizontalInset());
-    this.sliderLevel2VertGap.setValue(config.getOtherLevelVerticalInset());
+      this.buttonColorLevel2Fill.setValue(config.getOtherLevelBackgroundColor());
+      this.buttonColorLevel2Text.setValue(config.getOtherLevelTextColor());
 
-    this.buttonColorSelectFrame.setValue(config.getSelectLineColor());
-    this.spinnerSelectionFrameGap.setValue(config.getSelectLineGap());
-    this.spinnerSelectionFrameWidth.setValue(config.getSelectLineWidth());
+      this.sliderLevel1HorzGap.setValue(config.getFirstLevelHorizontalInset());
+      this.sliderLevel1VertGap.setValue(config.getFirstLevelVerticalInset());
 
-    this.onLoad(config);
+      this.sliderLevel2HorzGap.setValue(config.getOtherLevelHorizontalInset());
+      this.sliderLevel2VertGap.setValue(config.getOtherLevelVerticalInset());
 
-    return this;
+      this.buttonColorSelectFrame.setValue(config.getSelectLineColor());
+      this.spinnerSelectionFrameGap.setValue(config.getSelectLineGap());
+      this.spinnerSelectionFrameWidth.setValue(config.getSelectLineWidth());
+
+      this.onLoad(config);
+
+      return this;
+    } finally {
+      this.trapChangeAllowed = true;
+    }
   }
 
   public abstract void onLoad(MindMapPanelConfig config);
-
-  public MindMapPanelConfig make() {
-    return null;
-  }
 
   public void exportAsFileDialog() {
     final ResourceBundle bundle = MmcI18n.getInstance().findBundle();
@@ -848,7 +978,7 @@ public abstract class AbstractPreferencesPanel {
 
     private final Supplier<JButton> supplier;
 
-    private ButtonInfo(){
+    private ButtonInfo() {
       this.splitter = true;
       this.icon = null;
       this.title = null;
@@ -857,7 +987,8 @@ public abstract class AbstractPreferencesPanel {
       this.supplier = null;
     }
 
-    private ButtonInfo(final Image icon, final String title, final String tooltip, final ActionListener actionListener, final Supplier<JButton> supplier) {
+    private ButtonInfo(final Image icon, final String title, final String tooltip,
+                       final ActionListener actionListener, final Supplier<JButton> supplier) {
       this.splitter = false;
       this.icon = icon;
       this.title = title;
@@ -870,15 +1001,19 @@ public abstract class AbstractPreferencesPanel {
       return new ButtonInfo();
     }
 
-    public static ButtonInfo from(final Image icon, final String title, final ActionListener actionListener) {
+    public static ButtonInfo from(final Image icon, final String title,
+                                  final ActionListener actionListener) {
       return new ButtonInfo(icon, title, null, actionListener, null);
     }
 
-    public static ButtonInfo from(final Image icon, final String title, final String tooltip, final ActionListener actionListener) {
+    public static ButtonInfo from(final Image icon, final String title, final String tooltip,
+                                  final ActionListener actionListener) {
       return new ButtonInfo(icon, title, tooltip, actionListener, null);
     }
 
-    public static ButtonInfo from(final Image icon, final String title, final String tooltip, final ActionListener actionListener, final Supplier<JButton> supplier) {
+    public static ButtonInfo from(final Image icon, final String title, final String tooltip,
+                                  final ActionListener actionListener,
+                                  final Supplier<JButton> supplier) {
       return new ButtonInfo(icon, title, tooltip, actionListener, supplier);
     }
   }
