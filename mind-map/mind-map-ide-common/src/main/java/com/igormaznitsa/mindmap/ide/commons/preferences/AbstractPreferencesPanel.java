@@ -16,8 +16,6 @@
 
 package com.igormaznitsa.mindmap.ide.commons.preferences;
 
-import static java.util.Objects.requireNonNull;
-
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
