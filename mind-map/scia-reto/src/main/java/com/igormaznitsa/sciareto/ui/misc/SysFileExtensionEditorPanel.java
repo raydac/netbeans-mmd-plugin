@@ -27,6 +27,7 @@ import java.util.Locale;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
 public class SysFileExtensionEditorPanel extends javax.swing.JPanel {
@@ -219,7 +220,12 @@ public class SysFileExtensionEditorPanel extends javax.swing.JPanel {
   }//GEN-LAST:event_buttonResetActionPerformed
 
   private void buttonAddLineActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAddLineActionPerformed
-    ((DefaultTableModel)this.tableExtensions.getModel()).addRow(new String[]{""});
+    ((DefaultTableModel)this.tableExtensions.getModel()).insertRow(0, new String[]{""});
+    this.tableExtensions.requestFocus();
+    SwingUtilities.invokeLater(() -> {
+      this.tableExtensions.setRowSelectionInterval(0, 0);
+      this.tableExtensions.editCellAt(0, 0);
+    });
   }//GEN-LAST:event_buttonAddLineActionPerformed
 
   private void buttonEditLineActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonEditLineActionPerformed

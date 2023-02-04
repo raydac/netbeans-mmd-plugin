@@ -19,8 +19,7 @@
 package com.igormaznitsa.sciareto.ui.editors;
 
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
-import com.igormaznitsa.sciareto.preferences.PreferencesManager;
-import com.igormaznitsa.sciareto.preferences.SpecificKeys;
+import com.igormaznitsa.sciareto.preferences.AdditionalPreferences;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import java.awt.Font;
 import java.awt.event.MouseWheelEvent;
@@ -50,10 +49,7 @@ public final class ScalableRsyntaxTextArea extends RSyntaxTextArea {
 
     this.config = mmConfig;
 
-    this.setFont(PreferencesManager.getInstance()
-        .getFont(PreferencesManager.getInstance().getPreferences(),
-            SpecificKeys.PROPERTY_TEXT_EDITOR_FONT,
-            DEFAULT_FONT));
+    this.setFont(mmConfig.getOptionalProperty(AdditionalPreferences.PROPERTY_TEXT_EDITOR_FONT, DEFAULT_FONT));
     this.fontOriginalSize = this.getFont().getSize2D();
 
     this.addMouseWheelListener((@Nonnull final MouseWheelEvent e) -> {
@@ -113,9 +109,7 @@ public final class ScalableRsyntaxTextArea extends RSyntaxTextArea {
 
   public void updateConfig(@Nonnull final MindMapPanelConfig mmConfig) {
     this.config = mmConfig;
-    this.setFont(PreferencesManager.getInstance()
-        .getFont(PreferencesManager.getInstance().getPreferences(),
-            SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, DEFAULT_FONT));
+    this.setFont(mmConfig.getOptionalProperty(AdditionalPreferences.PROPERTY_TEXT_EDITOR_FONT, DEFAULT_FONT));
     this.fontOriginalSize = this.getFont().getSize2D();
     updateFontForScale();
     this.revalidate();

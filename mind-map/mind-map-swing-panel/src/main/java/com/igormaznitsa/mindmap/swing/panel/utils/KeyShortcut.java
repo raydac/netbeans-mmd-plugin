@@ -19,6 +19,7 @@ package com.igormaznitsa.mindmap.swing.panel.utils;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.Locale;
+import java.util.Objects;
 import javax.swing.KeyStroke;
 
 public final class KeyShortcut {
@@ -27,6 +28,24 @@ public final class KeyShortcut {
   private final String id;
   private final int modifiers;
   private final int keyCode;
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    KeyShortcut that = (KeyShortcut) o;
+    return modifiers == that.modifiers && keyCode == that.keyCode &&
+        Objects.equals(id, that.id);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, modifiers, keyCode);
+  }
 
   public KeyShortcut(final String packed) {
     final String[] split = packed.split("\\*");
@@ -146,24 +165,6 @@ public final class KeyShortcut {
       return code == this.keyCode &&
           (event.getModifiers() & modifiersMask) == (this.modifiers & modifiersMask);
     }
-  }
-
-  @Override
-  public int hashCode() {
-    return this.modifiers ^ this.keyCode;
-  }
-
-  @Override
-  public boolean equals(final Object object) {
-    if (object == this) {
-      return true;
-    }
-    if (object instanceof KeyShortcut) {
-      final KeyShortcut that = (KeyShortcut) object;
-      return this.id.equals(that.id) && this.keyCode == that.keyCode &&
-          this.modifiers == that.modifiers;
-    }
-    return false;
   }
 
   public String packToString() {

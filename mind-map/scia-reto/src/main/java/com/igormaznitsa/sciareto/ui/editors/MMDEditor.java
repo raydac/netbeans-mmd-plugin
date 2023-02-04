@@ -68,6 +68,7 @@ import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.SciaRetoStarter;
+import com.igormaznitsa.sciareto.preferences.AdditionalPreferences;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.preferences.SystemFileExtensionManager;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
@@ -130,7 +131,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
 public final class MMDEditor extends AbstractTextEditor
-    implements PluginContext, MindMapPanelController, MindMapListener, DropTargetListener {
+    implements PluginContext, MindMapPanelController, MindMapListener, DropTargetListener,
+    AdditionalPreferences {
 
   private static final long serialVersionUID = -1011638261448046201L;
   private static final double SCALE_MIN = 0.1d;
@@ -446,20 +448,17 @@ public final class MMDEditor extends AbstractTextEditor
 
   @Override
   public boolean isTrimTopicTextBeforeSet(@Nonnull final MindMapPanel source) {
-    return PreferencesManager.getInstance().getPreferences()
-        .getBoolean("trimTopicText", false); //NOI18N
+    return source.getConfiguration().getOptionalProperty(PROPERTY_TRIM_TOPIC_TEXT, false);
   }
 
   @Override
   public boolean isUnfoldCollapsedTopicDropTarget(@Nonnull final MindMapPanel source) {
-    return PreferencesManager.getInstance().getPreferences()
-        .getBoolean("unfoldCollapsedTarget", true); //NOI18N
+    return source.getConfiguration().getOptionalProperty(PROPERTY_UNFOLD_COLLAPSED_DROP_TARGET, false);
   }
 
   @Override
   public boolean isCopyColorInfoFromParentToNewChildAllowed(@Nonnull final MindMapPanel source) {
-    return PreferencesManager.getInstance().getPreferences()
-        .getBoolean("copyColorInfoToNewChildAllowed", true); //NOI18N
+    return source.getConfiguration().getOptionalProperty(PROPERTY_COPY_PARENT_COLORS_TO_NEW_CHILD, true);
   }
 
   @Override
@@ -1029,7 +1028,7 @@ public final class MMDEditor extends AbstractTextEditor
         // create new
         result = UiUtils.editText(String
             .format(SrI18n.getInstance().findBundle().getString("MMDGraphEditor.editTextForTopic.dlfAddNoteTitle"),
-                Utils.makeShortTextVersion(topic.getText(), 16)), new NoteEditorData()); //NOI18N
+                Utils.makeShortTextVersion(topic.getText(), 16)), new NoteEditorData(), this.mindMapPanelConfig); //NOI18N
       } else {
         // edit
         NoteEditorData noteText = null;
@@ -1067,7 +1066,7 @@ public final class MMDEditor extends AbstractTextEditor
           result = UiUtils.editText(String
               .format(
                   SrI18n.getInstance().findBundle().getString("MMDGraphEditor.editTextForTopic.dlgEditNoteTitle"),
-                  Utils.makeShortTextVersion(topic.getText(), 16)), noteText);
+                  Utils.makeShortTextVersion(topic.getText(), 16)), noteText, this.mindMapPanelConfig);
         }
       }
       if (result != null) {

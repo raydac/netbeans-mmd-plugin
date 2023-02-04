@@ -19,32 +19,31 @@ package com.igormaznitsa.sciareto.metrics;
 
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
+import com.igormaznitsa.sciareto.preferences.AdditionalPreferences;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 
 import javax.annotation.Nonnull;
-import java.util.concurrent.atomic.AtomicBoolean;
 
-public class MetricsService {
+public class MetricsService implements AdditionalPreferences {
 
-  public static final String PROPERTY_METRICS_SENDING_FLAG = "metrics.sending"; //NOI18N
-  public static final String PROPERTY_METRICS_SENDING_LAST_TIME = "metrics.sending.last.time"; //NOI18N
+  public static final String PROPERTY_METRICS_SENDING_LAST_TIME = "metrics.sending.last.time";
 
   private static final MetricsService INSTANCE = new MetricsService();
-  private static final String PROJECT_TOKEN = "3b0f869a336fd27dc5c2fbd73c7bd3ee"; //NOI18N
+  private static final String PROJECT_TOKEN = "3b0f869a336fd27dc5c2fbd73c7bd3ee";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MetricsService.class);
-
-  private final AtomicBoolean enabled = new AtomicBoolean();
+  private volatile boolean sendMetricsDataEnabled = true;
 
   private MetricsService() {
-    this.enabled.set(PreferencesManager.getInstance().getPreferences().getBoolean(PROPERTY_METRICS_SENDING_FLAG, true));
+    this.refreshConfig();
   }
 
   @Nonnull
-  public static final MetricsService getInstance() {
+  public static MetricsService getInstance() {
     return INSTANCE;
   }
-
+  
   public void onFirstStart() {
       LOGGER.info("Starting statistics send"); //NOI18N
       final Thread thread = new Thread(() -> {
@@ -53,38 +52,29 @@ public class MetricsService {
         } catch (Exception ex) {
           LOGGER.error("Can't send statistics", ex); //NOI18N
         }
-      }, "SCIARETO_STATISTIC_SEND"); //NOI18N
+      }, "sciareto-statistics-send-thread"); //NOI18N
       thread.setDaemon(true);
       thread.start();
   }
-  
+
   public void sendStatistics() {
-    if (this.enabled.get()) {
-      LOGGER.info("Starting statistics send"); //NOI18N
+    if (this.sendMetricsDataEnabled) {
+      LOGGER.info("Starting statistics send");
       final Thread thread = new Thread(() -> {
         try {
           doAction();
         } catch (Exception ex) {
-          LOGGER.error("Can't send statistics", ex); //NOI18N
+          LOGGER.error("Can't send statistics", ex);
         }
-      }, "SCIARETO_STATISTIC_SEND"); //NOI18N
+      }, "sciareto-statistics-send-thread");
       thread.setDaemon(true);
       thread.start();
     } else {
-      LOGGER.info("Ignored statistics because disabled"); //NOI18N
-    }
-  }
-
-  private void doFirstStartAction() throws Exception {
-    try {
-      final String installationUUID = PreferencesManager.getInstance().getInstallationUUID().toString();
-    } finally {
-      PreferencesManager.getInstance().getPreferences().putLong(PROPERTY_METRICS_SENDING_LAST_TIME, System.currentTimeMillis());
-      PreferencesManager.getInstance().flush();
+      LOGGER.info("Ignored statistics because disabled");
     }
   }
   
-  private void doAction() throws Exception {
+  private void doFirstStartAction() {
     try {
       final String installationUUID = PreferencesManager.getInstance().getInstallationUUID().toString();
     } finally {
@@ -93,14 +83,23 @@ public class MetricsService {
     }
   }
 
-  public boolean isEnabled() {
-    return this.enabled.get();
-  }
-
-  public void setEnabled(final boolean flag) {
-    if (this.enabled.compareAndSet(!flag, flag)) {
-      PreferencesManager.getInstance().getPreferences().putBoolean(PROPERTY_METRICS_SENDING_FLAG, flag);
+  private void doAction() {
+    try {
+      final String installationUUID = PreferencesManager.getInstance().getInstallationUUID().toString();
+    } finally {
+      PreferencesManager.getInstance().getPreferences().putLong(PROPERTY_METRICS_SENDING_LAST_TIME, System.currentTimeMillis());
       PreferencesManager.getInstance().flush();
     }
   }
+
+  public void refreshConfig() {
+    final MindMapPanelConfig config = new MindMapPanelConfig();
+    config.loadFrom(PreferencesManager.getInstance().getPreferences());
+    this.sendMetricsDataEnabled = config.getOptionalProperty(PROPERTY_METRICS_SENDING_FLAG, true);
+  }
+
+  public boolean isEnabled() {
+    return this.sendMetricsDataEnabled;
+  }
+
 }

@@ -18,6 +18,7 @@
  */
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.preferences.PrefUtils;
 
@@ -67,7 +68,9 @@ public final class SciaReto {
     }
 
     if (System.getProperty(ENV_PLANTUML_SECURITY_PROFILE) == null) {
-      PrefUtils.setPlantUmlSecurityProfileAsSystemProperty();
+      final MindMapPanelConfig config = new MindMapPanelConfig();
+      config.loadFrom(PreferencesManager.getInstance().getPreferences());
+      PrefUtils.setPlantUmlSecurityProfileAsSystemProperty(config);
     }
 
     final String presentedScale = System.getProperty("sun.java2d.uiScale", null);

@@ -28,6 +28,7 @@ import com.igormaznitsa.mindmap.swing.panel.utils.ImageSelection;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.SciaRetoStarter;
+import com.igormaznitsa.sciareto.preferences.AdditionalPreferences;
 import com.igormaznitsa.sciareto.preferences.PrefUtils;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.FindTextScopeProvider;
@@ -700,7 +701,8 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
   }
 
   private void initPlantUml() {
-    OptionFlags.getInstance().setDotExecutable(PrefUtils.getPlantUmlDotPath());
+    OptionFlags.getInstance().setDotExecutable(this.mindMapPanelConfig.getOptionalProperty(
+        AdditionalPreferences.PROPERTY_PLANTUML_DOT_PATH, null));
   }
 
   @Nonnull

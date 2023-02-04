@@ -22,6 +22,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.anyDouble;
 import static org.mockito.Mockito.anyFloat;
@@ -30,7 +31,6 @@ import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
 
 import com.igormaznitsa.mindmap.swing.panel.utils.KeyShortcut;
 import java.awt.Color;
@@ -66,7 +66,9 @@ public class MindMapPanelConfigTest {
     final MindMapPanelConfig one = new MindMapPanelConfig();
     final MindMapPanelConfig two = new MindMapPanelConfig();
 
-    one.setKeyShortCut(new KeyShortcut(MindMapPanelConfig.KEY_ADD_CHILD_AND_START_EDIT, Integer.MAX_VALUE, Integer.MIN_VALUE));
+    one.setKeyShortCut(
+        new KeyShortcut(MindMapPanelConfig.KEY_ADD_CHILD_AND_START_EDIT, Integer.MAX_VALUE,
+            Integer.MIN_VALUE));
     assertTrue(one.hasDifferenceInParameters(two));
   }
 
@@ -89,11 +91,54 @@ public class MindMapPanelConfigTest {
   }
 
   @Test
+  public void testOptionalProperties_SetGet() {
+    final MindMapPanelConfig config = new MindMapPanelConfig();
+
+    assertNull(config.getOptionalProperty("string", null));
+    assertNull(config.getOptionalProperty("number", null));
+    assertNull(config.getOptionalProperty("enum", null));
+    assertTrue(config.getOptionalProperties().isEmpty());
+
+    config.setOptionalProperty("string", "Hello");
+    config.setOptionalProperty("number", 123);
+    config.setOptionalProperty("enum", TestEnum.ONE);
+    assertEquals(3, config.getOptionalProperties().size());
+
+    assertEquals("Hello", config.getOptionalProperty("string", null));
+    assertEquals(TestEnum.ONE, config.<TestEnum>getOptionalProperty("enum", null));
+    assertEquals(Integer.valueOf(123), config.<Integer>getOptionalProperty("number", null));
+  }
+
+  @Test
+  public void testOptionalProperties_hasDifferenceInParameters() {
+    final MindMapPanelConfig one = new MindMapPanelConfig();
+    final MindMapPanelConfig two = new MindMapPanelConfig();
+
+    assertFalse(one.hasDifferenceInParameters(two));
+
+    one.setOptionalProperty("string", "Hello");
+    one.setOptionalProperty("number", 123);
+    one.setOptionalProperty("enum", TestEnum.ONE);
+
+    assertTrue(one.hasDifferenceInParameters(two));
+
+    two.setOptionalProperty("string", "Hello");
+    two.setOptionalProperty("number", 123);
+    two.setOptionalProperty("enum", TestEnum.ONE);
+
+    assertFalse(one.hasDifferenceInParameters(two));
+
+    two.setOptionalProperty("enum", TestEnum.TWO);
+    assertTrue(one.hasDifferenceInParameters(two));
+  }
+
+  @Test
   public void testHasDifferenceInParameters_DifferenceInColor() {
     final MindMapPanelConfig one = new MindMapPanelConfig();
     final MindMapPanelConfig two = new MindMapPanelConfig();
 
-    one.setCollapsatorBackgroundColor(new Color(two.getCollapsatorBackgroundColor().getRGB() ^ 0xFFFFFFFF));
+    one.setCollapsatorBackgroundColor(
+        new Color(two.getCollapsatorBackgroundColor().getRGB() ^ 0xFFFFFFFF));
     assertTrue(one.hasDifferenceInParameters(two));
   }
 
@@ -120,48 +165,45 @@ public class MindMapPanelConfigTest {
     final Map<String, Object> storage = new HashMap<>();
     final Preferences prefs = mock(Preferences.class);
 
-    doAnswer(new Answer() {
-      @Override
-      public Object answer(final InvocationOnMock invocation) throws Throwable {
-        final String key = invocation.getArgument(0);
-        final String value = invocation.getArgument(1);
-        storage.put(key, value);
-        return null;
-      }
+    doAnswer(invocation -> {
+      final String key = invocation.getArgument(0);
+      final String value = invocation.getArgument(1);
+      storage.put(key, value);
+      return null;
     }).when(prefs).put(anyString(), anyString());
 
-    doAnswer((Answer) (final InvocationOnMock invocation) -> {
+    doAnswer((final InvocationOnMock invocation) -> {
       final String key = invocation.getArgument(0);
       final Integer value = invocation.getArgument(1);
       storage.put(key, value);
       return null;
     }).when(prefs).putInt(anyString(), anyInt());
 
-    doAnswer((Answer) (final InvocationOnMock invocation) -> {
+    doAnswer((final InvocationOnMock invocation) -> {
       final String key = invocation.getArgument(0);
       final Boolean value = invocation.getArgument(1);
       storage.put(key, value);
       return null;
     }).when(prefs).putBoolean(anyString(), anyBoolean());
 
-    doAnswer((Answer) (final InvocationOnMock invocation) -> {
+    doAnswer((final InvocationOnMock invocation) -> {
       final String key = invocation.getArgument(0);
       final Float value = invocation.getArgument(1);
       storage.put(key, value);
       return null;
     }).when(prefs).putFloat(anyString(), anyFloat());
 
-    doAnswer((Answer) (final InvocationOnMock invocation) -> {
+    doAnswer((final InvocationOnMock invocation) -> {
       final String key = invocation.getArgument(0);
       final Double value = invocation.getArgument(1);
       storage.put(key, value);
       return null;
     }).when(prefs).putDouble(anyString(), anyDouble());
 
-    when(prefs.get(anyString(), anyString())).thenAnswer((InvocationOnMock invocation) -> {
+    when(prefs.get(anyString(), any())).thenAnswer((InvocationOnMock invocation) -> {
       final String key = invocation.getArgument(0);
       final String def = invocation.getArgument(1);
-      return storage.containsKey(key) ? (String) storage.get(key) : def;
+      return storage.containsKey(key) ? storage.get(key) : def;
     });
 
     when(prefs.getBoolean(anyString(), anyBoolean())).thenAnswer((InvocationOnMock invocation) -> {
@@ -189,7 +231,8 @@ public class MindMapPanelConfigTest {
     });
 
     try {
-      when(prefs.keys()).thenAnswer((final InvocationOnMock invocation) -> storage.keySet().toArray(new String[0]));
+      when(prefs.keys()).thenAnswer(
+          (final InvocationOnMock invocation) -> storage.keySet().toArray(new String[0]));
     } catch (Exception ex) {
       fail("Unexpected exception");
     }
@@ -199,6 +242,9 @@ public class MindMapPanelConfigTest {
     config.setScale(100.5d);
     config.setGridColor(Color.orange);
     config.setShowGrid(false);
+    config.setOptionalProperty("one", TestEnum.ONE);
+    config.setOptionalProperty("two", TestEnum.TWO);
+    config.setOptionalProperty("three", 112);
     config.setFont(new Font("Helvetica", Font.ITALIC, 36));
 
     config.setKeyShortCut(new KeyShortcut("testShortCut", 1234, 5678));
@@ -209,6 +255,10 @@ public class MindMapPanelConfigTest {
     final MindMapPanelConfig newConfig = new MindMapPanelConfig();
 
     newConfig.loadFrom(prefs);
+
+    assertEquals(TestEnum.ONE, newConfig.getOptionalProperty("one", null));
+    assertEquals(TestEnum.TWO, newConfig.getOptionalProperty("two", null));
+    assertEquals(Integer.valueOf(112), newConfig.getOptionalProperty("three", null));
 
     assertFalse(newConfig.isShowGrid());
     assertEquals(Color.orange, newConfig.getGridColor());
@@ -233,6 +283,10 @@ public class MindMapPanelConfigTest {
     assertEquals(etalon.getScale(), newConfig.getScale(), 0.0d);
     assertNull(newConfig.getKeyShortCut("testShortCut"));
     assertNotNull(newConfig.getKeyShortCut(MindMapPanelConfig.KEY_ADD_CHILD_AND_START_EDIT));
+  }
+
+  private enum TestEnum {
+    ONE, TWO
   }
 
 }

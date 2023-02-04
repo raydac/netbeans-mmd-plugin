@@ -30,6 +30,7 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.ide.IDEBridgeFactory;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
@@ -412,8 +413,9 @@ public final class UiUtils {
 
   @Nullable
   public static NoteEditorData editText(@Nonnull final String title,
-                                        @Nonnull final NoteEditorData data) {
-    final NoteEditor textEditor = new NoteEditor(data);
+                                        @Nonnull final NoteEditorData data,
+                                        @Nonnull final MindMapPanelConfig config) {
+    final NoteEditor textEditor = new NoteEditor(data, config);
     try {
       if (DialogProviderManager.getInstance().getDialogProvider()
           .msgOkCancel(SciaRetoStarter.getApplicationFrame(), title,

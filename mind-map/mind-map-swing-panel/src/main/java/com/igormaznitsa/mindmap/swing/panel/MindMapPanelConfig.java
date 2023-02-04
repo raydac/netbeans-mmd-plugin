@@ -28,16 +28,23 @@ import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import java.util.stream.Stream;
@@ -71,9 +78,13 @@ public final class MindMapPanelConfig implements Serializable {
   public static final String KEY_BIRDSEYE_MODIFIERS = "birdsEyeModifiers";
 
   private static final long serialVersionUID = -4273687011484460064L;
+  private static final String PREFIX_OPTIONAL_PROPERTY = "optionalProperty.";
+  private static final String PREFIX_SHORTCUT = "mapShortCut.";
   private transient final List<WeakReference<MindMapConfigListener>> listeners =
       new ArrayList<>();
   private transient final Map<String, KeyShortcut> mapShortCut = new HashMap<>();
+  private transient final Map<String, Serializable> optionalProperties = new ConcurrentHashMap<>();
+  private final Serializable NULL_OPTIONAL_OBJECT = "some_null_object";
   private int collapsatorSize = 16;
   private int textMargins = 10;
   private int otherLevelVerticalInset = 16;
@@ -265,7 +276,8 @@ public final class MindMapPanelConfig implements Serializable {
 
   /**
    * Check that modifiers match input event.
-   * @param id identifier of shortcut
+   *
+   * @param id    identifier of shortcut
    * @param event event, can be null
    * @return true if event is not null and modifiers match
    * @since 1.6.2
@@ -279,12 +291,33 @@ public final class MindMapPanelConfig implements Serializable {
     return this.isKeyEvent(id, event, KeyShortcut.ALL_MODIFIERS_MASK);
   }
 
+  @SuppressWarnings("unchecked")
+  public <T extends Serializable> T getOptionalProperty(final String id, final T defaultValue) {
+    final Serializable result = this.optionalProperties.get(id);
+    return (T) (result == null || result == NULL_OPTIONAL_OBJECT ? defaultValue : result);
+  }
+
+  public void setOptionalProperty(final String id, final Serializable value) {
+    this.optionalProperties.put(id, value == null ? NULL_OPTIONAL_OBJECT : value);
+  }
+
   public KeyShortcut getKeyShortCut(final String id) {
     return this.mapShortCut.get(id);
   }
 
   public void setKeyShortCut(final KeyShortcut shortCut) {
     this.mapShortCut.put(shortCut.getID(), shortCut);
+  }
+
+  @SettingsAccessor(name = "optionalProperties")
+  public Map<String, Serializable> getOptionalProperties() {
+    return new HashMap<>(this.optionalProperties);
+  }
+
+  @SettingsAccessor(name = "optionalProperties")
+  public void setOptionalProperties(final Map<String, Serializable> properties) {
+    this.optionalProperties.clear();
+    this.optionalProperties.putAll(properties);
   }
 
   @SettingsAccessor(name = "mapShortCut")
@@ -321,22 +354,8 @@ public final class MindMapPanelConfig implements Serializable {
       }
     }
 
-    final Map<String, KeyShortcut> thisShortcuts = this.mapShortCut;
-    final Map<String, KeyShortcut> thatShortcuts = etalon.mapShortCut;
-
-    if (thisShortcuts.size() != thatShortcuts.size()) {
-      return true;
-    }
-    for (final Map.Entry<String, KeyShortcut> e : thisShortcuts.entrySet()) {
-      if (!thatShortcuts.containsKey(e.getKey())) {
-        return true;
-      }
-      if (!thatShortcuts.get(e.getKey()).equals(thisShortcuts.get(e.getKey()))) {
-        return true;
-      }
-    }
-
-    return false;
+    return !this.mapShortCut.equals(etalon.mapShortCut)
+        || !this.optionalProperties.equals(etalon.optionalProperties);
   }
 
   public Preferences saveTo(final Preferences prefs) {
@@ -384,8 +403,28 @@ public final class MindMapPanelConfig implements Serializable {
       }
 
       for (final Map.Entry<String, KeyShortcut> e : this.mapShortCut.entrySet()) {
-        prefs.put("mapShortCut." + e.getValue().getID(), e.getValue().packToString());
+        prefs.put(PREFIX_SHORTCUT + e.getValue().getID(), e.getValue().packToString());
       }
+
+      for (final Map.Entry<String, Serializable> e : this.optionalProperties.entrySet()) {
+        final String key = PREFIX_OPTIONAL_PROPERTY + e.getKey();
+        if (e.getValue() == NULL_OPTIONAL_OBJECT) {
+          prefs.remove(key);
+        } else {
+          final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+          try {
+            final ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+            objectOutputStream.writeObject(e.getValue());
+            objectOutputStream.close();
+            final String encodedValue =
+                Base64.getEncoder().encodeToString(outputStream.toByteArray());
+            prefs.put(key, encodedValue);
+          } catch (final IOException ex) {
+            throw new RuntimeException("Error during write optional property: " + e, ex);
+          }
+        }
+      }
+      this.optionalProperties.values().removeIf(x -> x == NULL_OPTIONAL_OBJECT);
     }
     return prefs;
   }
@@ -445,7 +484,7 @@ public final class MindMapPanelConfig implements Serializable {
       this.mapShortCut.putAll(etalon.mapShortCut);
       try {
         for (final String k : prefs.keys()) {
-          if (k.startsWith("mapShortCut.")) {
+          if (k.startsWith(PREFIX_SHORTCUT)) {
 //            final int dotIndex = k.indexOf('.');
 //            final String id = k.substring(dotIndex + 1);
             final String packedValue = prefs.get(k, "");
@@ -454,6 +493,31 @@ public final class MindMapPanelConfig implements Serializable {
             }
             final KeyShortcut unpacked = new KeyShortcut(packedValue);
             this.mapShortCut.put(unpacked.getID(), unpacked);
+          }
+        }
+      } catch (BackingStoreException ex) {
+        throw new Error("Can't get list of keys from storage", ex);
+      }
+
+      this.optionalProperties.clear();
+      this.optionalProperties.putAll(etalon.optionalProperties);
+
+      try {
+        for (final String k : prefs.keys()) {
+          if (k.startsWith(PREFIX_OPTIONAL_PROPERTY)) {
+            final String propertyName = k.substring(k.indexOf('.') + 1);
+            final String value = prefs.get(k, null);
+            if (value == null) {
+              throw new Error("Unexpected situation, property value is null [" + k + ']');
+            }
+            try {
+              final Serializable readValue =
+                  (Serializable) new ObjectInputStream(
+                      new ByteArrayInputStream(Base64.getDecoder().decode(value))).readObject();
+              if (readValue != null) this.optionalProperties.put(propertyName, readValue);
+            } catch (ClassNotFoundException | IOException ex) {
+              // ignore error to save possibility to load config
+            }
           }
         }
       } catch (BackingStoreException ex) {
@@ -503,6 +567,9 @@ public final class MindMapPanelConfig implements Serializable {
 
       this.mapShortCut.clear();
       this.mapShortCut.putAll(src.mapShortCut);
+
+      this.optionalProperties.clear();
+      this.optionalProperties.putAll(src.optionalProperties);
 
       if (makeNotification) {
         this.notifyCfgListenersAboutChange();

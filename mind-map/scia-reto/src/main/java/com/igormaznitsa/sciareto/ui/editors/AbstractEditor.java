@@ -24,8 +24,8 @@ import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.sciareto.SciaRetoStarter;
+import com.igormaznitsa.sciareto.preferences.AdditionalPreferences;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
-import com.igormaznitsa.sciareto.preferences.SpecificKeys;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.SrI18n;
 import com.igormaznitsa.sciareto.ui.tabs.TabProvider;
@@ -156,9 +156,7 @@ public abstract class AbstractEditor implements TabProvider, Disposable {
   }
 
   protected boolean isAutoBackupAllowed() {
-    final PreferencesManager manager = PreferencesManager.getInstance();
-    return manager.getFlag(manager.getPreferences(),
-        SpecificKeys.PROPERTY_BACKUP_LAST_EDIT_BEFORE_SAVE, false);
+    return this.mindMapPanelConfig.getOptionalProperty(AdditionalPreferences.PROPERTY_BACKUP_LAST_EDIT_BEFORE_SAVE, true);
   }
 
   public void deleteBackup() {

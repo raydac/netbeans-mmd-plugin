@@ -28,10 +28,13 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.ide.IDEBridgeFactory;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.SciaRetoStarter;
+import com.igormaznitsa.sciareto.metrics.MetricsService;
+import com.igormaznitsa.sciareto.preferences.AdditionalPreferences;
 import com.igormaznitsa.sciareto.preferences.FileHistoryManager;
 import com.igormaznitsa.sciareto.preferences.PrefUtils;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
@@ -129,7 +132,8 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
-public final class MainFrame extends javax.swing.JFrame implements Context, PlatformMenuAction {
+public final class MainFrame extends javax.swing.JFrame implements Context, PlatformMenuAction,
+    AdditionalPreferences {
 
   private static final long serialVersionUID = 3798040833406256900L;
 
@@ -231,7 +235,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
     this.tabPane = new EditorTabPane(this);
 
-    this.explorerTree = new ExplorerTree(this);
+    this.explorerTree = new ExplorerTree(node -> this.mindMapPanelConfig.getOptionalProperty(AdditionalPreferences.PROPERTY_SHOW_HIDDEN_FILES, true), this);
 
     this.mainSplitPane = new SplitPaneExt(JSplitPane.HORIZONTAL_SPLIT);
     this.mainSplitPane.setOneTouchExpandable(true);
@@ -434,6 +438,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
                   langButtonGroup.add(langMenuItem);
                   this.menuLanguage.add(langMenuItem);
               });
+
+      this.loadAndRefreshConfig();
   }
   
   private void fillScaleUiMenu() {
@@ -1545,7 +1551,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
               SwingUtilities.invokeLater(() -> ProjectLoadingIconAnimationController.getInstance().registerLoadingProject(this.explorerTree.getProjectTree(), proj));
               return proj;
             })
-            .flatMap(proj -> proj.readSubtree(PrefUtils.isShowHiddenFilesAndFolders()))
+            .flatMap(proj -> proj.readSubtree(this.mindMapPanelConfig.getOptionalProperty(AdditionalPreferences.PROPERTY_SHOW_HIDDEN_FILES, true)))
             .doOnError(error -> {
               LOGGER.error("Can't open project", error);
               SwingUtilities.invokeLater(() -> {
@@ -1607,32 +1613,42 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     return result;
   }
 
+  private MindMapPanelConfig mindMapPanelConfig = new MindMapPanelConfig();
+
+  private void loadAndRefreshConfig() {
+    try {
+      this.mindMapPanelConfig.loadFrom(PreferencesManager.getInstance().getPreferences());
+      SystemFileExtensionManager.getInstance().setExtensionsAsCommaSeparatedString(this.mindMapPanelConfig.getOptionalProperty(AdditionalPreferences.PROPERTY_EXTENSIONS_TO_BE_OPENED_IN_SYSTEM,null));
+      MetricsService.getInstance().refreshConfig();
+    } catch (Exception ex) {
+      LOGGER.error("Can't refresh configuration for error", ex);
+    }
+    this.tabPane.forEach(t -> t.getProvider().updateConfiguration());
+  }
+
   @Override
   public void editPreferences() {
-    final PreferencesPanel preferencesPanel = new PreferencesPanel(this);
-    preferencesPanel.load(PreferencesManager.getInstance().getPreferences());
-    preferencesPanel.doLayout();
-    final JScrollPane preferenceScrollPane = new JScrollPane(preferencesPanel);
-    preferenceScrollPane.doLayout();
-    final Dimension prefSize = new Dimension(preferenceScrollPane.getPreferredSize().width, preferenceScrollPane.getPreferredSize().height);
-    
-    final int possibleScrollBarSpace = 48;
-    prefSize.width += possibleScrollBarSpace;
-    prefSize.height += possibleScrollBarSpace;
-    final Rectangle graphicsBounds = this.getGraphicsConfiguration().getBounds();
+    final PreferencesPanel preferencesPanelMaker = new PreferencesPanel(
+        UIComponentFactoryProvider.findInstance(),
+        DialogProviderManager.getInstance().getDialogProvider()
+    );
 
-    preferenceScrollPane.setPreferredSize(new Dimension(
-        Math.min(prefSize.width, (graphicsBounds.width << 1) / 3), 
-        Math.min(prefSize.height, (graphicsBounds.height << 1) / 3)
-    ));
+    final MindMapPanelConfig config = new MindMapPanelConfig();
+    config.loadFrom(PreferencesManager.getInstance().getPreferences());
+    preferencesPanelMaker.load(config);
+
+    final JPanel panel = preferencesPanelMaker.getPanel();
+    final Rectangle rectangle = this.getGraphicsConfiguration().getBounds();
+    panel.setPreferredSize(new Dimension(rectangle.width / 2, rectangle.height / 2));
+    UiUtils.makeOwningDialogResizable(panel);
 
     if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(this,
         SrI18n.getInstance().findBundle().getString("mainFrame.msgPreferences.title"),
-        preferenceScrollPane)) {
-      preferencesPanel.save();
-      for (final TabTitle t : this.tabPane) {
-        t.getProvider().updateConfiguration();
-      }
+        panel)) {
+      LOGGER.info("Saving panel configuration");
+      final MindMapPanelConfig newConfig = preferencesPanelMaker.save();
+      newConfig.saveTo(PreferencesManager.getInstance().getPreferences());
+      this.loadAndRefreshConfig();
     }
   }
 
@@ -1721,7 +1737,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
   private boolean tryCreateKnowledgeFolderIn(@Nonnull final File folder) {
     boolean created = false;
-    if (PreferencesManager.getInstance().getPreferences().getBoolean(PreferencesPanel.PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED, false)) {
+    if (this.mindMapPanelConfig.getOptionalProperty(PROPERTY_KNOWLEDGE_FOLDER_ALLOWED, false)) {
       final File knowledgeFolder = new File(folder, Context.KNOWLEDGE_FOLDER);
       if (knowledgeFolder.mkdirs()) {
         created = true;

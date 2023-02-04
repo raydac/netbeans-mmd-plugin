@@ -20,17 +20,19 @@ package com.igormaznitsa.sciareto.ui;
 
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
+import com.igormaznitsa.sciareto.preferences.AdditionalPreferences;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
-import com.igormaznitsa.sciareto.preferences.SpecificKeys;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
+import java.util.prefs.Preferences;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-public final class LocalizationController implements SpecificKeys {
+public final class LocalizationController implements AdditionalPreferences {
   public static final Logger LOGGER = LoggerFactory.getLogger(LocalizationController.class);
 
   private static final LocalizationController INSTANCE = new LocalizationController();
@@ -44,8 +46,10 @@ public final class LocalizationController implements SpecificKeys {
       hostLanguage = Language.RUSSIAN;
     }
 
-    final String language = PreferencesManager.getInstance().getPreferences()
-        .get(PROPERTY_LANGUAGE, hostLanguage.name());
+    final MindMapPanelConfig config = new MindMapPanelConfig();
+    config.loadFrom(PreferencesManager.getInstance().getPreferences());
+
+    final String language = config.getOptionalProperty(PROPERTY_LANGUAGE, hostLanguage.name());
     final Language selectedLanguage =
         Stream.of(Language.values()).filter(x -> x.name().equalsIgnoreCase(language)).findFirst()
             .orElse(hostLanguage);
@@ -67,23 +71,23 @@ public final class LocalizationController implements SpecificKeys {
   public synchronized void setLanguage(@Nonnull final Language language) {
     if (this.currentLanguage != language) {
       LOGGER.info("Change language to: " + language.name());
-      PreferencesManager.getInstance().getPreferences()
-          .put(PROPERTY_LANGUAGE, language.name());
+
+      final Preferences preferences = PreferencesManager.getInstance().getPreferences();
+      final MindMapPanelConfig config = new MindMapPanelConfig();
+
+      config.loadFrom(preferences);
+      config.setOptionalProperty(PROPERTY_LANGUAGE, language.name());
+      config.saveTo(preferences);
+
       this.currentLanguage = language;
       this.currentLanguage.activate();
     }
   }
 
   public enum Language {
-    ENGLISH("English", Locale.ENGLISH, e -> {
-      updateUiForBundle(SrI18n.getInstance().findBundle(e.locale));
-    }),
-    ESPERANTO("Esperanto", new Locale("eo"), Locale.ENGLISH, Locale.ENGLISH, e -> {
-      updateUiForBundle(SrI18n.getInstance().findBundle(e.locale));
-    }),
-    RUSSIAN("Русский", new Locale("ru"), e -> {
-      updateUiForBundle(SrI18n.getInstance().findBundle(e.locale));
-    });
+    ENGLISH("English", Locale.ENGLISH, e -> updateUiForBundle(SrI18n.getInstance().findBundle(e.locale))),
+    ESPERANTO("Esperanto", new Locale("eo"), Locale.ENGLISH, Locale.ENGLISH, e -> updateUiForBundle(SrI18n.getInstance().findBundle(e.locale))),
+    RUSSIAN("Русский", new Locale("ru"), e -> updateUiForBundle(SrI18n.getInstance().findBundle(e.locale)));
 
     private final String title;
     private final Locale locale;

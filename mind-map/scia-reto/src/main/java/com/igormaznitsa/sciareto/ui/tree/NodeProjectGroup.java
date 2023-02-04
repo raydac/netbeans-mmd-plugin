@@ -36,6 +36,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -56,8 +57,8 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(NodeProjectGroup.class);
 
-  public NodeProjectGroup(@Nonnull final Context context, @Nonnull final String name) {
-    super(null, true, ".", false); //NOI18N
+  public NodeProjectGroup(@Nonnull final Predicate<NodeFileOrFolder> predicateShowHiddenFiles, @Nonnull final Context context, @Nonnull final String name) {
+    super(predicateShowHiddenFiles, null, true, ".", false); //NOI18N
     this.groupName = name;
     this.context = context;
   }
@@ -104,7 +105,7 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
   public NodeProject addProjectFolder(@Nonnull final File folder) throws IOException {
     NodeProject newProject = findForFolder(folder);
     if (newProject == null) {
-      newProject = new NodeProject(this, folder);
+      newProject = new NodeProject(this.predicateShowHiddenFiles, this, folder);
 
       final int index = this.children.size();
       this.children.add(newProject);

@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Predicate;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.apache.commons.io.FileUtils;
@@ -54,8 +55,8 @@ public class NodeProject extends NodeFileOrFolder {
   private final AtomicBoolean loading = new AtomicBoolean(true);
   private final AtomicReference<Disposable> loadDispose = new AtomicReference<>();
   
-  public NodeProject(@Nonnull final NodeProjectGroup group, @Nonnull final File folder) throws IOException {
-    super(group, true, folder.getName(), !Files.isWritable(folder.toPath()));
+  public NodeProject(@Nonnull final Predicate<NodeFileOrFolder> predicateShowHiddenFiles, @Nonnull final NodeProjectGroup group, @Nonnull final File folder) throws IOException {
+    super(predicateShowHiddenFiles, group, true, folder.getName(), !Files.isWritable(folder.toPath()));
     this.folder = folder;
     this.knowledgeFolderPresented = new File(folder, Context.KNOWLEDGE_FOLDER).isDirectory();
   }
@@ -73,7 +74,7 @@ public class NodeProject extends NodeFileOrFolder {
   public void setName(@Nonnull final String name) throws IOException {
     this.name = name;
     this.folder = new File(folder.getParentFile(), name);
-    readSubtree(PrefUtils.isShowHiddenFilesAndFolders()).subscribeOn(MainFrame.REACTOR_SCHEDULER).subscribe();
+    readSubtree(this.predicateShowHiddenFiles.test(this)).subscribeOn(MainFrame.REACTOR_SCHEDULER).subscribe();
   }
 
   @Override
@@ -90,7 +91,7 @@ public class NodeProject extends NodeFileOrFolder {
   public void setFolder(@Nonnull final File folder) throws IOException {
     Assertions.assertTrue("Must be directory", folder.isDirectory()); //NOI18N
     this.folder = folder;
-    readSubtree(PrefUtils.isShowHiddenFilesAndFolders()).subscribeOn(MainFrame.REACTOR_SCHEDULER).subscribe();
+    readSubtree(this.predicateShowHiddenFiles.test(this)).subscribeOn(MainFrame.REACTOR_SCHEDULER).subscribe();
   }
 
   @Nonnull

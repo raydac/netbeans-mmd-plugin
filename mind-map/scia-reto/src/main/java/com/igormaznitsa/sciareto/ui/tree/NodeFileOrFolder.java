@@ -40,6 +40,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -65,13 +66,16 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
   protected volatile String name;
   private volatile boolean noAccess;
   private volatile boolean disposed = false;
+  protected final Predicate<NodeFileOrFolder> predicateShowHiddenFiles;
 
   public NodeFileOrFolder(
+      @Nonnull final Predicate<NodeFileOrFolder> predicateShowHiddenFiles,
       @Nullable final NodeFileOrFolder parent,
       final boolean folder,
       @Nullable final String name,
       final boolean readOnly
   ) {
+    this.predicateShowHiddenFiles = predicateShowHiddenFiles;
     this.parent = parent;
     this.name = name;
 
@@ -152,7 +156,7 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
   @Nonnull
   public NodeFileOrFolder addFile(@Nonnull final File file) {
     Assertions.assertTrue("Unexpected state!", this.folderFlag && file.getParentFile().equals(this.makeFileForNode())); //NOI18N
-    final NodeFileOrFolder result = new NodeFileOrFolder(this, file.isDirectory(), file.getName(), !Files.isWritable(file.toPath()));
+    final NodeFileOrFolder result = new NodeFileOrFolder(this.predicateShowHiddenFiles, this, file.isDirectory(), file.getName(), !Files.isWritable(file.toPath()));
     this.children.add(0, result);
     Collections.sort(this.children, this);
     return result;
@@ -160,7 +164,7 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
 
   public void setName(@Nonnull final String name) throws IOException {
     this.name = name;
-    readSubtree(PrefUtils.isShowHiddenFilesAndFolders()).subscribeOn(MainFrame.REACTOR_SCHEDULER).subscribe();
+    readSubtree(this.predicateShowHiddenFiles.test(this)).subscribeOn(MainFrame.REACTOR_SCHEDULER).subscribe();
   }
 
   private void clearChildren() {
@@ -209,7 +213,7 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
             }
           })
           .map(f -> {
-            NodeFileOrFolder newItem = new NodeFileOrFolder(this, Files.isDirectory(f), f.getFileName().toString(), !Files.isWritable(f));
+            NodeFileOrFolder newItem = new NodeFileOrFolder(this.predicateShowHiddenFiles, this, Files.isDirectory(f), f.getFileName().toString(), !Files.isWritable(f));
             this.children.add(newItem);
             return newItem;
           })

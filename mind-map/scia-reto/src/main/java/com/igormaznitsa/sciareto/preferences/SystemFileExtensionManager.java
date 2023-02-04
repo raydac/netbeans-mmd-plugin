@@ -19,6 +19,10 @@ package com.igormaznitsa.sciareto.preferences;
 
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -41,9 +45,17 @@ public class SystemFileExtensionManager {
           + "bin";
 
   private static final SystemFileExtensionManager INSTANCE = new SystemFileExtensionManager();
+  private final Map<String,String> mapLowerCaseToOrig = new ConcurrentHashMap<>();
 
   private SystemFileExtensionManager() {
+    this.fill(DEFAULT_OPEN_IN_SYSTEM_EXTENSIONS);
+  }
 
+  private void fill(@Nonnull final String commaSeparatedString) {
+    this.mapLowerCaseToOrig.clear();
+    for(final String s : commaSeparatedString.split("\\,")) {
+      this.mapLowerCaseToOrig.put(s.toLowerCase(Locale.ENGLISH), s);
+    }
   }
 
   @Nonnull
@@ -52,34 +64,16 @@ public class SystemFileExtensionManager {
   }
 
   @Nonnull
-  public synchronized String getExtensionsAsCommaSeparatedString() {
-    return PreferencesManager.getInstance().getPreferences().get(SpecificKeys.PROPERTY_EXTENSIONS_TO_BE_OPENED_IN_SYSTEM, DEFAULT_OPEN_IN_SYSTEM_EXTENSIONS);
+  public String makeExtensionsCommaSeparatedString() {
+    return this.mapLowerCaseToOrig.values().stream().sorted().collect(Collectors.joining(","));
   }
 
-  public synchronized boolean isSystemFileExtension(@Nonnull final String ext) {
-    final String[] parsed = getExtensionsAsCommaSeparatedString().split("\\,");
-
-    boolean found = false;
-
-    for (final String s : parsed) {
-      final String trimmed = s.trim();
-      if (!s.isEmpty() && ext.equalsIgnoreCase(trimmed)) {
-        found = true;
-        break;
-      }
-    }
-
-    return found;
+  public boolean isSystemFileExtension(@Nonnull final String ext) {
+    return this.mapLowerCaseToOrig.containsKey(ext.toLowerCase(Locale.ENGLISH));
   }
 
-  public synchronized void setExtensionsAsCommaSeparatedString(@Nullable final String value) {
-    if (value == null) {
-      LOGGER.info("Restoring default system file extension list");
-      PreferencesManager.getInstance().getPreferences().remove(SpecificKeys.PROPERTY_EXTENSIONS_TO_BE_OPENED_IN_SYSTEM);
-    } else {
-      LOGGER.info("Changing system file extension list : " + value);
-      PreferencesManager.getInstance().getPreferences().put(SpecificKeys.PROPERTY_EXTENSIONS_TO_BE_OPENED_IN_SYSTEM, value);
-    }
+  public void setExtensionsAsCommaSeparatedString(@Nullable final String value) {
+    this.fill(value == null ? DEFAULT_OPEN_IN_SYSTEM_EXTENSIONS : value);
   }
 
   @Nonnull

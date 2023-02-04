@@ -19,6 +19,7 @@
 package com.igormaznitsa.sciareto.preferences;
 
 
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.sciareto.ui.editors.PlantUmlSecurityProfile;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -28,31 +29,13 @@ public final class PrefUtils {
   public static final String ENV_PLANTUML_LIMIT_SIZE = "PLANTUML_LIMIT_SIZE";
   public static final String ENV_PLANTUML_SECURITY_PROFILE = "PLANTUML_SECURITY_PROFILE";
 
-  public static final String PROPERTY_PLANTUML_SECURITY_PROFILE = "plantuml.security.profile";
-  public static final String PROPERTY_PLANTUML_DOT_PATH = "plantuml.dotpath";
-
   private PrefUtils() {
 
   }
 
-  public static boolean isShowHiddenFilesAndFolders() {
-    return PreferencesManager.getInstance().getPreferences().getBoolean("showHiddenFiles", true);
-  }
-
-  public static void setPlantUmlSecurityProfileAsSystemProperty() {
-    final PlantUmlSecurityProfile currentProfile
-        = PlantUmlSecurityProfile.findForText(
-        PreferencesManager.getInstance().getPreferences()
-            .get(PROPERTY_PLANTUML_SECURITY_PROFILE, null),
-        PlantUmlSecurityProfile.LEGACY);
+  public static void setPlantUmlSecurityProfileAsSystemProperty(final MindMapPanelConfig config) {
+    final PlantUmlSecurityProfile currentProfile = config.getOptionalProperty(AdditionalPreferences.PROPERTY_PLANTUML_SECURITY_PROFILE, PlantUmlSecurityProfile.LEGACY);
     System.setProperty(ENV_PLANTUML_SECURITY_PROFILE, currentProfile.name());
-  }
-
-  @Nullable
-  public static String getPlantUmlDotPath() {
-    final String result =
-        PreferencesManager.getInstance().getPreferences().get(PROPERTY_PLANTUML_DOT_PATH, null);
-    return (result == null || result.trim().isEmpty()) ? null : result;
   }
 
   @Nonnull

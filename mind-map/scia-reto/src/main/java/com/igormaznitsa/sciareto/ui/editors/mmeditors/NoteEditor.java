@@ -24,13 +24,13 @@ import com.igormaznitsa.mindmap.ide.commons.SwingUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.ui.PasswordPanel;
 import com.igormaznitsa.mindmap.swing.panel.utils.Focuser;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import com.igormaznitsa.sciareto.SciaRetoStarter;
-import com.igormaznitsa.sciareto.preferences.PreferencesManager;
-import com.igormaznitsa.sciareto.preferences.SpecificKeys;
+import com.igormaznitsa.sciareto.preferences.AdditionalPreferences;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.SrI18n;
 import com.igormaznitsa.sciareto.ui.UiUtils;
@@ -61,7 +61,7 @@ import java.net.URI;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-public final class NoteEditor extends JPanel {
+public final class NoteEditor extends JPanel implements AdditionalPreferences {
 
   public static final Font DEFAULT_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 14);
   private static final long serialVersionUID = -1715683034655322518L;
@@ -115,7 +115,7 @@ public final class NoteEditor extends JPanel {
   private JToggleButton toggleButtonEncrypt;
   private final String originalText;
   
-  public NoteEditor(@Nonnull final NoteEditorData data) {
+  public NoteEditor(@Nonnull final NoteEditorData data, @Nonnull final MindMapPanelConfig config) {
     initComponents();
 
     if (data.isEncrypted()) {
@@ -220,9 +220,7 @@ public final class NoteEditor extends JPanel {
         });
 
     this.setPreferredSize(new Dimension(640, 480));
-    this.editorPane.setFont(PreferencesManager.getInstance()
-        .getFont(PreferencesManager.getInstance().getPreferences(),
-            SpecificKeys.PROPERTY_TEXT_EDITOR_FONT, DEFAULT_FONT));
+    this.editorPane.setFont(config.getOptionalProperty(PROPERTY_TEXT_EDITOR_FONT, DEFAULT_FONT));
     this.originalText = data.getText();
     this.editorPane.setText(data.getText());
 

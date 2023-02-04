@@ -16,9 +16,11 @@
 
 package com.igormaznitsa.mindmap.ide.commons;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import javax.swing.Action;
 import javax.swing.JPopupMenu;
+import javax.swing.UIManager;
 import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.TextAction;
@@ -49,6 +51,23 @@ public class SwingUtils {
 
     SelectAllTextAction() {
       super("Select All");
+    }
+
+    public static int calculateBrightness(final Color color) {
+      return (int) Math.sqrt(
+          color.getRed() * color.getRed() * .241d
+              + color.getGreen() * color.getGreen() * .691d
+              + color.getBlue() * color.getBlue() * .068d);
+    }
+
+
+    public static boolean figureOutThatDarkTheme() {
+      final Color color = UIManager.getColor("Panel.background"); //NOI18N
+      if (color == null) {
+        return false;
+      } else {
+        return calculateBrightness(color) < 150;
+      }
     }
 
     @Override
