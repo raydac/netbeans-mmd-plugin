@@ -33,7 +33,7 @@ public final class PrefUtils {
 
   }
 
-  public static void setPlantUmlSecurityProfileAsSystemProperty(final MindMapPanelConfig config) {
+  public static void setPlantUmlSecurityProfileAsSystemProperty(@Nonnull final MindMapPanelConfig config) {
     final PlantUmlSecurityProfile currentProfile = config.getOptionalProperty(AdditionalPreferences.PROPERTY_PLANTUML_SECURITY_PROFILE, PlantUmlSecurityProfile.LEGACY);
     System.setProperty(ENV_PLANTUML_SECURITY_PROFILE, currentProfile.name());
   }
