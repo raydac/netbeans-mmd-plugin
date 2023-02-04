@@ -18,10 +18,13 @@ package com.igormaznitsa.mindmap.ide.commons.preferences;
 
 import static java.util.Objects.requireNonNull;
 
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.utils.KeyShortcut;
 import com.igormaznitsa.mindmap.swing.panel.utils.MouseButton;
+import com.igormaznitsa.mindmap.swing.panel.utils.PropertiesPreferences;
 import com.igormaznitsa.mindmap.swing.panel.utils.RenderQuality;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import java.awt.BorderLayout;
@@ -35,10 +38,13 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.function.Supplier;
@@ -57,10 +63,15 @@ import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.border.TitledBorder;
+import javax.swing.filechooser.FileFilter;
+import org.apache.commons.io.FileUtils;
 
 public abstract class AbstractPreferencesPanel {
   private static final int GRID_GAP = 2;
 
+  protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractPreferencesPanel.class);
+
+  protected final DialogProvider dialogProvider;
   private final UIComponentFactory uiComponentFactory;
   private final JSpinner spinnerGridStep;
   private final ColorSelectButton buttonColorGrid;
@@ -79,7 +90,6 @@ public abstract class AbstractPreferencesPanel {
   private final JSlider sliderLevel1VertGap;
   private final JSlider sliderLevel2HorzGap;
   private final JSlider sliderLevel2VertGap;
-
   private final JSpinner spinnerConnectorWidth;
   private final JSpinner spinnerJumpLinkWidth;
   private final JSpinner spinnerCollapsatorSize;
@@ -90,14 +100,10 @@ public abstract class AbstractPreferencesPanel {
   private final ColorSelectButton buttonColorCollapsatorBorder;
   private final ColorSelectButton buttonColorJumpLink;
   private final ColorSelectButton buttonColorConnector;
-
   private final ColorSelectButton buttonFastNavigationPaper;
   private final ColorSelectButton buttonFastNavigationInk;
-
   private final FontSelectPanel fontChooserPanelMindMapTopicTitleFont;
   private final JPanel panel;
-  protected final DialogProvider dialogProvider;
-
   private final JComboBox<RenderQuality> comboBoxRenderQuality;
   private final JComboBox<MouseButton> comboBoxFastNavigationMouse;
   private final KeyModifiersSelector keyModifiersWheelScale;
@@ -106,52 +112,7 @@ public abstract class AbstractPreferencesPanel {
   private final JButton buttonKeyShortcutEditor;
 
   private final JCheckBox checkBoxSmartTextPaste;
-
-  public static class ButtonInfo {
-    private final Image icon;
-    private final String title;
-
-    private final ActionListener actionListener;
-
-    private final boolean splitter;
-    private final String tooltip;
-
-    private final Supplier<JButton> supplier;
-
-    private ButtonInfo(){
-      this.splitter = true;
-      this.icon = null;
-      this.title = null;
-      this.tooltip = null;
-      this.actionListener = null;
-      this.supplier = null;
-    }
-
-    private ButtonInfo(final Image icon, final String title, final String tooltip, final ActionListener actionListener, final Supplier<JButton> supplier) {
-      this.splitter = false;
-      this.icon = icon;
-      this.title = title;
-      this.tooltip = tooltip;
-      this.actionListener = actionListener;
-      this.supplier = supplier;
-    }
-
-    public static ButtonInfo splitter() {
-      return new ButtonInfo();
-    }
-
-    public static ButtonInfo from(final Image icon, final String title, final ActionListener actionListener) {
-      return new ButtonInfo(icon, title, null, actionListener, null);
-    }
-
-    public static ButtonInfo from(final Image icon, final String title, final String tooltip, final ActionListener actionListener) {
-      return new ButtonInfo(icon, title, tooltip, actionListener, null);
-    }
-
-    public static ButtonInfo from(final Image icon, final String title, final String tooltip, final ActionListener actionListener, final Supplier<JButton> supplier) {
-      return new ButtonInfo(icon, title, tooltip, actionListener, supplier);
-    }
-  }
+  private final Map<String,KeyShortcut> keyShortcutMap = new HashMap<>();
 
   public AbstractPreferencesPanel(final UIComponentFactory uiComponentFactory,
                                    final DialogProvider dialogProvider) {
@@ -660,8 +621,6 @@ public abstract class AbstractPreferencesPanel {
     return panel;
   }
 
-  private final Map<String,KeyShortcut> keyShortcutMap = new HashMap<>();
-
   public MindMapPanelConfig save() {
     final MindMapPanelConfig config = new MindMapPanelConfig();
 
@@ -780,8 +739,119 @@ public abstract class AbstractPreferencesPanel {
     return null;
   }
 
+  public void exportAsFileDialog() {
+    final ResourceBundle bundle = MmcI18n.getInstance().findBundle();
+    File file = this.dialogProvider
+        .msgSaveFileDialog(this.panel, null, "exportProperties",
+            bundle.getString("PreferencesPanel.ExportProperties.title"), null, true,
+            new FileFilter[] {new PropertiesFileFilter()},
+            bundle.getString("PreferencesPanel.ExportProperties.approve"));
+    if (file != null) {
+      if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".properties")) { //NOI18N
+        final Boolean addExt = this.dialogProvider
+            .msgConfirmYesNoCancel(this.getPanel(),
+                bundle.getString("PreferencesPanel.AddExtension.title"),
+                bundle.getString("PreferencesPanel.AddExtension.question"));
+        if (addExt == null) {
+          return;
+        }
+        if (addExt) {
+          file = new File(file.getAbsolutePath() + ".properties"); //NOI18N
+        }
+      }
+
+      if (file.exists() && !this.dialogProvider
+          .msgConfirmOkCancel(this.getPanel(),
+              bundle.getString("PreferencesPanel.OverrideFile.title"),
+              String.format(bundle.getString("PreferencesPanel.OverrideFile.question"),
+                  file.getName()))) {
+        return;
+      }
+
+      final PropertiesPreferences prefs = new PropertiesPreferences("SciaReto editor settings");
+      final MindMapPanelConfig cfg = save();
+      cfg.saveTo(prefs);
+      try {
+        FileUtils.write(file, prefs.toString(), StandardCharsets.UTF_8);
+      } catch (final Exception ex) {
+        LOGGER.error("Can't export settings", ex);
+        this.dialogProvider.msgError(this.getPanel(),
+            bundle.getString("PreferencesPanel.ExportProperties.error") +
+                ex.getMessage());
+      }
+    }
+  }
+
+  public void importFromFileDialog() {
+    final ResourceBundle bundle1 = MmcI18n.getInstance().findBundle();
+    final File file = this.dialogProvider
+        .msgOpenFileDialog(this.panel, null, "importProperties",
+            bundle1.getString("PreferencesPanel.ImportSettings.title"), null, true,
+            new FileFilter[] {new PropertiesFileFilter()},
+            bundle1.getString("PreferencesPanel.ImportSettings.approve"));
+    if (file != null) {
+      try {
+        final MindMapPanelConfig loadedConfig = new MindMapPanelConfig();
+        loadedConfig.loadFrom(new PropertiesPreferences("SciaReto",
+            FileUtils.readFileToString(file, StandardCharsets.UTF_8)));
+        load(loadedConfig);
+      } catch (final Exception ex) {
+        LOGGER.error("Can't import settings", ex);
+        this.dialogProvider
+            .msgError(this.panel,
+                bundle1.getString("PreferencesPanel.ImportSettings.error") + ex.getMessage());
+      }
+    }
+  }
+
   public JPanel getPanel() {
     return this.panel;
+  }
+
+  public static class ButtonInfo {
+    private final Image icon;
+    private final String title;
+
+    private final ActionListener actionListener;
+
+    private final boolean splitter;
+    private final String tooltip;
+
+    private final Supplier<JButton> supplier;
+
+    private ButtonInfo(){
+      this.splitter = true;
+      this.icon = null;
+      this.title = null;
+      this.tooltip = null;
+      this.actionListener = null;
+      this.supplier = null;
+    }
+
+    private ButtonInfo(final Image icon, final String title, final String tooltip, final ActionListener actionListener, final Supplier<JButton> supplier) {
+      this.splitter = false;
+      this.icon = icon;
+      this.title = title;
+      this.tooltip = tooltip;
+      this.actionListener = actionListener;
+      this.supplier = supplier;
+    }
+
+    public static ButtonInfo splitter() {
+      return new ButtonInfo();
+    }
+
+    public static ButtonInfo from(final Image icon, final String title, final ActionListener actionListener) {
+      return new ButtonInfo(icon, title, null, actionListener, null);
+    }
+
+    public static ButtonInfo from(final Image icon, final String title, final String tooltip, final ActionListener actionListener) {
+      return new ButtonInfo(icon, title, tooltip, actionListener, null);
+    }
+
+    public static ButtonInfo from(final Image icon, final String title, final String tooltip, final ActionListener actionListener, final Supplier<JButton> supplier) {
+      return new ButtonInfo(icon, title, tooltip, actionListener, supplier);
+    }
   }
 
   public static class KeyModifiersSelector {
@@ -827,5 +897,21 @@ public abstract class AbstractPreferencesPanel {
       return this;
     }
   }
+
+  private static final class PropertiesFileFilter extends FileFilter {
+
+    @Override
+    public boolean accept(final File f) {
+      return f.isDirectory() || f.getName().toLowerCase(Locale.ENGLISH).endsWith(".properties");
+    }
+
+    @Override
+    public String getDescription() {
+      return MmcI18n.getInstance().findBundle()
+          .getString("PreferencesPanel.fileChooser.filter.text");
+    }
+
+  }
+
 
 }

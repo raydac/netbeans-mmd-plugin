@@ -65,8 +65,10 @@ public class AbstractPreferencesPanelStarter extends AbstractPreferencesPanel {
     }));
     buttonInfos.add(ButtonInfo.splitter());
     buttonInfos.add(ButtonInfo.from(null, "Export to file", a -> {
+      this.exportAsFileDialog();
     }));
     buttonInfos.add(ButtonInfo.from(null, "Import from file", a -> {
+      this.importFromFileDialog();
     }));
     buttonInfos.add(ButtonInfo.from(null, "System file extensions", a -> {
     }));

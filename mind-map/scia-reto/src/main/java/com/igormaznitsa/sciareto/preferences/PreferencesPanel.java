@@ -25,10 +25,8 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
-import com.igormaznitsa.mindmap.swing.panel.utils.PropertiesPreferences;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
-import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.ui.SrI18n;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.editors.PlantUmlSecurityProfile;
@@ -39,10 +37,8 @@ import com.igormaznitsa.sciareto.ui.misc.SysFileExtensionEditorPanel;
 import java.awt.BorderLayout;
 import java.awt.Image;
 import java.io.File;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.ResourceBundle;
 import javax.annotation.Nonnull;
@@ -59,8 +55,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import javax.swing.filechooser.FileFilter;
-import org.apache.commons.io.FileUtils;
 
 public final class PreferencesPanel extends AbstractPreferencesPanel
     implements AdditionalPreferences {
@@ -85,6 +79,17 @@ public final class PreferencesPanel extends AbstractPreferencesPanel
   public PreferencesPanel(@Nonnull final UIComponentFactory uiComponentFactory,
                           @Nonnull final DialogProvider dialogProvider) {
     super(uiComponentFactory, dialogProvider);
+  }
+
+  @Nullable
+  private static Image loadIcon(@Nonnull final String path) {
+    try {
+      return ImageIO.read(
+          Objects.requireNonNull(PreferencesPanel.class.getResource(path), "Can't find " + path));
+    } catch (Exception ex) {
+      LOGGER.error("Error during icon load: " + path, ex);
+      return null;
+    }
   }
 
   @Override
@@ -156,17 +161,6 @@ public final class PreferencesPanel extends AbstractPreferencesPanel
     return result;
   }
 
-  @Nullable
-  private static Image loadIcon(@Nonnull final String path) {
-    try {
-      return ImageIO.read(
-          Objects.requireNonNull(PreferencesPanel.class.getResource(path), "Can't find " + path));
-    } catch (Exception ex) {
-      LOGGER.error("Error during icon load: " + path, ex);
-      return null;
-    }
-  }
-
   private void fillByDefault() {
     this.systemFileExtensions = null;
     load(new MindMapPanelConfig());
@@ -186,72 +180,6 @@ public final class PreferencesPanel extends AbstractPreferencesPanel
         JOptionPane.PLAIN_MESSAGE);
   }
 
-  private void doExportIntoFile(@Nonnull final ResourceBundle bundle) {
-    File file = this.dialogProvider
-        .msgSaveFileDialog(this.getPanel(), null, "exportProperties",
-            bundle.getString("PreferencesPanel.ExportProperties.title"), null, true,
-            new FileFilter[] {new PropertiesFileFilter()},
-            SrI18n.getInstance().findBundle()
-                .getString("PreferencesPanel.ExportProperties.approve"));
-    if (file != null) {
-      if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".properties")) { //NOI18N
-        final Boolean addExt = this.dialogProvider
-            .msgConfirmYesNoCancel(this.getPanel(),
-                bundle.getString("PreferencesPanel.AddExtension.title"),
-                bundle.getString("PreferencesPanel.AddExtension.question"));
-        if (addExt == null) {
-          return;
-        }
-        if (addExt) {
-          file = new File(file.getAbsolutePath() + ".properties"); //NOI18N
-        }
-      }
-
-      if (file.exists() && !this.dialogProvider
-          .msgConfirmOkCancel(this.getPanel(),
-              bundle.getString("PreferencesPanel.OverrideFile.title"),
-              String.format(bundle.getString("PreferencesPanel.OverrideFile.question"),
-                  file.getName()))) {
-        return;
-      }
-
-      final PropertiesPreferences prefs = new PropertiesPreferences("SciaReto editor settings");
-      final MindMapPanelConfig cfg = save();
-      cfg.saveTo(prefs);
-      try {
-        FileUtils.write(file, prefs.toString(), StandardCharsets.UTF_8);
-      } catch (final Exception ex) {
-        LOGGER.error("Can't export settings", ex); //NOI18N
-        this.dialogProvider.msgError(this.getPanel(),
-            SrI18n.getInstance().findBundle().getString("PreferencesPanel.ExportProperties.error") +
-                ex.getMessage()); //NOI18N
-      }
-    }
-  }
-
-  private void doImportFromFile(@Nonnull final ResourceBundle bundle) {
-    final File file = this.dialogProvider
-        .msgOpenFileDialog(this.getPanel(), null, "importProperties",
-            bundle.getString("PreferencesPanel.ImportSettings.title"), null, true,
-            new FileFilter[] {new PropertiesFileFilter()},
-            bundle.getString("PreferencesPanel.ImportSettings.approve"));
-    if (file != null) {
-      try {
-        final MindMapPanelConfig loadedConfig = new MindMapPanelConfig();
-        loadedConfig.loadFrom(new PropertiesPreferences("SciaReto",
-            FileUtils.readFileToString(file, StandardCharsets.UTF_8)));
-        load(loadedConfig);
-      } catch (final Exception ex) {
-        LOGGER.error("Can't import settings", ex);
-        this.dialogProvider
-            .msgError(SciaRetoStarter.getApplicationFrame(),
-                SrI18n.getInstance().findBundle()
-                    .getString("PreferencesPanel.ImportSettings.error") + ex.getMessage());
-      }
-    }
-  }
-
-
   @Nonnull
   @MustNotContainNull
   @Override
@@ -268,11 +196,11 @@ public final class PreferencesPanel extends AbstractPreferencesPanel
 
     list.add(ButtonInfo.from(loadIcon("/icons/document_export16.png"),
         bundle.getString("PreferencesPanel.buttonExportToFile"),
-        a -> this.doExportIntoFile(bundle)));
+        a -> this.exportAsFileDialog()));
 
     list.add(ButtonInfo.from(loadIcon("/icons/document_import16.png"),
         bundle.getString("PreferencesPanel.buttonImportFromFile"),
-        a -> this.doImportFromFile(bundle)));
+        a -> this.importFromFileDialog()));
 
     list.add(ButtonInfo.from(loadIcon("/icons/file_manager.png"),
         bundle.getString("PreferencesPanel.buttonSystemFileExtensions"),
@@ -433,21 +361,6 @@ public final class PreferencesPanel extends AbstractPreferencesPanel
         config.getOptionalProperty(PROPERTY_EXTENSIONS_TO_BE_OPENED_IN_SYSTEM,
             SystemFileExtensionManager.getInstance()
                 .getDefaultExtensionsAsCommaSeparatedString());
-
-  }
-
-  private static final class PropertiesFileFilter extends FileFilter {
-
-    @Override
-    public boolean accept(@Nonnull final File f) {
-      return f.isDirectory() || f.getName().toLowerCase(Locale.ENGLISH).endsWith(".properties");
-    }
-
-    @Override
-    public String getDescription() {
-      return SrI18n.getInstance().findBundle()
-          .getString("PreferencesPanel.fileChooser.filter.text");
-    }
 
   }
 
