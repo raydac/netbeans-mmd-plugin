@@ -823,15 +823,29 @@ public abstract class AbstractPreferencesPanel {
     return config;
   }
 
+  /**
+   * Called during {@link #save()}
+   *
+   * @param config config container to be saved
+   */
   public abstract void onSave(MindMapPanelConfig config);
 
-  public boolean isChanged() {
+  public boolean checkChanges() {
     if (this.lastLoadedConfig == null) {
       return false;
     } else {
       final MindMapPanelConfig newConfig = this.save();
-      return this.lastLoadedConfig.hasDifferenceInParameters(newConfig);
+      return this.lastLoadedConfig.hasDifferenceInParameters(newConfig) || this.onCheckChanges();
     }
+  }
+
+  /**
+   * Method called during {@link #checkChanges()} and can make some extra check.
+   *
+   * @return true if changes found, false otherwise
+   */
+  protected boolean onCheckChanges() {
+    return false;
   }
 
   public final AbstractPreferencesPanel load(final MindMapPanelConfig config) {
@@ -896,6 +910,11 @@ public abstract class AbstractPreferencesPanel {
     }
   }
 
+  /**
+   * Called during {@link #load(MindMapPanelConfig)} and allows add custom code to load data or fill custom fields.
+   *
+   * @param config loading config
+   */
   public abstract void onLoad(MindMapPanelConfig config);
 
   public void exportAsFileDialog() {
