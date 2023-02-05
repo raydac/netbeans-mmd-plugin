@@ -17,7 +17,9 @@ package com.igormaznitsa.nbmindmap.nb.explorer;
 
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.nbmindmap.nb.editor.MMDDataObject;
+import com.igormaznitsa.nbmindmap.nb.options.AdditionalPreferences;
 import com.igormaznitsa.nbmindmap.utils.BadgeIcons;
 import com.igormaznitsa.nbmindmap.utils.NbUtils;
 import java.io.IOException;
@@ -42,15 +44,14 @@ import org.openide.nodes.Node;
 import org.openide.util.ChangeSupport;
 import org.openide.util.WeakListeners;
 
-public final class MMKnowledgeSources implements NodeList<SourceGroup>, ChangeListener, DataFilter {
+public final class MMKnowledgeSources implements NodeList<SourceGroup>, ChangeListener, DataFilter,
+    AdditionalPreferences {
 
   private static final long serialVersionUID = -1360299214288653958L;
 
   public static final ResourceBundle BUNDLE = ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle");
 
   public static final String KNOWLEDGE_FOLDER_NAME = ".projectKnowledge";
-
-  public static final String PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED = "knowledgeFolderGenerationAllowed";
 
   private final Project project;
   private final Sources projectSources;
@@ -59,10 +60,13 @@ public final class MMKnowledgeSources implements NodeList<SourceGroup>, ChangeLi
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MMKnowledgeSources.class);
 
+  private final MindMapPanelConfig mindMapPanelConfig;
+
   public MMKnowledgeSources(final Project project) {
     this.project = project;
     this.projectSources = ProjectUtils.getSources(project);
     this.changeListener = WeakListeners.change(this, this.projectSources);
+    this.mindMapPanelConfig = loadConfig();
   }
 
   public static FileObject findProjectKnowledgeFolder(final Project project){
@@ -71,18 +75,20 @@ public final class MMKnowledgeSources implements NodeList<SourceGroup>, ChangeLi
     return projectFolder.getFileObject(KNOWLEDGE_FOLDER_NAME);
   }
   
-  private static boolean isKnowledgeFolderAllowedForCreation() {
-    return NbUtils.getPreferences().getBoolean(PREFERENCE_KEY_KNOWLEDGEFOLDER_ALLOWED, false);
+  private static MindMapPanelConfig loadConfig() {
+    final MindMapPanelConfig config = new MindMapPanelConfig();
+    config.loadFrom(NbUtils.getPreferences());
+    return config;
   }
 
-  private static SourceGroup[] getSourceGroups(final Project project) {
-    final String klazz = project.getClass().getName();
-    LOGGER.info("Request sources for project type " + klazz);
+  private static SourceGroup[] getSourceGroups(final Project project, final MindMapPanelConfig config) {
+    final String className = project.getClass().getName();
+    LOGGER.info("Request sources for project type " + className);
 
     SourceGroup knowledgeSrc = null;
     try {
       FileObject knowledgeFolder = project.getProjectDirectory().getFileObject(KNOWLEDGE_FOLDER_NAME);
-      if (knowledgeFolder == null && isKnowledgeFolderAllowedForCreation()) {
+      if (knowledgeFolder == null && config.getOptionalProperty(PROPERTY_KNOWLEDGE_FOLDER_ALLOWED, false)) {
         knowledgeFolder = project.getProjectDirectory().createFolder(KNOWLEDGE_FOLDER_NAME);
       }
       if (knowledgeFolder != null) {
@@ -110,7 +116,7 @@ public final class MMKnowledgeSources implements NodeList<SourceGroup>, ChangeLi
 
   @Override
   public List<SourceGroup> keys() {
-    final SourceGroup[] sourceGroups = getSourceGroups(this.project);
+    final SourceGroup[] sourceGroups = getSourceGroups(this.project, this.mindMapPanelConfig);
     final List<SourceGroup> keysList = new ArrayList<SourceGroup>();
     FileObject fileObject;
     for (final SourceGroup g : sourceGroups) {
@@ -175,12 +181,7 @@ public final class MMKnowledgeSources implements NodeList<SourceGroup>, ChangeLi
 
   @Override
   public void stateChanged(final ChangeEvent e) {
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        fireChanged();
-      }
-    });
+    SwingUtilities.invokeLater(() -> fireChanged());
   }
 
   private void fireChanged() {

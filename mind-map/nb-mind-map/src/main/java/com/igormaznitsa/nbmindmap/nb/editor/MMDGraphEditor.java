@@ -70,6 +70,7 @@ import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
+import com.igormaznitsa.nbmindmap.nb.options.AdditionalPreferences;
 import com.igormaznitsa.nbmindmap.nb.print.PrintPageAdapter;
 import com.igormaznitsa.nbmindmap.nb.swing.ColorAttributePanel;
 import com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton;
@@ -927,7 +928,7 @@ public final class MMDGraphEditor extends CloneableEditor
         case LINK: {
           final MMapURI uri = ((ExtraLink) extra).getValue();
           if (!NbUtils.browseURI(uri.asURI(),
-              NbUtils.getPreferences().getBoolean("useInsideBrowser", false))) { //NOI18N
+              this.getPanelConfig().getOptionalProperty(AdditionalPreferences.PROPERTY_USE_INTERNAL_BROWSER, false))) {
             NbUtils.msgError(null,
                 String.format(BUNDLE.getString("MMDGraphEditor.onClickOnExtra.msgCantBrowse"),
                     uri.toString()));
@@ -1128,7 +1129,7 @@ public final class MMDGraphEditor extends CloneableEditor
       final Topic topic = element.getModel();
       final MMapURI theURI;
 
-      if (NbUtils.getPreferences().getBoolean("makeRelativePathToProject", true)) { //NOI18N
+      if (this.getPanelConfig().getOptionalProperty(AdditionalPreferences.PROPERTY_MAKE_RELATIVE_PATHS_TO_PROJECT_ROOT, true)) {
         final File projectFolder = getProjectFolder();
         if (theFile.equals(projectFolder)) {
           theURI = new MMapURI(projectFolder, new File("."), null);
@@ -1408,9 +1409,9 @@ public final class MMDGraphEditor extends CloneableEditor
           try {
             final MMapURI fileUri;
             fileUri = MMapURI.makeFromFilePath(
-                NbUtils.getPreferences().getBoolean("makeRelativePathToProject", true) ?
+                this.getPanelConfig().getOptionalProperty(AdditionalPreferences.PROPERTY_MAKE_RELATIVE_PATHS_TO_PROJECT_ROOT, true) ?
                     projectFolder : null, dataContainer.getFilePathWithLine().getPath(),
-                props); //NOI18N
+                props);
 
             final File theFile = fileUri.asFile(projectFolder);
             LOGGER.info(
@@ -1716,17 +1717,17 @@ public final class MMDGraphEditor extends CloneableEditor
 
   @Override
   public boolean isTrimTopicTextBeforeSet(MindMapPanel source) {
-    return NbUtils.getPreferences().getBoolean("trimTopicText", false);
+    return this.getPanelConfig().getOptionalProperty(AdditionalPreferences.PROPERTY_TRIM_TOPIC_TEXT, false);
   }
 
   @Override
   public boolean isCopyColorInfoFromParentToNewChildAllowed(MindMapPanel source) {
-    return NbUtils.getPreferences().getBoolean("copyColorInfoToNewChildAllowed", true); //NOI18N
+    return this.getPanelConfig().getOptionalProperty(AdditionalPreferences.PROPERTY_COPY_PARENT_COLORS_TO_NEW_CHILD, true);
   }
 
   @Override
   public boolean isUnfoldCollapsedTopicDropTarget(final MindMapPanel source) {
-    return NbUtils.getPreferences().getBoolean("unfoldCollapsedTarget", true); //NOI18N
+    return this.getPanelConfig().getOptionalProperty(AdditionalPreferences.PROPERTY_UNFOLD_COLLAPSED_DROP_TARGET, true);
   }
 
   @Override

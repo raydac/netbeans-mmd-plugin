@@ -13,8 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.nbmindmap.nb.options;
 
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
+import com.igormaznitsa.nbmindmap.nb.editor.MMDGraphEditor;
+import com.igormaznitsa.nbmindmap.utils.DialogProviderManager;
+import com.igormaznitsa.nbmindmap.utils.NbUtils;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import javax.swing.JComponent;
@@ -22,36 +28,38 @@ import javax.swing.SwingUtilities;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 import org.openide.util.Lookup;
-import com.igormaznitsa.nbmindmap.utils.NbUtils;
 
 @OptionsPanelController.TopLevelRegistration(
-        categoryName = "Mind Map",
-        iconBase = "com/igormaznitsa/nbmindmap/icons/logo/logo32.png",
-        keywords = "mindmap",
-        keywordsCategory = "mindmap",
-        id = "nb-mmd-config-main",
-        position = 10000
+    categoryName = "Mind Map",
+    iconBase = "com/igormaznitsa/nbmindmap/icons/logo/logo32.png",
+    keywords = "mindmap",
+    keywordsCategory = "mindmap",
+    id = "nb-mmd-config-main",
+    position = 10000
 )
 public final class MMDCfgOptionsPanelController extends OptionsPanelController {
 
-  private MMDCfgPanel panel;
-  private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+  private PreferencesPanel panel;
+  private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
   private boolean changed;
 
   @Override
   public void update() {
-    getPanel().load(NbUtils.getPreferences());
+    final MindMapPanelConfig config = new MindMapPanelConfig();
+    config.loadFrom(NbUtils.getPreferences());
+    this.getPanel().load(config);
     this.changed = false;
   }
 
   @Override
   public void applyChanges() {
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        final MMDCfgPanel panel = getPanel();
-        panel.store(NbUtils.getPreferences(),panel.getConfig(),true);
+    SwingUtilities.invokeLater(() -> {
+      try {
+        final MindMapPanelConfig config = this.panel.save();
+        config.saveTo(NbUtils.getPreferences());
         changed = false;
+      } finally {
+        MMDGraphEditor.notifyReloadConfig();
       }
     });
   }
@@ -63,7 +71,7 @@ public final class MMDCfgOptionsPanelController extends OptionsPanelController {
 
   @Override
   public boolean isValid() {
-    return getPanel().valid();
+    return true;
   }
 
   @Override
@@ -78,32 +86,43 @@ public final class MMDCfgOptionsPanelController extends OptionsPanelController {
 
   @Override
   public JComponent getComponent(Lookup masterLookup) {
-    return getPanel();
+    return this.getPanel().getPanel();
   }
 
   @Override
   public void addPropertyChangeListener(PropertyChangeListener l) {
-    this.pcs.addPropertyChangeListener(l);
+    this.propertyChangeSupport.addPropertyChangeListener(l);
   }
 
   @Override
   public void removePropertyChangeListener(PropertyChangeListener l) {
-    this.pcs.removePropertyChangeListener(l);
+    this.propertyChangeSupport.removePropertyChangeListener(l);
   }
 
-  private MMDCfgPanel getPanel() {
+  private PreferencesPanel getPanel() {
     if (this.panel == null) {
-      this.panel = new MMDCfgPanel(this);
+      this.panel = new PreferencesPanel(UIComponentFactoryProvider.findInstance(),
+          DialogProviderManager.getInstance().getDialogProvider(), this::onPossibleChange);
     }
     return this.panel;
+  }
+
+  void onPossibleChange(final PreferencesPanel panel) {
+    this.changed = panel.checkChanges();
+    if (this.changed) {
+      this.propertyChangeSupport.firePropertyChange(OptionsPanelController.PROP_CHANGED, false,
+          true);
+    }
+    this.propertyChangeSupport.firePropertyChange(OptionsPanelController.PROP_VALID, null, null);
   }
 
   void changed() {
     if (!this.changed) {
       this.changed = true;
-      this.pcs.firePropertyChange(OptionsPanelController.PROP_CHANGED, false, true);
+      this.propertyChangeSupport.firePropertyChange(OptionsPanelController.PROP_CHANGED, false,
+          true);
     }
-    this.pcs.firePropertyChange(OptionsPanelController.PROP_VALID, null, null);
+    this.propertyChangeSupport.firePropertyChange(OptionsPanelController.PROP_VALID, null, null);
   }
 
 }

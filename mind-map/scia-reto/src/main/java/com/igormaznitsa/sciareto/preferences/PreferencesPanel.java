@@ -188,7 +188,7 @@ public final class PreferencesPanel extends AbstractPreferencesPanel
   @Nonnull
   @MustNotContainNull
   @Override
-  public List<ButtonInfo> findButtonInfo() {
+  public List<ButtonInfo> findButtonInfo(@Nonnull final UIComponentFactory uiComponentFactory, @Nonnull final DialogProvider dialogProvider) {
     final ResourceBundle bundle = SrI18n.getInstance().findBundle();
     final List<ButtonInfo> list = new ArrayList<>();
 
@@ -201,11 +201,11 @@ public final class PreferencesPanel extends AbstractPreferencesPanel
 
     list.add(ButtonInfo.from(loadIcon("/icons/document_export16.png"),
         bundle.getString("PreferencesPanel.buttonExportToFile"),
-        a -> this.exportAsFileDialog()));
+        a -> this.exportAsFileDialog(this::getPanel)));
 
     list.add(ButtonInfo.from(loadIcon("/icons/document_import16.png"),
         bundle.getString("PreferencesPanel.buttonImportFromFile"),
-        a -> this.importFromFileDialog()));
+        a -> this.importFromFileDialog(this::getPanel)));
 
     list.add(ButtonInfo.from(loadIcon("/icons/file_manager.png"),
         bundle.getString("PreferencesPanel.buttonSystemFileExtensions"),

@@ -13,18 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.nbmindmap.utils;
 
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
+import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import java.awt.Component;
+import java.awt.KeyboardFocusManager;
+import java.awt.Window;
 import java.io.File;
 import javax.annotation.Nonnull;
 import javax.swing.JComponent;
+import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 import org.openide.filesystems.FileChooserBuilder;
-import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 
 public final class DialogProviderManager {
+
+  private static final DialogProviderManager INSTANCE = new DialogProviderManager();
+  private final DialogProvider PROVIDER_INSTANCE = new DialogProviderImpl();
+
+  private DialogProviderManager() {
+
+  }
+
+  @Nonnull
+  public static DialogProviderManager getInstance() {
+    return INSTANCE;
+  }
+
+  @Nonnull
+  public DialogProvider getDialogProvider() {
+    return PROVIDER_INSTANCE;
+  }
 
   private static final class DialogProviderImpl implements DialogProvider {
 
@@ -44,12 +65,14 @@ public final class DialogProviderManager {
     }
 
     @Override
-    public boolean msgOkCancel(final Component parentComponent, String title, JComponent component) {
+    public boolean msgOkCancel(final Component parentComponent, String title,
+                               JComponent component) {
       return NbUtils.msgComponentOkCancel(parentComponent, title, component);
     }
 
     @Override
-    public boolean msgConfirmOkCancel(final Component parentComponent, String title, String question) {
+    public boolean msgConfirmOkCancel(final Component parentComponent, String title,
+                                      String question) {
       return NbUtils.msgConfirmOkCancel(parentComponent, title, question);
     }
 
@@ -59,19 +82,28 @@ public final class DialogProviderManager {
     }
 
     @Override
-    public Boolean msgConfirmYesNoCancel(final Component parentComponent, String title, String question) {
+    public Boolean msgConfirmYesNoCancel(final Component parentComponent, String title,
+                                         String question) {
       return NbUtils.msgConfirmYesNoCancel(parentComponent, title, question);
     }
 
     @Override
-    public File msgSaveFileDialog(final Component parentComponent, 
+    public File msgSaveFileDialog(
+        final Component parentComponent,
         final PluginContext pluginContext,
-        final String id, final String title, final File defaultFolder, final boolean fileOnly, final FileFilter[] fileFilters, final String approveButtonText) {
+        final String id,
+        final String title,
+        final File defaultFolder,
+        final boolean fileOnly,
+        final FileFilter[] fileFilters,
+        final String approveButtonText
+    ) {
+      KeyboardFocusManager.getCurrentKeyboardFocusManager().clearFocusOwner();
       final FileChooserBuilder builder = new FileChooserBuilder(id)
-              .setTitle(title)
-              .setDefaultWorkingDirectory(defaultFolder)
-              .setFilesOnly(fileOnly)
-              .setApproveText(approveButtonText);
+          .setTitle(title)
+          .setDefaultWorkingDirectory(defaultFolder)
+          .setFilesOnly(fileOnly)
+          .setApproveText(approveButtonText);
 
       for (final FileFilter filter : fileFilters) {
         builder.addFileFilter(filter);
@@ -85,14 +117,17 @@ public final class DialogProviderManager {
     }
 
     @Override
-    public File msgOpenFileDialog(final Component parentComponent, 
-        final PluginContext pluginContext,
-        final String id, final String title, final File defaultFolder, final boolean fileOnly, final FileFilter[] fileFilters, final String approveButtonText) {
+    public File msgOpenFileDialog(final Component parentComponent,
+                                  final PluginContext pluginContext,
+                                  final String id, final String title, final File defaultFolder,
+                                  final boolean fileOnly, final FileFilter[] fileFilters,
+                                  final String approveButtonText) {
+      KeyboardFocusManager.getCurrentKeyboardFocusManager().clearFocusOwner();
       final FileChooserBuilder builder = new FileChooserBuilder(id)
-              .setTitle(title)
-              .setDefaultWorkingDirectory(defaultFolder)
-              .setFilesOnly(fileOnly)
-              .setApproveText(approveButtonText);
+          .setTitle(title)
+          .setDefaultWorkingDirectory(defaultFolder)
+          .setFilesOnly(fileOnly)
+          .setApproveText(approveButtonText);
 
       for (final FileFilter filter : fileFilters) {
         builder.addFileFilter(filter);
@@ -104,24 +139,6 @@ public final class DialogProviderManager {
 
       return builder.showOpenDialog();
     }
-
-  }
-
-  private static final DialogProviderManager INSTANCE = new DialogProviderManager();
-  private final DialogProvider PROVIDER_INSTANCE = new DialogProviderImpl();
-
-  @Nonnull
-  public static DialogProviderManager getInstance() {
-    return INSTANCE;
-  }
-
-  @Nonnull
-  public DialogProvider getDialogProvider() {
-    return PROVIDER_INSTANCE;
-  }
-
-  private DialogProviderManager() {
-
   }
 
 }

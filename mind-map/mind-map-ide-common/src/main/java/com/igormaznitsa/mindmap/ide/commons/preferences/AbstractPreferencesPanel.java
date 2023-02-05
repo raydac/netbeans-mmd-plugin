@@ -260,7 +260,7 @@ public abstract class AbstractPreferencesPanel {
 
     this.panel.add(scrollPane, BorderLayout.CENTER);
 
-    final List<ButtonInfo> buttons = this.findButtonInfo();
+    final List<ButtonInfo> buttons = this.findButtonInfo(uiComponentFactory, dialogProvider);
     if (!buttons.isEmpty()) {
       this.panel.add(makeButtonPanel(buttons), BorderLayout.EAST);
     }
@@ -324,7 +324,7 @@ public abstract class AbstractPreferencesPanel {
 
   }
 
-  public abstract List<ButtonInfo> findButtonInfo();
+  public abstract List<ButtonInfo> findButtonInfo(UIComponentFactory uiComponentFactory, DialogProvider dialogProvider);
 
   private JPanel makeButtonPanel(final List<ButtonInfo> buttons) {
     final JPanel panel = this.uiComponentFactory.makePanel();
@@ -344,8 +344,12 @@ public abstract class AbstractPreferencesPanel {
         final JButton button =
             x.supplier == null ? this.uiComponentFactory.makeButton() : x.supplier.get();
         button.setHorizontalAlignment(JButton.LEFT);
-        button.setText(x.title);
-        button.setToolTipText(x.tooltip);
+        if (x.title != null) {
+          button.setText(x.title);
+        }
+        if (x.title != null) {
+          button.setToolTipText(x.tooltip);
+        }
         if (x.actionListener != null) {
           button.addActionListener(x.actionListener);
         }
@@ -835,7 +839,7 @@ public abstract class AbstractPreferencesPanel {
       return false;
     } else {
       final MindMapPanelConfig newConfig = this.save();
-      return this.lastLoadedConfig.hasDifferenceInParameters(newConfig) || this.onCheckChanges();
+      return this.lastLoadedConfig.hasDifferenceInParameters(newConfig) || this.checkExtraChanges();
     }
   }
 
@@ -844,7 +848,7 @@ public abstract class AbstractPreferencesPanel {
    *
    * @return true if changes found, false otherwise
    */
-  protected boolean onCheckChanges() {
+  protected boolean checkExtraChanges() {
     return false;
   }
 
@@ -917,17 +921,21 @@ public abstract class AbstractPreferencesPanel {
    */
   public abstract void onLoad(MindMapPanelConfig config);
 
-  public void exportAsFileDialog() {
+  private static File lastImportSettingFile = null;
+  private static File lastExportSettingFile = null;
+
+  public void exportAsFileDialog(final Supplier<Component> dialogParentSupplier) {
     final ResourceBundle bundle = MmcI18n.getInstance().findBundle();
     File file = this.dialogProvider
-        .msgSaveFileDialog(this.panel, null, "exportProperties",
-            bundle.getString("PreferencesPanel.ExportProperties.title"), null, true,
+        .msgSaveFileDialog(dialogParentSupplier.get(), null, "exportProperties",
+            bundle.getString("PreferencesPanel.ExportProperties.title"), lastExportSettingFile, true,
             new FileFilter[] {new PropertiesFileFilter()},
             bundle.getString("PreferencesPanel.ExportProperties.approve"));
     if (file != null) {
+      lastExportSettingFile = file;
       if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".properties")) { //NOI18N
         final Boolean addExt = this.dialogProvider
-            .msgConfirmYesNoCancel(this.getPanel(),
+            .msgConfirmYesNoCancel(dialogParentSupplier.get(),
                 bundle.getString("PreferencesPanel.AddExtension.title"),
                 bundle.getString("PreferencesPanel.AddExtension.question"));
         if (addExt == null) {
@@ -939,7 +947,7 @@ public abstract class AbstractPreferencesPanel {
       }
 
       if (file.exists() && !this.dialogProvider
-          .msgConfirmOkCancel(this.getPanel(),
+          .msgConfirmOkCancel(dialogParentSupplier.get(),
               bundle.getString("PreferencesPanel.OverrideFile.title"),
               String.format(bundle.getString("PreferencesPanel.OverrideFile.question"),
                   file.getName()))) {
@@ -953,21 +961,22 @@ public abstract class AbstractPreferencesPanel {
         FileUtils.write(file, prefs.toString(), StandardCharsets.UTF_8);
       } catch (final Exception ex) {
         LOGGER.error("Can't export settings", ex);
-        this.dialogProvider.msgError(this.getPanel(),
+        this.dialogProvider.msgError(dialogParentSupplier.get(),
             bundle.getString("PreferencesPanel.ExportProperties.error") +
                 ex.getMessage());
       }
     }
   }
 
-  public void importFromFileDialog() {
+  public void importFromFileDialog(final Supplier<Component> dialogParentSupplier) {
     final ResourceBundle bundle1 = MmcI18n.getInstance().findBundle();
     final File file = this.dialogProvider
-        .msgOpenFileDialog(this.panel, null, "importProperties",
-            bundle1.getString("PreferencesPanel.ImportSettings.title"), null, true,
+        .msgOpenFileDialog(dialogParentSupplier.get(), null, "importProperties",
+            bundle1.getString("PreferencesPanel.ImportSettings.title"), lastImportSettingFile, true,
             new FileFilter[] {new PropertiesFileFilter()},
             bundle1.getString("PreferencesPanel.ImportSettings.approve"));
     if (file != null) {
+      lastImportSettingFile = file;
       try {
         final MindMapPanelConfig loadedConfig = new MindMapPanelConfig();
         loadedConfig.loadFrom(new PropertiesPreferences("SciaReto",
@@ -976,7 +985,7 @@ public abstract class AbstractPreferencesPanel {
       } catch (final Exception ex) {
         LOGGER.error("Can't import settings", ex);
         this.dialogProvider
-            .msgError(this.panel,
+            .msgError(dialogParentSupplier.get(),
                 bundle1.getString("PreferencesPanel.ImportSettings.error") + ex.getMessage());
       }
     }

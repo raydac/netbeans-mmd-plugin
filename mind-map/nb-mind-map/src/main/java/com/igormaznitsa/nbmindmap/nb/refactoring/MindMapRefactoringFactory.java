@@ -17,6 +17,8 @@ package com.igormaznitsa.nbmindmap.nb.refactoring;
 
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
+import com.igormaznitsa.nbmindmap.nb.options.AdditionalPreferences;
 import com.igormaznitsa.nbmindmap.nb.refactoring.elements.MoveFileActionPlugin;
 import com.igormaznitsa.nbmindmap.nb.refactoring.elements.RenameFileActionPlugin;
 import com.igormaznitsa.nbmindmap.nb.refactoring.elements.SafeDeleteFileActionPlugin;
@@ -32,22 +34,25 @@ import org.openide.util.lookup.ServiceProvider;
 import com.igormaznitsa.nbmindmap.utils.NbUtils;
 
 @ServiceProvider(service = RefactoringPluginFactory.class)
-public class MindMapRefactoringFactory implements RefactoringPluginFactory {
+public class MindMapRefactoringFactory implements RefactoringPluginFactory, AdditionalPreferences {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MindMapRefactoringFactory.class);
 
-  public static final String PROPERTY_WATCH_FILE_REFACTORING = "watchFileRefactoring";
-  public static final String PROPERTY_IGNORE_WHEREUSED = "ignoreWhereUsed";
+  private MindMapPanelConfig loadConfig() {
+    final MindMapPanelConfig result = new MindMapPanelConfig();
+    result.loadFrom(NbUtils.getPreferences());
+    return result;
+  }
 
   @Override
   public RefactoringPlugin createInstance(final AbstractRefactoring refactoring) {
-    final boolean fileManipulationWatchingAllowed = NbUtils.getPreferences().getBoolean(PROPERTY_WATCH_FILE_REFACTORING, false);
-    final boolean ignoreWhereUsed = NbUtils.getPreferences().getBoolean(PROPERTY_IGNORE_WHEREUSED, false);
+    final MindMapPanelConfig config = loadConfig();
+    final boolean fileManipulationWatchingAllowed = config.getOptionalProperty(PROPERTY_WATCH_FILE_REFACTORING,false);
+    final boolean ignoreWhereUsed = config.getOptionalProperty(PROPERTY_TURN_OFF_PROCESSING_WHERE_USED, false);
     
     LOGGER.info("Request to create refactoring plugin : " + refactoring +", watchFileRefactoring = "+fileManipulationWatchingAllowed+", ignoreWhereUsed = "+ignoreWhereUsed);
 
     RefactoringPlugin result = null;
-
 
     if (fileManipulationWatchingAllowed) {
       if (refactoring instanceof SafeDeleteRefactoring) {

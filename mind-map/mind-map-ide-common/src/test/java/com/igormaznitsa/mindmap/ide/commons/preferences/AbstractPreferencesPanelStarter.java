@@ -56,7 +56,7 @@ public class AbstractPreferencesPanelStarter extends AbstractPreferencesPanel {
   }
 
   @Override
-  public List<ButtonInfo> findButtonInfo() {
+  public List<ButtonInfo> findButtonInfo(UIComponentFactory componentFactory, DialogProvider dialogProvider) {
     final List<ButtonInfo> buttonInfos = new ArrayList<>();
 
     buttonInfos.add(ButtonInfo.from(null, "Donate", a -> {
@@ -65,10 +65,10 @@ public class AbstractPreferencesPanelStarter extends AbstractPreferencesPanel {
     }));
     buttonInfos.add(ButtonInfo.splitter());
     buttonInfos.add(ButtonInfo.from(null, "Export to file", a -> {
-      this.exportAsFileDialog();
+      this.exportAsFileDialog(this::getPanel);
     }));
     buttonInfos.add(ButtonInfo.from(null, "Import from file", a -> {
-      this.importFromFileDialog();
+      this.importFromFileDialog(this::getPanel);
     }));
     buttonInfos.add(ButtonInfo.from(null, "System file extensions", a -> {
     }));
