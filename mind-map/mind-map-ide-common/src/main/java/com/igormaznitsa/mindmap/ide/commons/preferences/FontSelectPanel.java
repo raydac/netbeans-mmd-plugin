@@ -27,9 +27,12 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.swing.DefaultButtonModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -54,12 +57,14 @@ public class FontSelectPanel {
   private final JButton buttonSelect;
   private Font value;
 
+  private boolean allowListeners;
+
   public FontSelectPanel(
       final Supplier<Component> dialogParentSupplier,
       final String description,
       final UIComponentFactory componentFactory,
       final DialogProvider dialogProvider,
-      final Font value) {
+      final Font font) {
     final ResourceBundle bundle = MmcI18n.getInstance().findBundle();
     this.buttonSelect = componentFactory.makeButton();
     this.buttonSelect.setHorizontalAlignment(JButton.CENTER);
@@ -74,7 +79,7 @@ public class FontSelectPanel {
           FontSelectPanel.this.value = old;
         }
         updateFontForParameters();
-        buttonSelect.setText(asString(value));
+        buttonSelect.setText(asString(FontSelectPanel.this.value));
         super.fireActionPerformed(e);
       }
     });
@@ -89,7 +94,7 @@ public class FontSelectPanel {
     this.textArea.setWrapStyleWord(true);
 
     this.comboFontFamoly = componentFactory.makeComboBox(String.class);
-    this.comboFontFamoly.setModel(new DefaultComboBoxModel<>(getAllFontFamilies()));
+    this.comboFontFamoly.setModel(new DefaultComboBoxModel<>(getAllFontFamilies().toArray(new String[0])));
 
     this.comboFontStyle = componentFactory.makeComboBox(FontStyle.class);
     this.comboFontStyle.setModel(new DefaultComboBoxModel<>(FontStyle.values()));
@@ -121,25 +126,34 @@ public class FontSelectPanel {
     this.panel.add(topPanel, BorderLayout.NORTH);
     this.panel.add(scrollPane, BorderLayout.CENTER);
 
-    this.setValue(value);
-
     this.comboFontFamoly.addActionListener(a -> {
-      this.updateFontForParameters();
+      if (this.allowListeners) {
+        this.updateFontForParameters();
+      }
     });
     this.comboFontStyle.addActionListener(a -> {
-      this.updateFontForParameters();
+      if (this.allowListeners) {
+        this.updateFontForParameters();
+      }
     });
     this.spinnerFontSize.addChangeListener(a -> {
-      this.updateFontForParameters();
+      if (this.allowListeners) {
+        this.updateFontForParameters();
+      }
     });
+    this.setValue(font);
   }
 
-  private static String[] getAllFontFamilies() {
-    return GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+  private static List<String> getAllFontFamilies() {
+    return Stream.of(GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts())
+        .map(Font::getFamily)
+        .distinct()
+        .sorted()
+        .collect(Collectors.toList());
   }
 
   public static String asString(final Font font) {
-    return font.getFontName() + ", " +
+    return font.getFamily() + ", " +
         findFor(font.getStyle()).map(FontStyle::toString).orElse("UNKNOWN")
         + ", " + font.getSize();
   }
@@ -169,14 +183,19 @@ public class FontSelectPanel {
   }
 
   public void setValue(final Font font) {
-    this.value = requireNonNull(font, "Font must not be null");
-    this.comboFontFamoly.setSelectedItem(this.value.getFamily());
-    this.comboFontStyle.setSelectedItem(
-        FontStyle.findFor(this.value.getStyle()).orElse(FontStyle.PLAIN));
-    this.spinnerFontSize.setValue(this.value.getSize());
-    this.textArea.setFont(this.value);
-    this.buttonSelect.setText(asString(font));
-    this.panel.repaint();
+    this.allowListeners = false;
+    try {
+      this.value = requireNonNull(font, "Font must not be null");
+      this.comboFontFamoly.setSelectedItem(this.value.getFamily());
+      this.comboFontStyle.setSelectedItem(
+          FontStyle.findFor(this.value.getStyle()).orElse(FontStyle.PLAIN));
+      this.spinnerFontSize.setValue(this.value.getSize());
+      this.textArea.setFont(this.value);
+      this.buttonSelect.setText(asString(font));
+      this.panel.repaint();
+    }finally {
+      this.allowListeners = true;
+    }
   }
 
   public enum FontStyle {

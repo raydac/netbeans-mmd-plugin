@@ -19,21 +19,21 @@
 
   <dependencies>
 
-<!--    <dependency>-->
-<!--      <groupId>com.intellij</groupId>-->
-<!--      <artifactId>idea-app</artifactId>-->
-<!--      <version>0-SNAPSHOT</version>-->
-<!--      <scope>system</scope>-->
-<!--      <systemPath>/home/igorm/Programs/idea-IC/lib/app.jar</systemPath>-->
-<!--    </dependency>-->
+    <dependency>
+      <groupId>com.intellij</groupId>
+      <artifactId>idea-app</artifactId>
+      <version>0-SNAPSHOT</version>
+      <scope>system</scope>
+      <systemPath>/home/igorm/Programs/idea-IC/lib/app.jar</systemPath>
+    </dependency>
 
-<!--    <dependency>-->
-<!--      <groupId>com.intellij</groupId>-->
-<!--      <artifactId>idea-util</artifactId>-->
-<!--      <version>0-SNAPSHOT</version>-->
-<!--      <scope>system</scope>-->
-<!--      <systemPath>/home/igorm/Programs/idea-IC/lib/util.jar</systemPath>-->
-<!--    </dependency>-->
+    <dependency>
+      <groupId>com.intellij</groupId>
+      <artifactId>idea-util</artifactId>
+      <version>0-SNAPSHOT</version>
+      <scope>system</scope>
+      <systemPath>/home/igorm/Programs/idea-IC/lib/util.jar</systemPath>
+    </dependency>
 
     <dependency>
       <groupId>com.intellij</groupId>

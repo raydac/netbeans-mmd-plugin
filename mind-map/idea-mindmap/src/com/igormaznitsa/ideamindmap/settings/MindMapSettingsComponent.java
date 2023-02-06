@@ -104,7 +104,7 @@ public class MindMapSettingsComponent extends ConfigurableProvider implements Co
   @Override
   public void apply() throws ConfigurationException {
     if (this.uiPanel != null) {
-        MindMapApplicationSettings.getInstance().loadState(new MindMapApplicationSettings(this.uiPanel.save(true)));
+        MindMapApplicationSettings.getInstance().loadState(MindMapApplicationSettings.from(this.uiPanel.save(true)));
     }
   }
 

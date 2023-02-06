@@ -179,7 +179,8 @@ public abstract class AbstractPreferencesPanel {
     this.fontChooserPanelMindMapTopicTitleFont =
         new FontSelectPanel(() -> this.panel,
             bundle.getString("PreferencesPanel.fontSelectPanel.description"),
-            this.uiComponentFactory, dialogProvider,
+            this.uiComponentFactory,
+            dialogProvider,
             this.panel.getFont());
 
     this.checkBoxSmartTextPaste = this.uiComponentFactory.makeCheckBox();
