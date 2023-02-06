@@ -18,33 +18,25 @@ package com.igormaznitsa.mindmap.swing.panel.utils;
 
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.io.Serializable;
 import java.util.Locale;
 import java.util.Objects;
 import javax.swing.KeyStroke;
 
-public final class KeyShortcut {
+public final class KeyShortcut implements Serializable {
+
+  private static final long serialVersionUID = -4263687011484460164L;
 
   public static final int ALL_MODIFIERS_MASK = KeyEvent.SHIFT_MASK | KeyEvent.CTRL_MASK | KeyEvent.ALT_MASK | KeyEvent.META_MASK;
-  private final String id;
-  private final int modifiers;
-  private final int keyCode;
+  private String id;
+  private int modifiers;
+  private int keyCode;
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    KeyShortcut that = (KeyShortcut) o;
-    return modifiers == that.modifiers && keyCode == that.keyCode &&
-        Objects.equals(id, that.id);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(id, modifiers, keyCode);
+  // needed for serialization
+  public KeyShortcut() {
+    this.id = "";
+    this.modifiers = -1;
+    this.keyCode = 0;
   }
 
   public KeyShortcut(final String packed) {
@@ -64,6 +56,7 @@ public final class KeyShortcut {
   public KeyShortcut(final String id, final int modifiers) {
     this(id, Integer.MAX_VALUE, modifiers);
   }
+
   public KeyShortcut(final String id, final int keyCode, final int modifiers) {
     if (id.contains("*")) {
       throw new IllegalArgumentException("ID can't contain '*'");
@@ -96,6 +89,24 @@ public final class KeyShortcut {
       }
     }
     return result;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    KeyShortcut that = (KeyShortcut) o;
+    return modifiers == that.modifiers && keyCode == that.keyCode &&
+        Objects.equals(id, that.id);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, modifiers, keyCode);
   }
 
   public boolean isCtrl() {

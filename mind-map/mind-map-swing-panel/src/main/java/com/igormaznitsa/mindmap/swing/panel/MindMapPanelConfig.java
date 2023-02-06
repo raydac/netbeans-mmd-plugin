@@ -44,7 +44,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Objects;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import java.util.stream.Stream;
@@ -76,15 +76,14 @@ public final class MindMapPanelConfig implements Serializable {
   public static final String KEY_ZOOM_RESET = "zoomReset";
   public static final String KEY_SHOW_POPUP = "showPopupMenu";
   public static final String KEY_BIRDSEYE_MODIFIERS = "birdsEyeModifiers";
-
-  private static final long serialVersionUID = -4273687011484460064L;
-  private static final String PREFIX_OPTIONAL_PROPERTY = "optionalProperty.";
-  private static final String PREFIX_SHORTCUT = "mapShortCut.";
+  public static final String PREFIX_OPTIONAL_PROPERTY = "optionalProperty.";
+  public static final String PREFIX_SHORTCUT = "mapShortCut.";
+  private static final long serialVersionUID = -4263687011484460064L;
   private transient final List<WeakReference<MindMapConfigListener>> listeners =
       new ArrayList<>();
-  private transient final Map<String, KeyShortcut> mapShortCut = new HashMap<>();
-  private transient final Map<String, Serializable> optionalProperties = new ConcurrentHashMap<>();
   private final Serializable NULL_OPTIONAL_OBJECT = "some_null_object";
+  private Map<String, KeyShortcut> mapShortCut;
+  private Map<String, Serializable> optionalProperties;
   private int collapsatorSize = 16;
   private int textMargins = 10;
   private int otherLevelVerticalInset = 16;
@@ -129,12 +128,15 @@ public final class MindMapPanelConfig implements Serializable {
   private MouseButton birdseyeMouseButton = MouseButton.BUTTON_3;
   private transient volatile boolean notificationEnabled = true;
 
+
   public MindMapPanelConfig(final MindMapPanelConfig cfg, final boolean copyListeners) {
     this();
     this.makeFullCopyOf(cfg, copyListeners, false);
   }
 
   public MindMapPanelConfig() {
+    this.mapShortCut = new HashMap<>();
+    this.optionalProperties = new HashMap<>();
     this.font =
         findDefaultFont(Font.PLAIN, 18, Font.MONOSPACED, new String[] {"JetBrains Mono SemiBold"});
     if (SystemUtils.IS_OS_MAC) {
@@ -268,6 +270,16 @@ public final class MindMapPanelConfig implements Serializable {
     }
   }
 
+  public static MindMapPanelConfig deserialize(final byte[] value) throws IOException {
+    try {
+      final ObjectInputStream stream =
+          new ObjectInputStream(new ByteArrayInputStream(value));
+      return (MindMapPanelConfig) stream.readObject();
+    } catch (ClassNotFoundException ex) {
+      throw new IOException("Can;t find class during deserialization", ex);
+    }
+  }
+
   public boolean isKeyEvent(final String id, final KeyEvent event,
                             final int modifiersMask) {
     final KeyShortcut shortCut = this.mapShortCut.get(id);
@@ -293,12 +305,16 @@ public final class MindMapPanelConfig implements Serializable {
 
   @SuppressWarnings("unchecked")
   public <T extends Serializable> T getOptionalProperty(final String id, final T defaultValue) {
-    final Serializable result = this.optionalProperties.get(id);
-    return (T) (result == null || result == NULL_OPTIONAL_OBJECT ? defaultValue : result);
+    synchronized (this.optionalProperties) {
+      final Serializable result = this.optionalProperties.get(id);
+      return (T) (result == null || result == NULL_OPTIONAL_OBJECT ? defaultValue : result);
+    }
   }
 
   public void setOptionalProperty(final String id, final Serializable value) {
-    this.optionalProperties.put(id, value == null ? NULL_OPTIONAL_OBJECT : value);
+    synchronized (this.optionalProperties) {
+      this.optionalProperties.put(id, value == null ? NULL_OPTIONAL_OBJECT : value);
+    }
   }
 
   public KeyShortcut getKeyShortCut(final String id) {
@@ -316,8 +332,10 @@ public final class MindMapPanelConfig implements Serializable {
 
   @SettingsAccessor(name = "optionalProperties")
   public void setOptionalProperties(final Map<String, Serializable> properties) {
-    this.optionalProperties.clear();
-    this.optionalProperties.putAll(properties);
+    synchronized (this.optionalProperties) {
+      this.optionalProperties.clear();
+      this.optionalProperties.putAll(properties);
+    }
   }
 
   @SettingsAccessor(name = "mapShortCut")
@@ -392,6 +410,35 @@ public final class MindMapPanelConfig implements Serializable {
             prefs.put(fieldName, ((RenderQuality) f.get(this)).name());
           } else if (fieldClass == MouseButton.class) {
             prefs.put(fieldName, ((MouseButton) f.get(this)).name());
+          } else if (fieldClass == Map.class) {
+            if (f.getName().equals("mapShortCut")) {
+              for (final Map.Entry<String, KeyShortcut> e : this.mapShortCut.entrySet()) {
+                prefs.put(PREFIX_SHORTCUT + e.getValue().getID(), e.getValue().packToString());
+              }
+            } else {
+              synchronized (this.optionalProperties) {
+                for (final Map.Entry<String, Serializable> e : this.optionalProperties.entrySet()) {
+                  final String key = PREFIX_OPTIONAL_PROPERTY + e.getKey();
+                  if (e.getValue() == NULL_OPTIONAL_OBJECT) {
+                    prefs.remove(key);
+                  } else {
+                    final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                    try {
+                      final ObjectOutputStream objectOutputStream =
+                          new ObjectOutputStream(outputStream);
+                      objectOutputStream.writeObject(e.getValue());
+                      objectOutputStream.close();
+                      final String encodedValue =
+                          Base64.getEncoder().encodeToString(outputStream.toByteArray());
+                      prefs.put(key, encodedValue);
+                    } catch (final IOException ex) {
+                      throw new RuntimeException("Error during write optional property: " + e, ex);
+                    }
+                  }
+                }
+                this.optionalProperties.values().removeIf(x -> x == NULL_OPTIONAL_OBJECT);
+              }
+            }
           } else {
             throw new Error("Unexpected field type " + fieldClass.getName());
           }
@@ -401,30 +448,6 @@ public final class MindMapPanelConfig implements Serializable {
           throw new Error("IllegalArgumentException [" + fieldClass.getName() + ']', ex);
         }
       }
-
-      for (final Map.Entry<String, KeyShortcut> e : this.mapShortCut.entrySet()) {
-        prefs.put(PREFIX_SHORTCUT + e.getValue().getID(), e.getValue().packToString());
-      }
-
-      for (final Map.Entry<String, Serializable> e : this.optionalProperties.entrySet()) {
-        final String key = PREFIX_OPTIONAL_PROPERTY + e.getKey();
-        if (e.getValue() == NULL_OPTIONAL_OBJECT) {
-          prefs.remove(key);
-        } else {
-          final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-          try {
-            final ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
-            objectOutputStream.writeObject(e.getValue());
-            objectOutputStream.close();
-            final String encodedValue =
-                Base64.getEncoder().encodeToString(outputStream.toByteArray());
-            prefs.put(key, encodedValue);
-          } catch (final IOException ex) {
-            throw new RuntimeException("Error during write optional property: " + e, ex);
-          }
-        }
-      }
-      this.optionalProperties.values().removeIf(x -> x == NULL_OPTIONAL_OBJECT);
     }
     return prefs;
   }
@@ -471,6 +494,55 @@ public final class MindMapPanelConfig implements Serializable {
           } else if (fieldClass == MouseButton.class) {
             final String name = prefs.get(fieldName, ((MouseButton) f.get(etalon)).name());
             f.set(this, MouseButton.valueOf(name));
+          } else if (fieldClass == Map.class) {
+            if (f.getName().equals("mapShortCut")) {
+              this.mapShortCut.clear();
+              this.mapShortCut.putAll(etalon.mapShortCut);
+              try {
+                for (final String k : prefs.keys()) {
+                  if (k.startsWith(PREFIX_SHORTCUT)) {
+//            final int dotIndex = k.indexOf('.');
+//            final String id = k.substring(dotIndex + 1);
+                    final String packedValue = prefs.get(k, "");
+                    if (packedValue.isEmpty()) {
+                      throw new Error("Unexpected situation, short cut value is empty [" + k + ']');
+                    }
+                    final KeyShortcut unpacked = new KeyShortcut(packedValue);
+                    this.mapShortCut.put(unpacked.getID(), unpacked);
+                  }
+                }
+              } catch (BackingStoreException ex) {
+                throw new Error("Can't get list of keys from storage", ex);
+              }
+            } else {
+              this.optionalProperties.clear();
+              this.optionalProperties.putAll(etalon.optionalProperties);
+
+              try {
+                for (final String k : prefs.keys()) {
+                  if (k.startsWith(PREFIX_OPTIONAL_PROPERTY)) {
+                    final String propertyName = k.substring(k.indexOf('.') + 1);
+                    final String value = prefs.get(k, null);
+                    if (value == null) {
+                      throw new Error("Unexpected situation, property value is null [" + k + ']');
+                    }
+                    try {
+                      final Serializable readValue =
+                          (Serializable) new ObjectInputStream(
+                              new ByteArrayInputStream(
+                                  Base64.getDecoder().decode(value))).readObject();
+                      if (readValue != null) {
+                        this.optionalProperties.put(propertyName, readValue);
+                      }
+                    } catch (ClassNotFoundException | IOException ex) {
+                      // ignore error to save possibility to load config
+                    }
+                  }
+                }
+              } catch (BackingStoreException ex) {
+                throw new Error("Can't get list of keys from storage", ex);
+              }
+            }
           } else {
             throw new Error("Unexpected field type " + fieldClass.getName());
           }
@@ -479,49 +551,6 @@ public final class MindMapPanelConfig implements Serializable {
         } catch (IllegalArgumentException ex) {
           throw new Error("IllegalArgumentException [" + fieldClass.getName() + ']', ex);
         }
-      }
-      this.mapShortCut.clear();
-      this.mapShortCut.putAll(etalon.mapShortCut);
-      try {
-        for (final String k : prefs.keys()) {
-          if (k.startsWith(PREFIX_SHORTCUT)) {
-//            final int dotIndex = k.indexOf('.');
-//            final String id = k.substring(dotIndex + 1);
-            final String packedValue = prefs.get(k, "");
-            if (packedValue.isEmpty()) {
-              throw new Error("Unexpected situation, short cut value is empty [" + k + ']');
-            }
-            final KeyShortcut unpacked = new KeyShortcut(packedValue);
-            this.mapShortCut.put(unpacked.getID(), unpacked);
-          }
-        }
-      } catch (BackingStoreException ex) {
-        throw new Error("Can't get list of keys from storage", ex);
-      }
-
-      this.optionalProperties.clear();
-      this.optionalProperties.putAll(etalon.optionalProperties);
-
-      try {
-        for (final String k : prefs.keys()) {
-          if (k.startsWith(PREFIX_OPTIONAL_PROPERTY)) {
-            final String propertyName = k.substring(k.indexOf('.') + 1);
-            final String value = prefs.get(k, null);
-            if (value == null) {
-              throw new Error("Unexpected situation, property value is null [" + k + ']');
-            }
-            try {
-              final Serializable readValue =
-                  (Serializable) new ObjectInputStream(
-                      new ByteArrayInputStream(Base64.getDecoder().decode(value))).readObject();
-              if (readValue != null) this.optionalProperties.put(propertyName, readValue);
-            } catch (ClassNotFoundException | IOException ex) {
-              // ignore error to save possibility to load config
-            }
-          }
-        }
-      } catch (BackingStoreException ex) {
-        throw new Error("Can't get list of keys from storage", ex);
       }
     }
     return prefs;
@@ -535,6 +564,23 @@ public final class MindMapPanelConfig implements Serializable {
       this.notificationEnabled = true;
       notifyCfgListenersAboutChange();
     }
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(this.optionalProperties, this.mapShortCut);
+  }
+
+  @Override
+  public boolean equals(final Object object) {
+    if (object == null) {
+      return false;
+    }
+    if (object == this) {
+      return true;
+    }
+    return object instanceof MindMapPanelConfig &&
+        !this.hasDifferenceInParameters((MindMapPanelConfig) object);
   }
 
   public float safeScaleFloatValue(final float value, final float minimal) {
@@ -556,7 +602,8 @@ public final class MindMapPanelConfig implements Serializable {
               }
             }
           }
-        } else if ((f.getModifiers() & (Modifier.STATIC | Modifier.FINAL)) == 0) {
+        } else if ((f.getModifiers() & (Modifier.STATIC | Modifier.FINAL)) == 0 &&
+            f.getType() != Map.class) {
           try {
             f.set(this, f.get(src));
           } catch (Exception ex) {
@@ -614,6 +661,14 @@ public final class MindMapPanelConfig implements Serializable {
         }
       }
     }
+  }
+
+  public byte[] serialize() throws IOException {
+    final ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+    final ObjectOutputStream objectStream = new ObjectOutputStream(outStream);
+    objectStream.writeObject(this);
+    objectStream.close();
+    return outStream.toByteArray();
   }
 
   public boolean isKeyEventDetected(final KeyEvent event,

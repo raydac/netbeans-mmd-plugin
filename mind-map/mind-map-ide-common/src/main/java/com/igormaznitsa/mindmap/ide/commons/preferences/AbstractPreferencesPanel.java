@@ -20,6 +20,7 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
+import static com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig.KEY_BIRDSEYE_MODIFIERS;
 import com.igormaznitsa.mindmap.swing.panel.utils.KeyShortcut;
 import com.igormaznitsa.mindmap.swing.panel.utils.MouseButton;
 import com.igormaznitsa.mindmap.swing.panel.utils.PropertiesPreferences;
@@ -343,7 +344,7 @@ public abstract class AbstractPreferencesPanel {
       } else {
         final JButton button =
             x.supplier == null ? this.uiComponentFactory.makeButton() : x.supplier.get();
-        button.setHorizontalAlignment(JButton.LEFT);
+        button.setHorizontalAlignment(this.getButtonsAlign());
         if (x.title != null) {
           button.setText(x.title);
         }
@@ -769,7 +770,7 @@ public abstract class AbstractPreferencesPanel {
     return panel;
   }
 
-  public MindMapPanelConfig save() {
+  public MindMapPanelConfig save(final boolean replaceLoadedConfig) {
     final MindMapPanelConfig config = new MindMapPanelConfig();
 
     config.setPaperColor(this.buttonColorPaper.getValue());
@@ -824,6 +825,10 @@ public abstract class AbstractPreferencesPanel {
 
     this.onSave(config);
 
+    if (replaceLoadedConfig) {
+      this.lastLoadedConfig = new MindMapPanelConfig(config, false);
+    }
+
     return config;
   }
 
@@ -838,9 +843,13 @@ public abstract class AbstractPreferencesPanel {
     if (this.lastLoadedConfig == null) {
       return false;
     } else {
-      final MindMapPanelConfig newConfig = this.save();
+      final MindMapPanelConfig newConfig = this.save(false);
       return this.lastLoadedConfig.hasDifferenceInParameters(newConfig) || this.checkExtraChanges();
     }
+  }
+
+  protected int getButtonsAlign() {
+    return JButton.LEFT;
   }
 
   /**
@@ -882,7 +891,8 @@ public abstract class AbstractPreferencesPanel {
       this.keyModifiersWheelScale.setModifiers(config.getScaleModifiers());
       this.comboBoxFastNavigationMouse.setSelectedItem(config.getBirdseyeMouseButton());
       this.keyModifiersFastNavigation.setModifiers(
-          config.getKeyShortcutMap().get(MindMapPanelConfig.KEY_BIRDSEYE_MODIFIERS).getModifiers());
+          config.getKeyShortcutMap().getOrDefault(MindMapPanelConfig.KEY_BIRDSEYE_MODIFIERS, new KeyShortcut(KEY_BIRDSEYE_MODIFIERS,
+                      KeyEvent.CTRL_MASK | KeyEvent.SHIFT_MASK)).getModifiers());
 
       this.checkBoxDropShadow.setSelected(config.isDropShadow());
       this.spinnerBorderWidth.setValue(config.getElementBorderWidth());
@@ -955,7 +965,7 @@ public abstract class AbstractPreferencesPanel {
       }
 
       final PropertiesPreferences prefs = new PropertiesPreferences("SciaReto editor settings");
-      final MindMapPanelConfig cfg = save();
+      final MindMapPanelConfig cfg = save(false);
       cfg.saveTo(prefs);
       try {
         FileUtils.write(file, prefs.toString(), StandardCharsets.UTF_8);

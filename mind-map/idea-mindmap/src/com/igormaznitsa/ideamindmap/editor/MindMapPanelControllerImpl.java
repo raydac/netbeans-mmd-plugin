@@ -87,7 +87,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
   public MindMapPanelControllerImpl(final MindMapDocumentEditor editor) {
     this.editor = editor;
     this.dialogProvider = new MindMapDialogProvider(editor.getProject());
-    MindMapApplicationSettings.findInstance().getConfig().addConfigurationListener(this);
+    MindMapApplicationSettings.getInstance().getState().getConfig().addConfigurationListener(this);
   }
 
   public MindMapDialogProvider getDialogProvider() {
@@ -168,7 +168,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
   @Override
   @Nonnull
   public MindMapPanelConfig provideConfigForMindMapPanel(@Nonnull MindMapPanel mindMapPanel) {
-    return MindMapApplicationSettings.findInstance().getConfig();
+    return MindMapApplicationSettings.getInstance().getState().getConfig();
   }
 
   @Override

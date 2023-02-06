@@ -13,189 +13,113 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.igormaznitsa.ideamindmap.settings;
 
 import com.igormaznitsa.ideamindmap.plugins.PrinterPlugin;
-import com.igormaznitsa.meta.common.utils.GetUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
 import com.igormaznitsa.mindmap.plugins.external.ExternalPlugins;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
-import com.igormaznitsa.mindmap.swing.panel.utils.RenderQuality;
-import com.igormaznitsa.mindmap.swing.panel.SettingsAccessor;
-import com.igormaznitsa.mindmap.swing.panel.utils.KeyShortcut;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
-import java.awt.Color;
-import java.awt.Font;
+import com.intellij.util.xmlb.Converter;
+import com.intellij.util.xmlb.annotations.Transient;
 import java.io.File;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Base64;
+import java.util.Objects;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.xml.crypto.dsig.keyinfo.KeyValue;
+import com.intellij.util.xmlb.annotations.Attribute;
 
-@State(name = "NBMindMapPlugin", storages = {@Storage(file = "$APP_CONFIG$/nbmindmapsettings.xml")})
-public class MindMapApplicationSettings implements ApplicationComponent, PersistentStateComponent<DeclaredFieldsSerializer>, DeclaredFieldsSerializer.Converter {
+@State(name = "NBMindMapPlugin", storages = {
+    @Storage("IdeaMindMapPlugin.xml")})
+public class MindMapApplicationSettings implements ApplicationComponent, PersistentStateComponent<MindMapApplicationSettings> {
 
-  private static final MindMapPanelConfig etalon = new MindMapPanelConfig();
-  private static final String PROPERTY = "idea.mindmap.plugin.folder";
-  private static final Logger LOGGER = LoggerFactory.getLogger(MindMapApplicationSettings.class);
-  private final MindMapPanelConfig editorConfig = new MindMapPanelConfig();
+    private static final String PROPERTY = "idea.mindmap.plugin.folder";
+    private static final Logger LOGGER = LoggerFactory.getLogger(MindMapApplicationSettings.class);
 
-  public static MindMapApplicationSettings findInstance() {
-    return ApplicationManager.getApplication().getComponent(MindMapApplicationSettings.class);
-  }
+    @Attribute(value = "mmd_config_serialized", converter = MindMapPanelConfigSerializer.class)
+    private MindMapPanelConfig editorConfig;
 
-  public MindMapPanelConfig getConfig() {
-    return this.editorConfig;
-  }
-
-  @Override
-  public void initComponent() {
-    MindMapPluginRegistry.getInstance().registerPlugin(new PrinterPlugin());
-    final String pluginFolder = System.getProperty(PROPERTY);
-    if (pluginFolder != null) {
-      final File folder = new File(pluginFolder);
-      if (folder.isDirectory()) {
-        LOGGER.info("Loading plugins from folder : " + folder);
-        new ExternalPlugins(folder).init();
-      } else {
-        LOGGER.error("Can't find plugin folder : " + folder);
-      }
-    } else {
-      LOGGER.info("Property " + PROPERTY + " is not defined");
+    @Transient
+    private volatile boolean inited;
+    
+    public static MindMapApplicationSettings getInstance() {
+        return ApplicationManager.getApplication().getComponent(MindMapApplicationSettings.class);
     }
 
-  }
+    public MindMapApplicationSettings() {
+        this.editorConfig = new MindMapPanelConfig();
+    }
 
-  @Override
-  public void disposeComponent() {
+    public MindMapApplicationSettings(final MindMapPanelConfig config) {
+        this();
+        this.editorConfig = Objects.requireNonNull(config);
+    }
 
-  }
+    public static class MindMapPanelConfigSerializer extends Converter<MindMapPanelConfig> {
 
-  @Nonnull
-  @Override
-  public String getComponentName() {
-    return "NBMindMapApplicationSettings";
-  }
+        @Override
+        public MindMapPanelConfig fromString(final String value) {
+            try {
+                return MindMapPanelConfig.deserialize(Base64.getDecoder().decode(value));
+            } catch (Exception ex) {
+                LOGGER.warn("Detected incompatibility in config format, use default");
+                return new MindMapPanelConfig();
+            }
+        }
 
-  @Nullable
-  @Override
-  public DeclaredFieldsSerializer getState() {
-    return new DeclaredFieldsSerializer(this.editorConfig, this);
-  }
+        @Override
+        public String toString(final MindMapPanelConfig value) {
+            try {
+                return Base64.getEncoder().encodeToString(value.serialize());
+            } catch (Exception ex) {
+                LOGGER.error("Can't serialize configuration for error", ex);
+                throw new RuntimeException("Error during configuration serialization", ex);
+            }
+        }
+    }
 
-  @Override
-  public void loadState(final DeclaredFieldsSerializer state) {
-    state.fill(editorConfig, this);
-  }
+    public MindMapPanelConfig getConfig() {
+        return this.editorConfig;
+    }
 
-  public void fillBy(@Nonnull final MindMapPanelConfig mindMapPanelConfig) {
-    editorConfig.makeFullCopyOf(mindMapPanelConfig, false, true);
-  }
+    @Nonnull
+    @Override
+    public MindMapApplicationSettings getState() {
+        return this;
+    }
 
-  @Nullable
-  @Override
-  public Object fromString(@Nonnull Class<?> fieldType, @Nullable String value) {
-    if (fieldType.isAssignableFrom(Map.class)) {
-      if (value == null || value.trim().isEmpty()) {
-        return Collections.emptyMap();
-      } else {
-        try {
-          final Map<String, KeyShortcut> result = new HashMap<>();
-          for (final String s : value.split(",")) {
-            String[] keyValue = s.split("::");
-            if (keyValue.length == 2) {
-              final String key = keyValue[0].trim();
-              final String shortcut = keyValue[1].trim();
-              result.put(key, new KeyShortcut(shortcut));
+    @Override
+    public void loadState(final MindMapApplicationSettings state) {
+        this.editorConfig.makeFullCopyOf(state.editorConfig, false, true);
+    }
+
+    @Override
+    public void initComponent() {
+        initializeComponent();
+    }
+
+    //@Override
+    public void initializeComponent() {
+        if (!this.inited) {
+            this.inited = true;
+            MindMapPluginRegistry.getInstance().registerPlugin(new PrinterPlugin());
+            final String pluginFolder = System.getProperty(PROPERTY);
+            if (pluginFolder != null) {
+                final File folder = new File(pluginFolder);
+                if (folder.isDirectory()) {
+                    LOGGER.info("Loading plugins from folder : " + folder);
+                    new ExternalPlugins(folder).init();
+                } else {
+                    LOGGER.error("Can't find plugin folder : " + folder);
+                }
             } else {
-              throw new IllegalArgumentException("Detected wrong entity pair: " + s);
+                LOGGER.info("Property " + PROPERTY + " is not defined");
             }
-          }
-          return result;
-        }catch (Exception ex){
-          LOGGER.error("Can't split key shortcuts", ex);
-          return Collections.emptyMap();
         }
-      }
-    } if (fieldType == Color.class) {
-      if (value == null) return null;
-      return new Color(Integer.parseInt(value), true);
-    } else if (fieldType == Font.class) {
-      if (value == null) return new Font("Arial", Font.BOLD, 12);
-      final String[] splitted = value.split(":");
-      return new Font(splitted[0].trim(), Integer.parseInt(splitted[1].trim()), Integer.parseInt(splitted[2].trim()));
-    } else if (fieldType == RenderQuality.class) {
-      if (value == null) return RenderQuality.DEFAULT;
-      try {
-        return RenderQuality.valueOf(value);
-      } catch (Exception ex) {
-        return RenderQuality.DEFAULT;
-      }
-    } else {
-      throw new Error("Unexpected field type" + fieldType);
     }
-  }
-
-  @Nonnull
-  @Override
-  public String asString(@Nonnull Class<?> fieldType, @Nullable Object value) {
-    if (fieldType.isAssignableFrom(Map.class)) {
-      if (value == null) return "";
-      try {
-        final StringBuilder buffer = new StringBuilder();
-        final Map<String, KeyShortcut> keyMap = (Map<String, KeyShortcut>) value;
-        keyMap.forEach((k, v) -> {
-          if (buffer.length() > 0) buffer.append(",");
-          buffer.append(k).append("::").append(v.packToString());
-        });
-        return buffer.toString();
-      }catch (Exception ex) {
-        throw new RuntimeException("Can't make key short map", ex);
-      }
-    } else if (fieldType == Color.class) {
-      return Integer.toString(((Color) value).getRGB());
-    } else if (fieldType == Font.class) {
-      final Font font = (Font) value;
-      return font.getFamily() + ':' + font.getStyle() + ':' + font.getSize();
-    } else if (fieldType == RenderQuality.class) {
-      final RenderQuality rq = (RenderQuality) value;
-      return GetUtils.ensureNonNull(rq, RenderQuality.DEFAULT).name();
-    } else {
-      throw new Error("Unexpected field type" + fieldType);
-    }
-  }
-
-  @Nullable
-  @Override
-  public Object provideDefaultValue(@Nonnull final String fieldName, @Nonnull final Class<?> fieldType) {
-    try {
-      for(final Method method : MindMapPanelConfig.class.getDeclaredMethods()) {
-        if (Modifier.isPublic(method.getModifiers()) && method.getParameterCount() == 0) {
-          SettingsAccessor settingsAccessor = method.getAnnotation(SettingsAccessor.class);
-          if (settingsAccessor != null) {
-            if (settingsAccessor.name().equals(fieldName)) {
-              return method.invoke(etalon);
-            }
-          }
-        }
-      }
-      throw new IllegalStateException("Can't find getter for field name: " + fieldName);
-    } catch (Exception ex) {
-      LOGGER.error("Error during default value extraction (" + fieldType + " " + fieldName + ')');
-      throw new RuntimeException("Can't extract default value from settings", ex);
-    }
-  }
 }

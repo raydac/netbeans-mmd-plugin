@@ -16,6 +16,7 @@
 
 package com.igormaznitsa.mindmap.swing.panel.utils;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -23,10 +24,24 @@ import static org.junit.Assert.assertTrue;
 import java.awt.Component;
 import java.awt.event.KeyEvent;
 import javax.swing.KeyStroke;
+import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 public class KeyShortcutTest {
+
+  @Test
+  public void testPackAndParse() {
+    final KeyShortcut shortcut = new KeyShortcut("hahaha", KeyEvent.ALT_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK);
+    final String packed = shortcut.packToString();
+    final KeyShortcut parsed = new KeyShortcut(packed);
+    assertEquals(shortcut,parsed);
+
+    final KeyShortcut shortcut2 = new KeyShortcut("hahaha", KeyEvent.VK_0, KeyEvent.ALT_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK);
+    final String packed2 = shortcut2.packToString();
+    final KeyShortcut parsed2 = new KeyShortcut(packed2);
+    assertEquals(shortcut2, parsed2);
+  }
 
   @Test
   public void testIsEvent() {

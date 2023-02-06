@@ -33,8 +33,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.igormaznitsa.mindmap.swing.panel.utils.KeyShortcut;
+import com.igormaznitsa.mindmap.swing.panel.utils.RenderQuality;
 import java.awt.Color;
 import java.awt.Font;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.prefs.Preferences;
@@ -43,6 +49,25 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 public class MindMapPanelConfigTest {
+
+  @Test
+  public void testSerializationDeserialization() throws Exception {
+    final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+    final ObjectOutputStream stream = new ObjectOutputStream(buffer);
+
+    final MindMapPanelConfig config = new MindMapPanelConfig();
+    config.setOptionalProperty("aaa", 1);
+    config.setOptionalProperty("bbb", RenderQuality.QUALITY);
+    config.setOptionalProperty("cccc", false);
+    config.setKeyShortCut(new KeyShortcut("huzzaa", 45, 8980));
+
+    final byte[] data = config.serialize();
+    System.out.println("Approx size of config "+data.length+" bytes");
+    final MindMapPanelConfig restored = MindMapPanelConfig.deserialize(data);
+
+    assertEquals(config, restored);
+  }
+
 
   @Test
   public void testHasDifferenceInParameters_NoDifference() {

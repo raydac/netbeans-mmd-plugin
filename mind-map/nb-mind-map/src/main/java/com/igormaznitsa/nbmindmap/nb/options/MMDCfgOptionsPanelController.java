@@ -55,7 +55,7 @@ public final class MMDCfgOptionsPanelController extends OptionsPanelController {
   public void applyChanges() {
     SwingUtilities.invokeLater(() -> {
       try {
-        final MindMapPanelConfig config = this.panel.save();
+        final MindMapPanelConfig config = this.panel.save(true);
         config.saveTo(NbUtils.getPreferences());
         changed = false;
       } finally {

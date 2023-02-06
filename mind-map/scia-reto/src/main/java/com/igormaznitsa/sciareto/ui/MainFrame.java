@@ -1646,7 +1646,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         SrI18n.getInstance().findBundle().getString("mainFrame.msgPreferences.title"),
         panel)) {
       LOGGER.info("Saving panel configuration");
-      final MindMapPanelConfig newConfig = preferencesPanelMaker.save();
+      final MindMapPanelConfig newConfig = preferencesPanelMaker.save(false);
       newConfig.saveTo(PreferencesManager.getInstance().getPreferences());
       this.loadAndRefreshConfig();
     }
