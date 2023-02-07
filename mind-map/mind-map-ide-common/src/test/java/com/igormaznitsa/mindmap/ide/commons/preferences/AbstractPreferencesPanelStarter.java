@@ -21,6 +21,7 @@ import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.SwingMessageDialogProvider;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
+import java.awt.Insets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -36,9 +37,27 @@ public class AbstractPreferencesPanelStarter extends AbstractPreferencesPanel {
     super(uiComponentFactory, dialogProvider);
   }
 
+  public static void main(String... args) {
+    SwingUtilities.invokeLater(() -> {
+      final JFrame frame = new JFrame("Test panel");
+
+      final AbstractPreferencesPanel bp =
+          new AbstractPreferencesPanelStarter(UIComponentFactoryProvider.findInstance(),
+              new SwingMessageDialogProvider());
+
+      bp.load(new MindMapPanelConfig());
+
+      frame.setContentPane(bp.getPanel());
+      frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+      frame.pack();
+      frame.setVisible(true);
+    });
+  }
+
   @Override
   protected JButton processColorButton(final JButton button) {
-    button.setHorizontalAlignment(JButton.CENTER);
+    button.setMargin(new Insets(3,8,3,0));
+    return button;
   }
 
   @Override
@@ -83,23 +102,6 @@ public class AbstractPreferencesPanelStarter extends AbstractPreferencesPanel {
     }));
 
     return buttonInfos;
-  }
-
-  public static void main(String... args) {
-    SwingUtilities.invokeLater(() -> {
-      final JFrame frame = new JFrame("Test panel");
-
-      final AbstractPreferencesPanel bp =
-          new AbstractPreferencesPanelStarter(UIComponentFactoryProvider.findInstance(),
-              new SwingMessageDialogProvider());
-
-      bp.load(new MindMapPanelConfig());
-
-      frame.setContentPane(bp.getPanel());
-      frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-      frame.pack();
-      frame.setVisible(true);
-    });
   }
 
 

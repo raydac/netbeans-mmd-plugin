@@ -25,6 +25,7 @@ import com.intellij.openapi.util.IconLoader;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Insets;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,7 +49,8 @@ public class PreferencesPanel extends AbstractPreferencesPanel {
 
     @Override
     protected JButton processColorButton(final JButton button) {
-        button.setHorizontalAlignment(JButton.CENTER);
+        button.setMargin(new Insets(3,8,3,0));
+        return button;
     }
 
     @Override
