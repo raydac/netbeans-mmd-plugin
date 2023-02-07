@@ -51,10 +51,13 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
@@ -89,6 +92,7 @@ public class PUMLExporter extends AbstractExporter {
 
     final List<StyleItem> styles = new ArrayList<>();
     final Set<String> emoticons = new HashSet<>();
+    final Map<Topic, String> images = new IdentityHashMap<>();
 
     int styleCounter = 0;
     for (final Topic t : map) {
@@ -128,6 +132,10 @@ public class PUMLExporter extends AbstractExporter {
       if (emoticon != null) {
         emoticons.add(emoticon);
       }
+      final String image = t.getAttribute(StandardTopicAttributes.MMD_TOPIC_ATTRIBUTE_IMAGE_DATA);
+      if (image != null) {
+        images.put(t, image);
+      }
     }
 
     final StringBuilder buffer = new StringBuilder();
@@ -166,15 +174,29 @@ public class PUMLExporter extends AbstractExporter {
       }
     });
 
-    map.forEach(x -> writeTopic(buffer, x, config, styles));
+    final Map<Topic, String> mapImageId = new IdentityHashMap<>();
+    final AtomicInteger imageCounter = new AtomicInteger(0);
+    images.forEach((t, i) -> {
+      final String id = "$image_" + imageCounter.incrementAndGet();
+      buffer.append('!').append(id).append("=\"<img data:image/png;base64,")
+          .append(i).append(">\"").append(EOL);
+      mapImageId.put(t, id);
+    });
+    images.clear();
+
+    map.forEach(x -> writeTopic(buffer, x, mapImageId, config, styles));
 
     buffer.append("@endmindmap");
 
     return buffer.toString();
   }
 
-  private void writeTopic(final StringBuilder buffer, final Topic topic,
-                          final MindMapPanelConfig config, final List<StyleItem> styles) {
+  private void writeTopic(
+      final StringBuilder buffer, final Topic topic,
+      final Map<Topic, String> imageMap,
+      final MindMapPanelConfig config,
+      final List<StyleItem> styles
+  ) {
     final int level = topic.getPath().length;
     final char prefix;
     if (level > 1) {
@@ -188,6 +210,7 @@ public class PUMLExporter extends AbstractExporter {
 
     final String emoticon =
         topic.getAttribute(StandardTopicAttributes.MMD_TOPIC_ATTRIBUTE_EMOTICON);
+    final String image = imageMap.get(topic);
 
     final Color borderColor;
     final Color textColor;
@@ -217,6 +240,9 @@ public class PUMLExporter extends AbstractExporter {
     IntStream.range(0, level).forEach(x -> buffer.append(prefix));
     if (emoticon != null) {
       buffer.append(" $emoticon_").append(emoticon).append(' ');
+    }
+    if (image != null) {
+      buffer.append(' ').append(image).append(' ');
     }
     buffer.append(' ').append(escapePlantUml(topic.getText())).append(" <<")
         .append(styleItem.getUid())
