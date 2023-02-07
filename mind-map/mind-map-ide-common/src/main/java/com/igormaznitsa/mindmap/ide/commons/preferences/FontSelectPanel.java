@@ -23,9 +23,10 @@ import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.util.List;
 import java.util.Optional;
@@ -33,6 +34,7 @@ import java.util.ResourceBundle;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.swing.Box;
 import javax.swing.DefaultButtonModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -94,7 +96,8 @@ public class FontSelectPanel {
     this.textArea.setWrapStyleWord(true);
 
     this.comboFontFamoly = componentFactory.makeComboBox(String.class);
-    this.comboFontFamoly.setModel(new DefaultComboBoxModel<>(getAllFontFamilies().toArray(new String[0])));
+    this.comboFontFamoly.setModel(
+        new DefaultComboBoxModel<>(getAllFontFamilies().toArray(new String[0])));
 
     this.comboFontStyle = componentFactory.makeComboBox(FontStyle.class);
     this.comboFontStyle.setModel(new DefaultComboBoxModel<>(FontStyle.values()));
@@ -103,22 +106,30 @@ public class FontSelectPanel {
     this.spinnerFontSize.setModel(new SpinnerNumberModel(8, 4, 128, 1));
 
     final JPanel topPanel = componentFactory.makePanel();
-    topPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+    topPanel.setLayout(new GridBagLayout());
+
+    final GridBagConstraints gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridy = 0;
+    gridBagConstraints.fill = GridBagConstraints.BOTH;
 
     JLabel label = componentFactory.makeLabel();
     label.setText(bundle.getString("panelFontSelector.labelName"));
-    topPanel.add(label);
-    topPanel.add(this.comboFontFamoly);
+    topPanel.add(label, gridBagConstraints);
+    topPanel.add(this.comboFontFamoly, gridBagConstraints);
+
+    topPanel.add(Box.createHorizontalStrut(16), gridBagConstraints);
 
     label = componentFactory.makeLabel();
     label.setText(bundle.getString("panelFontSelector.labelStyle"));
-    topPanel.add(label);
-    topPanel.add(this.comboFontStyle);
+    topPanel.add(label, gridBagConstraints);
+    topPanel.add(this.comboFontStyle, gridBagConstraints);
+
+    topPanel.add(Box.createHorizontalStrut(16), gridBagConstraints);
 
     label = componentFactory.makeLabel();
     label.setText(bundle.getString("panelFontSelector.labelSize"));
-    topPanel.add(label);
-    topPanel.add(this.spinnerFontSize);
+    topPanel.add(label, gridBagConstraints);
+    topPanel.add(this.spinnerFontSize, gridBagConstraints);
 
     final JScrollPane scrollPane = componentFactory.makeScrollPane();
     scrollPane.setViewportView(this.textArea);
