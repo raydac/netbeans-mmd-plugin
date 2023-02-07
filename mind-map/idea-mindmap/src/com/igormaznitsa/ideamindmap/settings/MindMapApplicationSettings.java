@@ -55,12 +55,6 @@ public class MindMapApplicationSettings implements ApplicationComponent, Persist
         this.editorConfig = new MindMapPanelConfig();
     }
 
-    public static MindMapApplicationSettings from(final MindMapPanelConfig config) {
-        final MindMapApplicationSettings result = new MindMapApplicationSettings();
-        result.editorConfig = config;
-        return result;
-    }
-    
     public MindMapApplicationSettings(final MindMapPanelConfig config) {
         this();
         this.editorConfig = Objects.requireNonNull(config);
