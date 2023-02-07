@@ -24,6 +24,7 @@ import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -33,6 +34,11 @@ public class AbstractPreferencesPanelStarter extends AbstractPreferencesPanel {
   public AbstractPreferencesPanelStarter(UIComponentFactory uiComponentFactory,
                                          DialogProvider dialogProvider) {
     super(uiComponentFactory, dialogProvider);
+  }
+
+  @Override
+  protected JButton processColorButton(final JButton button) {
+    button.setHorizontalAlignment(JButton.CENTER);
   }
 
   @Override

@@ -1638,8 +1638,13 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     preferencesPanelMaker.load(config);
 
     final JPanel panel = preferencesPanelMaker.getPanel();
+    panel.doLayout();
+    final Dimension panelSize = new Dimension(panel.getPreferredSize());
+    panelSize.width += 64;
+    panelSize.height += 64;
+
     final Rectangle rectangle = this.getGraphicsConfiguration().getBounds();
-    panel.setPreferredSize(new Dimension((rectangle.width * 3) / 4, (rectangle.height * 3) / 4));
+    panel.setPreferredSize(new Dimension(Math.min(panelSize.width, (rectangle.width * 3) / 4), Math.min(panelSize.height, (rectangle.height * 3) / 4)));
     UiUtils.makeOwningDialogResizable(panel);
 
     if (DialogProviderManager.getInstance().getDialogProvider().msgOkCancel(this,

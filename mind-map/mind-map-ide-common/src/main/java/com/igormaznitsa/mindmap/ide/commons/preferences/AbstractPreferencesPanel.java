@@ -16,11 +16,12 @@
 
 package com.igormaznitsa.mindmap.ide.commons.preferences;
 
+import static com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig.KEY_BIRDSEYE_MODIFIERS;
+
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
-import static com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig.KEY_BIRDSEYE_MODIFIERS;
 import com.igormaznitsa.mindmap.swing.panel.utils.KeyShortcut;
 import com.igormaznitsa.mindmap.swing.panel.utils.MouseButton;
 import com.igormaznitsa.mindmap.swing.panel.utils.PropertiesPreferences;
@@ -76,6 +77,8 @@ import org.apache.commons.io.FileUtils;
 public abstract class AbstractPreferencesPanel {
   protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractPreferencesPanel.class);
   private static final int GRID_GAP = 2;
+  private static File lastImportSettingFile = null;
+  private static File lastExportSettingFile = null;
   protected final DialogProvider dialogProvider;
   private final UIComponentFactory uiComponentFactory;
   private final JSpinner spinnerGridStep;
@@ -113,9 +116,7 @@ public abstract class AbstractPreferencesPanel {
   private final JComboBox<MouseButton> comboBoxFastNavigationMouse;
   private final KeyModifiersSelector keyModifiersWheelScale;
   private final KeyModifiersSelector keyModifiersFastNavigation;
-
   private final JButton buttonKeyShortcutEditor;
-
   private final JCheckBox checkBoxSmartTextPaste;
   private final Map<String, KeyShortcut> keyShortcutMap = new HashMap<>();
   protected MindMapPanelConfig lastLoadedConfig;
@@ -132,33 +133,42 @@ public abstract class AbstractPreferencesPanel {
 
     this.buttonFastNavigationPaper =
         new ColorSelectButton(this.panel, this.uiComponentFactory, dialogProvider,
-            c -> new Color(0x90000000 | (c.getRGB() & 0xFFFFFF), true));
+            c -> new Color(0x90000000 | (c.getRGB() & 0xFFFFFF), true), this::processColorButton);
     this.buttonFastNavigationInk =
         new ColorSelectButton(this.panel, this.uiComponentFactory, dialogProvider,
-            c -> new Color(0x90000000 | (c.getRGB() & 0xFFFFFF), true));
+            c -> new Color(0x90000000 | (c.getRGB() & 0xFFFFFF), true), this::processColorButton);
 
     this.spinnerGridStep = this.uiComponentFactory.makeSpinner();
     this.spinnerGridStep.setModel(new SpinnerNumberModel(32, 8, 1024, 8));
     this.buttonColorGrid =
-        new ColorSelectButton(this.panel, this.uiComponentFactory, dialogProvider);
+        new ColorSelectButton(this.panel, this.uiComponentFactory, dialogProvider, x -> x,
+            this::processColorButton);
     this.buttonColorPaper =
-        new ColorSelectButton(this.panel, this.uiComponentFactory, dialogProvider);
+        new ColorSelectButton(this.panel, this.uiComponentFactory, dialogProvider, x -> x,
+            this::processColorButton);
     this.checkBoxShowGrid = this.uiComponentFactory.makeCheckBox();
 
     this.buttonColorSelectFrame =
-        new ColorSelectButton(this.panel, this.uiComponentFactory, dialogProvider);
+        new ColorSelectButton(this.panel, this.uiComponentFactory, dialogProvider, x -> x,
+            this::processColorButton);
     this.buttonColorRootFill =
-        new ColorSelectButton(this.panel, this.uiComponentFactory, dialogProvider);
+        new ColorSelectButton(this.panel, this.uiComponentFactory, dialogProvider, x -> x,
+            this::processColorButton);
     this.buttonColorRootText =
-        new ColorSelectButton(this.panel, this.uiComponentFactory, dialogProvider);
+        new ColorSelectButton(this.panel, this.uiComponentFactory, dialogProvider, x -> x,
+            this::processColorButton);
     this.buttonColorLevel1Fill =
-        new ColorSelectButton(this.panel, this.uiComponentFactory, dialogProvider);
+        new ColorSelectButton(this.panel, this.uiComponentFactory, dialogProvider, x -> x,
+            this::processColorButton);
     this.buttonColorLevel2Fill =
-        new ColorSelectButton(this.panel, this.uiComponentFactory, dialogProvider);
+        new ColorSelectButton(this.panel, this.uiComponentFactory, dialogProvider, x -> x,
+            this::processColorButton);
     this.buttonColorLevel1Text =
-        new ColorSelectButton(this.panel, this.uiComponentFactory, dialogProvider);
+        new ColorSelectButton(this.panel, this.uiComponentFactory, dialogProvider, x -> x,
+            this::processColorButton);
     this.buttonColorLevel2Text =
-        new ColorSelectButton(this.panel, this.uiComponentFactory, dialogProvider);
+        new ColorSelectButton(this.panel, this.uiComponentFactory, dialogProvider, x -> x,
+            this::processColorButton);
 
     this.spinnerConnectorWidth = this.uiComponentFactory.makeSpinner();
     this.spinnerConnectorWidth.setModel(new SpinnerNumberModel(1.5d, 0.1d, 5.0d, 0.01d));
@@ -169,13 +179,17 @@ public abstract class AbstractPreferencesPanel {
     this.spinnerCollapsatorWidth = this.uiComponentFactory.makeSpinner();
     this.spinnerCollapsatorWidth.setModel(new SpinnerNumberModel(16, 1, 1024, 1));
     this.buttonColorCollapsatorFill =
-        new ColorSelectButton(this.panel, this.uiComponentFactory, dialogProvider);
+        new ColorSelectButton(this.panel, this.uiComponentFactory, dialogProvider, x -> x,
+            this::processColorButton);
     this.buttonColorCollapsatorBorder =
-        new ColorSelectButton(this.panel, this.uiComponentFactory, dialogProvider);
+        new ColorSelectButton(this.panel, this.uiComponentFactory, dialogProvider, x -> x,
+            this::processColorButton);
     this.buttonColorConnector =
-        new ColorSelectButton(this.panel, this.uiComponentFactory, dialogProvider);
+        new ColorSelectButton(this.panel, this.uiComponentFactory, dialogProvider, x -> x,
+            this::processColorButton);
     this.buttonColorJumpLink =
-        new ColorSelectButton(this.panel, this.uiComponentFactory, dialogProvider);
+        new ColorSelectButton(this.panel, this.uiComponentFactory, dialogProvider, x -> x,
+            this::processColorButton);
     this.fontChooserPanelMindMapTopicTitleFont =
         new FontSelectPanel(() -> this.panel,
             bundle.getString("PreferencesPanel.fontSelectPanel.description"),
@@ -276,6 +290,10 @@ public abstract class AbstractPreferencesPanel {
     this.trapChangeAllowed = true;
   }
 
+  protected JButton processColorButton(final JButton button) {
+    return button;
+  }
+
   protected void onPossibleChangeNotify(final Component source) {
 
   }
@@ -326,7 +344,8 @@ public abstract class AbstractPreferencesPanel {
 
   }
 
-  public abstract List<ButtonInfo> findButtonInfo(UIComponentFactory uiComponentFactory, DialogProvider dialogProvider);
+  public abstract List<ButtonInfo> findButtonInfo(UIComponentFactory uiComponentFactory,
+                                                  DialogProvider dialogProvider);
 
   private JPanel makeButtonPanel(final List<ButtonInfo> buttons) {
     final JPanel panel = this.uiComponentFactory.makePanel();
@@ -892,8 +911,9 @@ public abstract class AbstractPreferencesPanel {
       this.keyModifiersWheelScale.setModifiers(config.getScaleModifiers());
       this.comboBoxFastNavigationMouse.setSelectedItem(config.getBirdseyeMouseButton());
       this.keyModifiersFastNavigation.setModifiers(
-          config.getKeyShortcutMap().getOrDefault(MindMapPanelConfig.KEY_BIRDSEYE_MODIFIERS, new KeyShortcut(KEY_BIRDSEYE_MODIFIERS,
-                      KeyEvent.CTRL_MASK | KeyEvent.SHIFT_MASK)).getModifiers());
+          config.getKeyShortcutMap().getOrDefault(MindMapPanelConfig.KEY_BIRDSEYE_MODIFIERS,
+              new KeyShortcut(KEY_BIRDSEYE_MODIFIERS,
+                  KeyEvent.CTRL_MASK | KeyEvent.SHIFT_MASK)).getModifiers());
 
       this.checkBoxDropShadow.setSelected(config.isDropShadow());
       this.spinnerBorderWidth.setValue(config.getElementBorderWidth());
@@ -932,14 +952,12 @@ public abstract class AbstractPreferencesPanel {
    */
   public abstract void onLoad(MindMapPanelConfig config);
 
-  private static File lastImportSettingFile = null;
-  private static File lastExportSettingFile = null;
-
   public void exportAsFileDialog(final Supplier<Component> dialogParentSupplier) {
     final ResourceBundle bundle = MmcI18n.getInstance().findBundle();
     File file = this.dialogProvider
         .msgSaveFileDialog(dialogParentSupplier.get(), null, "exportProperties",
-            bundle.getString("PreferencesPanel.ExportProperties.title"), lastExportSettingFile, true,
+            bundle.getString("PreferencesPanel.ExportProperties.title"), lastExportSettingFile,
+            true,
             new FileFilter[] {new PropertiesFileFilter()},
             bundle.getString("PreferencesPanel.ExportProperties.approve"));
     if (file != null) {

@@ -54,14 +54,25 @@ public final class ColorSelectButton {
 
   public ColorSelectButton(final Component dialogComponent,
                            final UIComponentFactory componentFactory,
-                           final DialogProvider dialogProvider, final Function<Color,Color> valueProcessor) {
+                           final DialogProvider dialogProvider,
+                           final Function<Color,Color> valueProcessor) {
+    this(dialogComponent, componentFactory, dialogProvider, valueProcessor, x -> x);
+  }
+
+  public ColorSelectButton(final Component dialogComponent,
+                           final UIComponentFactory componentFactory,
+                           final DialogProvider dialogProvider,
+                           final Function<Color,Color> valueProcessor,
+                           final Function<JButton, JButton> buttonProcessor) {
+
     this.valueProcessor = requireNonNull(valueProcessor);
-    this.delegateButton = componentFactory.makeButton();
 
-    this.delegateButton.setHorizontalAlignment(JButton.LEFT);
-    this.delegateButton.setVerticalAlignment(JButton.CENTER);
+    final JButton button = componentFactory.makeButton();
 
-    this.delegateButton.setModel(new DefaultButtonModel() {
+    button.setHorizontalAlignment(JButton.LEFT);
+    button.setVerticalAlignment(JButton.CENTER);
+
+    button.setModel(new DefaultButtonModel() {
       @Override
       protected void fireActionPerformed(ActionEvent e) {
         final ColorChooser colorChooser = new ColorChooser(usedColors, value);
@@ -82,6 +93,8 @@ public final class ColorSelectButton {
         }
       }
     });
+
+    this.delegateButton = buttonProcessor.apply(button);
 
     setValue(Color.BLACK);
   }

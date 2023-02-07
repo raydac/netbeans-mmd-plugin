@@ -47,6 +47,11 @@ public class PreferencesPanel extends AbstractPreferencesPanel {
     }
 
     @Override
+    protected JButton processColorButton(final JButton button) {
+        button.setHorizontalAlignment(JButton.CENTER);
+    }
+
+    @Override
     protected void beforePanelsCreate(final UIComponentFactory uiComponentFactory) {
         
     }
