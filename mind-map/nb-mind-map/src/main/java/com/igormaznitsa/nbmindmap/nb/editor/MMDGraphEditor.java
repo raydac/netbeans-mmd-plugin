@@ -29,6 +29,8 @@ import static org.openide.windows.TopComponent.PERSISTENCE_NEVER;
 import com.igormaznitsa.mindmap.ide.commons.DnDUtils;
 import com.igormaznitsa.mindmap.ide.commons.FilePathWithLine;
 import com.igormaznitsa.mindmap.ide.commons.Misc;
+import com.igormaznitsa.mindmap.ide.commons.editors.ColorAttributePanel;
+import com.igormaznitsa.mindmap.ide.commons.preferences.ColorSelectButton;
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.ExtraFile;
 import com.igormaznitsa.mindmap.model.ExtraLink;
@@ -72,14 +74,13 @@ import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import com.igormaznitsa.nbmindmap.nb.options.AdditionalPreferences;
 import com.igormaznitsa.nbmindmap.nb.print.PrintPageAdapter;
-import com.igormaznitsa.nbmindmap.nb.swing.ColorAttributePanel;
-import com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton;
 import com.igormaznitsa.nbmindmap.nb.swing.FileEditPanel;
 import com.igormaznitsa.nbmindmap.nb.swing.FindTextPanel;
 import com.igormaznitsa.nbmindmap.nb.swing.FindTextScopeProvider;
 import com.igormaznitsa.nbmindmap.nb.swing.MindMapTreePanel;
 import com.igormaznitsa.nbmindmap.nb.swing.NoteEditorData;
 import com.igormaznitsa.nbmindmap.utils.DialogProviderManager;
+import com.igormaznitsa.nbmindmap.utils.Icons;
 import com.igormaznitsa.nbmindmap.utils.NbUtils;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -1781,23 +1782,28 @@ public final class MMDGraphEditor extends CloneableEditor
         NbUtils.extractCommonColorForColorChooserButton(ATTR_TEXT_COLOR.getText(), topics);
 
     final ColorAttributePanel panel =
-        new ColorAttributePanel(source.getModel(), borderColor, fillColor, textColor);
+        new ColorAttributePanel(UIComponentFactoryProvider.findInstance(),
+            DialogProviderManager.getInstance().getDialogProvider(),
+            source.getModel(),
+            borderColor, fillColor,
+            textColor,
+            Icons.CROSS.getIcon());
     if (NbUtils.plainMessageOkCancel(null,
         String.format(BUNDLE.getString("MMDGraphEditor.colorEditDialogTitle"), topics.length),
-        panel)) {
+        panel.getPanel())) {
       ColorAttributePanel.Result result = panel.getResult();
 
-      if (result.getBorderColor() != ColorChooserButton.DIFF_COLORS) {
+      if (result.getBorderColor() != ColorSelectButton.DIFF_COLORS) {
         Utils.setAttribute(ATTR_BORDER_COLOR.getText(),
             Utils.color2html(result.getBorderColor(), false), topics);
       }
 
-      if (result.getTextColor() != ColorChooserButton.DIFF_COLORS) {
+      if (result.getTextColor() != ColorSelectButton.DIFF_COLORS) {
         Utils.setAttribute(ATTR_TEXT_COLOR.getText(),
             Utils.color2html(result.getTextColor(), false), topics);
       }
 
-      if (result.getFillColor() != ColorChooserButton.DIFF_COLORS) {
+      if (result.getFillColor() != ColorSelectButton.DIFF_COLORS) {
         Utils.setAttribute(ATTR_FILL_COLOR.getText(),
             Utils.color2html(result.getFillColor(), false), topics);
       }

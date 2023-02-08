@@ -17,12 +17,12 @@
 package com.igormaznitsa.ideamindmap.utils;
 
 import com.igormaznitsa.ideamindmap.editor.MindMapDocumentEditor;
-import com.igormaznitsa.ideamindmap.swing.ColorChooserButton;
 import com.igormaznitsa.ideamindmap.swing.FileEditPanel;
 import com.igormaznitsa.ideamindmap.swing.NoteEditorData;
 import com.igormaznitsa.ideamindmap.swing.PlainTextEditor;
 import com.igormaznitsa.ideamindmap.swing.UriEditPanel;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.mindmap.ide.commons.preferences.ColorSelectButton;
 import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
@@ -452,7 +452,7 @@ public final class IdeaUtils {
         result = color;
       } else {
         if (!result.equals(color)) {
-          return ColorChooserButton.DIFF_COLORS;
+          return ColorSelectButton.DIFF_COLORS;
         }
       }
     }

@@ -24,14 +24,15 @@ import com.igormaznitsa.ideamindmap.facet.MindMapFacet;
 import com.igormaznitsa.ideamindmap.settings.MindMapApplicationSettings;
 import com.igormaznitsa.ideamindmap.settings.MindMapSettingsComponent;
 import com.igormaznitsa.ideamindmap.swing.AboutForm;
-import com.igormaznitsa.ideamindmap.swing.ColorAttributePanel;
-import com.igormaznitsa.ideamindmap.swing.ColorChooserButton;
 import com.igormaznitsa.ideamindmap.swing.FileEditPanel;
 import com.igormaznitsa.ideamindmap.swing.MindMapTreePanel;
 import com.igormaznitsa.ideamindmap.swing.NoteEditorData;
+import com.igormaznitsa.ideamindmap.utils.AllIcons;
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
 import com.igormaznitsa.mindmap.ide.commons.FilePathWithLine;
 import com.igormaznitsa.mindmap.ide.commons.Misc;
+import com.igormaznitsa.mindmap.ide.commons.editors.ColorAttributePanel;
+import com.igormaznitsa.mindmap.ide.commons.preferences.ColorSelectButton;
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.ExtraFile;
 import com.igormaznitsa.mindmap.model.ExtraLink;
@@ -76,6 +77,8 @@ import javax.annotation.Nullable;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
+import java.awt.Insets;
 
 public class MindMapPanelControllerImpl implements MindMapPanelController, MindMapConfigListener, PluginContext {
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("i18n/Bundle");
@@ -424,18 +427,25 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
     final Color fillColor = IdeaUtils.extractCommonColorForColorChooserButton(StandardTopicAttribute.ATTR_FILL_COLOR.getText(), topics);
     final Color textColor = IdeaUtils.extractCommonColorForColorChooserButton(StandardTopicAttribute.ATTR_TEXT_COLOR.getText(), topics);
 
-    final ColorAttributePanel panel = new ColorAttributePanel(source.getModel(), getDialogProvider(), borderColor, fillColor, textColor);
-    if (IdeaUtils.plainMessageOkCancel(this.editor.getProject(), String.format(BUNDLE.getString("MMDGraphEditor.colorEditDialogTitle"), topics.length), panel)) {
+    final ColorAttributePanel panel = new ColorAttributePanel(UIComponentFactoryProvider.findInstance(), 
+            dialogProvider,
+            source.getModel(), borderColor, fillColor, textColor, AllIcons.Buttons.CROSS, (button, color) -> {
+                if (color) {
+                    button.setMargin(new Insets(3, 16, 3, 3));
+                }
+                return button;
+            });
+    if (IdeaUtils.plainMessageOkCancel(this.editor.getProject(), String.format(BUNDLE.getString("MMDGraphEditor.colorEditDialogTitle"), topics.length), panel.getPanel())) {
       ColorAttributePanel.Result result = panel.getResult();
-      if (result.getBorderColor() != ColorChooserButton.DIFF_COLORS) {
+      if (result.getBorderColor() != ColorSelectButton.DIFF_COLORS) {
         Utils.setAttribute(StandardTopicAttribute.ATTR_BORDER_COLOR.getText(), Utils.color2html(result.getBorderColor(), false), topics);
       }
 
-      if (result.getTextColor() != ColorChooserButton.DIFF_COLORS) {
+      if (result.getTextColor() != ColorSelectButton.DIFF_COLORS) {
         Utils.setAttribute(StandardTopicAttribute.ATTR_TEXT_COLOR.getText(), Utils.color2html(result.getTextColor(), false), topics);
       }
 
-      if (result.getFillColor() != ColorChooserButton.DIFF_COLORS) {
+      if (result.getFillColor() != ColorSelectButton.DIFF_COLORS) {
         Utils.setAttribute(StandardTopicAttribute.ATTR_FILL_COLOR.getText(), Utils.color2html(result.getFillColor(), false), topics);
       }
 

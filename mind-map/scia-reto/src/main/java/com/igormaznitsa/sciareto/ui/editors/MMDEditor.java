@@ -33,6 +33,8 @@ import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.ide.commons.DnDUtils;
 import com.igormaznitsa.mindmap.ide.commons.FilePathWithLine;
 import com.igormaznitsa.mindmap.ide.commons.Misc;
+import com.igormaznitsa.mindmap.ide.commons.editors.ColorAttributePanel;
+import com.igormaznitsa.mindmap.ide.commons.preferences.ColorSelectButton;
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.ExtraFile;
 import com.igormaznitsa.mindmap.model.ExtraLink;
@@ -66,6 +68,7 @@ import com.igormaznitsa.mindmap.swing.panel.utils.CryptoUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.KeyEventType;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.preferences.AdditionalPreferences;
@@ -75,11 +78,9 @@ import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.FindTextScopeProvider;
 import com.igormaznitsa.sciareto.ui.SrI18n;
 import com.igormaznitsa.sciareto.ui.UiUtils;
-import com.igormaznitsa.sciareto.ui.editors.mmeditors.ColorAttributePanel;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.FileEditPanel;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.MindMapTreePanel;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.NoteEditorData;
-import com.igormaznitsa.sciareto.ui.misc.ColorChooserButton;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 import com.igormaznitsa.sciareto.ui.tree.FileTransferable;
 import com.igormaznitsa.sciareto.ui.tree.NodeProject;
@@ -112,6 +113,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -120,6 +122,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -1340,27 +1344,30 @@ public final class MMDEditor extends AbstractTextEditor
     final Color textColor =
         UiUtils.extractCommonColorForColorChooserButton(ATTR_TEXT_COLOR.getText(), topics);
 
+    final Icon resetIcon = new ImageIcon(Objects.requireNonNull(UiUtils.loadIcon("cross16.png")));
+
     final ColorAttributePanel panel =
-        new ColorAttributePanel(source.getModel(), borderColor, fillColor, textColor);
+        new ColorAttributePanel(UIComponentFactoryProvider.findInstance(), DialogProviderManager.getInstance()
+            .getDialogProvider(), source.getModel(), borderColor, fillColor, textColor, resetIcon);
     if (DialogProviderManager.getInstance().getDialogProvider()
         .msgOkCancel(SciaRetoStarter.getApplicationFrame(),
             String.format(SrI18n.getInstance().findBundle().getString("MMDGraphEditor.colorEditDialogTitle"),
                 topics.length),
-            panel)) {
+            panel.getPanel())) {
       ColorAttributePanel.Result result = panel.getResult();
 
-      if (result.getBorderColor() != ColorChooserButton.DIFF_COLORS) {
+      if (result.getBorderColor() != ColorSelectButton.DIFF_COLORS) {
         Utils.setAttribute(ATTR_BORDER_COLOR.getText(),
             Utils.color2html(result.getBorderColor(), false), topics);
       }
 
-      if (result.getTextColor() != ColorChooserButton.DIFF_COLORS) {
+      if (result.getTextColor() != ColorSelectButton.DIFF_COLORS) {
         Utils
             .setAttribute(ATTR_TEXT_COLOR.getText(), Utils.color2html(result.getTextColor(), false),
                 topics);
       }
 
-      if (result.getFillColor() != ColorChooserButton.DIFF_COLORS) {
+      if (result.getFillColor() != ColorSelectButton.DIFF_COLORS) {
         Utils
             .setAttribute(ATTR_FILL_COLOR.getText(), Utils.color2html(result.getFillColor(), false),
                 topics);

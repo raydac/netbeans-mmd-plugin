@@ -15,10 +15,10 @@
  */
 package com.igormaznitsa.nbmindmap.utils;
 
+import com.igormaznitsa.mindmap.ide.commons.preferences.ColorSelectButton;
 import com.igormaznitsa.nbmindmap.nb.swing.FileEditPanel;
 import com.igormaznitsa.nbmindmap.nb.swing.UriEditPanel;
 import com.igormaznitsa.nbmindmap.nb.swing.PlainTextEditor;
-import com.igormaznitsa.nbmindmap.nb.swing.ColorChooserButton;
 import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
@@ -241,7 +241,7 @@ public final class NbUtils {
         result = color;
       }
       else if (!result.equals(color)) {
-        return ColorChooserButton.DIFF_COLORS;
+        return ColorSelectButton.DIFF_COLORS;
       }
     }
     return result;

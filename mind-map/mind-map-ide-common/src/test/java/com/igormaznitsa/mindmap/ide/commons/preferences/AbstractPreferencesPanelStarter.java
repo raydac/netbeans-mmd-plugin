@@ -16,6 +16,7 @@
 
 package com.igormaznitsa.mindmap.ide.commons.preferences;
 
+import com.igormaznitsa.mindmap.ide.commons.AbstractUiStarter;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.SwingMessageDialogProvider;
@@ -27,82 +28,79 @@ import java.util.Collections;
 import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
+import javax.swing.JPanel;
 
-public class AbstractPreferencesPanelStarter extends AbstractPreferencesPanel {
+public class AbstractPreferencesPanelStarter extends AbstractUiStarter {
 
-  public AbstractPreferencesPanelStarter(UIComponentFactory uiComponentFactory,
-                                         DialogProvider dialogProvider) {
-    super(uiComponentFactory, dialogProvider);
-  }
-
-  public static void main(String... args) {
-    SwingUtilities.invokeLater(() -> {
-      final JFrame frame = new JFrame("Test panel");
-
-      final AbstractPreferencesPanel bp =
-          new AbstractPreferencesPanelStarter(UIComponentFactoryProvider.findInstance(),
-              new SwingMessageDialogProvider());
-
-      bp.load(new MindMapPanelConfig());
-
-      frame.setContentPane(bp.getPanel());
-      frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-      frame.pack();
-      frame.setVisible(true);
-    });
+  public static void main(final String ... args){
+    AbstractUiStarter.main(AbstractPreferencesPanelStarter.class.getName());
   }
 
   @Override
-  protected JButton processColorButton(final JButton button) {
-    button.setMargin(new Insets(3,8,3,0));
-    return button;
+  public JPanel makePanel(UIComponentFactory componentFactory,
+                          DialogProvider dialogProvider) {
+    final AbstractPreferencesPanel bp =
+        new AbstractPreferencesPanel(UIComponentFactoryProvider.findInstance(),
+            new SwingMessageDialogProvider()) {
+          @Override
+          protected JButton processColorButton(final JButton button) {
+            button.setMargin(new Insets(3, 8, 3, 0));
+            return button;
+          }
+
+          @Override
+          public void onSave(MindMapPanelConfig config) {
+
+          }
+
+          @Override
+          public List<JComponent> findMiscComponents(UIComponentFactory componentFactory) {
+            return Collections.emptyList();
+          }
+
+          @Override
+          public List<JComponent> findFeaturesComponents(UIComponentFactory componentFactory) {
+            return Collections.emptyList();
+          }
+
+          @Override
+          public void onLoad(MindMapPanelConfig config) {
+
+          }
+
+          @Override
+          public List<AbstractPreferencesPanel.ButtonInfo> findButtonInfo(
+              UIComponentFactory componentFactory, DialogProvider dialogProvider) {
+            final List<AbstractPreferencesPanel.ButtonInfo> buttonInfos = new ArrayList<>();
+
+            buttonInfos.add(AbstractPreferencesPanel.ButtonInfo.from(null, "Donate", a -> {
+            }));
+            buttonInfos.add(AbstractPreferencesPanel.ButtonInfo.from(null, "About", a -> {
+            }));
+            buttonInfos.add(AbstractPreferencesPanel.ButtonInfo.splitter());
+            buttonInfos.add(AbstractPreferencesPanel.ButtonInfo.from(null, "Export to file", a -> {
+              this.exportAsFileDialog(this::getPanel);
+            }));
+            buttonInfos.add(
+                AbstractPreferencesPanel.ButtonInfo.from(null, "Import from file", a -> {
+                  this.importFromFileDialog(this::getPanel);
+                }));
+            buttonInfos.add(
+                AbstractPreferencesPanel.ButtonInfo.from(null, "System file extensions", a -> {
+                }));
+            buttonInfos.add(AbstractPreferencesPanel.ButtonInfo.splitter());
+            buttonInfos.add(
+                AbstractPreferencesPanel.ButtonInfo.from(null, "Reset to default", a -> {
+                }));
+
+            return buttonInfos;
+          }
+
+        };
+
+    bp.load(new MindMapPanelConfig());
+
+    return bp.getPanel();
   }
-
-  @Override
-  public void onSave(MindMapPanelConfig config) {
-
-  }
-
-  @Override
-  public List<JComponent> findMiscComponents(UIComponentFactory componentFactory) {
-    return Collections.emptyList();
-  }
-
-  @Override
-  public List<JComponent> findFeaturesComponents(UIComponentFactory componentFactory) {
-    return Collections.emptyList();
-  }
-
-  @Override
-  public void onLoad(MindMapPanelConfig config) {
-
-  }
-
-  @Override
-  public List<ButtonInfo> findButtonInfo(UIComponentFactory componentFactory, DialogProvider dialogProvider) {
-    final List<ButtonInfo> buttonInfos = new ArrayList<>();
-
-    buttonInfos.add(ButtonInfo.from(null, "Donate", a -> {
-    }));
-    buttonInfos.add(ButtonInfo.from(null, "About", a -> {
-    }));
-    buttonInfos.add(ButtonInfo.splitter());
-    buttonInfos.add(ButtonInfo.from(null, "Export to file", a -> {
-      this.exportAsFileDialog(this::getPanel);
-    }));
-    buttonInfos.add(ButtonInfo.from(null, "Import from file", a -> {
-      this.importFromFileDialog(this::getPanel);
-    }));
-    buttonInfos.add(ButtonInfo.from(null, "System file extensions", a -> {
-    }));
-    buttonInfos.add(ButtonInfo.splitter());
-    buttonInfos.add(ButtonInfo.from(null, "Reset to default", a -> {
-    }));
-
-    return buttonInfos;
-  }
-
 
 }

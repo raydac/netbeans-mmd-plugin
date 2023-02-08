@@ -44,7 +44,6 @@ public class MindMapSettingsComponent extends ConfigurableProvider implements Co
     if (instance == null) {
       instance = new MindMapSettingsComponent();
     }
-
     return instance;
   }
 

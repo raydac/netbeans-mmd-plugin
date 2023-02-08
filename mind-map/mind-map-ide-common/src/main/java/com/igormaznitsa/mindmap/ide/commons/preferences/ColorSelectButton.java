@@ -29,7 +29,6 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 import javax.swing.DefaultButtonModel;
@@ -159,7 +158,7 @@ public final class ColorSelectButton {
   }
 
   public void setValue(final Color color) {
-    this.value = new Color(color.getRGB() & 0xFFFFFF, false);
+    this.value = color == null ? null : new Color(color.getRGB() & 0xFFFFFF, false);
     this.delegateButton.setIcon(makeColorIconForColor(this.value));
   }
 }

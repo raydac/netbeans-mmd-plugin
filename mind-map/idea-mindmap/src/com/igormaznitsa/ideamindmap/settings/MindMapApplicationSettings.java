@@ -55,11 +55,12 @@ public class MindMapApplicationSettings implements ApplicationComponent, Persist
         this.editorConfig = new MindMapPanelConfig();
     }
 
-    public MindMapApplicationSettings(final MindMapPanelConfig config) {
-        this();
-        this.editorConfig = Objects.requireNonNull(config);
+    public static MindMapApplicationSettings from(final MindMapPanelConfig config) {
+        MindMapApplicationSettings result = new MindMapApplicationSettings();
+        result.editorConfig = config;
+        return result;
     }
-
+    
     public static class MindMapPanelConfigSerializer extends Converter<MindMapPanelConfig> {
 
         @Override

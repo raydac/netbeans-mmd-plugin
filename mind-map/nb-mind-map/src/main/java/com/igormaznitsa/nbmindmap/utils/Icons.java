@@ -28,6 +28,7 @@ public enum Icons {
   SOURCE("source16.png"), //NOI18N
   BLUEBALL("blueball16.png"), //NOI18N
   GOLDBALL("goldball16.png"), //NOI18N
+  CROSS("cross16.png"), //NOI18N
   COINS("coins_in_hand16.png"); //NOI18N
 
   private final ImageIcon icon;

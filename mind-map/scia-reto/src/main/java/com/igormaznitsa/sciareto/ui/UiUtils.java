@@ -24,6 +24,7 @@ import static java.util.ResourceBundle.getBundle;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.meta.common.utils.IOUtils;
+import com.igormaznitsa.mindmap.ide.commons.preferences.ColorSelectButton;
 import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
@@ -38,7 +39,6 @@ import com.igormaznitsa.sciareto.ui.editors.mmeditors.FileEditPanel;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.NoteEditor;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.NoteEditorData;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.UriEditPanel;
-import com.igormaznitsa.sciareto.ui.misc.ColorChooserButton;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Component;
@@ -379,7 +379,7 @@ public final class UiUtils {
       if (result == null) {
         result = color;
       } else if (!result.equals(color)) {
-        return ColorChooserButton.DIFF_COLORS;
+        return ColorSelectButton.DIFF_COLORS;
       }
     }
     return result;
