@@ -33,6 +33,7 @@ import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.ide.commons.DnDUtils;
 import com.igormaznitsa.mindmap.ide.commons.FilePathWithLine;
 import com.igormaznitsa.mindmap.ide.commons.Misc;
+import com.igormaznitsa.mindmap.ide.commons.editors.AbstractNoteEditorData;
 import com.igormaznitsa.mindmap.ide.commons.editors.ColorAttributePanel;
 import com.igormaznitsa.mindmap.ide.commons.preferences.ColorSelectButton;
 import com.igormaznitsa.mindmap.model.Extra;
@@ -80,7 +81,6 @@ import com.igormaznitsa.sciareto.ui.SrI18n;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.FileEditPanel;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.MindMapTreePanel;
-import com.igormaznitsa.sciareto.ui.editors.mmeditors.NoteEditorData;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 import com.igormaznitsa.sciareto.ui.tree.FileTransferable;
 import com.igormaznitsa.sciareto.ui.tree.NodeProject;
@@ -1027,15 +1027,15 @@ public final class MMDEditor extends AbstractTextEditor
   private void editTextForTopic(@Nonnull final Topic topic) {
     final ExtraNote note = (ExtraNote) topic.getExtras().get(Extra.ExtraType.NOTE);
     try {
-      final NoteEditorData result;
+      final AbstractNoteEditorData result;
       if (note == null) {
         // create new
         result = UiUtils.editText(String
             .format(SrI18n.getInstance().findBundle().getString("MMDGraphEditor.editTextForTopic.dlfAddNoteTitle"),
-                Utils.makeShortTextVersion(topic.getText(), 16)), new NoteEditorData(), this.mindMapPanelConfig); //NOI18N
+                Utils.makeShortTextVersion(topic.getText(), 16)), new AbstractNoteEditorData(), this.mindMapPanelConfig); //NOI18N
       } else {
         // edit
-        NoteEditorData noteText = null;
+        AbstractNoteEditorData noteText = null;
         if (note.isEncrypted()) {
           final PasswordPanel passwordPanel =
               new PasswordPanel("", note.getHint() == null ? "" : note.getHint(), false);
@@ -1048,7 +1048,7 @@ public final class MMDEditor extends AbstractTextEditor
             final String pass = new String(passwordPanel.getPassword()).trim();
             try {
               if (CryptoUtils.decrypt(pass, note.getValue(), decrypted)) {
-                noteText = new NoteEditorData(decrypted.toString(), pass, note.getHint());
+                noteText = new AbstractNoteEditorData(decrypted.toString(), pass, note.getHint());
               } else {
                 DialogProviderManager.getInstance().getDialogProvider()
                     .msgError(SciaRetoStarter.getApplicationFrame(),
@@ -1062,7 +1062,7 @@ public final class MMDEditor extends AbstractTextEditor
             }
           }
         } else {
-          noteText = new NoteEditorData(note.getValue(), null, null);
+          noteText = new AbstractNoteEditorData(note.getValue(), null, null);
         }
         if (noteText == null) {
           result = null;

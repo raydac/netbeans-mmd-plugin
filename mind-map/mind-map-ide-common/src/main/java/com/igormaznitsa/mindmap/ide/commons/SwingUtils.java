@@ -17,9 +17,15 @@
 package com.igormaznitsa.mindmap.ide.commons;
 
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dialog;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
 import javax.swing.Action;
 import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.JTextComponent;
@@ -45,6 +51,28 @@ public class SwingUtils {
     return menu;
   }
 
+  public static void makeOwningDialogResizable(final Component component,
+                                               final Runnable... extraActions) {
+    final HierarchyListener listener = new HierarchyListener() {
+      @Override
+      public void hierarchyChanged(final HierarchyEvent e) {
+        final Window window = SwingUtilities.getWindowAncestor(component);
+        if (window instanceof Dialog) {
+          final Dialog dialog = (Dialog) window;
+          if (!dialog.isResizable()) {
+            dialog.setResizable(true);
+            component.removeHierarchyListener(this);
+
+            for (final Runnable r : extraActions) {
+              r.run();
+            }
+          }
+        }
+      }
+    };
+    component.addHierarchyListener(listener);
+  }
+
   public static class SelectAllTextAction extends TextAction {
 
     private static final long serialVersionUID = 3800454333693618054L;
@@ -62,7 +90,7 @@ public class SwingUtils {
 
 
     public static boolean figureOutThatDarkTheme() {
-      final Color color = UIManager.getColor("Panel.background"); //NOI18N
+      final Color color = UIManager.getColor("Panel.background");
       if (color == null) {
         return false;
       } else {

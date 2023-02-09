@@ -19,25 +19,25 @@
 package com.igormaznitsa.sciareto.ui;
 
 import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.html2color;
-import static java.util.ResourceBundle.getBundle;
+import static com.igormaznitsa.sciareto.preferences.AdditionalPreferences.PROPERTY_TEXT_EDITOR_FONT;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.meta.common.utils.IOUtils;
+import com.igormaznitsa.mindmap.ide.commons.editors.AbstractNoteEditor;
+import com.igormaznitsa.mindmap.ide.commons.editors.AbstractNoteEditorData;
 import com.igormaznitsa.mindmap.ide.commons.preferences.ColorSelectButton;
 import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
-import com.igormaznitsa.mindmap.swing.ide.IDEBridgeFactory;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.FileEditPanel;
-import com.igormaznitsa.sciareto.ui.editors.mmeditors.NoteEditor;
-import com.igormaznitsa.sciareto.ui.editors.mmeditors.NoteEditorData;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.UriEditPanel;
 import java.awt.AlphaComposite;
 import java.awt.Color;
@@ -46,6 +46,7 @@ import java.awt.Container;
 import java.awt.Desktop;
 import java.awt.Dialog;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
@@ -70,7 +71,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
-import java.util.ResourceBundle;
+import java.util.Objects;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import javax.annotation.Nonnull;
@@ -356,7 +357,9 @@ public final class UiUtils {
       } catch (URISyntaxException ex) {
         DialogProviderManager.getInstance().getDialogProvider()
             .msgError(SciaRetoStarter.getApplicationFrame(),
-                String.format(MmdI18n.getInstance().findBundle().getString("NbUtils.errMsgIllegalURI"), text));
+                String.format(
+                    MmdI18n.getInstance().findBundle().getString("NbUtils.errMsgIllegalURI"),
+                    text));
         return null;
       }
     } else {
@@ -403,7 +406,8 @@ public final class UiUtils {
         DialogProviderManager.getInstance().getDialogProvider()
             .msgError(SciaRetoStarter.getApplicationFrame(),
                 String.format(
-                    SrI18n.getInstance().findBundle().getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"),
+                    SrI18n.getInstance().findBundle()
+                        .getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"),
                     result.getFilePathWithLine().getPath()));
         result = null;
       }
@@ -412,14 +416,47 @@ public final class UiUtils {
   }
 
   @Nullable
-  public static NoteEditorData editText(@Nonnull final String title,
-                                        @Nonnull final NoteEditorData data,
-                                        @Nonnull final MindMapPanelConfig config) {
-    final NoteEditor textEditor = new NoteEditor(data, config);
+  public static AbstractNoteEditorData editText(@Nonnull final String title,
+                                                @Nonnull final AbstractNoteEditorData data,
+                                                @Nonnull final MindMapPanelConfig config) {
+    final AbstractNoteEditor textEditor =
+        new AbstractNoteEditor(SciaRetoStarter::getApplicationFrame,
+            UIComponentFactoryProvider.findInstance(),
+            DialogProviderManager.getInstance().getDialogProvider(),
+            data) {
+          @Nonnull
+          @Override
+          protected Font findEditorFont(@Nonnull final Font defaultFont) {
+            return config.getOptionalProperty(PROPERTY_TEXT_EDITOR_FONT, DEFAULT_FONT);
+          }
+
+          @Nullable
+          @Override
+          protected Icon findToolbarIconForId(@Nonnull final IconId iconId) {
+            switch (iconId) {
+              case BROWSE: return new ImageIcon(Objects.requireNonNull(UiUtils.loadIcon("link16.png")));
+              case COPY: return new ImageIcon(Objects.requireNonNull(UiUtils.loadIcon("page_copy16.png")));
+              case CLEARALL: return new ImageIcon(Objects.requireNonNull(UiUtils.loadIcon("cross16.png")));
+              case EXPORT: return new ImageIcon(Objects.requireNonNull(UiUtils.loadIcon("file_save16.png")));
+              case IMPORT: return new ImageIcon(Objects.requireNonNull(UiUtils.loadIcon("disk16.png")));
+              case PASSWORD_OFF: return new ImageIcon(Objects.requireNonNull(UiUtils.loadIcon("set_password16.png")));
+              case PASSWORD_ON: return new ImageIcon(Objects.requireNonNull(UiUtils.loadIcon("set_password16on.png")));
+              case REDO: return new ImageIcon(Objects.requireNonNull(UiUtils.loadIcon("redo.png")));
+              case UNDO: return new ImageIcon(Objects.requireNonNull(UiUtils.loadIcon("undo.png")));
+              case PASTE: return new ImageIcon(Objects.requireNonNull(UiUtils.loadIcon("paste_plain16.png")));
+              default: return null;
+            }
+          }
+
+          @Override
+          public void onBrowseUri(@Nonnull final URI uri, final boolean preferInternalBrowser) throws Exception {
+            UiUtils.browseURI(uri, false);
+          }
+        };
     try {
       if (DialogProviderManager.getInstance().getDialogProvider()
           .msgOkCancel(SciaRetoStarter.getApplicationFrame(), title,
-              Utils.catchEscInParentDialog(textEditor,
+              Utils.catchEscInParentDialog(textEditor.getPanel(),
                   DialogProviderManager.getInstance().getDialogProvider(),
                   dialog -> textEditor.isTextChanged(),
                   x -> textEditor.cancel()))) {

@@ -54,19 +54,19 @@ public final class PasswordPanel extends JPanel {
         createLineBorder(LIGHT_GRAY),
         createEmptyBorder(4, 4, 4, 4)));
 
-    final UIComponentFactory uifactory = UIComponentFactoryProvider.findInstance();
+    final UIComponentFactory componentFactory = UIComponentFactoryProvider.findInstance();
 
     if (hintEditable) {
-      this.textFieldHint = uifactory.makeTextField();
+      this.textFieldHint = componentFactory.makeTextField();
       this.textFieldHint.setText(passwordHint);
       this.textFieldHint.setColumns(COLUMNS);
       this.textLabelHint = null;
     } else {
       this.textFieldHint = null;
-      this.textLabelHint = uifactory.makeLabel();
+      this.textLabelHint = componentFactory.makeLabel();
       this.textLabelHint.setText(passwordHint);
     }
-    this.textFieldPassword = uifactory.makePasswordField();
+    this.textFieldPassword = componentFactory.makePasswordField();
     this.textFieldPassword.setColumns(COLUMNS);
     this.textFieldPassword.setText(password);
     this.textFieldPassword.setEchoChar('*');
@@ -78,7 +78,7 @@ public final class PasswordPanel extends JPanel {
     gbc.insets = new Insets(2, 2, 2, 2);
     gbc.fill = GridBagConstraints.HORIZONTAL;
 
-    JLabel label = uifactory.makeLabel();
+    JLabel label = componentFactory.makeLabel();
     label.setHorizontalAlignment(SwingConstants.RIGHT);
     label.setText(MmdI18n.getInstance().findBundle().getString("PasswordPanel.labelPassword.text"));
     label.setToolTipText(MmdI18n.getInstance().findBundle().getString("PasswordPanel.labelPassword.tooltip"));
@@ -92,7 +92,7 @@ public final class PasswordPanel extends JPanel {
     gbc.gridy = 1;
     gbc.anchor = GridBagConstraints.EAST;
 
-    label = uifactory.makeLabel();
+    label = componentFactory.makeLabel();
     label.setHorizontalAlignment(SwingConstants.RIGHT);
     label.setText(MmdI18n.getInstance().findBundle().getString("PasswordPanel.labelHint.text"));
     label.setToolTipText(MmdI18n.getInstance().findBundle().getString("PasswordPanel.labelHint.tooltip"));
@@ -106,7 +106,7 @@ public final class PasswordPanel extends JPanel {
     gbc.gridy = 2;
     gbc.anchor = GridBagConstraints.EAST;
     gbc.fill = GridBagConstraints.NONE;
-    final JCheckBox showPasswordCheckbox = uifactory.makeCheckBox();
+    final JCheckBox showPasswordCheckbox = componentFactory.makeCheckBox();
     showPasswordCheckbox.setText(MmdI18n.getInstance().findBundle().getString("PasswordPanel.checkboxShowPassword.text"));
     showPasswordCheckbox
         .setToolTipText(MmdI18n.getInstance().findBundle().getString("PasswordPanel.checkboxShowPassword.tooltip"));
