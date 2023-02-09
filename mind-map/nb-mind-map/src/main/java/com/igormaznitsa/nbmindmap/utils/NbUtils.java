@@ -15,10 +15,12 @@
  */
 package com.igormaznitsa.nbmindmap.utils;
 
+import com.igormaznitsa.mindmap.ide.commons.editors.AbstractNoteEditor;
+import com.igormaznitsa.mindmap.ide.commons.editors.AbstractNoteEditorData;
 import com.igormaznitsa.mindmap.ide.commons.preferences.ColorSelectButton;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import com.igormaznitsa.nbmindmap.nb.swing.FileEditPanel;
 import com.igormaznitsa.nbmindmap.nb.swing.UriEditPanel;
-import com.igormaznitsa.nbmindmap.nb.swing.PlainTextEditor;
 import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
@@ -50,6 +52,7 @@ import java.util.prefs.Preferences;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.Action;
+import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -76,7 +79,6 @@ import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
-import com.igormaznitsa.nbmindmap.nb.swing.NoteEditorData;
 
 public final class NbUtils {
 
@@ -307,13 +309,39 @@ public final class NbUtils {
   }
 
   @Nullable
-  public static NoteEditorData editText (@Nullable Component parentComponent, @Nonnull final DialogProvider provider, @Nonnull final String title, @Nonnull final NoteEditorData data) {
-    final PlainTextEditor textEditor = new PlainTextEditor(data);
+  public static AbstractNoteEditorData editText (@Nullable Component parentComponent, @Nonnull final DialogProvider provider, @Nonnull final String title, @Nonnull final AbstractNoteEditorData data) {
+    final AbstractNoteEditor textEditor = new AbstractNoteEditor(()-> parentComponent,
+        UIComponentFactoryProvider.findInstance(), provider, data){
+
+      @Nullable
+      @Override
+      protected Icon findToolbarIconForId(@Nonnull final IconId iconId) {
+        switch (iconId){
+          case BROWSE: return Icons.BROWSE.getIcon();
+          case CLEARALL: return Icons.CLEAR_ALL.getIcon();
+          case COPY: return Icons.COPY.getIcon();
+          case EXPORT: return Icons.EXPORT.getIcon();
+          case IMPORT: return Icons.IMPORT.getIcon();
+          case PASSWORD_OFF: return Icons.PASSWORD_OFF.getIcon();
+          case PASSWORD_ON: return Icons.PASSWORD_ON.getIcon();
+          case PASTE: return Icons.PASTE.getIcon();
+          case REDO: return Icons.REDO.getIcon();
+          case UNDO: return Icons.UNDO.getIcon();
+          default: return null;
+        }
+      }
+
+      @Override
+      public void onBrowseUri(@Nonnull final URI uri, final boolean flag) throws Exception {
+        NbUtils.browseURI(uri, flag);
+      }
+    };
+
     try {
-      Utils.catchEscInParentDialog(textEditor, provider, d -> textEditor.isChanged(), x -> {
+      Utils.catchEscInParentDialog(textEditor.getPanel(), provider, d -> textEditor.isTextChanged(), x -> {
           textEditor.cancel();
       });
-      if (plainMessageOkCancel(parentComponent, title, textEditor)) {
+      if (plainMessageOkCancel(parentComponent, title, textEditor.getPanel())) {
         return textEditor.getData();
       }
       else {

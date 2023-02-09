@@ -75,6 +75,9 @@ public class AllIcons {
     public static final Icon CLEARALL = findIcon("/icons/cross.png");
     public static final Icon PROTECT_OFF = findIcon("/icons/set_password.png");
     public static final Icon PROTECT_ON = findIcon("/icons/set_passwordon.png");
+    public static final Icon BROWSE = findIcon("/icons/world_link.png");
+    public static final Icon REDO = findIcon("/icons/redo.png");
+    public static final Icon UNDO = findIcon("/icons/undo.png");
   }
 
   public static class PopUp {

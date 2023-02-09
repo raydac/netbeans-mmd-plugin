@@ -26,11 +26,11 @@ import com.igormaznitsa.ideamindmap.settings.MindMapSettingsComponent;
 import com.igormaznitsa.ideamindmap.swing.AboutForm;
 import com.igormaznitsa.ideamindmap.swing.FileEditPanel;
 import com.igormaznitsa.ideamindmap.swing.MindMapTreePanel;
-import com.igormaznitsa.ideamindmap.swing.NoteEditorData;
 import com.igormaznitsa.ideamindmap.utils.AllIcons;
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
 import com.igormaznitsa.mindmap.ide.commons.FilePathWithLine;
 import com.igormaznitsa.mindmap.ide.commons.Misc;
+import com.igormaznitsa.mindmap.ide.commons.editors.AbstractNoteEditorData;
 import com.igormaznitsa.mindmap.ide.commons.editors.ColorAttributePanel;
 import com.igormaznitsa.mindmap.ide.commons.preferences.ColorSelectButton;
 import com.igormaznitsa.mindmap.model.Extra;
@@ -458,18 +458,18 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
   public void editTextForTopic(final Topic topic) {
     try {
       final ExtraNote note = (ExtraNote) topic.getExtras().get(Extra.ExtraType.NOTE);
-      final NoteEditorData result;
+      final AbstractNoteEditorData result;
       if (note == null) {
         // create new
         result = IdeaUtils
-            .editText(this.editor.getProject(),
+            .editText(this.getPanel(), this.editor.getProject(),
                     this.dialogProvider,
                     String.format(BUNDLE.getString("MMDGraphEditor.editTextForTopic.dlfAddNoteTitle"),
                         Utils.makeShortTextVersion(topic.getText(), 16)),
-                new NoteEditorData()); //NOI18N
+                new AbstractNoteEditorData()); //NOI18N
       } else {
         // edit
-        NoteEditorData noteText = null;
+        AbstractNoteEditorData noteText = null;
         if (note.isEncrypted()) {
           final PasswordPanel passwordPanel
               = new PasswordPanel("", note.getHint() == null ? "" : note.getHint(), false);
@@ -480,7 +480,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
             final String pass = new String(passwordPanel.getPassword()).trim();
             try {
               if (CryptoUtils.decrypt(pass, note.getValue(), decrypted)) {
-                noteText = new NoteEditorData(decrypted.toString(), pass, note.getHint());
+                noteText = new AbstractNoteEditorData(decrypted.toString(), pass, note.getHint());
               } else {
                 this.dialogProvider.msgError(this.getPanel(), "Wrong password!");
               }
@@ -491,14 +491,14 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
             }
           }
         } else {
-          noteText = new NoteEditorData(note.getValue(), null, null);
+          noteText = new AbstractNoteEditorData(note.getValue(), null, null);
         }
 
         if (noteText == null) {
           result = null;
         } else {
           result = IdeaUtils
-              .editText(this.editor.getProject(),
+              .editText(this.getPanel(), this.editor.getProject(),
                   this.dialogProvider,
                       String.format(BUNDLE.getString("MMDGraphEditor.editTextForTopic.dlgEditNoteTitle"),
                       Utils.makeShortTextVersion(topic.getText(), 16)), noteText);

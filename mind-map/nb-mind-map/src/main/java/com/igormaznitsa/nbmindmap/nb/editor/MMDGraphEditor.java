@@ -29,6 +29,7 @@ import static org.openide.windows.TopComponent.PERSISTENCE_NEVER;
 import com.igormaznitsa.mindmap.ide.commons.DnDUtils;
 import com.igormaznitsa.mindmap.ide.commons.FilePathWithLine;
 import com.igormaznitsa.mindmap.ide.commons.Misc;
+import com.igormaznitsa.mindmap.ide.commons.editors.AbstractNoteEditorData;
 import com.igormaznitsa.mindmap.ide.commons.editors.ColorAttributePanel;
 import com.igormaznitsa.mindmap.ide.commons.preferences.ColorSelectButton;
 import com.igormaznitsa.mindmap.model.Extra;
@@ -78,7 +79,6 @@ import com.igormaznitsa.nbmindmap.nb.swing.FileEditPanel;
 import com.igormaznitsa.nbmindmap.nb.swing.FindTextPanel;
 import com.igormaznitsa.nbmindmap.nb.swing.FindTextScopeProvider;
 import com.igormaznitsa.nbmindmap.nb.swing.MindMapTreePanel;
-import com.igormaznitsa.nbmindmap.nb.swing.NoteEditorData;
 import com.igormaznitsa.nbmindmap.utils.DialogProviderManager;
 import com.igormaznitsa.nbmindmap.utils.Icons;
 import com.igormaznitsa.nbmindmap.utils.NbUtils;
@@ -1554,16 +1554,16 @@ public final class MMDGraphEditor extends CloneableEditor
   private void editTextForTopic(final Topic topic) {
     try {
       final ExtraNote note = (ExtraNote) topic.getExtras().get(Extra.ExtraType.NOTE);
-      final NoteEditorData result;
+      final AbstractNoteEditorData result;
       if (note == null) {
         // create new
         result = NbUtils.editText(null, DialogProviderManager.getInstance().getDialogProvider(),
             String.format(BUNDLE.getString("MMDGraphEditor.editTextForTopic.dlfAddNoteTitle"),
                 Utils.makeShortTextVersion(topic.getText(), 16)),
-            new NoteEditorData()); //NOI18N
+            new AbstractNoteEditorData()); //NOI18N
       } else {
         // edit
-        NoteEditorData noteText = null;
+        AbstractNoteEditorData noteText = null;
         if (note.isEncrypted()) {
           final PasswordPanel passwordPanel
               =
@@ -1578,7 +1578,7 @@ public final class MMDGraphEditor extends CloneableEditor
             try {
               if (CryptoUtils.decrypt(pass, note.getValue(), decrypted)) {
                 noteText =
-                    new NoteEditorData(decrypted.toString(), pass, note.getHint());
+                    new AbstractNoteEditorData(decrypted.toString(), pass, note.getHint());
               } else {
                 DialogProviderManager.getInstance().getDialogProvider()
                     .msgError(this, "Wrong password!");
@@ -1591,7 +1591,7 @@ public final class MMDGraphEditor extends CloneableEditor
             }
           }
         } else {
-          noteText = new NoteEditorData(note.getValue(), null, null);
+          noteText = new AbstractNoteEditorData(note.getValue(), null, null);
         }
         if (noteText == null) {
           result = null;

@@ -18,6 +18,9 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -34,6 +37,7 @@ import java.util.ResourceBundle;
 import java.util.function.Supplier;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.Box;
 import javax.swing.Box.Filler;
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -44,7 +48,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 import javax.swing.JToggleButton;
-import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -84,6 +87,7 @@ public abstract class AbstractNoteEditor {
   private JButton buttonPaste;
   private JButton buttonRedo;
   private JButton buttonUndo;
+  private JTextArea editorPane;
   private final UndoManager undoManager = new UndoManager() {
     @Override
     public void undoableEditHappened(final UndoableEditEvent e) {
@@ -92,12 +96,11 @@ public abstract class AbstractNoteEditor {
     }
 
   };
-  private JTextArea editorPane;
   private Filler wrapFiller;
   private JPanel bottomPanel;
   private JScrollPane editorScrollPane;
   private JSeparator wrapSeparator;
-  private JToolBar buttonToolBar;
+  private JPanel buttonBarPanel;
   private JLabel labelCursorPos;
   private JLabel labelWrapMode;
   private JToggleButton toggleButtonEncrypt;
@@ -213,7 +216,10 @@ public abstract class AbstractNoteEditor {
 
         });
 
-    this.mainPanel.setPreferredSize(new Dimension(640, 480));
+    this.buttonBarPanel.doLayout();
+
+    this.mainPanel.setPreferredSize(
+        new Dimension(Math.max(this.buttonBarPanel.getPreferredSize().width, 640), 480));
     this.editorPane.setFont(this.findEditorFont(DEFAULT_FONT));
     this.originalText = data.getText();
     this.editorPane.setText(data.getText());
@@ -256,25 +262,6 @@ public abstract class AbstractNoteEditor {
     new Focuser(this.editorPane);
   }
 
-  public JPanel getPanel() {
-    return this.mainPanel;
-  }
-
-  private FileFilter makeFileFilter() {
-    return new FileFilter() {
-
-      @Override
-      public boolean accept(final File f) {
-        return f.isDirectory() || f.getName().toLowerCase(Locale.ENGLISH).endsWith(".txt"); //NOI18N
-      }
-
-      @Override
-      public String getDescription() {
-        return bundle.getString("PlainTextEditor.fileFilter.description");
-      }
-    };
-  }
-
   private static boolean isWhitespaceOrControl(final char c) {
     return Character.isISOControl(c) || Character.isWhitespace(c);
   }
@@ -300,6 +287,29 @@ public abstract class AbstractNoteEditor {
       LOGGER.error("Bad location", e); //NOI18N
     }
     return -1;
+  }
+
+  protected JComponent preprocessToolBarButton(final JComponent button) {
+    return button;
+  }
+
+  public JPanel getPanel() {
+    return this.mainPanel;
+  }
+
+  private FileFilter makeFileFilter() {
+    return new FileFilter() {
+
+      @Override
+      public boolean accept(final File f) {
+        return f.isDirectory() || f.getName().toLowerCase(Locale.ENGLISH).endsWith(".txt"); //NOI18N
+      }
+
+      @Override
+      public String getDescription() {
+        return bundle.getString("PlainTextEditor.fileFilter.description");
+      }
+    };
   }
 
   protected Font findEditorFont(final Font defaultFont) {
@@ -460,7 +470,15 @@ public abstract class AbstractNoteEditor {
     this.mainPanel = this.uiComponentFactory.makePanel();
     this.mainPanel.setLayout(new BorderLayout());
 
-    this.buttonToolBar = this.uiComponentFactory.makeToolBar();
+    this.buttonBarPanel = this.uiComponentFactory.makePanel();
+    this.buttonBarPanel.setLayout(new GridBagLayout());
+    final GridBagConstraints constraints = new GridBagConstraints();
+    constraints.insets = new Insets(4, 4, 4, 4);
+    constraints.fill = GridBagConstraints.BOTH;
+    constraints.gridy = 0;
+    constraints.weightx = 1;
+    constraints.weighty = 1;
+
     this.buttonUndo = this.uiComponentFactory.makeButton();
     this.buttonRedo = this.uiComponentFactory.makeButton();
     this.buttonImport = this.uiComponentFactory.makeButton();
@@ -480,9 +498,6 @@ public abstract class AbstractNoteEditor {
     this.editorScrollPane = this.uiComponentFactory.makeScrollPane();
     this.editorPane = this.uiComponentFactory.makeTextArea();
 
-    this.buttonToolBar.setFloatable(false);
-    this.buttonToolBar.setRollover(true);
-
     this.buttonUndo
         .setIcon(this.findToolbarIconForId(IconId.UNDO));
     this.buttonUndo.setMnemonic('u');
@@ -492,7 +507,7 @@ public abstract class AbstractNoteEditor {
     this.buttonUndo.setNextFocusableComponent(this.buttonRedo);
     this.buttonUndo.setVerticalTextPosition(SwingConstants.BOTTOM);
     this.buttonUndo.addActionListener(this::buttonUndoActionPerformed);
-    this.buttonToolBar.add(this.buttonUndo);
+    this.buttonBarPanel.add(this.preprocessToolBarButton(this.buttonUndo), constraints);
 
     this.buttonRedo
         .setIcon(this.findToolbarIconForId(IconId.REDO));
@@ -503,7 +518,7 @@ public abstract class AbstractNoteEditor {
     this.buttonRedo.setNextFocusableComponent(this.buttonImport);
     this.buttonRedo.setVerticalTextPosition(SwingConstants.BOTTOM);
     this.buttonRedo.addActionListener(this::buttonRedoActionPerformed);
-    this.buttonToolBar.add(this.buttonRedo);
+    this.buttonBarPanel.add(this.preprocessToolBarButton(this.buttonRedo), constraints);
 
     this.buttonImport
         .setIcon(this.findToolbarIconForId(IconId.IMPORT));
@@ -515,7 +530,7 @@ public abstract class AbstractNoteEditor {
     this.buttonImport.setNextFocusableComponent(this.buttonExport);
     this.buttonImport.setVerticalTextPosition(SwingConstants.BOTTOM);
     this.buttonImport.addActionListener(this::buttonImportActionPerformed);
-    this.buttonToolBar.add(this.buttonImport);
+    this.buttonBarPanel.add(this.preprocessToolBarButton(this.buttonImport), constraints);
 
     this.buttonExport.setIcon(this.findToolbarIconForId(IconId.EXPORT));
     this.buttonExport.setMnemonic('e');
@@ -526,7 +541,7 @@ public abstract class AbstractNoteEditor {
     this.buttonExport.setNextFocusableComponent(this.buttonCopy);
     this.buttonExport.setVerticalTextPosition(SwingConstants.BOTTOM);
     this.buttonExport.addActionListener(this::buttonExportActionPerformed);
-    this.buttonToolBar.add(this.buttonExport);
+    this.buttonBarPanel.add(this.preprocessToolBarButton(this.buttonExport), constraints);
 
     this.buttonCopy.setIcon(this.findToolbarIconForId(IconId.COPY));
     this.buttonCopy.setMnemonic('c');
@@ -537,7 +552,7 @@ public abstract class AbstractNoteEditor {
     this.buttonCopy.setNextFocusableComponent(this.buttonPaste);
     this.buttonCopy.setVerticalTextPosition(SwingConstants.BOTTOM);
     this.buttonCopy.addActionListener(this::buttonCopyActionPerformed);
-    this.buttonToolBar.add(this.buttonCopy);
+    this.buttonBarPanel.add(this.preprocessToolBarButton(this.buttonCopy), constraints);
 
     this.buttonPaste.setIcon(this.findToolbarIconForId(IconId.PASTE));
     this.buttonPaste.setMnemonic('p');
@@ -548,7 +563,7 @@ public abstract class AbstractNoteEditor {
     this.buttonPaste.setNextFocusableComponent(this.buttonBrowse);
     this.buttonPaste.setVerticalTextPosition(SwingConstants.BOTTOM);
     this.buttonPaste.addActionListener(this::buttonPasteActionPerformed);
-    this.buttonToolBar.add(this.buttonPaste);
+    this.buttonBarPanel.add(this.preprocessToolBarButton(this.buttonPaste), constraints);
 
     this.buttonBrowse
         .setIcon(this.findToolbarIconForId(IconId.BROWSE));
@@ -560,7 +575,7 @@ public abstract class AbstractNoteEditor {
     this.buttonBrowse.setNextFocusableComponent(this.buttonClear);
     this.buttonBrowse.setVerticalTextPosition(SwingConstants.BOTTOM);
     this.buttonBrowse.addActionListener(this::buttonBrowseActionPerformed);
-    this.buttonToolBar.add(this.buttonBrowse);
+    this.buttonBarPanel.add(this.preprocessToolBarButton(this.buttonBrowse), constraints);
 
     this.buttonClear
         .setIcon(this.findToolbarIconForId(IconId.CLEARALL));
@@ -572,7 +587,7 @@ public abstract class AbstractNoteEditor {
     this.buttonClear.setNextFocusableComponent(this.editorPane);
     this.buttonClear.setVerticalTextPosition(SwingConstants.BOTTOM);
     this.buttonClear.addActionListener(this::buttonClearActionPerformed);
-    this.buttonToolBar.add(this.buttonClear);
+    this.buttonBarPanel.add(this.preprocessToolBarButton(this.buttonClear), constraints);
 
     this.toggleButtonEncrypt.setIcon(this.findToolbarIconForId(IconId.PASSWORD_OFF));
     this.toggleButtonEncrypt.setSelectedIcon(this.findToolbarIconForId(IconId.PASSWORD_ON));
@@ -583,9 +598,12 @@ public abstract class AbstractNoteEditor {
     this.toggleButtonEncrypt.setHorizontalTextPosition(SwingConstants.CENTER);
     this.toggleButtonEncrypt.setVerticalTextPosition(SwingConstants.BOTTOM);
     this.toggleButtonEncrypt.addActionListener(this::toggleButtonEncryptActionPerformed);
-    this.buttonToolBar.add(this.toggleButtonEncrypt);
+    this.buttonBarPanel.add(this.preprocessToolBarButton(this.toggleButtonEncrypt), constraints);
 
-    this.mainPanel.add(this.buttonToolBar, BorderLayout.NORTH);
+    constraints.weightx = 1000;
+    this.buttonBarPanel.add(Box.createHorizontalGlue(), constraints);
+
+    this.mainPanel.add(this.buttonBarPanel, BorderLayout.NORTH);
 
     this.bottomPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
@@ -714,5 +732,7 @@ public abstract class AbstractNoteEditor {
       }
     }
   }
+
+
 }
 

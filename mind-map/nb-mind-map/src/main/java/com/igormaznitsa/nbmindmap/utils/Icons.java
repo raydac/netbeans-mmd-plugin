@@ -29,6 +29,16 @@ public enum Icons {
   BLUEBALL("blueball16.png"), //NOI18N
   GOLDBALL("goldball16.png"), //NOI18N
   CROSS("cross16.png"), //NOI18N
+  BROWSE("world_link16.png"), //NOI18N
+  REDO("redo16.png"), //NOI18N
+  UNDO("undo16.png"), //NOI18N
+  CLEAR_ALL("cross16.png"), //NOI18N
+  COPY("page_copy16.png"), //NOI18N
+  EXPORT("file_save16.png"), //NOI18N
+  IMPORT("disk16.png"), //NOI18N
+  PASSWORD_ON("set_password16on.png"), //NOI18N
+  PASSWORD_OFF("set_password16.png"), //NOI18N
+  PASTE("paste_plain16.png"), //NOI18N
   COINS("coins_in_hand16.png"); //NOI18N
 
   private final ImageIcon icon;

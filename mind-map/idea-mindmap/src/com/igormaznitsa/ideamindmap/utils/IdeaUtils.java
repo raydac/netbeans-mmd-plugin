@@ -18,10 +18,12 @@ package com.igormaznitsa.ideamindmap.utils;
 
 import com.igormaznitsa.ideamindmap.editor.MindMapDocumentEditor;
 import com.igormaznitsa.ideamindmap.swing.FileEditPanel;
-import com.igormaznitsa.ideamindmap.swing.NoteEditorData;
-import com.igormaznitsa.ideamindmap.swing.PlainTextEditor;
 import com.igormaznitsa.ideamindmap.swing.UriEditPanel;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.mindmap.ide.commons.editors.AbstractNoteEditor;
+import static com.igormaznitsa.mindmap.ide.commons.editors.AbstractNoteEditor.IconId.BROWSE;
+import static com.igormaznitsa.mindmap.ide.commons.editors.AbstractNoteEditor.IconId.CLEARALL;
+import com.igormaznitsa.mindmap.ide.commons.editors.AbstractNoteEditorData;
 import com.igormaznitsa.mindmap.ide.commons.preferences.ColorSelectButton;
 import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.Topic;
@@ -30,12 +32,15 @@ import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.HasPreferredFocusComponent;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import com.intellij.CommonBundle;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.editor.colors.EditorColorsManager;
+import com.intellij.openapi.editor.colors.EditorFontType;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.module.ModuleUtilCore;
@@ -59,6 +64,8 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -74,8 +81,11 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.Action;
+import javax.swing.Icon;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
+import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 import org.apache.commons.text.StringEscapeUtils;
@@ -394,16 +404,52 @@ public final class IdeaUtils {
     }
   }
 
-  public static NoteEditorData editText(final Project project, final DialogProvider dialogProvider,
-                                        final String title, final NoteEditorData data) {
-    final PlainTextEditor editor = new PlainTextEditor(project, data);
-    editor.setPreferredSize(new Dimension(550, 450));
+  public static AbstractNoteEditorData editText(final Component parent,final Project project, final DialogProvider dialogProvider,
+                                        final String title, final AbstractNoteEditorData data) {
+    final AbstractNoteEditor editor = new AbstractNoteEditor(() -> parent, UIComponentFactoryProvider.findInstance(), dialogProvider, data) {
+        @Override
+        public void onBrowseUri(final URI uri, final boolean preferInternalBrowser) throws Exception {
+            IdeaUtils.browseURI(uri, preferInternalBrowser);
+        }
 
-    Utils.catchEscInParentDialog(editor, dialogProvider, d -> editor.isChanged(),
+        @Override
+        protected Icon findToolbarIconForId(final AbstractNoteEditor.IconId iconId) {
+            switch(iconId) {
+                case CLEARALL: return AllIcons.Buttons.CLEARALL;
+                case COPY: return AllIcons.Buttons.COPY;
+                case EXPORT: return AllIcons.Buttons.EXPORT;
+                case IMPORT: return AllIcons.Buttons.IMPORT;
+                case PASSWORD_OFF: return AllIcons.Buttons.PROTECT_OFF;
+                case PASSWORD_ON: return AllIcons.Buttons.PROTECT_ON;
+                case PASTE: return AllIcons.Buttons.PASTE;
+                case BROWSE: return AllIcons.Buttons.BROWSE;
+                case REDO: return AllIcons.Buttons.REDO;
+                case UNDO: return AllIcons.Buttons.UNDO;
+                default: return null;
+            }
+        }
+
+        @Override
+        protected JComponent preprocessToolBarButton(final JComponent button) {
+            if (button instanceof JButton) {
+                ((JButton)button).setMargin(new Insets(4,4,4,4));
+            } else if (button instanceof JToggleButton) {
+                ((JToggleButton) button).setMargin(new Insets(4, 4, 4, 4));
+            }
+            return button;
+        }
+        
+        @Override
+        protected Font findEditorFont(final Font defaultFont) {
+            return EditorColorsManager.getInstance().getGlobalScheme().getFont(EditorFontType.PLAIN);
+        }
+    };
+    
+    Utils.catchEscInParentDialog(editor.getPanel(), dialogProvider, d -> editor.isTextChanged(),
         x -> editor.cancel());
 
     final DialogComponent dialog =
-        new DialogComponent(project, title, editor, editor.getEditor(), false);
+        new DialogComponent(project, title, editor.getPanel(), editor.getPanel(), false);
 
     return dialog.showAndGet() ? editor.getData() : null;
   }
