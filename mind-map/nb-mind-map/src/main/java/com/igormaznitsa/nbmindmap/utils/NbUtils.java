@@ -302,6 +302,12 @@ public final class NbUtils {
     return DialogDisplayer.getDefault().notify(desc) == NotifyDescriptor.OK_OPTION;
   }
 
+  public static boolean plainMessageOkCancel (@Nullable Component parentComponent,@Nonnull final String title, @Nonnull final JComponent compo, final boolean noDefaultClose) {
+    final NotifyDescriptor desc = new NotifyDescriptor.Confirmation(compo, title, NotifyDescriptor.OK_CANCEL_OPTION, NotifyDescriptor.PLAIN_MESSAGE);
+    desc.setNoDefaultClose(noDefaultClose);
+    return DialogDisplayer.getDefault().notify(desc) == NotifyDescriptor.OK_OPTION;
+  }
+
   public static void plainMessageOk (@Nullable Component parentComponent,@Nonnull final String title, @Nonnull final JComponent compo) {
     final NotifyDescriptor desc = new NotifyDescriptor.Message(compo, NotifyDescriptor.PLAIN_MESSAGE);
     desc.setTitle(title);
@@ -341,7 +347,7 @@ public final class NbUtils {
       Utils.catchEscInParentDialog(textEditor.getPanel(), provider, d -> textEditor.isTextChanged(), x -> {
           textEditor.cancel();
       });
-      if (plainMessageOkCancel(parentComponent, title, textEditor.getPanel())) {
+      if (plainMessageOkCancel(parentComponent, title, textEditor.getPanel(), true)) {
         return textEditor.getData();
       }
       else {
