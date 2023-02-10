@@ -34,6 +34,7 @@ import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
@@ -393,14 +394,14 @@ public final class UiUtils {
                                                          @Nullable final File projectFolder,
                                                          @Nullable
                                                          final FileEditPanel.DataContainer data) {
-    final FileEditPanel filePathEditor = new FileEditPanel(projectFolder, data);
-
-    filePathEditor.doLayout();
-    filePathEditor.setPreferredSize(new Dimension(450, filePathEditor.getPreferredSize().height));
+    final FileEditPanel filePathEditor = new FileEditPanel(
+        UIComponentFactoryProvider.findInstance(),
+        DialogProviderManager.getInstance().getDialogProvider(),
+        projectFolder, data);
 
     FileEditPanel.DataContainer result = null;
     if (DialogProviderManager.getInstance().getDialogProvider()
-        .msgOkCancel(SciaRetoStarter.getApplicationFrame(), title, filePathEditor)) {
+        .msgOkCancel(SciaRetoStarter.getApplicationFrame(), title, filePathEditor.getPanel())) {
       result = filePathEditor.getData();
       if (!result.isValid()) {
         DialogProviderManager.getInstance().getDialogProvider()

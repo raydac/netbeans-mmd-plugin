@@ -522,19 +522,16 @@ public final class IdeaUtils {
                                                          final File projectFolder,
                                                          final FileEditPanel.DataContainer data) {
     final FileEditPanel filePathEditor =
-        new FileEditPanel(editor.getDialogProvider(), projectFolder, data);
+        new FileEditPanel(UIComponentFactoryProvider.findInstance(), editor.getDialogProvider(), projectFolder, data);
 
-    filePathEditor.doLayout();
-    filePathEditor.setPreferredSize(new Dimension(450, filePathEditor.getPreferredSize().height));
-
-    if (plainMessageOkCancel(editor.getProject(), title, filePathEditor)) {
+    if (plainMessageOkCancel(editor.getProject(), title, filePathEditor.getPanel())) {
       final FileEditPanel.DataContainer result = filePathEditor.getData();
       if (result.isValid()) {
         return result;
       } else {
         Messages.showErrorDialog(editor.getMindMapPanel(),
             String.format(BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"),
-                result.getPathWithLine().getPath()), "Error");
+                result.getFilePathWithLine().getPath()), "Error");
         return null;
       }
     } else {

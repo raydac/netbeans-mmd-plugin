@@ -367,24 +367,24 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
 
       if (dataContainer != null) {
         boolean changed = false;
-        if (dataContainer.getPathWithLine().isEmptyOrOnlySpaces()) {
+        if (dataContainer.getFilePathWithLine().isEmptyOrOnlySpaces()) {
           changed = topic.removeExtra(Extra.ExtraType.FILE);
         } else {
           final Properties props = new Properties();
           if (dataContainer.isShowWithSystemTool()) {
             props.put(FILELINK_ATTR_OPEN_IN_SYSTEM, "true"); //NOI18N
           }
-          if (dataContainer.getPathWithLine().getLine() >= 0) {
-            props.put(FILELINK_ATTR_LINE, Integer.toString(dataContainer.getPathWithLine().getLine()));
+          if (dataContainer.getFilePathWithLine().getLine() >= 0) {
+            props.put(FILELINK_ATTR_LINE, Integer.toString(dataContainer.getFilePathWithLine().getLine()));
           }
 
           try {
             final MMapURI fileUri =
                 MMapURI.makeFromFilePath(this.editor.isMakeRelativePath() ? projectFolder : null,
-                    dataContainer.getPathWithLine().getPath(), props); //NOI18N
+                    dataContainer.getFilePathWithLine().getPath(), props); //NOI18N
             final File theFile = fileUri.asFile(projectFolder);
             LOGGER.info(
-                String.format("Path %s converted to uri: %s", dataContainer.getPathWithLine(),
+                String.format("Path %s converted to uri: %s", dataContainer.getFilePathWithLine(),
                     fileUri.asString(false, true))); //NOI18N
 
             if (theFile.exists()) {
@@ -401,14 +401,14 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
             } else {
               dialogProvider.msgError(null, String.format(
                   BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.errorCantFindFile"),
-                  dataContainer.getPathWithLine().getPath()));
+                  dataContainer.getFilePathWithLine().getPath()));
             }
           }catch (URISyntaxException ex){
             LOGGER.error(
-                String.format("Malformed URI syntax: %s", dataContainer.getPathWithLine()), ex); //NOI18N
+                String.format("Malformed URI syntax: %s", dataContainer.getFilePathWithLine()), ex); //NOI18N
             dialogProvider.msgError(null, String.format(
                 BUNDLE.getString("MMDGraphEditor.editFileLinkForTopic.malformedURI"),
-                dataContainer.getPathWithLine().getPath()));
+                dataContainer.getFilePathWithLine().getPath()));
           }
         }
 
