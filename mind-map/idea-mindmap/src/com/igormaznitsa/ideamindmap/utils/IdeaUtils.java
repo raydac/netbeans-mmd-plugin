@@ -542,12 +542,9 @@ public final class IdeaUtils {
   public static MMapURI editURI(final MindMapDocumentEditor editor, final String title,
                                 final MMapURI uri) {
     final UriEditPanel uriEditor =
-        new UriEditPanel(uri == null ? null : uri.asString(false, false));
+        new UriEditPanel(UIComponentFactoryProvider.findInstance(), uri == null ? null : uri.asString(false, false), false);
 
-    uriEditor.doLayout();
-    uriEditor.setPreferredSize(new Dimension(450, uriEditor.getPreferredSize().height));
-
-    if (plainMessageOkCancel(editor.getProject(), title, uriEditor)) {
+    if (plainMessageOkCancel(editor.getProject(), title, uriEditor.getPanel())) {
       final String text = uriEditor.getText();
       if (text.isEmpty()) {
         return EMPTY_URI;

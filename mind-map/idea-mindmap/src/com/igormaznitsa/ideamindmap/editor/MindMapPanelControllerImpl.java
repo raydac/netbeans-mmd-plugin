@@ -247,10 +247,10 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
     final MMapURI result;
     if (link == null) {
       // create new
-      result = IdeaUtils.editURI(this.editor, String.format(MmdI18n.getInstance().findBundle().getString("MMDGraphEditor.editLinkForTopic.dlgAddURITitle"), Utils.makeShortTextVersion(topic.getText(), 16)), null);
+      result = IdeaUtils.editURI(this.editor, String.format(BUNDLE.getString("MMDGraphEditor.editLinkForTopic.dlgAddURITitle"), Utils.makeShortTextVersion(topic.getText(), 16)), null);
     } else {
       // edit
-      result = IdeaUtils.editURI(this.editor, String.format(MmdI18n.getInstance().findBundle().getString("MMDGraphEditor.editLinkForTopic.dlgEditURITitle"), Utils.makeShortTextVersion(topic.getText(), 16)), link.getValue());
+      result = IdeaUtils.editURI(this.editor, String.format(BUNDLE.getString("MMDGraphEditor.editLinkForTopic.dlgEditURITitle"), Utils.makeShortTextVersion(topic.getText(), 16)), link.getValue());
     }
     if (result != null) {
       boolean changed = false;

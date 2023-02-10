@@ -342,13 +342,11 @@ public final class UiUtils {
   @Nullable
   public static MMapURI editURI(@Nonnull final String title, @Nullable final MMapURI uri) {
     final UriEditPanel textEditor =
-        new UriEditPanel(uri == null ? null : uri.asString(false, false));
-
-    textEditor.doLayout();
-    textEditor.setPreferredSize(new Dimension(450, textEditor.getPreferredSize().height));
+        new UriEditPanel(UIComponentFactoryProvider.findInstance(),
+            uri == null ? null : uri.asString(false, false), false);
 
     if (DialogProviderManager.getInstance().getDialogProvider()
-        .msgOkCancel(null, title, textEditor)) {
+        .msgOkCancel(null, title, textEditor.getPanel())) {
       final String text = textEditor.getText();
       if (text.isEmpty()) {
         return EMPTY_URI;

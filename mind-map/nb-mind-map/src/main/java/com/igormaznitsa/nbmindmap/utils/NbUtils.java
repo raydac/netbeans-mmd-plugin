@@ -343,13 +343,11 @@ public final class NbUtils {
   public static MMapURI editURI(@Nullable Component parentComponent, @Nonnull final String title,
                                 @Nullable final MMapURI uri) {
     final UriEditPanel textEditor =
-        new UriEditPanel(uri == null ? null : uri.asString(false, false));
-
-    textEditor.doLayout();
-    textEditor.setPreferredSize(new Dimension(450, textEditor.getPreferredSize().height));
+        new UriEditPanel(UIComponentFactoryProvider.findInstance(),
+            uri == null ? null : uri.asString(false, false), false);
 
     final NotifyDescriptor desc =
-        new NotifyDescriptor.Confirmation(textEditor, title, NotifyDescriptor.OK_CANCEL_OPTION,
+        new NotifyDescriptor.Confirmation(textEditor.getPanel(), title, NotifyDescriptor.OK_CANCEL_OPTION,
             NotifyDescriptor.PLAIN_MESSAGE);
     if (DialogDisplayer.getDefault().notify(desc) == NotifyDescriptor.OK_OPTION) {
       final String text = textEditor.getText();
