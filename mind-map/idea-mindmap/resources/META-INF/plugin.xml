@@ -14,7 +14,10 @@
     <change-notes><![CDATA[
         <p>1.6.2 (SNAPSHOT)</p>
         <ul>
+          <li>reworked topic note edit dialog</li>
           <li>reworked settings panel</li>
+          <li>added fast bird's eye navigation</li>
+          <li>improved PlantUML mind map export</li>
         </ul>
         <p>1.6.1 (15-jan-2023)</p>
         <ul>

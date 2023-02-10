@@ -15,20 +15,17 @@ Initially I developed a plugin for NetBeans IDE then the IntellijIDEA plugin was
 
 # Changelog
 
+__1.6.2 (SNAPSHOT)__
+- ALL: added fast navigation through bird's eye panel
+- ALL: refactoring of settings panel and text note editor panel
+- SR:  PlantUML updated to 1.2023.1
+- SR:  updated embedded JDK to 19.0.2+9
+
 __1.6.1 (15-jan-2023)__
 - ALL: added export into PlantUML mind map script
 - AP:  fixes in annotation processor
 - SR:  updated dependencies
 - SR:  PlantUML updated to 1.2023.0
-
-__1.6.0 (25-dec-2022)__
-- ALL: improved SVG exporter to prevent image duplication
-- SR:  updated PlantUML to 1.2022.14
-- SR:  embedded JDK updated to 19.0.1+11
-- SR:  added support of SVG images in viewer
-- ALL: rework Base64, now JDK API in use
-- ALL: __refactoring of base components, changes in plugin API__
-- ALL: [added annotation processing to generate MMD files from sources](https://github.com/raydac/netbeans-mmd-plugin/wiki/Mind-Map-annotation-processor)
 
 [Full changelog](https://github.com/raydac/netbeans-mmd-plugin/blob/master/changelog.txt)   
 
