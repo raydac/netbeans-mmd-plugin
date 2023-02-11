@@ -16,9 +16,8 @@
 
 package com.igormaznitsa.ideamindmap.utils;
 
-import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.plugins.api.parameters.AbstractParameter;
+import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.services.DefaultParametersPanelFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import com.intellij.openapi.ui.ComboBox;
@@ -28,10 +27,11 @@ import com.intellij.openapi.ui.JBPopupMenu;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
+import com.intellij.ui.components.JBPasswordField;
 import com.intellij.ui.components.JBRadioButton;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTextField;
-import com.intellij.ui.components.JBPasswordField;
+import com.intellij.ui.treeStructure.Tree;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -58,6 +58,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
+import javax.swing.JTree;
 
 public class IdeaUIComponentFactory implements UIComponentFactory {
 
@@ -69,7 +70,8 @@ public class IdeaUIComponentFactory implements UIComponentFactory {
 
   @Nonnull
   @Override
-  public JPanel makePanelWithOptions(@Nonnull DialogProvider dialogProvider, @Nonnull Set<AbstractParameter<?>> parameters) {
+  public JPanel makePanelWithOptions(@Nonnull DialogProvider dialogProvider,
+                                     @Nonnull Set<AbstractParameter<?>> parameters) {
     return DefaultParametersPanelFactory.getInstance().make(dialogProvider, parameters);
   }
 
@@ -153,13 +155,15 @@ public class IdeaUIComponentFactory implements UIComponentFactory {
 
   @Override
   @Nonnull
-  public JCheckBoxMenuItem makeCheckboxMenuItem(@Nonnull final String s, final Icon icon, final boolean b) {
+  public JCheckBoxMenuItem makeCheckboxMenuItem(@Nonnull final String s, final Icon icon,
+                                                final boolean b) {
     return new JBCheckboxMenuItem(s, icon, b);
   }
 
   @Nonnull
   @Override
-  public JRadioButtonMenuItem makeRadioButtonMenuItem(@Nonnull String s, @Nullable Icon icon, boolean b) {
+  public JRadioButtonMenuItem makeRadioButtonMenuItem(@Nonnull String s, @Nullable Icon icon,
+                                                      boolean b) {
     return new JRadioButtonMenuItem(s, icon, b);
   }
 
@@ -185,6 +189,11 @@ public class IdeaUIComponentFactory implements UIComponentFactory {
   @Nonnull
   public JSlider makeSlider() {
     return new JSlider();
+  }
+
+  @Override
+  public JTree makeTree() {
+    return new Tree();
   }
 
   @Nonnull

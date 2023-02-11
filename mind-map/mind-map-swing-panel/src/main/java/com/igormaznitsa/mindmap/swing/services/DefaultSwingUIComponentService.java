@@ -42,6 +42,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
+import javax.swing.JTree;
 
 public class DefaultSwingUIComponentService implements UIComponentFactory {
 
@@ -162,4 +163,8 @@ public class DefaultSwingUIComponentService implements UIComponentFactory {
     return new JSlider();
   }
 
+  @Override
+  public JTree makeTree() {
+    return new JTree();
+  }
 }

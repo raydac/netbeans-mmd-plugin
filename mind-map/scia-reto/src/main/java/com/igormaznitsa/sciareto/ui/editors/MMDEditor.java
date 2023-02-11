@@ -1236,12 +1236,12 @@ public final class MMDEditor extends AbstractTextEditor
 
       if (link == null) {
         final MindMapTreePanel treePanel =
-            new MindMapTreePanel(this.mindMapPanel.getModel(), null, true, null);
+            new MindMapTreePanel(UIComponentFactoryProvider.findInstance(), this.mindMapPanel.getModel(), null, true, null);
         if (DialogProviderManager.getInstance().getDialogProvider()
             .msgOkCancel(SciaRetoStarter.getApplicationFrame(),
                 SrI18n.getInstance().findBundle().getString(
                     "MMDGraphEditor.editTopicLinkForTopic.dlgSelectTopicTitle"),
-                treePanel)) {
+                treePanel.getPanel())) {
           final Topic selected = treePanel.getSelectedTopic();
           treePanel.dispose();
           if (selected != null) {
@@ -1252,12 +1252,12 @@ public final class MMDEditor extends AbstractTextEditor
         }
       } else {
         final MindMapTreePanel panel =
-            new MindMapTreePanel(this.mindMapPanel.getModel(), link, true, null);
+            new MindMapTreePanel(UIComponentFactoryProvider.findInstance(), this.mindMapPanel.getModel(), link, true, null);
         if (DialogProviderManager.getInstance().getDialogProvider()
             .msgOkCancel(SciaRetoStarter.getApplicationFrame(),
                 SrI18n.getInstance().findBundle().getString(
                     "MMDGraphEditor.editTopicLinkForTopic.dlgEditSelectedTitle"),
-                panel)) {
+                panel.getPanel())) {
           final Topic selected = panel.getSelectedTopic();
           if (selected != null) {
             result = ExtraTopic.makeLinkTo(this.mindMapPanel.getModel(), selected);

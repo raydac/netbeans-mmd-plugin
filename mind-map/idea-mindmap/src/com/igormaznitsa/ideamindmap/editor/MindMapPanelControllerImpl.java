@@ -286,8 +286,8 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
     final ExtraTopic remove = new ExtraTopic("_______"); //NOI18N
 
     if (link == null) {
-      final MindMapTreePanel treePanel = new MindMapTreePanel(mindMapPanel.getModel(), null, true, null);
-      if (IdeaUtils.plainMessageOkCancel(this.editor.getProject(), BUNDLE.getString("MMDGraphEditor.editTopicLinkForTopic.dlgSelectTopicTitle"), treePanel)) {
+      final MindMapTreePanel treePanel = new MindMapTreePanel(UIComponentFactoryProvider.findInstance(), mindMapPanel.getModel(), null, true, null);
+      if (IdeaUtils.plainMessageOkCancel(this.editor.getProject(), BUNDLE.getString("MMDGraphEditor.editTopicLinkForTopic.dlgSelectTopicTitle"), treePanel.getPanel())) {
         final Topic selected = treePanel.getSelectedTopic();
         treePanel.dispose();
         if (selected != null) {
@@ -297,8 +297,8 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
         }
       }
     } else {
-      final MindMapTreePanel panel = new MindMapTreePanel(mindMapPanel.getModel(), link, true, null);
-      if (IdeaUtils.plainMessageOkCancel(this.editor.getProject(), BUNDLE.getString("MMDGraphEditor.editTopicLinkForTopic.dlgEditSelectedTitle"), panel)) {
+      final MindMapTreePanel panel = new MindMapTreePanel(UIComponentFactoryProvider.findInstance(), mindMapPanel.getModel(), link, true, null);
+      if (IdeaUtils.plainMessageOkCancel(this.editor.getProject(), BUNDLE.getString("MMDGraphEditor.editTopicLinkForTopic.dlgEditSelectedTitle"), panel.getPanel())) {
         final Topic selected = panel.getSelectedTopic();
         if (selected != null) {
           result = ExtraTopic.makeLinkTo(mindMapPanel.getModel(), selected);

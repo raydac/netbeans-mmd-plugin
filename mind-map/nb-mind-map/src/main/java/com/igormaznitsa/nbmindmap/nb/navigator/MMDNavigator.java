@@ -22,6 +22,7 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import com.igormaznitsa.nbmindmap.nb.editor.MMDDataObject;
 import com.igormaznitsa.nbmindmap.nb.editor.MMDEditorSupport;
 import com.igormaznitsa.nbmindmap.nb.swing.MindMapTreePanel;
@@ -62,7 +63,7 @@ public final class MMDNavigator extends JScrollPane implements NavigatorPanel, L
 
   public MMDNavigator() {
     super();
-    this.mindMapTree = new MindMapTreePanel(null, null, true, new ActionListener() {
+    this.mindMapTree = new MindMapTreePanel(UIComponentFactoryProvider.findInstance(), null, null, true, new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
         final MMDDataObject current = (MMDDataObject) currentSupport.getDataObject();

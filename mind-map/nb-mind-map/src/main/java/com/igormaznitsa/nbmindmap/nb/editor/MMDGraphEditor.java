@@ -1464,10 +1464,10 @@ public final class MMDGraphEditor extends CloneableEditor
 
     if (link == null) {
       final MindMapTreePanel treePanel =
-          new MindMapTreePanel(this.mindMapPanel.getModel(), null, true, null);
+          new MindMapTreePanel(UIComponentFactoryProvider.findInstance(), this.mindMapPanel.getModel(), null, true, null);
       if (NbUtils.plainMessageOkCancel(null,
           BUNDLE.getString("MMDGraphEditor.editTopicLinkForTopic.dlgSelectTopicTitle"),
-          treePanel)) {
+          treePanel.getTree())) {
         final Topic selected = treePanel.getSelectedTopic();
         treePanel.dispose();
         if (selected != null) {
@@ -1478,9 +1478,9 @@ public final class MMDGraphEditor extends CloneableEditor
       }
     } else {
       final MindMapTreePanel panel =
-          new MindMapTreePanel(this.mindMapPanel.getModel(), link, true, null);
+          new MindMapTreePanel(UIComponentFactoryProvider.findInstance(), this.mindMapPanel.getModel(), link, true, null);
       if (NbUtils.plainMessageOkCancel(null,
-          BUNDLE.getString("MMDGraphEditor.editTopicLinkForTopic.dlgEditSelectedTitle"), panel)) {
+          BUNDLE.getString("MMDGraphEditor.editTopicLinkForTopic.dlgEditSelectedTitle"), panel.getPanel())) {
         final Topic selected = panel.getSelectedTopic();
         if (selected != null) {
           result = ExtraTopic.makeLinkTo(this.mindMapPanel.getModel(), selected);
