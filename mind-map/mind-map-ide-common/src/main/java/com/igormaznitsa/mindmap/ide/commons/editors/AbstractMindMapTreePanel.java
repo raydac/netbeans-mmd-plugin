@@ -24,15 +24,18 @@ import java.awt.event.MouseEvent;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.function.BiFunction;
 import javax.swing.Box;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.SwingConstants;
 import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
@@ -61,7 +64,7 @@ public class AbstractMindMapTreePanel implements HasPreferredFocusComponent {
     this.resourceBundle = MmcI18n.getInstance().findBundle();
     initComponents();
 
-    this.treeMindMap.setCellRenderer(new MindMapTreeCellRenderer(this));
+    this.treeMindMap.setCellRenderer(this.makeTreeCellRenderer(this::prepareTreeCellRender));
     this.treeMindMap.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
     if (map != null) {
       this.sortedModel = new SortedTreeModelWrapper(map,
@@ -205,6 +208,48 @@ public class AbstractMindMapTreePanel implements HasPreferredFocusComponent {
     }
   }
 
+  protected TreeCellRenderer makeTreeCellRenderer(
+      BiFunction<Object, Component, Component> cellRenderFunction) {
+    return new DefaultTreeCellRenderer() {
+      @Override
+      public Component getTreeCellRendererComponent(
+          final JTree tree,
+          final Object value,
+          final boolean selected,
+          final boolean expanded,
+          final boolean leaf,
+          final int row,
+          final boolean hasFocus) {
+        return cellRenderFunction.apply(value,
+            super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus));
+      }
+    };
+  }
+
+  protected Component prepareTreeCellRender(final Object value, final Component component) {
+    final JLabel result = (JLabel) component;
+    if (value instanceof Topic) {
+      result.setIcon(getIconForTopic((Topic) value));
+      result.setText(this.extractTextFromTopic((Topic) value));
+    }
+    return result;
+  }
+
+  protected Icon getIconForTopic(final Topic topic) {
+    switch (topic.getTopicLevel()) {
+      case 0:
+        return this.getIcon(IconId.TREE_DOCUMENT);
+      case 1:
+        return this.getIcon(IconId.BALL_BLUE);
+      default:
+        return this.getIcon(IconId.BALL_GOLD);
+    }
+  }
+
+  protected String extractTextFromTopic(final Topic topic) {
+    return Utils.makeShortTextVersion(Utils.getFirstLine(topic.getText()), 20);
+  }
+
   public enum IconId {
     TREE_DOCUMENT,
     BALL_BLUE,
@@ -214,47 +259,4 @@ public class AbstractMindMapTreePanel implements HasPreferredFocusComponent {
     BUTTON_SELECT_NONE
   }
 
-  private static final class MindMapTreeCellRenderer extends DefaultTreeCellRenderer {
-
-    private final AbstractMindMapTreePanel parent;
-
-    MindMapTreeCellRenderer(final AbstractMindMapTreePanel parent) {
-      this.parent = parent;
-    }
-
-    @Override
-    public Component getTreeCellRendererComponent(
-        final JTree tree,
-        final Object value,
-        final boolean sel,
-        final boolean expanded,
-        final boolean leaf,
-        final int row,
-        final boolean hasFocus
-    ) {
-      final DefaultTreeCellRenderer result =
-          (DefaultTreeCellRenderer) super.getTreeCellRendererComponent(tree, value, sel, expanded,
-              leaf, row, hasFocus);
-      if (value instanceof Topic) {
-        result.setIcon(getIconForTopic((Topic) value));
-        result.setText(extractTextFromTopic((Topic) value));
-      }
-      return result;
-    }
-
-    private Icon getIconForTopic(final Topic topic) {
-      switch (topic.getTopicLevel()) {
-        case 0:
-          return this.parent.getIcon(IconId.TREE_DOCUMENT);
-        case 1:
-          return this.parent.getIcon(IconId.BALL_BLUE);
-        default:
-          return this.parent.getIcon(IconId.BALL_GOLD);
-      }
-    }
-
-    private String extractTextFromTopic(final Topic topic) {
-      return Utils.makeShortTextVersion(Utils.getFirstLine(topic.getText()), 20);
-    }
-  }
 }
