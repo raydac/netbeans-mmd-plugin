@@ -970,9 +970,11 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
   }
 
   public void refreshConfiguration() {
-    this.mindMapPanel.refreshConfiguration();
-    this.mindMapPanel.doLayout();
-    this.mindMapPanel.repaint();
+    if (!this.mindMapPanel.isDisposed()) {
+      this.mindMapPanel.refreshConfiguration();
+      this.mindMapPanel.doLayout();
+      this.mindMapPanel.repaint();
+    }
   }
 
   @Override
