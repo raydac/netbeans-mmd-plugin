@@ -1467,7 +1467,7 @@ public final class MMDGraphEditor extends CloneableEditor
           new MindMapTreePanel(UIComponentFactoryProvider.findInstance(), this.mindMapPanel.getModel(), null, true, null);
       if (NbUtils.plainMessageOkCancel(null,
           BUNDLE.getString("MMDGraphEditor.editTopicLinkForTopic.dlgSelectTopicTitle"),
-          treePanel.getTree())) {
+          treePanel.getPanel())) {
         final Topic selected = treePanel.getSelectedTopic();
         treePanel.dispose();
         if (selected != null) {
