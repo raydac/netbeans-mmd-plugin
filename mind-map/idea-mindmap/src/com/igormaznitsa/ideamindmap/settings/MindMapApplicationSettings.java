@@ -30,7 +30,6 @@ import com.intellij.util.xmlb.Converter;
 import com.intellij.util.xmlb.annotations.Transient;
 import java.io.File;
 import java.util.Base64;
-import java.util.Objects;
 import javax.annotation.Nonnull;
 import com.intellij.util.xmlb.annotations.Attribute;
 

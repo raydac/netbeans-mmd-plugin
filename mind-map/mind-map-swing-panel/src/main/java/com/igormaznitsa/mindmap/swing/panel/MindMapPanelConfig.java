@@ -34,17 +34,17 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import java.util.stream.Stream;
@@ -80,7 +80,7 @@ public final class MindMapPanelConfig implements Serializable {
   public static final String PREFIX_SHORTCUT = "mapShortCut.";
   private static final long serialVersionUID = -4263687011484460064L;
   private transient final List<WeakReference<MindMapConfigListener>> listeners =
-      new ArrayList<>();
+      new CopyOnWriteArrayList<>();
   private final Serializable NULL_OPTIONAL_OBJECT = "some_null_object";
   private Map<String, KeyShortcut> mapShortCut;
   private Map<String, Serializable> optionalProperties;
@@ -562,7 +562,7 @@ public final class MindMapPanelConfig implements Serializable {
       runnable.run();
     } finally {
       this.notificationEnabled = true;
-      notifyCfgListenersAboutChange();
+      this.notifyCfgListenersAboutChange();
     }
   }
 
@@ -595,12 +595,7 @@ public final class MindMapPanelConfig implements Serializable {
         if (f.getName().equals("listeners")) {
           if (copyListeners) {
             this.listeners.clear();
-            for (final WeakReference<MindMapConfigListener> weakContainer : src.listeners) {
-              final MindMapConfigListener theListener = weakContainer.get();
-              if (theListener != null) {
-                this.listeners.add(new WeakReference<>(theListener));
-              }
-            }
+            this.listeners.addAll(src.listeners);
           }
         } else if ((f.getModifiers() & (Modifier.STATIC | Modifier.FINAL)) == 0 &&
             f.getType() != Map.class) {
@@ -629,14 +624,10 @@ public final class MindMapPanelConfig implements Serializable {
   }
 
   public void removeConfigurationListener(final MindMapConfigListener l) {
-    final Iterator<WeakReference<MindMapConfigListener>> iter = this.listeners.iterator();
-    while (iter.hasNext()) {
-      final WeakReference<MindMapConfigListener> wr = iter.next();
-      final MindMapConfigListener c = wr.get();
-      if (c == null || c == l) {
-        iter.remove();
-      }
-    }
+    this.listeners.removeIf(x -> {
+      final MindMapConfigListener listener = x.get();
+      return listener == null || listener.equals(l);
+    });
   }
 
   public boolean isShortcutConflict(final KeyStroke keyStroke) {
@@ -654,13 +645,11 @@ public final class MindMapPanelConfig implements Serializable {
 
   private void notifyCfgListenersAboutChange() {
     if (this.notificationEnabled) {
-      for (final WeakReference<MindMapConfigListener> l : this.listeners) {
-        final MindMapConfigListener c = l.get();
-        if (c != null) {
-          c.onConfigurationPropertyChanged(this);
-        }
-      }
+      this.listeners.stream().map(Reference::get)
+          .filter(Objects::nonNull)
+          .forEach(x -> x.onConfigurationPropertyChanged(this));
     }
+    this.listeners.removeIf(x -> x.get() == null);
   }
 
   public byte[] serialize() throws IOException {

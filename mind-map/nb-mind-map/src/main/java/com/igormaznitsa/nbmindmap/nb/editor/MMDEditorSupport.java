@@ -21,10 +21,12 @@ import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 import javax.annotation.Nullable;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -44,11 +46,13 @@ import org.openide.text.CloneableEditor;
 import org.openide.text.DataEditorSupport;
 import org.openide.windows.CloneableTopComponent;
 
-public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, EditCookie, EditorCookie, EditorCookie.Observable, ChangeListener, Serializable {
+public class MMDEditorSupport extends DataEditorSupport
+    implements OpenCookie, EditCookie, EditorCookie, EditorCookie.Observable, ChangeListener,
+    Serializable {
 
   private static final long serialVersionUID = 3419821892803816299L;
 
-  private final List<WeakReference<MMDGraphEditor>> listeners = new ArrayList<WeakReference<MMDGraphEditor>>();
+  private final List<WeakReference<MMDGraphEditor>> listeners = new CopyOnWriteArrayList<>();
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MMDEditorSupport.class);
 
@@ -87,7 +91,7 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
   @Override
   protected CloneableEditor createCloneableEditor() {
     final MMDGraphEditor editor = new MMDGraphEditor(this);
-    this.listeners.add(new WeakReference<MMDGraphEditor>(editor));
+    this.listeners.add(new WeakReference<>(editor));
     return editor;
   }
 
@@ -162,12 +166,11 @@ public class MMDEditorSupport extends DataEditorSupport implements OpenCookie, E
 
   @Override
   public void stateChanged(final ChangeEvent e) {
-    for (final WeakReference<MMDGraphEditor> g : this.listeners) {
-      final MMDGraphEditor ge = g.get();
-      if (ge != null) {
-        ge.updateView();
-      }
-    }
+    this.listeners.stream()
+        .map(Reference::get)
+        .filter(Objects::nonNull)
+        .forEach(MMDGraphEditor::updateView);
+    this.listeners.removeIf(x -> x.get() == null);
   }
 
   public void focusToPosition(final boolean enforceVisibilityOfTopic, final int[] positionPath) {

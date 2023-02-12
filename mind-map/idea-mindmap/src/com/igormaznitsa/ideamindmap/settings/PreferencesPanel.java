@@ -97,7 +97,9 @@ public class PreferencesPanel extends AbstractPreferencesPanel {
     }
 
     private void resetToDefault() {
+        final MindMapPanelConfig last = this.lastLoadedConfig;
         this.load(new MindMapPanelConfig());
+        this.lastLoadedConfig = last;
     }
     
     @Override

@@ -76,7 +76,7 @@ public class MindMapSettingsComponent extends ConfigurableProvider implements Co
   @Nullable
   @Override
   public Configurable createConfigurable() {
-    return getInstance();
+    return this.getInstance();
   }
 
   @Nonnull
