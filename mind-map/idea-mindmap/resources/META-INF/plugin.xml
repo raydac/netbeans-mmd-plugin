@@ -12,13 +12,13 @@
     ]]></description>
 
     <change-notes><![CDATA[
-        <p>1.6.2 (SNAPSHOT)</p>
+        <p>1.6.2 (12-feb-2023)</p>
         <ul>
           <li>rework of topic attribute edit dialogs</li>
           <li>reworked settings panel</li>
           <li>added fast bird's eye navigation</li>
           <li>improved PlantUML mind map export</li>
-          <li>bugfix</li>
+          <li>bugfix and refactoring</li>
         </ul>
         <p>1.6.1 (15-jan-2023)</p>
         <ul>
