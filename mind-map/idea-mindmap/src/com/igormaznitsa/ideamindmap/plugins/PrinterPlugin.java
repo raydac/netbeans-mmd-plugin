@@ -44,7 +44,7 @@ public class PrinterPlugin extends AbstractPopupMenuItem {
     final JMenuItem printAction = UI_COMPO_FACTORY.makeMenuItem(BUNDLE.getString("MMDGraphEditor.makePopUp.miPrintPreview"), AllIcons.PopUp.PRINTER);
     final Project project = (Project) assertNotNull(context.getPanel().getClientProperty("mmd.editor.project"));
     printAction.addActionListener(e -> {
-      final MMDPrintPanel panel = new MMDPrintPanel(context.getDialogProvider(), new IdeaMMDPrintPanelAdaptor(project), PrintableObject.newBuild().mmdpanel(context.getPanel()).build());
+      final MMDPrintPanel panel = new MMDPrintPanel(UI_COMPO_FACTORY, context.getDialogProvider(), new IdeaMMDPrintPanelAdaptor(project), PrintableObject.newBuild().mmdpanel(context.getPanel()).build());
       IdeaUtils.plainMessageClose(project, "Print mind map", panel);
     });
     return printAction;

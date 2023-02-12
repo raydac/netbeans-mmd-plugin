@@ -26,6 +26,8 @@ import com.igormaznitsa.mindmap.print.MMDPrintPanel;
 import com.igormaznitsa.mindmap.print.PrintableObject;
 import com.igormaznitsa.mindmap.swing.panel.utils.ImageSelection;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.preferences.AdditionalPreferences;
@@ -346,7 +348,9 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
       buttonPrintImage.addActionListener((@Nonnull final ActionEvent e) -> {
         SciaRetoStarter.getApplicationFrame().endFullScreenIfActive();
         final MMDPrintPanel printPanel =
-            new MMDPrintPanel(DialogProviderManager.getInstance().getDialogProvider(), null,
+            new MMDPrintPanel(
+                UIComponentFactoryProvider.findInstance(),
+                DialogProviderManager.getInstance().getDialogProvider(), null,
                 PrintableObject.newBuild().image(imageComponent.getImage()).build());
         UiUtils.makeOwningDialogResizable(printPanel);
         JOptionPane.showMessageDialog(mainPanel, printPanel,

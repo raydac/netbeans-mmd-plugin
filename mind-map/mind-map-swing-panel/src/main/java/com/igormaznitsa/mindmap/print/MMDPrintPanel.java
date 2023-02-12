@@ -30,6 +30,9 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.Stroke;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -42,6 +45,7 @@ import java.awt.print.PrinterJob;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -50,6 +54,7 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JToolBar;
 
 public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent {
@@ -61,7 +66,6 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
   private static final Icon ICO_OPTIONS = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_OPTIONS);
   private static final long serialVersionUID = -2588424836865316862L;
   private static final Logger LOGGER = LoggerFactory.getLogger(MMDPrintPanel.class);
-  private static final UIComponentFactory UI_COMPO_FACTORY = UIComponentFactoryProvider.findInstance();
   private final Pages previewContainer;
   private final JComponent preferredFocusedComponent;
   private final PrintableObject printableObject;
@@ -78,15 +82,19 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
 
   private final ResourceBundle resourceBundle = MmdI18n.getInstance().findBundle();
 
-  public MMDPrintPanel(final DialogProvider dialogProvider, final Adaptor adaptor,
-                       final PrintableObject printableObject) {
+  public MMDPrintPanel(
+      final UIComponentFactory uiComponentFactory,
+      final DialogProvider dialogProvider,
+      final Adaptor adaptor,
+      final PrintableObject printableObject
+  ) {
     super(new BorderLayout());
     this.dialogProvider = dialogProvider;
 
     this.theAdaptor = adaptor == null ? new DefaultMMDPrintPanelAdaptor() : adaptor;
     this.printableObject = printableObject;
 
-    final JScrollPane scrollPane = UI_COMPO_FACTORY.makeScrollPane();
+    final JScrollPane scrollPane = uiComponentFactory.makeScrollPane();
     scrollPane.getHorizontalScrollBar().setBlockIncrement(SCROLL_BLOCK);
     scrollPane.getHorizontalScrollBar().setUnitIncrement(SCROLL_UNIT);
     scrollPane.getVerticalScrollBar().setBlockIncrement(SCROLL_BLOCK);
@@ -95,11 +103,16 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
     final PrinterJob printerJob = PrinterJob.getPrinterJob();
     printerJob.setJobName("Mind map print job");
 
-    final JToolBar toolBar = UI_COMPO_FACTORY.makeToolBar();
-    toolBar.setOrientation(JToolBar.HORIZONTAL);
-    toolBar.setFloatable(false);
+    final JPanel toolBar = uiComponentFactory.makePanel();
+    toolBar.setLayout(new GridBagLayout());
+    final GridBagConstraints toolBarConstraints = new GridBagConstraints();
+    toolBarConstraints.weightx = 1;
+    toolBarConstraints.weighty = 1;
+    toolBarConstraints.gridy = 0;
+    toolBarConstraints.fill= GridBagConstraints.BOTH;
+    toolBarConstraints.insets = new Insets(3,3,3,3);
 
-    final JButton buttonPrint = UI_COMPO_FACTORY.makeButton();
+    final JButton buttonPrint = uiComponentFactory.makeButton();
     buttonPrint.setText(this.resourceBundle.getString("MMDPrintPanel.PrintPages"));
     buttonPrint.setIcon(ICO_PRINTER);
 
@@ -119,8 +132,8 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
 
           @Override
           public PageFormat getPageFormat(final int pageIndex) throws IndexOutOfBoundsException {
-            final PrintPage thepage = findPageForIndex(pageIndex);
-            if (thepage == null) {
+            final PrintPage printPage = findPageForIndex(pageIndex);
+            if (printPage == null) {
               throw new IndexOutOfBoundsException();
             }
             return format;
@@ -168,9 +181,9 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
         }
       }
     });
-    toolBar.add(buttonPrint);
+    toolBar.add(buttonPrint, toolBarConstraints);
 
-    final JButton buttonPageSetup = UI_COMPO_FACTORY.makeButton();
+    final JButton buttonPageSetup = uiComponentFactory.makeButton();
     buttonPageSetup.setText(this.resourceBundle.getString("MMDPrintPanel.PageSetup"));
     buttonPageSetup.setIcon(ICO_PAGE);
     buttonPageSetup.addActionListener(e -> {
@@ -180,9 +193,9 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
       scrollPane.getViewport().revalidate();
       scrollPane.repaint();
     });
-    toolBar.add(buttonPageSetup);
+    toolBar.add(buttonPageSetup, toolBarConstraints);
 
-    final JButton buttonPrintOptions = UI_COMPO_FACTORY.makeButton();
+    final JButton buttonPrintOptions = uiComponentFactory.makeButton();
     buttonPrintOptions.setText(this.resourceBundle.getString("MMDPrintPanel.PrintOptions"));
     buttonPrintOptions.setIcon(ICO_OPTIONS);
     buttonPrintOptions.addActionListener(e -> {
@@ -197,7 +210,7 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
         scrollPane.repaint();
       }
     });
-    toolBar.add(buttonPrintOptions);
+    toolBar.add(buttonPrintOptions, toolBarConstraints);
 
     final List<String> scalesList = new ArrayList<>();
     scalesList.add("10 %");
@@ -206,7 +219,7 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
     }
 
     final String[] scales = scalesList.toArray(new String[0]);
-    final JComboBox<String> comboBoxScale = UI_COMPO_FACTORY.makeComboBox(String.class);
+    final JComboBox<String> comboBoxScale = uiComponentFactory.makeComboBox(String.class);
     comboBoxScale.setModel(new DefaultComboBoxModel<>(scales));
     comboBoxScale.setSelectedItem("100 %");
     this.pageZoomFactor = 1.0d;
@@ -222,18 +235,25 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
       scrollPane.repaint();
     });
     comboBoxScale.setMaximumSize(comboBoxScale.getPreferredSize());
-    toolBar.addSeparator();
+
+    JSeparator separator = uiComponentFactory.makeMenuSeparator();
+    separator.setOrientation(JSeparator.VERTICAL);
+
+    toolBar.add(separator, toolBarConstraints);
     toolBar.add(comboBoxScale);
 
-    toolBar.addSeparator();
+    separator = uiComponentFactory.makeMenuSeparator();
+    separator.setOrientation(JSeparator.VERTICAL);
 
-    this.checkBoxDrawBorder = UI_COMPO_FACTORY.makeCheckBox();
+    toolBar.add(separator, toolBarConstraints);
+
+    this.checkBoxDrawBorder = uiComponentFactory.makeCheckBox();
     this.checkBoxDrawBorder.setSelected(true);
     this.checkBoxDrawBorder.setText(this.resourceBundle.getString("MMDPrintPanel.DrawBorder"));
     this.checkBoxDrawBorder.addActionListener(e -> scrollPane.repaint());
-    toolBar.add(this.checkBoxDrawBorder);
+    toolBar.add(this.checkBoxDrawBorder, toolBarConstraints);
 
-    this.checkBoxDrawAsImage = UI_COMPO_FACTORY.makeCheckBox();
+    this.checkBoxDrawAsImage = uiComponentFactory.makeCheckBox();
     this.checkBoxDrawAsImage.setSelected(this.options.isDrawAsImage() || printableObject.isImage());
     this.checkBoxDrawAsImage.setEnabled(!printableObject.isImage());
     this.checkBoxDrawAsImage.setText(this.resourceBundle.getString("MMDPrintPanel.DrawAsImage"));
@@ -244,7 +264,10 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
       scrollPane.getViewport().revalidate();
       scrollPane.repaint();
     });
-    toolBar.add(this.checkBoxDrawAsImage);
+    toolBar.add(this.checkBoxDrawAsImage, toolBarConstraints);
+
+    toolBarConstraints.weightx = 1000;
+    toolBar.add(Box.createHorizontalGlue(), toolBarConstraints);
 
     this.add(toolBar, BorderLayout.NORTH);
 
@@ -257,8 +280,8 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
 
     this.add(scrollPane, BorderLayout.CENTER);
 
-    doLayout();
-    super.setPreferredSize(this.theAdaptor.getPreferredSizeOfPanel(this));
+    this.doLayout();
+    super.setPreferredSize(this.theAdaptor.getPreferredSizeOfPanel(toolBar, this));
   }
 
   @Override
@@ -326,6 +349,8 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
 
     void onPrintTaskStarted(MMDPrintPanel source);
 
-    Dimension getPreferredSizeOfPanel(MMDPrintPanel source);
+    default Dimension getPreferredSizeOfPanel(JPanel toolbarPanel, MMDPrintPanel source) {
+      return new Dimension(toolbarPanel.getPreferredSize().width + 16, 450);
+    }
   }
 }

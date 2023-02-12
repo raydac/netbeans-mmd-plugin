@@ -74,7 +74,7 @@ public final class ColorSelectButton {
     button.setModel(new DefaultButtonModel() {
       @Override
       protected void fireActionPerformed(ActionEvent e) {
-        final ColorChooser colorChooser = new ColorChooser(usedColors, value);
+        final ColorChooser colorChooser = new ColorChooser(componentFactory, usedColors, value);
 
         if (dialogProvider.msgOkCancel(dialogComponent,
             String.format(

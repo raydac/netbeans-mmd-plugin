@@ -25,7 +25,6 @@ import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.MessageType;
-import java.awt.Dimension;
 import java.awt.Window;
 import javax.annotation.Nonnull;
 import javax.swing.SwingUtilities;
@@ -73,12 +72,6 @@ public class IdeaMMDPrintPanelAdaptor implements MMDPrintPanel.Adaptor {
         wnd.dispose();
       }
     });
-  }
-
-  @Override
-  @Nonnull
-  public Dimension getPreferredSizeOfPanel(@Nonnull final MMDPrintPanel mmdPrintPanel) {
-    return new Dimension(600, 450);
   }
 
 }

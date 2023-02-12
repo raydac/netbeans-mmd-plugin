@@ -55,6 +55,7 @@ public class PrinterPlugin extends AbstractPopupMenuItem implements MMDPrintPane
           SciaRetoStarter.getApplicationFrame().endFullScreenIfActive();
           final MMDPrintPanel panel =
               new MMDPrintPanel(
+                  UI_COMPO_FACTORY,
                   context.getDialogProvider(),
                   adaptor,
                   PrintableObject.newBuild().mmdpanel(context.getPanel()).build());
@@ -117,9 +118,4 @@ public class PrinterPlugin extends AbstractPopupMenuItem implements MMDPrintPane
     });
   }
 
-  @Override
-  @Nonnull
-  public Dimension getPreferredSizeOfPanel(@Nonnull final MMDPrintPanel source) {
-    return new Dimension(600, 450);
-  }
 }

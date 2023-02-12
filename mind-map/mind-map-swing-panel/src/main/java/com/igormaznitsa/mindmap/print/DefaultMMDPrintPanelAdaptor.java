@@ -42,8 +42,4 @@ public class DefaultMMDPrintPanelAdaptor implements MMDPrintPanel.Adaptor {
   public void onPrintTaskStarted(final MMDPrintPanel source) {
   }
 
-  @Override
-  public Dimension getPreferredSizeOfPanel(final MMDPrintPanel source) {
-    return new Dimension(600, 450);
-  }
 }

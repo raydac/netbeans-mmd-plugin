@@ -21,6 +21,8 @@ package com.igormaznitsa.sciareto.ui.editors;
 import com.igormaznitsa.mindmap.print.MMDPrintPanel;
 import com.igormaznitsa.mindmap.print.PrintableObject;
 import com.igormaznitsa.mindmap.swing.panel.utils.ImageSelection;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
+import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
@@ -119,7 +121,7 @@ public final class PictureViewer extends AbstractEditor {
     buttonPrintImage.addActionListener(e -> {
       SciaRetoStarter.getApplicationFrame().endFullScreenIfActive();
       final MMDPrintPanel printPanel =
-          new MMDPrintPanel(DialogProviderManager.getInstance().getDialogProvider(), null,
+          new MMDPrintPanel(UIComponentFactoryProvider.findInstance(), DialogProviderManager.getInstance().getDialogProvider(), null,
               PrintableObject.newBuild().image(imageViewer.getImage()).build());
       UiUtils.makeOwningDialogResizable(printPanel);
       JOptionPane

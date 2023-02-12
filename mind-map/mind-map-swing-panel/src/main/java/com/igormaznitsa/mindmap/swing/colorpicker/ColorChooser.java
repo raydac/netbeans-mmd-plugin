@@ -59,11 +59,11 @@ public final class ColorChooser {
   private final ResourceBundle resourceBundle = MmdI18n.getInstance().findBundle();
 
   public ColorChooser(
+      final UIComponentFactory uiComponentFactory,
       final List<Color> mapColors,
       final Color selectedColor
   ) {
-    final UIComponentFactory componentFactory = UIComponentFactoryProvider.findInstance();
-    this.panel = componentFactory.makePanel();
+    this.panel = uiComponentFactory.makePanel();
     this.panel.setLayout(new GridBagLayout());
 
     final String SAMPLE_TEXT = "    TEXT    ";
@@ -75,7 +75,7 @@ public final class ColorChooser {
     data.fill = GridBagConstraints.BOTH;
     data.insets.set(4, 4, 4, 4);
 
-    this.sampleDarkFill = componentFactory.makeLabel();
+    this.sampleDarkFill = uiComponentFactory.makeLabel();
     final Font font = this.sampleDarkFill.getFont().deriveFont(Font.BOLD, this.sampleDarkFill.getFont().getSize() * 2);
     this.sampleDarkFill.setFont(font);
 
@@ -85,7 +85,7 @@ public final class ColorChooser {
     this.sampleDarkFill.setHorizontalAlignment(JLabel.CENTER);
     this.sampleDarkFill.setBackground(Color.WHITE);
 
-    this.sampleDarkText = componentFactory.makeLabel();
+    this.sampleDarkText = uiComponentFactory.makeLabel();
     this.sampleDarkText.setText(SAMPLE_TEXT);
     this.sampleDarkText.setOpaque(true);
     this.sampleDarkText.setForeground(Color.BLACK);
@@ -93,7 +93,7 @@ public final class ColorChooser {
     this.sampleDarkText.setBackground(Color.WHITE);
     this.sampleDarkText.setFont(font);
 
-    this.sampleLightFill = componentFactory.makeLabel();
+    this.sampleLightFill = uiComponentFactory.makeLabel();
     this.sampleLightFill.setText(SAMPLE_TEXT);
     this.sampleLightFill.setOpaque(true);
     this.sampleLightFill.setForeground(Color.WHITE);
@@ -101,7 +101,7 @@ public final class ColorChooser {
     this.sampleLightFill.setBackground(Color.BLACK);
     this.sampleLightFill.setFont(font);
 
-    this.sampleLightText = componentFactory.makeLabel();
+    this.sampleLightText = uiComponentFactory.makeLabel();
     this.sampleLightText.setText(SAMPLE_TEXT);
     this.sampleLightText.setOpaque(true);
     this.sampleLightText.setForeground(Color.WHITE);
@@ -110,15 +110,15 @@ public final class ColorChooser {
     this.sampleLightText.setFont(font);
 
     this.colorPicker =
-        new ColorPickerPanel(componentFactory.makePanel(), PALETTE_ROWS, 12, 4, 4, PALETTE);
-    this.presentedColors = new ColorPickerPanel(componentFactory.makePanel(), 2, 12, 4, 4,
+        new ColorPickerPanel(uiComponentFactory.makePanel(), PALETTE_ROWS, 12, 4, 4, PALETTE);
+    this.presentedColors = new ColorPickerPanel(uiComponentFactory.makePanel(), 2, 12, 4, 4,
         mapColors == null ? Collections.emptyList() : mapColors);
 
     this.panel.add(this.colorPicker.getPanel(), data);
 
     data.gridy = 1;
 
-    final JPanel samplePanel = componentFactory.makePanel();
+    final JPanel samplePanel = uiComponentFactory.makePanel();
 
     samplePanel.setLayout(new GridLayout(2, 2));
     samplePanel.setBorder(BorderFactory.createTitledBorder(this.resourceBundle.getString("ColorChooser.Text.Example")));
