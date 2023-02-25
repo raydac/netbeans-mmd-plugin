@@ -40,15 +40,15 @@ public class UriEditPanel extends AbstractUriEditPanel {
   public Icon findIcon(final IconId id) {
     switch (id) {
       case BROWSE_LINK:
-        new ImageIcon(ImageUtilities.loadImage("/com/igormaznitsa/nbmindmap/icons/url_link.png"));
+        return new ImageIcon(ImageUtilities.loadImage("/com/igormaznitsa/nbmindmap/icons/url_link.png"));
       case INDICATOR_URI_OK:
-        new ImageIcon(ImageUtilities.loadImage("com/igormaznitsa/nbmindmap/icons/tick16.png"));
+        return new ImageIcon(ImageUtilities.loadImage("/com/igormaznitsa/nbmindmap/icons/tick16.png"));
       case INDICATOR_URI_BAD:
-        new ImageIcon(ImageUtilities.loadImage("com/igormaznitsa/nbmindmap/icons/cancel16.png"));
+        return new ImageIcon(ImageUtilities.loadImage("/com/igormaznitsa/nbmindmap/icons/cancel16.png"));
       case INDICATOR_URI_UNKNOWN:
-        new ImageIcon(ImageUtilities.loadImage("com/igormaznitsa/nbmindmap/icons/question16.png"));
+        return new ImageIcon(ImageUtilities.loadImage("/com/igormaznitsa/nbmindmap/icons/question16.png"));
       case BUTTON_RESET:
-        new ImageIcon(ImageUtilities.loadImage("/com/igormaznitsa/nbmindmap/icons/cross16.png"));
+        return new ImageIcon(ImageUtilities.loadImage("/com/igormaznitsa/nbmindmap/icons/cross16.png"));
       default:
         return null;
     }

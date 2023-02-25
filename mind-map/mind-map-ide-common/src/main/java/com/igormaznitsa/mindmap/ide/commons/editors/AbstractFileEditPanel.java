@@ -154,7 +154,7 @@ public abstract class AbstractFileEditPanel implements HasPreferredFocusComponen
     final File theFile = new File(this.textFieldFilePath.getText().trim());
     final File parent = theFile.getParentFile();
 
-    final File file = this.dialogProvider.msgOpenFileDialog(this.panel, null, null,
+    final File file = this.dialogProvider.msgOpenFileDialog(this.panel, null, this.getClass().getName(),
         this.resourceBundle.getString("FileEditPanel.fileChooser.title"),
         this.projectFolder, false, new FileFilter[0],
         this.resourceBundle.getString("FileEditPanel.fileChooser.approve"));

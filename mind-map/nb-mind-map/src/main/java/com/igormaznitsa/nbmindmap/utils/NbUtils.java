@@ -37,7 +37,6 @@ import com.igormaznitsa.nbmindmap.nb.swing.UriEditPanel;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Desktop;
-import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.event.ActionEvent;
@@ -347,7 +346,8 @@ public final class NbUtils {
             uri == null ? null : uri.asString(false, false), false);
 
     final NotifyDescriptor desc =
-        new NotifyDescriptor.Confirmation(textEditor.getPanel(), title, NotifyDescriptor.OK_CANCEL_OPTION,
+        new NotifyDescriptor.Confirmation(textEditor.getPanel(), title,
+            NotifyDescriptor.OK_CANCEL_OPTION,
             NotifyDescriptor.PLAIN_MESSAGE);
     if (DialogDisplayer.getDefault().notify(desc) == NotifyDescriptor.OK_OPTION) {
       final String text = textEditor.getText();
@@ -379,7 +379,8 @@ public final class NbUtils {
         projectFolder, data);
 
     final NotifyDescriptor desc =
-        new NotifyDescriptor.Confirmation(filePathEditor, title, NotifyDescriptor.OK_CANCEL_OPTION,
+        new NotifyDescriptor.Confirmation(filePathEditor.getPanel(), title,
+            NotifyDescriptor.OK_CANCEL_OPTION,
             NotifyDescriptor.PLAIN_MESSAGE);
     FileEditPanel.DataContainer result = null;
     if (DialogDisplayer.getDefault().notify(desc) == NotifyDescriptor.OK_OPTION) {
