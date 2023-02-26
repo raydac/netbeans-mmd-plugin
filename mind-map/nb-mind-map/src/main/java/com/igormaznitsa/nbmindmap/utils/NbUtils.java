@@ -413,40 +413,29 @@ public final class NbUtils {
 
   public static void openInSystemViewer(@Nullable final Component parentComponent,
                                         @Nonnull final File file) {
-    final Runnable startEdit = new Runnable() {
-      @Override
-      public void run() {
-        boolean ok = false;
-        if (Desktop.isDesktopSupported()) {
-          final Desktop dsk = Desktop.getDesktop();
-          if (dsk.isSupported(Desktop.Action.OPEN)) {
-            try {
-              dsk.open(file);
-              ok = true;
-            } catch (Throwable ex) {
-              LOGGER.error("Can't open file in system viewer : " + file, ex);//NOI18N
-            }
+    final Runnable startEdit = () -> {
+      boolean ok = false;
+      if (Desktop.isDesktopSupported()) {
+        final Desktop dsk = Desktop.getDesktop();
+        if (dsk.isSupported(Desktop.Action.OPEN)) {
+          try {
+            dsk.open(file);
+            ok = true;
+          } catch (Throwable ex) {
+            LOGGER.error("Can't open file in system viewer : " + file, ex);//NOI18N
           }
         }
-        if (!ok) {
-          SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-              NbUtils.msgError(parentComponent,
-                  "Can't open file in system viewer! See the log!");//NOI18N
-              Toolkit.getDefaultToolkit().beep();
-            }
-          });
-        }
+      }
+      if (!ok) {
+        SwingUtilities.invokeLater(() -> {
+          NbUtils.msgError(parentComponent,
+              "Can't open file in system viewer! See the log!");//NOI18N
+          Toolkit.getDefaultToolkit().beep();
+        });
       }
     };
     final Thread thr = new Thread(startEdit, " MMDStartFileEdit");//NOI18N
-    thr.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-      @Override
-      public void uncaughtException(final Thread t, final Throwable e) {
-        LOGGER.error("Detected uncaught exception in openInSystemViewer() for file " + file, e);
-      }
-    });
+    thr.setUncaughtExceptionHandler((t, e) -> LOGGER.error("Detected uncaught exception in openInSystemViewer() for file " + file, e));
 
     thr.setDaemon(true);
     thr.start();

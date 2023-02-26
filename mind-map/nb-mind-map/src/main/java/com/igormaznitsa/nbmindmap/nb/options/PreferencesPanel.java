@@ -38,6 +38,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.SwingUtilities;
 
 public class PreferencesPanel extends AbstractPreferencesPanel implements AdditionalPreferences {
 
@@ -121,12 +122,12 @@ public class PreferencesPanel extends AbstractPreferencesPanel implements Additi
     final List<ButtonInfo> list = new ArrayList<>();
 
     list.add(ButtonInfo.from(this.loadImage("info16.png"), bundle.getString("MMDCfgPanel.buttonAbout.Text"), e -> this.doShowAbout()));
-    list.add(ButtonInfo.from(null, null, null, e -> this.doShowAbout(), DonateButton::new));
+    list.add(ButtonInfo.from(null, null, null, null, DonateButton::new));
     list.add(ButtonInfo.splitter());
     list.add(ButtonInfo.from(this.loadImage("document_export16.png"), bundle.getString("MMDCfgPanel.buttonExport.Text"),
-        e -> this.exportAsFileDialog(this::getPanel)));
+        e -> this.exportAsFileDialog(() -> SwingUtilities.getWindowAncestor(this.getPanel()))));
     list.add(ButtonInfo.from(this.loadImage("document_import16.png"), bundle.getString("MMDCfgPanel.buttonImport.Text"),
-        e -> this.importFromFileDialog(this::getPanel)));
+        e -> this.importFromFileDialog(() -> SwingUtilities.getWindowAncestor(this.getPanel()))));
     list.add(ButtonInfo.splitter());
     list.add(ButtonInfo.from(this.loadImage("stop16.png"), bundle.getString("MMDCfgPanel.buttonReset.Text"),
         e -> this.fillByDefault()));
