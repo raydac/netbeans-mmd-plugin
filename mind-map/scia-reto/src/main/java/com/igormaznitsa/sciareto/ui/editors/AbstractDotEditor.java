@@ -35,10 +35,10 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
-import net.sourceforge.plantuml.cucadiagram.dot.ExeState;
-import net.sourceforge.plantuml.cucadiagram.dot.Graphviz;
-import net.sourceforge.plantuml.cucadiagram.dot.GraphvizUtils;
-import net.sourceforge.plantuml.cucadiagram.dot.ProcessState;
+import net.sourceforge.plantuml.dot.ExeState;
+import net.sourceforge.plantuml.dot.Graphviz;
+import net.sourceforge.plantuml.dot.GraphvizUtils;
+import net.sourceforge.plantuml.dot.ProcessState;
 
 public abstract class AbstractDotEditor extends AbstractPlUmlEditor {
 

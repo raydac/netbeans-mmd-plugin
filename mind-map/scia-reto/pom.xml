@@ -707,6 +707,7 @@
                         <exclude>**/ASSEMBLY_EXCEPTION</exclude>
                         <exclude>**/ADDITIONAL_LICENSE_INFO</exclude>
                         <exclude>**/LICENSE</exclude>
+                        <exclude>**/cldr.md</exclude>
                       </excludes>
                     </resource>
                     <resource>

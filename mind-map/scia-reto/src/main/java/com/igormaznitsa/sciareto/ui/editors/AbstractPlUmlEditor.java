@@ -110,7 +110,7 @@ import net.sourceforge.plantuml.OptionFlags;
 import net.sourceforge.plantuml.SourceStringReader;
 import net.sourceforge.plantuml.core.Diagram;
 import net.sourceforge.plantuml.core.DiagramDescription;
-import net.sourceforge.plantuml.cucadiagram.dot.GraphvizUtils;
+import net.sourceforge.plantuml.dot.GraphvizUtils;
 import net.sourceforge.plantuml.error.PSystemError;
 import org.apache.commons.io.FileUtils;
 import org.fife.ui.autocomplete.AutoCompletion;
