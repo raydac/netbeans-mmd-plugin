@@ -79,14 +79,6 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="menuOpenFileActionPerformed"/>
               </Events>
             </MenuItem>
-            <Menu class="javax.swing.JMenu" name="menuOpenRecentFile">
-              <Properties>
-                <Property name="mnemonic" type="int" value="102"/>
-                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemFile.itemOpenRecentFile" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
-                </Property>
-              </Properties>
-            </Menu>
             <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator3">
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="menuSave">
@@ -131,6 +123,30 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="menuSaveAllActionPerformed"/>
               </Events>
             </MenuItem>
+            <Menu class="javax.swing.JMenu" name="menuOpenRecentFile">
+              <Properties>
+                <Property name="mnemonic" type="int" value="102"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemFile.itemOpenRecentFile" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
+                </Property>
+              </Properties>
+            </Menu>
+            <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator9">
+            </MenuItem>
+            <Menu class="javax.swing.JMenu" name="menuFileExportAs">
+              <Properties>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemFile.itemExportAs" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
+                </Property>
+              </Properties>
+            </Menu>
+            <Menu class="javax.swing.JMenu" name="menuFileImportFrom">
+              <Properties>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="com/igormaznitsa/nbmindmap/i18n/Bundle.properties" key="mainMenu.itemFile.itemImportFrom" replaceFormat="com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString(&quot;{key}&quot;)"/>
+                </Property>
+              </Properties>
+            </Menu>
             <MenuItem class="javax.swing.JPopupMenu$Separator" name="separatorExitSection">
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="menuExit">

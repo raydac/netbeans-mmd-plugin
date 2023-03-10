@@ -36,7 +36,6 @@ import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.metrics.MetricsService;
 import com.igormaznitsa.sciareto.preferences.AdditionalPreferences;
 import com.igormaznitsa.sciareto.preferences.FileHistoryManager;
-import com.igormaznitsa.sciareto.preferences.PrefUtils;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.preferences.PreferencesPanel;
 import com.igormaznitsa.sciareto.preferences.SystemFileExtensionManager;
@@ -60,6 +59,8 @@ import com.igormaznitsa.sciareto.ui.platform.PlatformMenuAction;
 import com.igormaznitsa.sciareto.ui.platform.PlatformMenuEvent;
 import com.igormaznitsa.sciareto.ui.platform.PlatformProvider;
 import com.igormaznitsa.sciareto.ui.tabs.EditorTabPane;
+import com.igormaznitsa.sciareto.ui.tabs.TabExporter;
+import com.igormaznitsa.sciareto.ui.tabs.TabImporter;
 import com.igormaznitsa.sciareto.ui.tabs.TabProvider;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 import com.igormaznitsa.sciareto.ui.tree.ExplorerTree;
@@ -534,6 +535,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       this.menuFindText.setEnabled(false);
       this.menuEditSelectAll.setEnabled(false);
       this.menuEditSelectNone.setEnabled(false);
+      this.menuFileExportAs.setEnabled(false);
+      this.menuFileImportFrom.setEnabled(false);
     } else {
       if (provider.doesSupportCutCopyPaste()) {
         this.menuEditCopy.setEnabled(provider.isCopyAllowed());
@@ -559,6 +562,38 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       } else {
         this.menuSave.setEnabled(false);
         this.menuSaveAs.setEnabled(false);
+      }
+      
+      final List<TabImporter> importers = provider.findImporters();
+      final List<TabExporter> exporters = provider.findExporters();
+      
+      this.menuFileExportAs.removeAll();
+      this.menuFileImportFrom.removeAll();
+      
+      if (importers.isEmpty()) {
+          this.menuFileImportFrom.setEnabled(false);
+      } else {
+          this.menuFileImportFrom.setEnabled(true);
+          importers.stream().sorted((a, b) -> a.getTitle().compareTo(b.getTitle())).forEach(importer -> {
+              final JMenuItem menuItem = new JMenuItem(importer.getTitle());
+              menuItem.addActionListener(a -> {
+                  importer.execute(provider);
+              });
+              this.menuFileImportFrom.add(menuItem);
+          });
+      }
+
+      if (exporters.isEmpty()) {
+          this.menuFileExportAs.setEnabled(false);
+      } else {
+          this.menuFileExportAs.setEnabled(true);
+          exporters.stream().sorted((a, b) -> a.getTitle().compareTo(b.getTitle())).forEach(exporter -> {
+              final JMenuItem menuItem = new JMenuItem(exporter.getTitle());
+              menuItem.addActionListener(a -> {
+                  exporter.execute(provider);
+              });
+              this.menuFileExportAs.add(menuItem);
+          });
       }
     }
   }
@@ -1051,11 +1086,14 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         menuOpenProject = new javax.swing.JMenuItem();
         menuOpenRecentProject = new javax.swing.JMenu();
         menuOpenFile = new javax.swing.JMenuItem();
-        menuOpenRecentFile = new javax.swing.JMenu();
         jSeparator3 = new javax.swing.JPopupMenu.Separator();
         menuSave = new javax.swing.JMenuItem();
         menuSaveAs = new javax.swing.JMenuItem();
         menuSaveAll = new javax.swing.JMenuItem();
+        menuOpenRecentFile = new javax.swing.JMenu();
+        jSeparator9 = new javax.swing.JPopupMenu.Separator();
+        menuFileExportAs = new javax.swing.JMenu();
+        menuFileImportFrom = new javax.swing.JMenu();
         separatorExitSection = new javax.swing.JPopupMenu.Separator();
         menuExit = new javax.swing.JMenuItem();
         menuEdit = new javax.swing.JMenu();
@@ -1152,10 +1190,6 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
             }
         });
         menuFile.add(menuOpenFile);
-
-        menuOpenRecentFile.setMnemonic('f');
-        menuOpenRecentFile.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("mainMenu.itemFile.itemOpenRecentFile")); // NOI18N
-        menuFile.add(menuOpenRecentFile);
         menuFile.add(jSeparator3);
 
         menuSave.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/diskette.png"))); // NOI18N
@@ -1187,6 +1221,17 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
             }
         });
         menuFile.add(menuSaveAll);
+
+        menuOpenRecentFile.setMnemonic('f');
+        menuOpenRecentFile.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("mainMenu.itemFile.itemOpenRecentFile")); // NOI18N
+        menuFile.add(menuOpenRecentFile);
+        menuFile.add(jSeparator9);
+
+        menuFileExportAs.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("mainMenu.itemFile.itemExportAs")); // NOI18N
+        menuFile.add(menuFileExportAs);
+
+        menuFileImportFrom.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("mainMenu.itemFile.itemImportFrom")); // NOI18N
+        menuFile.add(menuFileImportFrom);
         menuFile.add(separatorExitSection);
 
         menuExit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/menu_icons/door_in.png"))); // NOI18N
@@ -2264,6 +2309,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     private javax.swing.JPopupMenu.Separator jSeparator6;
     private javax.swing.JPopupMenu.Separator jSeparator7;
     private javax.swing.JPopupMenu.Separator jSeparator8;
+    private javax.swing.JPopupMenu.Separator jSeparator9;
     private javax.swing.JMenuBar mainMenu;
     private javax.swing.JMenuItem menuAbout;
     private javax.swing.JMenu menuEdit;
@@ -2275,6 +2321,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     private javax.swing.JMenuItem menuEditShowTreeContextMenu;
     private javax.swing.JMenuItem menuExit;
     private javax.swing.JMenu menuFile;
+    private javax.swing.JMenu menuFileExportAs;
+    private javax.swing.JMenu menuFileImportFrom;
     private javax.swing.JMenuItem menuFindText;
     private javax.swing.JMenuItem menuFullScreen;
     private javax.swing.JMenuItem menuGoToFile;

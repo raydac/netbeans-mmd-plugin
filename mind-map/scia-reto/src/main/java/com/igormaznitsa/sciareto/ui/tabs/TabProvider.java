@@ -17,6 +17,7 @@
  */
 package com.igormaznitsa.sciareto.ui.tabs;
 
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import java.io.File;
 import java.io.IOException;
 import java.util.regex.Pattern;
@@ -27,6 +28,7 @@ import com.igormaznitsa.meta.annotation.Weight;
 import com.igormaznitsa.sciareto.ui.FindTextScopeProvider;
 import com.igormaznitsa.sciareto.ui.editors.AbstractEditor;
 import com.igormaznitsa.sciareto.ui.editors.SelectCommand;
+import java.util.List;
 import javax.swing.JPanel;
 
 public interface TabProvider {
@@ -80,4 +82,17 @@ public interface TabProvider {
   boolean doesSupportPatternSearch();
 
   boolean showSearchPane(@Nonnull JPanel searchPanel); 
+
+  @Nonnull
+  @MustNotContainNull
+  default List<TabImporter> findImporters() {
+      return List.of();
+  }
+  
+  @Nonnull
+  @MustNotContainNull
+  default List<TabExporter> findExporters() {
+      return List.of();
+  }
+  
 }
