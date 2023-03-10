@@ -575,11 +575,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       } else {
           this.menuFileImportFrom.setEnabled(true);
           importers.stream().sorted((a, b) -> a.getTitle().compareTo(b.getTitle())).forEach(importer -> {
-              final JMenuItem menuItem = new JMenuItem(importer.getTitle());
-              menuItem.addActionListener(a -> {
-                  importer.execute(provider);
-              });
-              this.menuFileImportFrom.add(menuItem);
+              this.menuFileImportFrom.add(importer.makeMenuItem());
           });
       }
 
@@ -588,11 +584,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       } else {
           this.menuFileExportAs.setEnabled(true);
           exporters.stream().sorted((a, b) -> a.getTitle().compareTo(b.getTitle())).forEach(exporter -> {
-              final JMenuItem menuItem = new JMenuItem(exporter.getTitle());
-              menuItem.addActionListener(a -> {
-                  exporter.execute(provider);
-              });
-              this.menuFileExportAs.add(menuItem);
+              this.menuFileExportAs.add(exporter.makeMenuItem());
           });
       }
     }

@@ -47,7 +47,10 @@ import com.igormaznitsa.mindmap.model.StandardMmdAttributes;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.TopicFinder;
 import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
+import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
+import com.igormaznitsa.mindmap.plugins.api.AbstractImporter;
 import com.igormaznitsa.mindmap.plugins.api.ExternallyExecutedPlugin;
+import com.igormaznitsa.mindmap.plugins.api.MindMapPlugin;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.processors.ExtraFilePlugin;
 import com.igormaznitsa.mindmap.plugins.processors.ExtraJumpPlugin;
@@ -81,6 +84,8 @@ import com.igormaznitsa.sciareto.ui.SrI18n;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.FileEditPanel;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.MindMapTreePanel;
+import com.igormaznitsa.sciareto.ui.tabs.TabExporter;
+import com.igormaznitsa.sciareto.ui.tabs.TabImporter;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 import com.igormaznitsa.sciareto.ui.tree.FileTransferable;
 import com.igormaznitsa.sciareto.ui.tree.NodeProject;
@@ -109,6 +114,7 @@ import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -125,6 +131,7 @@ import javax.annotation.Nullable;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -200,24 +207,27 @@ public final class MMDEditor extends AbstractTextEditor
     this.currentModelState.set(this.mindMapPanel.getModel().asString());
   }
 
-    @Override
-    public boolean isSelectCommandAllowed(@Nonnull final SelectCommand command) {
-        return this.mindMapPanel.getController().isSelectionAllowed(this.mindMapPanel);
-    }
+  @Override
+  public boolean isSelectCommandAllowed(@Nonnull final SelectCommand command) {
+    return this.mindMapPanel.getController().isSelectionAllowed(this.mindMapPanel);
+  }
 
-    @Override
-    public void doSelectCommand(@Nonnull final SelectCommand command) {
-        switch (command) {
-            case SELECT_ALL: {
-                this.mindMapPanel.setSelectedTopics(this.mindMapPanel.getModel().stream().collect(Collectors.toList()));
-            } break;
-            case SELECT_NONE:{
-                this.mindMapPanel.setSelectedTopics(Collections.emptyList());
-            } break;
-        }
+  @Override
+  public void doSelectCommand(@Nonnull final SelectCommand command) {
+    switch (command) {
+      case SELECT_ALL: {
+        this.mindMapPanel.setSelectedTopics(
+            this.mindMapPanel.getModel().stream().collect(Collectors.toList()));
+      }
+      break;
+      case SELECT_NONE: {
+        this.mindMapPanel.setSelectedTopics(Collections.emptyList());
+      }
+      break;
     }
+  }
 
-  
+
   @Nonnull
   public static FileFilter makeFileFilter() {
     return new FileFilter() {
@@ -229,7 +239,8 @@ public final class MMDEditor extends AbstractTextEditor
       @Override
       @Nonnull
       public String getDescription() {
-        return SrI18n.getInstance().findBundle().getString("editorAbstractPlUml.fileFilter.mmd.description");
+        return SrI18n.getInstance().findBundle()
+            .getString("editorAbstractPlUml.fileFilter.mmd.description");
       }
     };
   }
@@ -457,12 +468,14 @@ public final class MMDEditor extends AbstractTextEditor
 
   @Override
   public boolean isUnfoldCollapsedTopicDropTarget(@Nonnull final MindMapPanel source) {
-    return source.getConfiguration().getOptionalProperty(PROPERTY_UNFOLD_COLLAPSED_DROP_TARGET, false);
+    return source.getConfiguration()
+        .getOptionalProperty(PROPERTY_UNFOLD_COLLAPSED_DROP_TARGET, false);
   }
 
   @Override
   public boolean isCopyColorInfoFromParentToNewChildAllowed(@Nonnull final MindMapPanel source) {
-    return source.getConfiguration().getOptionalProperty(PROPERTY_COPY_PARENT_COLORS_TO_NEW_CHILD, true);
+    return source.getConfiguration()
+        .getOptionalProperty(PROPERTY_COPY_PARENT_COLORS_TO_NEW_CHILD, true);
   }
 
   @Override
@@ -704,7 +717,8 @@ public final class MMDEditor extends AbstractTextEditor
             DialogProviderManager.getInstance().getDialogProvider()
                 .msgWarn(SciaRetoStarter.getApplicationFrame(), String
                     .format(
-                        SrI18n.getInstance().findBundle().getString("MMDGraphEditor.onClickExtra.errorCanfFindFile"),
+                        SrI18n.getInstance().findBundle()
+                            .getString("MMDGraphEditor.onClickExtra.errorCanfFindFile"),
                         theFile));
           }
         }
@@ -717,7 +731,8 @@ public final class MMDEditor extends AbstractTextEditor
             DialogProviderManager.getInstance().getDialogProvider()
                 .msgError(SciaRetoStarter.getApplicationFrame(), String
                     .format(
-                        SrI18n.getInstance().findBundle().getString("MMDGraphEditor.onClickOnExtra.msgCantBrowse"),
+                        SrI18n.getInstance().findBundle()
+                            .getString("MMDGraphEditor.onClickOnExtra.msgCantBrowse"),
                         uri));
           }
         }
@@ -732,7 +747,8 @@ public final class MMDEditor extends AbstractTextEditor
             // not presented
             DialogProviderManager.getInstance().getDialogProvider()
                 .msgWarn(SciaRetoStarter.getApplicationFrame(),
-                    SrI18n.getInstance().findBundle().getString("MMDGraphEditor.onClickOnExtra.msgCantFindTopic"));
+                    SrI18n.getInstance().findBundle()
+                        .getString("MMDGraphEditor.onClickOnExtra.msgCantFindTopic"));
           } else {
             // detected
             this.mindMapPanel.focusTo(theTopic);
@@ -767,9 +783,11 @@ public final class MMDEditor extends AbstractTextEditor
     } else {
       result = DialogProviderManager.getInstance().getDialogProvider()
           .msgConfirmYesNo(SciaRetoStarter.getApplicationFrame(),
-              SrI18n.getInstance().findBundle().getString("MMDGraphEditor.allowedRemovingOfTopics,title"), String
+              SrI18n.getInstance().findBundle()
+                  .getString("MMDGraphEditor.allowedRemovingOfTopics,title"), String
                   .format(
-                      SrI18n.getInstance().findBundle().getString("MMDGraphEditor.allowedRemovingOfTopics.message"),
+                      SrI18n.getInstance().findBundle()
+                          .getString("MMDGraphEditor.allowedRemovingOfTopics.message"),
                       topics.length));
     }
     return result;
@@ -971,8 +989,10 @@ public final class MMDEditor extends AbstractTextEditor
       if (topic.getExtras().containsKey(Extra.ExtraType.FILE)) {
         if (!DialogProviderManager.getInstance().getDialogProvider()
             .msgConfirmOkCancel(SciaRetoStarter.getApplicationFrame(),
-                SrI18n.getInstance().findBundle().getString("MMDGraphEditor.addDataObjectToElement.confirmTitle"),
-                SrI18n.getInstance().findBundle().getString("MMDGraphEditor.addDataObjectToElement.confirmMsg"))) {
+                SrI18n.getInstance().findBundle()
+                    .getString("MMDGraphEditor.addDataObjectToElement.confirmTitle"),
+                SrI18n.getInstance().findBundle()
+                    .getString("MMDGraphEditor.addDataObjectToElement.confirmMsg"))) {
           return;
         }
       }
@@ -1031,8 +1051,10 @@ public final class MMDEditor extends AbstractTextEditor
       if (note == null) {
         // create new
         result = UiUtils.editText(String
-            .format(SrI18n.getInstance().findBundle().getString("MMDGraphEditor.editTextForTopic.dlfAddNoteTitle"),
-                Utils.makeShortTextVersion(topic.getText(), 16)), new AbstractNoteEditorData(), this.mindMapPanelConfig); //NOI18N
+                .format(SrI18n.getInstance().findBundle()
+                        .getString("MMDGraphEditor.editTextForTopic.dlfAddNoteTitle"),
+                    Utils.makeShortTextVersion(topic.getText(), 16)), new AbstractNoteEditorData(),
+            this.mindMapPanelConfig); //NOI18N
       } else {
         // edit
         AbstractNoteEditorData noteText = null;
@@ -1052,12 +1074,14 @@ public final class MMDEditor extends AbstractTextEditor
               } else {
                 DialogProviderManager.getInstance().getDialogProvider()
                     .msgError(SciaRetoStarter.getApplicationFrame(),
-                        SrI18n.getInstance().findBundle().getString("MMDGraphEditor.msgErrorPassword.text"));
+                        SrI18n.getInstance().findBundle()
+                            .getString("MMDGraphEditor.msgErrorPassword.text"));
               }
             } catch (RuntimeException ex) {
               DialogProviderManager.getInstance().getDialogProvider()
                   .msgError(SciaRetoStarter.getApplicationFrame(),
-                      SrI18n.getInstance().findBundle().getString("MMDGraphEditor.msgCantDecodeEncrypted.text"));
+                      SrI18n.getInstance().findBundle()
+                          .getString("MMDGraphEditor.msgCantDecodeEncrypted.text"));
               logger.error("Can't decode encrypted note", ex);
             }
           }
@@ -1068,9 +1092,11 @@ public final class MMDEditor extends AbstractTextEditor
           result = null;
         } else {
           result = UiUtils.editText(String
-              .format(
-                  SrI18n.getInstance().findBundle().getString("MMDGraphEditor.editTextForTopic.dlgEditNoteTitle"),
-                  Utils.makeShortTextVersion(topic.getText(), 16)), noteText, this.mindMapPanelConfig);
+                  .format(
+                      SrI18n.getInstance().findBundle()
+                          .getString("MMDGraphEditor.editTextForTopic.dlgEditNoteTitle"),
+                      Utils.makeShortTextVersion(topic.getText(), 16)), noteText,
+              this.mindMapPanelConfig);
         }
       }
       if (result != null) {
@@ -1089,7 +1115,8 @@ public final class MMDEditor extends AbstractTextEditor
             } catch (RuntimeException ex) {
               DialogProviderManager.getInstance().getDialogProvider()
                   .msgError(this.getMainComponent(),
-                      SrI18n.getInstance().findBundle().getString("MMDGraphEditor.msgCantEncrypt.text")
+                      SrI18n.getInstance().findBundle()
+                          .getString("MMDGraphEditor.msgCantEncrypt.text")
                   );
               logger.error("Can't encrypt note", ex);
               return;
@@ -1141,7 +1168,8 @@ public final class MMDEditor extends AbstractTextEditor
                 .getSessionObject(Misc.SESSIONKEY_ADD_FILE_OPEN_IN_SYSTEM, Boolean.class, false));
         dataContainer =
             UiUtils.editFilePath(
-                SrI18n.getInstance().findBundle().getString("MMDGraphEditor.editFileLinkForTopic.dlgTitle"),
+                SrI18n.getInstance().findBundle()
+                    .getString("MMDGraphEditor.editFileLinkForTopic.dlgTitle"),
                 this.mindMapPanel.getSessionObject(Misc.SESSIONKEY_ADD_FILE_LAST_FOLDER, File.class,
                     projectFolder),
                 prefilled);
@@ -1162,7 +1190,8 @@ public final class MMDEditor extends AbstractTextEditor
             flagOpenInSystem);
         dataContainer = UiUtils
             .editFilePath(
-                SrI18n.getInstance().findBundle().getString("MMDGraphEditor.editFileLinkForTopic.addPathTitle"),
+                SrI18n.getInstance().findBundle()
+                    .getString("MMDGraphEditor.editFileLinkForTopic.addPathTitle"),
                 projectFolder, origPath);
       }
 
@@ -1236,7 +1265,8 @@ public final class MMDEditor extends AbstractTextEditor
 
       if (link == null) {
         final MindMapTreePanel treePanel =
-            new MindMapTreePanel(UIComponentFactoryProvider.findInstance(), this.mindMapPanel.getModel(), null, true, null);
+            new MindMapTreePanel(UIComponentFactoryProvider.findInstance(),
+                this.mindMapPanel.getModel(), null, true, null);
         if (DialogProviderManager.getInstance().getDialogProvider()
             .msgOkCancel(SciaRetoStarter.getApplicationFrame(),
                 SrI18n.getInstance().findBundle().getString(
@@ -1252,7 +1282,8 @@ public final class MMDEditor extends AbstractTextEditor
         }
       } else {
         final MindMapTreePanel panel =
-            new MindMapTreePanel(UIComponentFactoryProvider.findInstance(), this.mindMapPanel.getModel(), link, true, null);
+            new MindMapTreePanel(UIComponentFactoryProvider.findInstance(),
+                this.mindMapPanel.getModel(), link, true, null);
         if (DialogProviderManager.getInstance().getDialogProvider()
             .msgOkCancel(SciaRetoStarter.getApplicationFrame(),
                 SrI18n.getInstance().findBundle().getString(
@@ -1302,12 +1333,14 @@ public final class MMDEditor extends AbstractTextEditor
       if (link == null) {
         // create new
         result = UiUtils.editURI(String
-            .format(SrI18n.getInstance().findBundle().getString("MMDGraphEditor.editLinkForTopic.dlgAddURITitle"),
+            .format(SrI18n.getInstance().findBundle()
+                    .getString("MMDGraphEditor.editLinkForTopic.dlgAddURITitle"),
                 Utils.makeShortTextVersion(topic.getText(), 16)), null);
       } else {
         // edit
         result = UiUtils.editURI(String
-            .format(SrI18n.getInstance().findBundle().getString("MMDGraphEditor.editLinkForTopic.dlgEditURITitle"),
+            .format(SrI18n.getInstance().findBundle()
+                    .getString("MMDGraphEditor.editLinkForTopic.dlgEditURITitle"),
                 Utils.makeShortTextVersion(topic.getText(), 16)), link.getValue());
       }
       if (result != null) {
@@ -1347,11 +1380,14 @@ public final class MMDEditor extends AbstractTextEditor
     final Icon resetIcon = new ImageIcon(Objects.requireNonNull(UiUtils.loadIcon("cross16.png")));
 
     final ColorAttributePanel panel =
-        new ColorAttributePanel(UIComponentFactoryProvider.findInstance(), DialogProviderManager.getInstance()
-            .getDialogProvider(), source.getModel(), borderColor, fillColor, textColor, resetIcon);
+        new ColorAttributePanel(UIComponentFactoryProvider.findInstance(),
+            DialogProviderManager.getInstance()
+                .getDialogProvider(), source.getModel(), borderColor, fillColor, textColor,
+            resetIcon);
     if (DialogProviderManager.getInstance().getDialogProvider()
         .msgOkCancel(SciaRetoStarter.getApplicationFrame(),
-            String.format(SrI18n.getInstance().findBundle().getString("MMDGraphEditor.colorEditDialogTitle"),
+            String.format(
+                SrI18n.getInstance().findBundle().getString("MMDGraphEditor.colorEditDialogTitle"),
                 topics.length),
             panel.getPanel())) {
       ColorAttributePanel.Result result = panel.getResult();
@@ -1407,8 +1443,10 @@ public final class MMDEditor extends AbstractTextEditor
       if (destinationTopic.getExtras().containsKey(Extra.ExtraType.TOPIC)) {
         if (!DialogProviderManager.getInstance().getDialogProvider()
             .msgConfirmOkCancel(SciaRetoStarter.getApplicationFrame(),
-                SrI18n.getInstance().findBundle().getString("MMDGraphEditor.addTopicToElement.confirmTitle"),
-                SrI18n.getInstance().findBundle().getString("MMDGraphEditor.addTopicToElement.confirmMsg"))) {
+                SrI18n.getInstance().findBundle()
+                    .getString("MMDGraphEditor.addTopicToElement.confirmTitle"),
+                SrI18n.getInstance().findBundle()
+                    .getString("MMDGraphEditor.addTopicToElement.confirmMsg"))) {
           return result;
         }
       }
@@ -1597,4 +1635,61 @@ public final class MMDEditor extends AbstractTextEditor
   public boolean isBirdsEyeAllowed(@Nonnull MindMapPanel source) {
     return true;
   }
+
+  @Nonnull
+  @MustNotContainNull
+  @Override
+  public List<TabImporter> findImporters() {
+    final List<TabImporter> result = new ArrayList<>();
+    for (final MindMapPlugin plugin : MindMapPluginRegistry.getInstance()) {
+      if (plugin instanceof AbstractImporter) {
+        final AbstractImporter importer = (AbstractImporter) plugin;
+        if (!importer.needsSelectedTopics() && !importer.needsTopicUnderMouse()) {
+          result.add(new TabImporter() {
+            @Nonnull
+            @Override
+            public JMenuItem makeMenuItem() {
+              return importer.makeMenuItem(makePluginContext(mindMapPanel), null);
+            }
+
+            @Nonnull
+            @Override
+            public String getTitle() {
+              return importer.getName(makePluginContext(mindMapPanel));
+            }
+          });
+        }
+      }
+    }
+    return result;
+  }
+
+  @Nonnull
+  @MustNotContainNull
+  @Override
+  public List<TabExporter> findExporters() {
+    final List<TabExporter> result = new ArrayList<>();
+    for (final MindMapPlugin plugin : MindMapPluginRegistry.getInstance()) {
+      if (plugin instanceof AbstractExporter) {
+        final AbstractExporter exporter = (AbstractExporter) plugin;
+        if (!exporter.needsSelectedTopics() && !exporter.needsTopicUnderMouse()) {
+          result.add(new TabExporter() {
+            @Nonnull
+            @Override
+            public JMenuItem makeMenuItem() {
+              return exporter.makeMenuItem(makePluginContext(mindMapPanel), null);
+            }
+
+            @Nonnull
+            @Override
+            public String getTitle() {
+              return exporter.getName(makePluginContext(mindMapPanel), null);
+            }
+          });
+        }
+      }
+    }
+    return result;
+  }
+
 }

@@ -1,9 +1,12 @@
 package com.igormaznitsa.sciareto.ui.tabs;
 
 import javax.annotation.Nonnull;
+import javax.swing.JMenuItem;
 
 public interface TabExporter {
-    void execute(@Nonnull final TabProvider tabProvider);
-    @Nonnull
-    String getTitle();
+  @Nonnull
+  JMenuItem makeMenuItem();
+
+  @Nonnull
+  String getTitle();
 }
