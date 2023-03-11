@@ -20,25 +20,26 @@ package com.igormaznitsa.sciareto.ui.editors;
 
 import static org.apache.commons.text.StringEscapeUtils.escapeHtml3;
 
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.annotation.UiThread;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.print.MMDPrintPanel;
 import com.igormaznitsa.mindmap.print.PrintableObject;
 import com.igormaznitsa.mindmap.swing.panel.utils.ImageSelection;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
-import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.preferences.AdditionalPreferences;
-import com.igormaznitsa.sciareto.preferences.PrefUtils;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.FindTextScopeProvider;
 import com.igormaznitsa.sciareto.ui.MainFrame;
 import com.igormaznitsa.sciareto.ui.ScaleStatusIndicator;
+import com.igormaznitsa.sciareto.ui.SrI18n;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.misc.BigLoaderIconAnimationConroller;
 import com.igormaznitsa.sciareto.ui.misc.SplitPaneExt;
+import com.igormaznitsa.sciareto.ui.tabs.TabExporter;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -72,11 +73,14 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -94,6 +98,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -512,23 +517,55 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
 
   }
 
+  @Nonnull
+  @MustNotContainNull
+  @Override
+  public List<TabExporter> findExporters() {
+    final List<TabExporter> exporters = new ArrayList<>();
+    if (this.isExportImageAsFileAllowed()) {
+      final ResourceBundle bundle = SrI18n.getInstance().findBundle();
+      exporters.add(new TabExporter() {
+        private final String name = bundle.getString("mainMenu.itemFile.itemExport.Image");
+
+        @Nonnull
+        @Override
+        public JMenuItem makeMenuItem() {
+          final JMenuItem item = new JMenuItem(name);
+          item.addActionListener(a -> {
+            exportAsFile();
+          });
+          return item;
+        }
+
+        @Nonnull
+        @Override
+        public String getTitle() {
+          return this.name;
+        }
+      });
+    }
+    return exporters;
+  }
+
   @Override
   public boolean isSelectCommandAllowed(@Nonnull final SelectCommand command) {
-      return this.isTextEditorVisible();
+    return this.isTextEditorVisible();
   }
 
   @Override
   public void doSelectCommand(@Nonnull final SelectCommand command) {
-      if (this.isTextEditorVisible()) {
-        switch (command) {
-            case SELECT_ALL: {
-                this.editor.selectAll();
-            } break;
-            case SELECT_NONE: {
-                this.editor.select(0,0);
-            } break;
+    if (this.isTextEditorVisible()) {
+      switch (command) {
+        case SELECT_ALL: {
+          this.editor.selectAll();
         }
+        break;
+        case SELECT_NONE: {
+          this.editor.select(0, 0);
+        }
+        break;
       }
+    }
   }
 
   @Override
