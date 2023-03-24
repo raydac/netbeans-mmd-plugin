@@ -57,9 +57,15 @@ public abstract class AbstractExporter extends AbstractPopupMenuItem implements 
 
   protected MindMapPanelConfig loadPreferencesFile(final File file) throws IOException {
     final MindMapPanelConfig result = new MindMapPanelConfig();
-    result.loadFrom(new PropertiesPreferences("SciaReto",
-        FileUtils.readFileToString(file, StandardCharsets.UTF_8)));
-    return result;
+    try {
+      result.loadFrom(new PropertiesPreferences("SciaReto",
+          FileUtils.readFileToString(file, StandardCharsets.UTF_8)));
+      return result;
+    } catch (IOException ex) {
+      throw ex;
+    } catch (Exception ex) {
+      throw new IOException(ex.getMessage(), ex);
+    }
   }
 
   @Override

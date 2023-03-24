@@ -20,16 +20,23 @@ import com.igormaznitsa.mindmap.plugins.api.parameters.AbstractParameter;
 import com.igormaznitsa.mindmap.plugins.api.parameters.BooleanParameter;
 import com.igormaznitsa.mindmap.plugins.api.parameters.DoubleParameter;
 import com.igormaznitsa.mindmap.plugins.api.parameters.FileParameter;
+import com.igormaznitsa.mindmap.plugins.api.parameters.Importance;
 import com.igormaznitsa.mindmap.plugins.api.parameters.IntegerParameter;
 import com.igormaznitsa.mindmap.plugins.api.parameters.StringParameter;
 import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.ide.IDEBridgeFactory;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
+import com.igormaznitsa.mindmap.swing.panel.utils.Pair;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.io.File;
+import java.util.Comparator;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
@@ -40,6 +47,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.DocumentEvent;
@@ -55,20 +63,21 @@ public class DefaultParametersPanelFactory extends JPanel {
     return INSTANCE;
   }
 
-  public JPanel make(final DialogProvider dialogProvider,
+  public JComponent make(final DialogProvider dialogProvider,
                      final Set<AbstractParameter<?>> parameters) {
     return this.makeParametersPanelFactory(UIComponentFactoryProvider.findInstance(),
         dialogProvider, parameters);
   }
 
-  private JPanel makeParametersPanelFactory(final UIComponentFactory uiComponentFactory,
+  private JComponent makeParametersPanelFactory(final UIComponentFactory uiComponentFactory,
                                             final DialogProvider dialogProvider,
                                             final Set<AbstractParameter<?>> parameters) {
-    final JPanel panel = uiComponentFactory.makePanel();
-    panel.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
-    panel.setLayout(new GridBagLayout());
 
-    final AtomicInteger layoutY = new AtomicInteger(0);
+    final Map<Importance, JPanel> panelsByImportance =
+        new EnumMap<>(Importance.class);
+
+    final GridBagConstraints gbc = new GridBagConstraints();
+    gbc.insets = new Insets(4, 4, 4, 4);
 
     parameters.stream()
         .sorted()
@@ -139,21 +148,36 @@ public class DefaultParametersPanelFactory extends JPanel {
           label.setToolTipText(p.getComment());
           changer.setToolTipText(p.getComment());
 
-          final GridBagConstraints constraints = new GridBagConstraints();
-          constraints.insets = new Insets(0, 4, 8, 4);
+          final JPanel targetPanel = panelsByImportance.computeIfAbsent(p.getImportance(), i -> {
+            final JPanel panel = uiComponentFactory.makePanel();
+            panel.setLayout(new GridBagLayout());
+            return panel;
+          });
 
-          constraints.gridy = layoutY.getAndIncrement();
-          constraints.gridx = 0;
-          constraints.anchor = GridBagConstraints.EAST;
-          panel.add(label, constraints);
+          gbc.gridx = 0;
+          gbc.anchor = GridBagConstraints.EAST;
+          targetPanel.add(label, gbc);
 
-          constraints.gridx = 1;
-          constraints.anchor = GridBagConstraints.WEST;
-          panel.add(changer, constraints);
-
+          gbc.gridx = 1;
+          gbc.anchor = GridBagConstraints.WEST;
+          targetPanel.add(changer, gbc);
         });
 
-    return panel;
+    if (panelsByImportance.isEmpty()) {
+      return uiComponentFactory.makePanel();
+    } else if (panelsByImportance.size() == 1) {
+      return panelsByImportance.values().stream().findFirst().orElseThrow(() -> new IllegalStateException("Unexpectedly can't find panel"));
+    } else {
+      final JTabbedPane tabbedPane = uiComponentFactory.makeTabbedPane();
+      final ResourceBundle bundle = MmdI18n.getInstance().findBundle();
+      panelsByImportance.keySet()
+          .stream()
+          .sorted(Comparator.comparingInt(Enum::ordinal))
+          .forEach(k -> {
+            tabbedPane.add(bundle.getString("Importance."+k.name()), panelsByImportance.get(k));
+          });
+      return tabbedPane;
+    }
   }
 
   private static final class FileChooserCombo {

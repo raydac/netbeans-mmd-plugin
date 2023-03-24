@@ -34,7 +34,13 @@ public class DoubleParameter extends AbstractParameter<Double>{
       final double defaultValue,
       final int order
   ) {
-    super(id, title, comment, defaultValue, order);
+    this(id, title, comment, defaultValue, order, min, max, Importance.MAIN);
+  }
+
+  public DoubleParameter(String id, String title, String comment,
+                         Double defaultValue, int order,
+                         double min, double max, Importance importance) {
+    super(id, title, comment, defaultValue, order, importance);
     this.min = min;
     this.max = max;
   }

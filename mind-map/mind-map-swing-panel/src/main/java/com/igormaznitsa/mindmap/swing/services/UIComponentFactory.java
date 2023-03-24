@@ -25,6 +25,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -38,6 +39,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
@@ -47,11 +49,13 @@ import javax.swing.JTree;
 public interface UIComponentFactory {
   JPanel makePanel();
 
-  JPanel makePanelWithOptions(DialogProvider dialogProvider, Set<AbstractParameter<?>> parameters);
+  JComponent makePanelWithOptions(DialogProvider dialogProvider, Set<AbstractParameter<?>> parameters);
 
   <T> JComboBox<T> makeComboBox(Class<T> type);
 
   JSpinner makeSpinner();
+
+  JTabbedPane makeTabbedPane();
 
   JButton makeButton();
 

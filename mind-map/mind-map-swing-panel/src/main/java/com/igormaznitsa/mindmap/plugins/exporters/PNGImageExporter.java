@@ -24,6 +24,7 @@ import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.api.parameters.AbstractParameter;
 import com.igormaznitsa.mindmap.plugins.api.parameters.BooleanParameter;
 import com.igormaznitsa.mindmap.plugins.api.parameters.FileParameter;
+import com.igormaznitsa.mindmap.plugins.api.parameters.Importance;
 import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.ide.IDEBridgeFactory;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
@@ -117,7 +118,7 @@ public final class PNGImageExporter extends AbstractExporter {
         public boolean isFilesOnly() {
           return true;
         }
-      }, 0));
+      }, 0, Importance.SECONDARY));
     }};
   }
 

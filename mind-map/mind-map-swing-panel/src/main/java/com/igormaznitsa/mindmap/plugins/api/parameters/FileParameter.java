@@ -35,14 +35,28 @@ public class FileParameter extends AbstractParameter<File> {
 
   private final FileChooserParamsProvider fileChooserParamsProvider;
 
-  public FileParameter(final String id, final String title, final String comment,
-                       final File defaultValue, final FileChooserParamsProvider fileChooserParamsProvider) {
+  public FileParameter(final String id,
+                       final String title,
+                       final String comment,
+                       final File defaultValue,
+                       final FileChooserParamsProvider fileChooserParamsProvider
+  ) {
     this(id, title, comment, defaultValue, fileChooserParamsProvider, 0);
   }
 
   public FileParameter(final String id, final String title, final String comment,
-                       final File defaultValue, final FileChooserParamsProvider fileChooserParamsProvider, final int order) {
-    super(id, title, comment, defaultValue, order);
+                       final File defaultValue,
+                       final FileChooserParamsProvider fileChooserParamsProvider,
+                       final int order) {
+    this(id, title, comment, defaultValue, fileChooserParamsProvider, order,  Importance.MAIN);
+  }
+
+  public FileParameter(final String id, final String title, final String comment,
+                       final File defaultValue,
+                       final FileChooserParamsProvider fileChooserParamsProvider,
+                       final int order,
+                       final Importance importance) {
+    super(id, title, comment, defaultValue, order, importance);
     this.fileChooserParamsProvider = requireNonNull(fileChooserParamsProvider);
   }
 

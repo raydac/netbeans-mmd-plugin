@@ -29,7 +29,19 @@ public class IntegerParameter extends AbstractParameter<Long> {
       final long max,
       final long defaultValue,
       final int order) {
-    super(id, title, comment, defaultValue, order);
+    this(id, title, comment, min, max, defaultValue, order, Importance.MAIN);
+  }
+
+  public IntegerParameter(
+      final String id,
+      final String title,
+      final String comment,
+      final long min,
+      final long max,
+      final long defaultValue,
+      final int order,
+      final Importance importance) {
+    super(id, title, comment, defaultValue, order, importance);
     this.min = min;
     this.max = max;
   }

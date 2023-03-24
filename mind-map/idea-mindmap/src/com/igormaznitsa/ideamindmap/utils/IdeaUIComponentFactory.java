@@ -41,6 +41,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -54,6 +55,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
@@ -70,8 +72,8 @@ public class IdeaUIComponentFactory implements UIComponentFactory {
 
   @Nonnull
   @Override
-  public JPanel makePanelWithOptions(@Nonnull DialogProvider dialogProvider,
-                                     @Nonnull Set<AbstractParameter<?>> parameters) {
+  public JComponent makePanelWithOptions(@Nonnull DialogProvider dialogProvider,
+                                         @Nonnull Set<AbstractParameter<?>> parameters) {
     return DefaultParametersPanelFactory.getInstance().make(dialogProvider, parameters);
   }
 
@@ -91,6 +93,12 @@ public class IdeaUIComponentFactory implements UIComponentFactory {
   @Nonnull
   public <T> JComboBox<T> makeComboBox(final Class<T> type) {
     return new ComboBox<T>();
+  }
+
+  @Override
+  @Nonnull
+  public JTabbedPane makeTabbedPane() {
+    return new JTabbedPane();
   }
 
   @Override

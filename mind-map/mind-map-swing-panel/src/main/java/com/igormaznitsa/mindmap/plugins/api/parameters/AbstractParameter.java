@@ -26,7 +26,13 @@ public abstract class AbstractParameter<T> implements Comparable<AbstractParamet
   private final String comment;
   private T value;
 
+  private Importance importance;
+
   private final int order;
+
+  public Importance getImportance() {
+    return this.importance;
+  }
 
   public int getOrder() {
     return this.order;
@@ -63,6 +69,21 @@ public abstract class AbstractParameter<T> implements Comparable<AbstractParamet
     this.title = requireNonNull(title);
     this.value = defaultValue;
     this.order = order;
+    this.importance = Importance.MAIN;
+  }
+
+  public AbstractParameter(final String id,
+                           final String title,
+                           final String comment,
+                           final T defaultValue,
+                           final int order,
+                           final Importance importance) {
+    this.id = requireNonNull(id);
+    this.comment = requireNonNull(comment);
+    this.title = requireNonNull(title);
+    this.value = defaultValue;
+    this.order = order;
+    this.importance = importance;
   }
 
   public AbstractParameter(final String id,
