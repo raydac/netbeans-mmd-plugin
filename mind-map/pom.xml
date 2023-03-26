@@ -165,9 +165,24 @@
                 <version>5.13.0</version>
             </dependency>
             <dependency>
+                <groupId>org.eclipse.elk</groupId>
+                <artifactId>org.eclipse.elk.core</artifactId>
+                <version>0.8.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.elk</groupId>
+                <artifactId>org.eclipse.elk.alg.layered</artifactId>
+                <version>0.8.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.elk</groupId>
+                <artifactId>org.eclipse.elk.alg.mrtree</artifactId>
+                <version>0.8.1</version>
+            </dependency>
+            <dependency>
                 <groupId>net.sourceforge.plantuml</groupId>
                 <artifactId>plantuml</artifactId>
-                <version>1.2023.4</version>
+                <version>1.2023.5</version>
             </dependency>
             <dependency>
                 <groupId>commons-codec</groupId>
