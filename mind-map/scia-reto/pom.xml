@@ -87,6 +87,12 @@
     <dependency>
       <groupId>org.eclipse.elk</groupId>
       <artifactId>org.eclipse.elk.core</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.eclipse.elk</groupId>
