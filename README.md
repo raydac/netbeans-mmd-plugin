@@ -15,18 +15,18 @@ Initially I developed a plugin for NetBeans IDE then the IntellijIDEA plugin was
 
 # Changelog
 
+__1.6.3 (SNAPSHOT)__
+- SR:  updated embedded JDK to 20+37
+- SR:  added Eclipse ELK
+- SR:  PlantUML updated to 1.2023.5
+- ALL: fimprovements of export plugins
+
 __1.6.2 (12-feb-2023)__
 - ALL: added fast navigation through bird's eye panel
 - ALL: refactoring of settings panel and text note editor panel
 - SR:  PlantUML updated to 1.2023.1
 - SR:  updated embedded JDK to 19.0.2+9
 - ALL: refactoring and bugfix
-
-__1.6.1 (15-jan-2023)__
-- ALL: added export into PlantUML mind map script
-- AP:  fixes in annotation processor
-- SR:  updated dependencies
-- SR:  PlantUML updated to 1.2023.0
 
 [Full changelog](https://github.com/raydac/netbeans-mmd-plugin/blob/master/changelog.txt)   
 
