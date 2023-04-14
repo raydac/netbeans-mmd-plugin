@@ -131,7 +131,7 @@ final class InternalLayoutBlock {
     this.parent = parent;
   }
 
-  private String findTitle() {
+  public String findTitle() {
     if (this.forceTitle != null) {
       return this.forceTitle;
     }

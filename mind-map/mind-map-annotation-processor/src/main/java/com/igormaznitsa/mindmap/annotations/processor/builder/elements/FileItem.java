@@ -18,9 +18,12 @@ package com.igormaznitsa.mindmap.annotations.processor.builder.elements;
 
 import static com.igormaznitsa.mindmap.annotations.MmdFile.MACROS_SRC_CLASS_FOLDER;
 import static com.igormaznitsa.mindmap.annotations.processor.builder.elements.AbstractItem.MmdAttribute.TOPIC_LINK_UID;
+import static java.util.Arrays.stream;
 import static java.util.Comparator.comparingLong;
 import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.joining;
 import static org.apache.commons.io.FilenameUtils.normalizeNoEndSeparator;
+import static org.apache.commons.lang3.StringUtils.abbreviate;
 import static org.apache.commons.lang3.StringUtils.isNoneBlank;
 
 import com.igormaznitsa.mindmap.annotations.MmdFile;
@@ -314,8 +317,14 @@ public class FileItem extends AbstractItem {
       current = foundRoots.get(0);
       index++;
     } else {
+      final String foundPaths = foundRoots.stream()
+          .map(x -> abbreviate(stream(x.findPath())
+              .map(y -> x.findTitle())
+              .collect(joining("/"))
+              .replaceAll("\\n", " "), 32))
+          .collect(joining(", ", "\"", "\""));
       throw new MmdAnnotationProcessorException(baseItem.getAnnotationItem(),
-          String.format("Path start has %d variant(s) in target mind map file", foundRoots.size()));
+          String.format("Found multiple path starts, there are %d variants in the target mind map file: %s", foundRoots.size(), foundPaths));
     }
 
     boolean generateAllRestPathNodes = current == null;
