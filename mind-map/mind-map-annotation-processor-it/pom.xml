@@ -105,7 +105,7 @@
                     <systemProperties>
                         <property>
                             <name>mmd.basedir</name>
-                            <value>${mmd.basedir}</value>
+                            <value>${project.basedir}</value>
                         </property>
                         <property>
                             <name>mmd.src.dir</name>

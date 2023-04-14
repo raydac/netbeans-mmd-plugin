@@ -170,14 +170,14 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
       }
     }
 
-    if (processingEnv.getOptions().containsKey(KEY_MMD_FILE_LINK_BASE_FOLDER)) {
+    final String baseFolderPathAsString = processingEnv.getOptions().getOrDefault(KEY_MMD_FILE_LINK_BASE_FOLDER, null);
+    if (baseFolderPathAsString != null) {
       this.optionFileLinkBaseFolder =
           Paths.get(
-              FilenameUtils.normalizeNoEndSeparator(
-                  processingEnv.getOptions().get(KEY_MMD_FILE_LINK_BASE_FOLDER)));
+              FilenameUtils.normalizeNoEndSeparator(baseFolderPathAsString));
       this.messager.printMessage(
           NOTE,
-          String.format("File link base folder for MMD files: %s", this.optionFileLinkBaseFolder));
+          String.format("Found provided file link base folder for MMD files: %s", this.optionFileLinkBaseFolder));
     }
 
     if (processingEnv.getOptions().containsKey(KEY_MMD_FILE_ROOT_FOLDER)) {
