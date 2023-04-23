@@ -1,8 +1,8 @@
-__1.6.3 (SNAPSHOT)__
-- SR:  updated embedded JDK to 20+37
+__1.6.3 (23-apr-2023)__
+- SR:  updated embedded JDK to 20.0.1+10
 - SR:  added Eclipse ELK
-- SR:  PlantUML updated to 1.2023.5
-- ALL: fimprovements of export plugins
+- SR:  PlantUML updated to 1.2023.6
+- ALL: improvements of export plugins
 
 __1.6.2 (12-feb-2023)__
 - ALL: added fast navigation through bird's eye panel

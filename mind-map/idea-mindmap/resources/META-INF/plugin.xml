@@ -12,8 +12,10 @@
     ]]></description>
 
     <change-notes><![CDATA[
-        <p>1.6.3 (SNAPSHOT)</p>
+        <p>1.6.3 (23-apr-2023)</p>
         <ul>
+          <li>improved export parameter panel</li>
+          <li>refactoring</li>
         </ul>
         <p>1.6.2.1 (12-feb-2023)</p>
         <ul>
