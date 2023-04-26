@@ -1871,6 +1871,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
               try {
                 KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(fullScreenEscCatcher);
                 device.setFullScreenWindow(window);
+                window.getContentPane().setVisible(true);
               } catch (Exception ex) {
                 LOGGER.error("Can't turn on full screen", ex); //NOI18N
                 endFullScreenIfActive();
