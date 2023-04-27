@@ -1,5 +1,5 @@
 __1.6.4 (SNAPSHOT)__
-
+- SR:  improved full-screen activation
 
 __1.6.3 (23-apr-2023)__
 - SR:  updated embedded JDK to 20.0.1+10
