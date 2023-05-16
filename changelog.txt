@@ -1,4 +1,5 @@
 __1.6.4 (SNAPSHOT)__
+- SR:  PlantUML updated to 1.2023.7
 - SR:  improved full-screen activation
 
 __1.6.3 (23-apr-2023)__
