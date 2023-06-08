@@ -19,13 +19,16 @@ package com.igormaznitsa.mindmap.swing.panel;
 import static java.util.Objects.requireNonNull;
 
 import com.igormaznitsa.mindmap.model.MiscUtils;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.utils.KeyShortcut;
 import com.igormaznitsa.mindmap.swing.panel.utils.MouseButton;
 import com.igormaznitsa.mindmap.swing.panel.utils.RenderQuality;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
+import java.awt.Toolkit;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.ByteArrayInputStream;
@@ -482,7 +485,14 @@ public final class MindMapPanelConfig implements Serializable {
             final int fontSize = prefs.getInt(fieldName + ".size", etalonFont.getSize());
             final int fontStyle = prefs.getInt(fieldName + ".style", etalonFont.getStyle());
 
-            f.set(this, new Font(fontName, fontStyle, fontSize));
+            Font newFont = new Font(fontName, fontStyle, fontSize);
+            try {
+              Objects.requireNonNull(Toolkit.getDefaultToolkit().getFontMetrics(newFont));
+            } catch (Exception ex) {
+              LoggerFactory.getLogger(MindMapPanelConfig.class).warn("Can't find font metrics for requested font: " + ex.getMessage());
+              newFont = findDefaultFont(Font.PLAIN, 18, Font.MONOSPACED, new String[] {"JetBrains Mono SemiBold"});
+            }
+            f.set(this, newFont);
           } else if (fieldClass == Color.class) {
             final int argb = prefs.getInt(fieldName, ((Color) f.get(etalon)).getRGB());
             f.set(this, new Color(argb, true));
