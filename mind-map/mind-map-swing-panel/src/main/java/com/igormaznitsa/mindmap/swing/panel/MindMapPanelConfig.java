@@ -588,6 +588,9 @@ public final class MindMapPanelConfig implements Serializable {
     return Float.compare(result, minimal) >= 0 ? result : minimal;
   }
 
+  private static Font cloneFont(final Font font) {
+    return new Font(font.getName(), font.getStyle(), font.getSize());
+  }
   public void makeFullCopyOf(final MindMapPanelConfig src, final boolean copyListeners,
                              final boolean makeNotification) {
     if (src != null) {
@@ -600,7 +603,12 @@ public final class MindMapPanelConfig implements Serializable {
         } else if ((f.getModifiers() & (Modifier.STATIC | Modifier.FINAL)) == 0 &&
             f.getType() != Map.class) {
           try {
-            f.set(this, f.get(src));
+            Object value = f.get(src);
+            if (value instanceof Font) {
+              final Font font = (Font)value;
+              value = cloneFont(font); // prevent possible bugs in deserialization of font object in IDE like IDEA
+            }
+            f.set(this, value);
           } catch (Exception ex) {
             throw new Error("Unexpected state during cloning field " + f, ex);
           }

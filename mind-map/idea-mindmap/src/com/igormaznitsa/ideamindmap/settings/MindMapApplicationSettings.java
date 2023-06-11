@@ -65,7 +65,7 @@ public class MindMapApplicationSettings implements ApplicationComponent, Persist
         @Override
         public MindMapPanelConfig fromString(final String value) {
             try {
-                return MindMapPanelConfig.deserialize(Base64.getDecoder().decode(value));
+                return new MindMapPanelConfig(MindMapPanelConfig.deserialize(Base64.getDecoder().decode(value)), false);
             } catch (Exception ex) {
                 LOGGER.warn("Detected incompatibility in config format, use default");
                 return new MindMapPanelConfig();
