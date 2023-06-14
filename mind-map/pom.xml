@@ -11,6 +11,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <elk.version>0.8.1</elk.version>
+        <plantuml.version>1.2023.9</plantuml.version>
     </properties>
 
     <modules>
@@ -167,22 +169,22 @@
             <dependency>
                 <groupId>org.eclipse.elk</groupId>
                 <artifactId>org.eclipse.elk.core</artifactId>
-                <version>0.8.1</version>
+                <version>${elk.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.elk</groupId>
                 <artifactId>org.eclipse.elk.alg.layered</artifactId>
-                <version>0.8.1</version>
+                <version>${elk.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.elk</groupId>
                 <artifactId>org.eclipse.elk.alg.mrtree</artifactId>
-                <version>0.8.1</version>
+                <version>${elk.version}</version>
             </dependency>
             <dependency>
                 <groupId>net.sourceforge.plantuml</groupId>
                 <artifactId>plantuml</artifactId>
-                <version>1.2023.9</version>
+                <version>${plantuml.version}</version>
             </dependency>
             <dependency>
                 <groupId>commons-codec</groupId>
