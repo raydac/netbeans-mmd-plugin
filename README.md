@@ -14,19 +14,16 @@ Initially I developed a plugin for NetBeans IDE then the IntellijIDEA plugin was
 ![Screenshots from all](./assets/screenshots_all.png)
 
 # Changelog
+__1.6.4 (SNAPSHOT)__
+- IJ:  "Knowledge folders" pane removed [#116](https://github.com/raydac/netbeans-mmd-plugin/issues/116)
+- SR:  PlantUML updated to 1.2023.9
+- SR:  improved full-screen activation
 
 __1.6.3 (23-apr-2023)__
 - SR:  updated embedded JDK to 20.0.1+10
 - SR:  added Eclipse ELK
 - SR:  PlantUML updated to 1.2023.6
 - ALL: improvements of export plugins
-
-__1.6.2 (12-feb-2023)__
-- ALL: added fast navigation through bird's eye panel
-- ALL: refactoring of settings panel and text note editor panel
-- SR:  PlantUML updated to 1.2023.1
-- SR:  updated embedded JDK to 19.0.2+9
-- ALL: refactoring and bugfix
 
 [Full changelog](https://github.com/raydac/netbeans-mmd-plugin/blob/master/changelog.txt)   
 
