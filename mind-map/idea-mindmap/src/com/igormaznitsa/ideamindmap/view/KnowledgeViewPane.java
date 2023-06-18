@@ -21,13 +21,10 @@ import com.intellij.ide.DataManager;
 import com.intellij.ide.PsiCopyPasteManager;
 import com.intellij.ide.SelectInTarget;
 import com.intellij.ide.dnd.aware.DnDAwareTree;
-import com.intellij.ide.projectView.BaseProjectTreeBuilder;
 import com.intellij.ide.projectView.impl.AbstractProjectViewPane;
 import com.intellij.ide.projectView.impl.ProjectViewTree;
 import com.intellij.ide.ui.customization.CustomizationUtil;
-import com.intellij.ide.util.treeView.AbstractTreeBuilder;
 import com.intellij.ide.util.treeView.AbstractTreeStructure;
-import com.intellij.ide.util.treeView.AbstractTreeUpdater;
 import com.intellij.openapi.actionSystem.ActionPlaces;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.actionSystem.IdeActions;
@@ -89,7 +86,6 @@ public class KnowledgeViewPane extends AbstractProjectViewPane {
     enableDnD();
     myComponent = ScrollPaneFactory.createScrollPane(myTree);
     myTreeStructure = createStructure();
-    setTreeBuilder(createBuilder(treeModel));
 
     installComparator();
     initTree();
@@ -187,20 +183,6 @@ public class KnowledgeViewPane extends AbstractProjectViewPane {
     CustomizationUtil.installPopupHandler(myTree, IdeActions.GROUP_PROJECT_VIEW_POPUP, ActionPlaces.PROJECT_VIEW_POPUP);
   }
 
-  private AbstractTreeUpdater createTreeUpdater(final AbstractTreeBuilder builder) {
-    return new AbstractTreeUpdater(builder);
-  }
-
-  @Nonnull
-  protected BaseProjectTreeBuilder createBuilder(DefaultTreeModel treeModel) {
-    return new KnowledgeViewTreeBuilder(myProject, myTree, treeModel, null, (KnowledgeViewPanelTreeStructure) myTreeStructure) {
-      @Override
-      protected AbstractTreeUpdater createUpdater() {
-        return createTreeUpdater(this);
-      }
-    };
-  }
-
   @Nonnull
   @Override
   public ActionCallback updateFromRoot(boolean restoreExpandedPaths) {
@@ -210,7 +192,7 @@ public class KnowledgeViewPane extends AbstractProjectViewPane {
   @Override
   public void select(Object element, VirtualFile file, boolean requestFocus) {
     if (file != null) {
-      ((KnowledgeViewTreeBuilder) getTreeBuilder()).select(element, file, requestFocus);
+
     }
   }
 

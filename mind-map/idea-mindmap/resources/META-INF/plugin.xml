@@ -248,7 +248,7 @@
         <facetType implementation="com.igormaznitsa.ideamindmap.facet.MindMapFacetType"/>
         <framework.detector implementation="com.igormaznitsa.ideamindmap.facet.MindMapFacetDetector"/>
         <applicationConfigurable instance="com.igormaznitsa.ideamindmap.settings.MindMapSettingsComponent"/>
-        <projectViewPane implementation="com.igormaznitsa.ideamindmap.view.KnowledgeViewPane"/>
+<!--        <projectViewPane implementation="com.igormaznitsa.ideamindmap.view.KnowledgeViewPane"/>-->
         <annotator language="NBMindMap"
                    implementationClass="com.igormaznitsa.ideamindmap.lang.highlighter.MMAnnotator"/>
         <lang.syntaxHighlighterFactory language="NBMindMap"
