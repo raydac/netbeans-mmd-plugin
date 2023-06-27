@@ -19,7 +19,11 @@
 package com.igormaznitsa.sciareto.ui.editors;
 
 import static com.igormaznitsa.meta.common.utils.Assertions.fail;
+import static java.util.Objects.requireNonNull;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -35,174 +39,28 @@ import org.fife.ui.rsyntaxtextarea.TokenMap;
 
 public class PlantUmlTokenMaker extends AbstractTokenMaker {
 
-  private static final List<String> RESERVED_WORDS = new ArrayList<>();
+  private static final List<String> RESERVED_WORDS;
+
+  private static final String PLANTUML_KEWORD_RESOURCE = "/puml/pumlkeywords.txt";
 
   static {
-    RESERVED_WORDS.add("@endboard");
-    RESERVED_WORDS.add("@endbpm");
-    RESERVED_WORDS.add("@endcreole");
-    RESERVED_WORDS.add("@endcute");
-    RESERVED_WORDS.add("@enddef");
-    RESERVED_WORDS.add("@endditaa");
-    RESERVED_WORDS.add("@enddot");
-    RESERVED_WORDS.add("@endflow");
-    RESERVED_WORDS.add("@endgantt");
-    RESERVED_WORDS.add("@endgit");
-    RESERVED_WORDS.add("@endjcckit");
-    RESERVED_WORDS.add("@endjson");
-    RESERVED_WORDS.add("@endlatex");
-    RESERVED_WORDS.add("@endmath");
-    RESERVED_WORDS.add("@endmindmap");
-    RESERVED_WORDS.add("@endnwdiag");
-    RESERVED_WORDS.add("@endproject");
-    RESERVED_WORDS.add("@endsalt");
-    RESERVED_WORDS.add("@endtree");
-    RESERVED_WORDS.add("@enduml");
-    RESERVED_WORDS.add("@endwbs");
-    RESERVED_WORDS.add("@endebnf");
-    RESERVED_WORDS.add("@endwire");
-    RESERVED_WORDS.add("@endyaml");
-    RESERVED_WORDS.add("@startboard");
-    RESERVED_WORDS.add("@startbpm");
-    RESERVED_WORDS.add("@startebnf");
-    RESERVED_WORDS.add("@startcreole");
-    RESERVED_WORDS.add("@startcute");
-    RESERVED_WORDS.add("@startdef");
-    RESERVED_WORDS.add("@startditaa");
-    RESERVED_WORDS.add("@startdot");
-    RESERVED_WORDS.add("@startflow");
-    RESERVED_WORDS.add("@startgantt");
-    RESERVED_WORDS.add("@startgit");
-    RESERVED_WORDS.add("@startjcckit");
-    RESERVED_WORDS.add("@startjson");
-    RESERVED_WORDS.add("@startlatex");
-    RESERVED_WORDS.add("@startmath");
-    RESERVED_WORDS.add("@startmindmap");
-    RESERVED_WORDS.add("@startnwdiag");
-    RESERVED_WORDS.add("@startproject");
-    RESERVED_WORDS.add("@startsalt");
-    RESERVED_WORDS.add("@starttree");
-    RESERVED_WORDS.add("@startuml");
-    RESERVED_WORDS.add("@startwbs");
-    RESERVED_WORDS.add("@startwire");
-    RESERVED_WORDS.add("@startyaml");
-    RESERVED_WORDS.add("across");
-    RESERVED_WORDS.add("activate");
-    RESERVED_WORDS.add("again");
-    RESERVED_WORDS.add("allow_mixing");
-    RESERVED_WORDS.add("allowmixing");
-    RESERVED_WORDS.add("also");
-    RESERVED_WORDS.add("alt");
-    RESERVED_WORDS.add("as");
-    RESERVED_WORDS.add("autonumber");
-    RESERVED_WORDS.add("bold");
-    RESERVED_WORDS.add("bottom");
-    RESERVED_WORDS.add("box");
-    RESERVED_WORDS.add("break");
-    RESERVED_WORDS.add("caption");
-    RESERVED_WORDS.add("center");
-    RESERVED_WORDS.add("circle");
-    RESERVED_WORDS.add("color");
-    RESERVED_WORDS.add("create");
-    RESERVED_WORDS.add("critical");
-    RESERVED_WORDS.add("dashed");
-    RESERVED_WORDS.add("deactivate");
-    RESERVED_WORDS.add("description");
-    RESERVED_WORDS.add("destroy");
-    RESERVED_WORDS.add("detach");
-    RESERVED_WORDS.add("dotted");
-    RESERVED_WORDS.add("down");
-    RESERVED_WORDS.add("else");
-    RESERVED_WORDS.add("elseif");
-    RESERVED_WORDS.add("empty");
-    RESERVED_WORDS.add("end");
-    RESERVED_WORDS.add("endif");
-    RESERVED_WORDS.add("endwhile");
-    RESERVED_WORDS.add("false");
-    RESERVED_WORDS.add("footbox");
-    RESERVED_WORDS.add("footer");
-    RESERVED_WORDS.add("fork");
-    RESERVED_WORDS.add("group");
-    RESERVED_WORDS.add("header");
-    RESERVED_WORDS.add("hide");
-    RESERVED_WORDS.add("hnote");
-    RESERVED_WORDS.add("if");
-    RESERVED_WORDS.add("is");
-    RESERVED_WORDS.add("italic");
-    RESERVED_WORDS.add("kill");
-    RESERVED_WORDS.add("left");
-    RESERVED_WORDS.add("left to right direction");
-    RESERVED_WORDS.add("legend");
-    RESERVED_WORDS.add("link");
-    RESERVED_WORDS.add("loop");
-    RESERVED_WORDS.add("mainframe");
-    RESERVED_WORDS.add("map");
-    RESERVED_WORDS.add("members");
-    RESERVED_WORDS.add("namespace");
-    RESERVED_WORDS.add("newpage");
-    RESERVED_WORDS.add("normal");
-    RESERVED_WORDS.add("note");
-    RESERVED_WORDS.add("of");
-    RESERVED_WORDS.add("on");
-    RESERVED_WORDS.add("opt");
-    RESERVED_WORDS.add("order");
-    RESERVED_WORDS.add("over");
-    RESERVED_WORDS.add("package");
-    RESERVED_WORDS.add("page");
-    RESERVED_WORDS.add("par");
-    RESERVED_WORDS.add("partition");
-    RESERVED_WORDS.add("plain");
-    RESERVED_WORDS.add("ref");
-    RESERVED_WORDS.add("repeat");
-    RESERVED_WORDS.add("return");
-    RESERVED_WORDS.add("right");
-    RESERVED_WORDS.add("rnote");
-    RESERVED_WORDS.add("rotate");
-    RESERVED_WORDS.add("show");
-    RESERVED_WORDS.add("skin");
-    RESERVED_WORDS.add("skinparam");
-    RESERVED_WORDS.add("split");
-    RESERVED_WORDS.add("sprite");
-    RESERVED_WORDS.add("start");
-    RESERVED_WORDS.add("stereotype");
-    RESERVED_WORDS.add("stop");
-    RESERVED_WORDS.add("style");
-    RESERVED_WORDS.add("then");
-    RESERVED_WORDS.add("title");
-    RESERVED_WORDS.add("top");
-    RESERVED_WORDS.add("top to bottom direction");
-    RESERVED_WORDS.add("true");
-    RESERVED_WORDS.add("up");
-    RESERVED_WORDS.add("while");
-
-    RESERVED_WORDS.add("!assert");
-    RESERVED_WORDS.add("!define");
-    RESERVED_WORDS.add("!definelong");
-    RESERVED_WORDS.add("!dump_memory");
-    RESERVED_WORDS.add("!else");
-    RESERVED_WORDS.add("!enddefinelong");
-    RESERVED_WORDS.add("!endfunction");
-    RESERVED_WORDS.add("!endif");
-    RESERVED_WORDS.add("!endprocedure");
-    RESERVED_WORDS.add("!endsub");
-    RESERVED_WORDS.add("!exit");
-    RESERVED_WORDS.add("!function");
-    RESERVED_WORDS.add("!if");
-    RESERVED_WORDS.add("!ifdef");
-    RESERVED_WORDS.add("!ifndef");
-    RESERVED_WORDS.add("!import");
-    RESERVED_WORDS.add("!include");
-    RESERVED_WORDS.add("!local");
-    RESERVED_WORDS.add("!log");
-    RESERVED_WORDS.add("!pragma");
-    RESERVED_WORDS.add("!procedure");
-    RESERVED_WORDS.add("!return");
-    RESERVED_WORDS.add("!startsub");
-    RESERVED_WORDS.add("!theme");
-    RESERVED_WORDS.add("!undef");
-    RESERVED_WORDS.add("!unquoted");
-
-    Collections.sort(RESERVED_WORDS);
+    final List<String> loaded = new ArrayList<>();
+    try (final BufferedReader reader = new BufferedReader(new InputStreamReader(
+        requireNonNull(PlantUmlTokenMaker.class.getResourceAsStream(PLANTUML_KEWORD_RESOURCE),
+            "Can't find PlantUML keywords list for resource: " + PLANTUML_KEWORD_RESOURCE)))) {
+      String line;
+      while ((line = reader.readLine()) != null) {
+        final String trimmed = line.trim();
+        if (trimmed.isEmpty() || trimmed.startsWith(";")) {
+          continue;
+        }
+        loaded.add(trimmed);
+      }
+    } catch (IOException ex) {
+      throw new Error("Can't read PlantUML keyword list from " + PLANTUML_KEWORD_RESOURCE, ex);
+    }
+    Collections.sort(loaded);
+    RESERVED_WORDS = Collections.unmodifiableList(loaded);
   }
 
   @Override
