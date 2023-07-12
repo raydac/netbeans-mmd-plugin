@@ -30,7 +30,6 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
@@ -58,7 +57,6 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
       + "Sub-topologies:\n"
       + "Sub-topology: 0\n"
       + "	Source:  KSTREAM-SOURCE-0000000000 (topics: [conversation-meta])\n";
-  public final FileFilter sourceFileFilter = makeFileFilter();
   private static final String MIME = "text/kstpl";
   private static final String PROPERTY_ORTHOGONAL = "edge.ortho";
   private static final String PROPERTY_TOPICS_GROUP = "group.topics";
@@ -67,6 +65,7 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
   private static final String PROPERTY_LAYOUT_HORIZ = "layout.horiz";
   private static final Pattern GLOBAL_STORAGE_SUBTOPOLOGY =
       Pattern.compile(".*global.*store.*", Pattern.CASE_INSENSITIVE);
+  public final FileFilter sourceFileFilter = makeFileFilter();
   private volatile boolean modeOrtho;
   private volatile boolean modeHoriz;
   private volatile boolean modeGroupTopics;
@@ -107,9 +106,21 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
       @Override
       @Nonnull
       public String getDescription() {
-        return SrI18n.getInstance().findBundle().getString("editorAbstractPlUml.fileFilter.kstpl.description");
+        return SrI18n.getInstance().findBundle()
+            .getString("editorAbstractPlUml.fileFilter.kstpl.description");
       }
     };
+  }
+
+  private static String preprocessId(final IdType idType, final String elementId) {
+    switch (idType) {
+      case STORES:
+        return "store_" + elementId;
+      case TOPICS:
+        return "topic_" + elementId;
+      default:
+        return elementId;
+    }
   }
 
   @Override
@@ -166,8 +177,9 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
               result.put(e.id, "__tel_" + counter.incrementAndGet());
             }
             e.dataItems.forEach((k, v) -> v.forEach(z -> {
-              if (!result.containsKey(z)) {
-                result.put(z,
+              final String processedId = preprocessId(IdType.find(k), z);
+              if (!result.containsKey(processedId)) {
+                result.put(processedId,
                     "__dta_" + (k.hashCode() & 0x7FFFFFFF) + "_" + counter.incrementAndGet());
               }
             }));
@@ -285,44 +297,29 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
         final StringBuilder bufferStores = new StringBuilder();
         final StringBuilder bufferOthers = new StringBuilder();
 
-        final int TYPE_BROKER = 0;
-        final int TYPE_STORES = 1;
-        final int TYPE_OTHER = 2;
-
         t.subTopologies.stream().flatMap(st -> st.children.values().stream())
             .flatMap(el -> el.dataItems.entrySet().stream())
             .forEach(es -> {
-              final String keyLowCase = es.getKey().trim().toLowerCase(Locale.ENGLISH);
+              final IdType idType = IdType.find(es.getKey());
               es.getValue().forEach(elem -> {
-                final String type;
-                int storeType = TYPE_OTHER;
-                if (keyLowCase.startsWith("topic")) {
-                  storeType = TYPE_BROKER;
-                  type = "queue";
-                } else if (keyLowCase.startsWith("store")) {
-                  storeType = TYPE_STORES;
-                  type = "database";
-                } else {
-                  type = "file";
-                }
-
-                switch (storeType) {
-                  case TYPE_BROKER: {
+                switch (idType) {
+                  case TOPICS: {
                     bufferBroker.append(
-                        format("%s \"%s\" as %s%n", type, makePumlMultiline(unicode(elem), 32),
-                            keys.get(elem)));
+                        format("%s \"%s\" as %s%n", "queue", makePumlMultiline(unicode(elem), 32),
+                            keys.get(preprocessId(IdType.TOPICS, elem))));
                   }
                   break;
-                  case TYPE_STORES: {
+                  case STORES: {
                     bufferStores.append(
-                        format("%s \"%s\" as %s%n", type, makePumlMultiline(unicode(elem), 10),
-                            keys.get(elem)));
+                        format("%s \"%s\" as %s%n", "database",
+                            makePumlMultiline(unicode(elem), 10),
+                            keys.get(preprocessId(IdType.STORES, elem))));
                   }
                   break;
                   default: {
                     bufferOthers.append(
-                        format("%s \"%s\" as %s%n", type, makePumlMultiline(unicode(elem), 10),
-                            keys.get(elem)));
+                        format("%s \"%s\" as %s%n", "file", makePumlMultiline(unicode(elem), 10),
+                            keys.get(preprocessId(IdType.OTHERS, elem))));
                   }
                   break;
                 }
@@ -358,31 +355,36 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
         }
       }
 
-      parser.getTopologies().forEach(topology -> Stream.concat(topology.subTopologies.stream().flatMap(st -> st.children.values().stream()),
+      parser.getTopologies().forEach(topology -> Stream.concat(
+              topology.subTopologies.stream().flatMap(st -> st.children.values().stream()),
               topology.orphans.stream())
           .forEach(element -> {
             final String elemKey = keys.get(element.id);
-            element.to.forEach(dst -> builder.append(format("%s -->> %s%n", elemKey, keys.get(dst.id))));
+            element.to.forEach(
+                dst -> builder.append(format("%s -->> %s%n", elemKey, keys.get(dst.id))));
             element.from.stream()
                 .filter(src -> src.to.stream().noneMatch(tl -> tl.id.equals(element.id)))
                 .forEach(src -> builder.append(format("%s -->> %s%n", keys.get(src.id), elemKey)));
-            element.dataItems.values().stream().flatMap(Collection::stream)
-                .forEach(dataItemName -> {
-                  final String link;
-                  switch (KStreamType.find(element)) {
-                    case SOURCE:
-                      link = "<<=.=";
-                      break;
-                    case SINK:
-                      link = "=.=>>";
-                      break;
-                    default:
-                      link = "=.=";
-                      break;
-                  }
-                  builder.append(format("%s %s %s%n", elemKey, link, keys.get(dataItemName)));
-                });
 
+            element.dataItems.entrySet().forEach(e -> {
+              final IdType idType = IdType.find(e.getKey());
+              e.getValue().forEach(dataItemName -> {
+                final String link;
+                switch (KStreamType.find(element)) {
+                  case SOURCE:
+                    link = "<<=.=";
+                    break;
+                  case SINK:
+                    link = "=.=>>";
+                    break;
+                  default:
+                    link = "=.=";
+                    break;
+                }
+                builder.append(format("%s %s %s%n", elemKey, link,
+                    keys.get(preprocessId(idType, dataItemName))));
+              });
+            });
           }));
 
       builder.append("@enduml\n");
@@ -430,8 +432,9 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
     buttonClipboardText.setName("BUTTON.PLANTUML");
     buttonClipboardText.setToolTipText(
         this.bundle.getString("editorKsTpl.buttonClipboardTtext.tooltip"));
-    buttonClipboardText.addActionListener((ActionEvent e) -> Toolkit.getDefaultToolkit().getSystemClipboard()
-        .setContents(new StringSelection(preprocessEditorText(editor.getText())), null));
+    buttonClipboardText.addActionListener(
+        (ActionEvent e) -> Toolkit.getDefaultToolkit().getSystemClipboard()
+            .setContents(new StringSelection(preprocessEditorText(editor.getText())), null));
 
     checkBoxGroupTopics =
         new JCheckBox(this.bundle.getString("editorKsTpl.checkBoxGroupTopics.title"),
@@ -491,6 +494,23 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
   @Nonnull
   public FileFilter getFileFilter() {
     return sourceFileFilter;
+  }
+
+  private enum IdType {
+    STORES,
+    TOPICS,
+    OTHERS;
+
+    static IdType find(final String elementType) {
+      final String normalized = elementType.trim().toLowerCase(Locale.ENGLISH);
+      if (normalized.startsWith("topic")) {
+        return TOPICS;
+      }
+      if (normalized.startsWith("store")) {
+        return STORES;
+      }
+      return OTHERS;
+    }
   }
 
   private enum PartitioningFlag {
