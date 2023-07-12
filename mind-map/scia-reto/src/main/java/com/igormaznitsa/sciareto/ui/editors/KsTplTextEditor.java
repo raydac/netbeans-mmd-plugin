@@ -112,7 +112,8 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
     };
   }
 
-  private static String preprocessId(final IdType idType, final String elementId) {
+  @Nonnull
+  private static String preprocessId(@Nonnull final IdType idType, @Nonnull final String elementId) {
     switch (idType) {
       case STORES:
         return "store_" + elementId;
