@@ -16,6 +16,7 @@ Initially I developed a plugin for NetBeans IDE then the IntellijIDEA plugin was
 # Changelog
 __1.6.4 (SNAPSHOT)__
 - IJ:  "Knowledge folders" pane removed [#116](https://github.com/raydac/netbeans-mmd-plugin/issues/116)
+- SR:  improved rendering of KafkaStreams topology
 - SR:  PlantUML updated to 1.2023.9
 - SR:  improved full-screen activation
 
