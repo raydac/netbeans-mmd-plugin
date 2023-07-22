@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.igormaznitsa</groupId>
     <artifactId>mind-map</artifactId>
-    <version>1.6.4-SNAPSHOT</version>
+    <version>1.6.4</version>
     <packaging>pom</packaging>
 
     <inceptionYear>2015</inceptionYear>
