@@ -1,8 +1,8 @@
 <!--suppress XmlUnboundNsPrefix -->
-<idea-plugin version="2">
+<idea-plugin>
     <id>nb-mind-map-idea</id>
     <name>IDEA Mind Map</name>
-    <version>1.6.4</version>
+    <version>1.6.5</version>
     <vendor url="https://www.igormaznitsa.com">Igor Maznitsa</vendor>
 
     <category>Knowledge management</category>
@@ -12,6 +12,10 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <p>1.6.5 (SNAPSHOT)</p>
+        <ul>
+          <li></li>
+        </ul>
         <p>1.6.4 (22-jul-2023)</p>
         <ul>
           <li>removed "Knowledge folder" pane</li>
