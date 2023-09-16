@@ -14,6 +14,9 @@ Initially I developed a plugin for NetBeans IDE then the IntellijIDEA plugin was
 ![Screenshots from all](./assets/screenshots_all.png)
 
 # Changelog
+__1.6.5 (SNAPSHOT)__
+- SR:  PlantUML updated to 1.2023.11
+
 __1.6.4 (22-jul-2023)__
 - IJ:  "Knowledge folders" pane removed [#116](https://github.com/raydac/netbeans-mmd-plugin/issues/116)
 - SR:  improved rendering of KafkaStreams topology
