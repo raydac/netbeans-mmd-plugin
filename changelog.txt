@@ -1,4 +1,5 @@
 __1.6.5 (SNAPSHOT)
+- SR:  embedded JDK updated to 20.0.2+10
 - SR:  PlantUML updated to 1.2023.11
 
 __1.6.4 (22-jul-2023)__

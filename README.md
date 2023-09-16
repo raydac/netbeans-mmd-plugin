@@ -16,6 +16,7 @@ Initially I developed a plugin for NetBeans IDE then the IntellijIDEA plugin was
 # Changelog
 __1.6.5 (SNAPSHOT)__
 - SR:  PlantUML updated to 1.2023.11
+- SR:  embedded JDK updated to 20.0.2+10
 
 __1.6.4 (22-jul-2023)__
 - IJ:  "Knowledge folders" pane removed [#116](https://github.com/raydac/netbeans-mmd-plugin/issues/116)
