@@ -24,7 +24,7 @@
 
   <properties>
     <app.name>sciareto-${project.version}</app.name>
-    <jre.version>20.0.2+10</jre.version>
+    <jre.version>21+37</jre.version>
   </properties>
 
   <dependencies>
