@@ -16,7 +16,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <mvn.golang.go.version>1.21.0</mvn.golang.go.version>
+        <mvn.golang.go.version>1.21.3</mvn.golang.go.version>
         <maven.test.skip>true</maven.test.skip>
         <target.name>scia-reto</target.name>
         <final.extension>.exe</final.extension>
