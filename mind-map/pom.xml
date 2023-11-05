@@ -398,7 +398,15 @@
                         <configuration>
                             <rules>
                                 <dependencyConvergence/>
+                                <banDuplicateClasses/>
+                                <banCircularDependencies/>
                                 <reactorModuleConvergence/>
+                                <enforceBytecodeVersion>
+                                    <maxJdkVersion>9</maxJdkVersion>
+                                    <ignoredScopes>
+                                        <ignoredScope>test</ignoredScope>
+                                    </ignoredScopes>
+                                </enforceBytecodeVersion>
                                 <requireJavaVersion>
                                     <version>9.0</version>
                                 </requireJavaVersion>
@@ -409,6 +417,13 @@
                         </goals>
                     </execution>
                 </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>extra-enforcer-rules</artifactId>
+                        <version>1.7.0</version>
+                    </dependency>
+                </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>

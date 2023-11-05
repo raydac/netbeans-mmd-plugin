@@ -857,6 +857,9 @@
                 <filter>
                   <artifact>*:*</artifact>
                   <excludes>
+                    <exclude>META-INF/eclipse.inf</exclude>
+                    <exclude>META-INF/LICENSE</exclude>
+                    <exclude>META-INF/MANIFEST.MF</exclude>
                     <exclude>about.*</exclude>
                     <exclude>plugin.*</exclude>
                     <exclude>META-INF/*.SF</exclude>
@@ -869,11 +872,15 @@
                     <exclude>META-INF/AL2.0</exclude>
                     <exclude>META-INF/LGPL2.1</exclude>
                     <exclude>META-INF/COPYING</exclude>
+                    <exclude>modeling32.png</exclude>
                   </excludes>
                 </filter>
               </filters>
               <transformers>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>SciaReto</mainClass>
+                </transformer>
               </transformers>
               <minimizeJar>false</minimizeJar>
             </configuration>
