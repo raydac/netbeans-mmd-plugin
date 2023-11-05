@@ -15,6 +15,12 @@
     <name>MMD Annotation processor</name>
     <description>Annotation processor to find and generate annotation source based MMD mind map files</description>
 
+    <properties>
+        <maven.compiler.source>9</maven.compiler.source>
+        <maven.compiler.target>9</maven.compiler.target>
+    </properties>
+
+
     <profiles>
         <profile>
             <id>publish</id>
@@ -104,9 +110,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <release>9</release>
-                    <source>9</source>
-                    <target>9</target>
+                    <release>${maven.compiler.target}</release>
                     <verbose>true</verbose>
                     <showDeprecation>true</showDeprecation>
                     <showWarnings>true</showWarnings>

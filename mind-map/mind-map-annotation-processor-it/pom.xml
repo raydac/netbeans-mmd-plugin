@@ -14,6 +14,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>9</maven.compiler.source>
+        <maven.compiler.target>9</maven.compiler.target>
     </properties>
 
     <dependencies>
@@ -93,9 +95,7 @@
                         <compilerArg>-J-Djava.awt.headless=true</compilerArg>
                         <compilerArg>-Ammd.file.link.base.folder=${mmd.basedir}</compilerArg>
                     </compilerArgs>
-                    <release>9</release>
-                    <source>9</source>
-                    <target>9</target>
+                    <release>${maven.compiler.target}</release>
                 </configuration>
             </plugin>
             <plugin>
