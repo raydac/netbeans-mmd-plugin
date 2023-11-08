@@ -400,13 +400,20 @@
                         <configuration>
                             <rules>
                                 <dependencyConvergence/>
-                                <banDuplicateClasses/>
+                                <banDuplicateClasses>
+                                    <ignoreClasses>
+                                        <ignoreClass>org.netbeans.modules.openide.*</ignoreClass>
+                                    </ignoreClasses>
+                                    <findAllDuplicates>true</findAllDuplicates>
+                                    <ignoreWhenIdentical>true</ignoreWhenIdentical>
+                                </banDuplicateClasses>
                                 <banCircularDependencies/>
                                 <reactorModuleConvergence/>
                                 <enforceBytecodeVersion>
                                     <maxJdkVersion>9</maxJdkVersion>
                                     <ignoredScopes>
                                         <ignoredScope>test</ignoredScope>
+                                        <ignoredScope>system</ignoredScope>
                                     </ignoredScopes>
                                 </enforceBytecodeVersion>
                                 <requireJavaVersion>
