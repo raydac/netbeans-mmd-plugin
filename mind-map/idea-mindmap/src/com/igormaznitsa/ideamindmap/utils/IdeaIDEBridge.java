@@ -47,7 +47,7 @@ public class IdeaIDEBridge implements IDEBridge {
     final ApplicationInfo info = ApplicationInfo.getInstance();
     final long major = safeNumberExtraction(info.getMajorVersion());
     final long minor = safeNumberExtraction(info.getMinorVersion());
-    final long micro = safeNumberExtraction(IdeaUtils.safeInvokeMethodForResult(info, "0", "getMicroVersion", new Class<?>[0], new Object[0]));
+    final long micro = safeNumberExtraction(IdeaUtils.safeInvokeMethodForResult(ApplicationInfo.class, info, "0", "getMicroVersion", new Class<?>[0], new Object[0]));
     this.ideVersion = new Version("intellij", new long[] {major, minor, micro}, info.getVersionName());
   }
 

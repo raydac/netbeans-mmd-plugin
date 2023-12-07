@@ -246,7 +246,9 @@ public final class IdeaUtils {
 
   @SuppressWarnings("unchecked")
   @Nullable
-  public static <T> T safeInvokeMethodForResult(@Nonnull final Object instance,
+  public static <T> T safeInvokeMethodForResult(
+                                                @Nonnull final Class<?> instanceClass,
+                                                @Nonnull final Object instance,
                                                 @Nonnull final T defaultResult,
                                                 @Nonnull final String methodName,
                                                 @Nonnull @MustNotContainNull
@@ -255,18 +257,18 @@ public final class IdeaUtils {
                                                 final Object[] arguments) {
     final Method method;
     try {
-      method = instance.getClass().getMethod(methodName, argumentClasses);
+      method = instanceClass.getMethod(methodName, argumentClasses);
     } catch (NoSuchMethodException ex) {
       LOGGER.info(
-          "Can't find method '" + methodName + "' in class " + instance.getClass().getName());
+          "Can't find method '" + methodName + "' in class " + instanceClass.getName());
       return defaultResult;
     }
 
     try {
       return (T) method.invoke(instance, arguments);
     } catch (Exception ex) {
-      LOGGER.error("Error during call " + instance.getClass().getName() + "." + methodName +
-          ", default result will be returned");
+      LOGGER.error("Error during call " + instanceClass.getName() + "." + methodName +
+          ", default result will be returned, error message = " + ex.getMessage());
     }
     return defaultResult;
   }
