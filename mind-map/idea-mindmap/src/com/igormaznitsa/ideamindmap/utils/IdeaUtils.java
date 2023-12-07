@@ -180,12 +180,20 @@ public final class IdeaUtils {
   }
 
   @Nullable
-  public static Object callGetInstance(@Nonnull final String className) {
-    Object result = null;
+  public static Class<?> findClass(@Nonnull final String className) {
     try {
-      final Class<?> foundClass = Class.forName(className);
+      return Class.forName(className);
+    } catch (ClassNotFoundException ex) {
+      return null;
+    }
+  }
+
+  @Nullable
+  public static Object callGetInstance(@Nullable final Class<?> classRef) {
+    Object result = null;
+    if (classRef != null) {
       try {
-        final Method instanceMethod = foundClass.getMethod("getInstance");
+        final Method instanceMethod = classRef.getMethod("getInstance");
         if (Modifier.isStatic(instanceMethod.getModifiers())) {
           result = instanceMethod.invoke(null);
         }
@@ -194,19 +202,18 @@ public final class IdeaUtils {
       } catch (Exception ex) {
         result = null;
       }
-    } catch (final ClassNotFoundException ex) {
-      result = null;
     }
     return result;
   }
 
   public static boolean submitTransactionLater(@Nonnull final Runnable runnable) {
-    final Object transactionGuardInstance =
-        callGetInstance("com.intellij.openapi.application.TransactionGuard");
+    final Class<?> transactionGuardClass = findClass("com.intellij.openapi.application.TransactionGuard");
+    final Object transactionGuardInstance = callGetInstance(transactionGuardClass);
 
     boolean result = false;
     if (transactionGuardInstance != null) {
-      result = safeInvokeMethodNoResult(transactionGuardInstance, "submitTransactionLater",
+      result = safeInvokeMethodNoResult(transactionGuardClass, transactionGuardInstance,
+          "submitTransactionLater",
           new Class<?>[] {Disposable.class, Runnable.class}, new Object[] {(Disposable) () -> {
           }, runnable});
     }
@@ -273,7 +280,9 @@ public final class IdeaUtils {
     return defaultResult;
   }
 
-  public static boolean safeInvokeMethodNoResult(@Nonnull final Object instance,
+  public static boolean safeInvokeMethodNoResult(
+                                                 @Nonnull final Class<?> instanceClass,
+                                                 @Nonnull final Object instance,
                                                  @Nonnull final String methodName,
                                                  @Nonnull @MustNotContainNull
                                                  final Class<?>[] argumentClasses,
@@ -281,10 +290,10 @@ public final class IdeaUtils {
                                                  final Object[] arguments) {
     final Method method;
     try {
-      method = instance.getClass().getMethod(methodName, argumentClasses);
+      method = instanceClass.getMethod(methodName, argumentClasses);
     } catch (NoSuchMethodException ex) {
       LOGGER.info(
-          "Can't find method '" + methodName + "' in class " + instance.getClass().getName());
+          "Can't find method '" + methodName + "' in class " + instanceClass.getName());
       return false;
     }
 
@@ -292,7 +301,7 @@ public final class IdeaUtils {
       method.invoke(instance, arguments);
       return true;
     } catch (Exception ex) {
-      LOGGER.error("Error during call " + instance.getClass().getName() + "." + methodName);
+      LOGGER.error("Error during call " + instanceClass.getName() + "." + methodName + ", error message = " + ex.getMessage());
     }
     return false;
   }
