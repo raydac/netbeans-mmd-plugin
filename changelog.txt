@@ -1,6 +1,7 @@
 __1.6.5 (SNAPSHOT)
-- SR:  embedded JDK updated to 21+37
-- SR:  PlantUML updated to 1.2023.11
+- IJ:  Fixed error for access to private field in ApplicationInfo [#119](https://github.com/raydac/netbeans-mmd-plugin/issues/119)
+- SR:  embedded JDK updated to 21.0.1+12
+- SR:  PlantUML updated to 1.2023.12
 
 __1.6.4 (22-jul-2023)__
 - IJ:  "Knowledge folders" pane removed [#116](https://github.com/raydac/netbeans-mmd-plugin/issues/116)
