@@ -15,6 +15,7 @@ Initially I developed a plugin for NetBeans IDE then the IntellijIDEA plugin was
 
 # Changelog
 __1.6.5 (SNAPSHOT)__
+- IJ:  Fixed new topic focus lost if TAB pressed during edit [#91](https://github.com/raydac/netbeans-mmd-plugin/issues/91)
 - IJ:  Fixed error for access to private field in ApplicationInfo [#119](https://github.com/raydac/netbeans-mmd-plugin/issues/119)
 - SR:  embedded JDK updated to 21.0.1+12
 - SR:  PlantUML updated to 1.2023.12
