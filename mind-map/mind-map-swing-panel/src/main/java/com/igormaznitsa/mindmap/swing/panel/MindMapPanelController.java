@@ -167,4 +167,15 @@ public interface MindMapPanelController {
   default boolean isBirdsEyeAllowed(MindMapPanel source) {
     return false;
   }
+
+  /**
+   * Start auto-edit of new topic if new topic was created during edit topic by TAB key.
+   *
+   * @param source source mind map panel must not be null
+   * @return true if new created topic allowed to start edit, false otherwise
+   * @since 1.6.5
+   */
+  default boolean isStartEditNewTopicCreatedDuringEdit(MindMapPanel source) {
+    return true;
+  }
 }

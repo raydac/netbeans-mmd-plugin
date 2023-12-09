@@ -206,7 +206,8 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
                 endEdit(true);
                 final Topic theTopic = model.findAtPosition(topicPosition);
                 if (theTopic != null) {
-                  makeNewChildAndStartEdit(theTopic, null);
+                  makeNewChildAndFocus(theTopic, null,
+                      controller.isStartEditNewTopicCreatedDuringEdit(MindMapPanel.this));
                 }
               }
             }
@@ -339,14 +340,14 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
         if (config.isKeyEvent(MindMapPanelConfig.KEY_ADD_CHILD_AND_START_EDIT, e)) {
           e.consume();
           if (!selectedTopics.isEmpty()) {
-            makeNewChildAndStartEdit(selectedTopics.get(0), null);
+            makeNewChildAndFocus(selectedTopics.get(0), null, true);
           }
         } else if (config.isKeyEvent(MindMapPanelConfig.KEY_ADD_SIBLING_AND_START_EDIT, e)) {
           e.consume();
           if (!hasActiveEditor() && hasOnlyTopicSelected()) {
             final Topic baseTopic = selectedTopics.get(0);
-            makeNewChildAndStartEdit(
-                baseTopic.getParent() == null ? baseTopic : baseTopic.getParent(), baseTopic);
+            makeNewChildAndFocus(
+                baseTopic.getParent() == null ? baseTopic : baseTopic.getParent(), baseTopic, true);
           }
         } else if (config.isKeyEvent(MindMapPanelConfig.KEY_FOCUS_ROOT_OR_START_EDIT, e)) {
           e.consume();
@@ -1755,7 +1756,24 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
     return result;
   }
 
+  /**
+   * Create new child topic and start its edit.
+   * @param parent parent topic, must not be null
+   * @param baseTopic topic to be used as base if we want to add after it, can be null
+   */
   public void makeNewChildAndStartEdit(final Topic parent, final Topic baseTopic) {
+    this.makeNewChildAndFocus(parent, baseTopic, true);
+  }
+
+  /**
+   * Create new child topic, move focus to it and optionally start its edit.
+   *
+   * @param parent parent topic, must not be null
+   * @param baseTopic topic to be used as base if we want to add after it, can be null
+   * @param startEdit if true then new topic should be moved into edit mode, false otherwise
+   * @since 1.6.5
+   */
+  public void makeNewChildAndFocus(final Topic parent, final Topic baseTopic, final boolean startEdit) {
     assertNotDisposed();
     if (parent != null) {
       final Topic currentSelected = getFirstSelected();
@@ -1806,7 +1824,9 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
 
       fireNotificationEnsureTopicVisibility(newTopic);
       select(newTopic, false);
-      startEdit((AbstractElement) newTopic.getPayload());
+      if (startEdit) {
+        this.startEdit((AbstractElement) newTopic.getPayload());
+      }
       repaint();
     }
   }

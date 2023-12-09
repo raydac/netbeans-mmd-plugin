@@ -47,7 +47,7 @@ public class AddChildPlugin extends AbstractFocusedTopicPlugin {
 
   @Override
   protected void doActionForTopic(final PluginContext context, final Topic actionTopic) {
-    context.getPanel().makeNewChildAndStartEdit(requireNonNull(actionTopic), null);
+    context.getPanel().makeNewChildAndFocus(requireNonNull(actionTopic), null, true);
   }
 
   @Override

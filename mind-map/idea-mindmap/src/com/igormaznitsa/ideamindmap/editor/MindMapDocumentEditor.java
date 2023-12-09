@@ -152,7 +152,11 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
     this.project = project;
     this.file = file;
 
-    this.panelController = new MindMapPanelControllerImpl(this);
+    this.panelController = new MindMapPanelControllerImpl(this) {
+      public boolean isStartEditNewTopicCreatedFromTextEditor(MindMapPanel panel) {
+        return false;
+      }
+    };
 
     this.mindMapPanel = new MindMapPanel(panelController);
     this.mindMapPanel.putClientProperty("mmd.editor.project", project);
