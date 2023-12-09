@@ -18,6 +18,10 @@ package com.igormaznitsa.mindmap.swing.panel;
 
 import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispatchThread;
 import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.isPopupEvent;
+import static java.awt.event.InputEvent.ALT_MASK;
+import static java.awt.event.InputEvent.CTRL_MASK;
+import static java.awt.event.InputEvent.META_MASK;
+import static java.awt.event.InputEvent.SHIFT_MASK;
 import static java.util.Objects.requireNonNull;
 
 import com.igormaznitsa.mindmap.model.Extra;
@@ -121,13 +125,13 @@ import org.apache.commons.text.StringEscapeUtils;
  */
 public class MindMapPanel extends JComponent implements ClipboardOwner {
 
-  public static final long serialVersionUID = 2783412123454232L;
+  private static final long serialVersionUID = 2783412123454232L;
   private static final int MIN_DISTANCE_FOR_TOPIC_DRAGGING_START = 8;
   private static final Logger LOGGER = LoggerFactory.getLogger(MindMapPanel.class);
   private static final UIComponentFactory UI_COMPO_FACTORY =
       UIComponentFactoryProvider.findInstance();
   private static final int ALL_SUPPORTED_MODIFIERS =
-      KeyEvent.SHIFT_MASK | KeyEvent.ALT_MASK | KeyEvent.META_MASK | KeyEvent.CTRL_MASK;
+      SHIFT_MASK | ALT_MASK | META_MASK | CTRL_MASK;
   private static final double SCALE_STEP = 0.1d;
   private static final double SCALE_MINIMUM = 0.3d;
   private static final double SCALE_MAXIMUM = 8.0d;
@@ -149,7 +153,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   private final AtomicBoolean popupMenuActive = new AtomicBoolean();
   private final AtomicBoolean removeEditedTopicForRollback = new AtomicBoolean();
   private final UUID uuid = UUID.randomUUID();
-  private final ResourceBundle bundle = MmdI18n.getInstance().findBundle();
+  private final transient ResourceBundle bundle = MmdI18n.getInstance().findBundle();
   private Dimension mindMapImageSize = new Dimension();
   private volatile MindMap model;
   private volatile String errorText;
@@ -901,8 +905,8 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
 
           final float minX = clipBounds.x;
           final float minY = clipBounds.y;
-          final float maxX = clipBounds.x + clipBounds.width;
-          final float maxY = clipBounds.y + clipBounds.height;
+          final float maxX = (float) clipBounds.x + (float) clipBounds.width;
+          final float maxY = (float) clipBounds.y + (float) clipBounds.height;
 
           final Color gridColor = cfg.getGridColor();
 
