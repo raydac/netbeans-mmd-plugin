@@ -12,9 +12,10 @@
     ]]></description>
 
     <change-notes><![CDATA[
-        <p>1.6.5 (SNAPSHOT)</p>
+        <p>1.6.5 (13-dec-2023)</p>
         <ul>
-          <li></li>
+          <li>Fixed new topic focus lost if TAB pressed during edit</li>
+          <li>Fixed error for access to private field in ApplicationInfo</li>
         </ul>
         <p>1.6.4 (22-jul-2023)</p>
         <ul>

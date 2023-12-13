@@ -14,11 +14,11 @@ Initially I developed a plugin for NetBeans IDE then the IntellijIDEA plugin was
 ![Screenshots from all](./assets/screenshots_all.png)
 
 # Changelog
-__1.6.5 (SNAPSHOT)__
+__1.6.5 (13-dec-2023)__
 - IJ:  Fixed new topic focus lost if TAB pressed during edit [#91](https://github.com/raydac/netbeans-mmd-plugin/issues/91)
 - IJ:  Fixed error for access to private field in ApplicationInfo [#119](https://github.com/raydac/netbeans-mmd-plugin/issues/119)
 - SR:  embedded JDK updated to 21.0.1+12
-- SR:  PlantUML updated to 1.2023.12
+- SR:  PlantUML updated to 1.2023.13
 
 __1.6.4 (22-jul-2023)__
 - IJ:  "Knowledge folders" pane removed [#116](https://github.com/raydac/netbeans-mmd-plugin/issues/116)
@@ -26,11 +26,6 @@ __1.6.4 (22-jul-2023)__
 - SR:  PlantUML updated to 1.2023.10
 - SR:  improved full-screen activation
 
-__1.6.3 (23-apr-2023)__
-- SR:  updated embedded JDK to 20.0.1+10
-- SR:  added Eclipse ELK
-- SR:  PlantUML updated to 1.2023.6
-- ALL: improvements of export plugins
 
 [Full changelog](https://github.com/raydac/netbeans-mmd-plugin/blob/master/changelog.txt)   
 
