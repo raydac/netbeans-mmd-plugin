@@ -480,6 +480,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         "JetBrainsMono-ExtraLightItalic.ttf",
         "JetBrainsMono-ExtraLight.ttf",
         "JetBrainsMono-Italic.ttf",
+        "JetBrainsMono-KawkabRegular.ttf",
         "JetBrainsMono-LightItalic.ttf",
         "JetBrainsMono-Light.ttf",
         "JetBrainsMono-MediumItalic.ttf",
@@ -488,7 +489,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         "JetBrainsMono-SemiBoldItalic.ttf",
         "JetBrainsMono-SemiBold.ttf",
         "JetBrainsMono-ThinItalic.ttf",
-        "JetBrainsMono-Thin.ttf"
+        "JetBrainsMono-Thin.ttf",
+        "JetBrainsMono-VazirRegular.ttf"
     };
     final GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
     for (final String fontFileName : fontFiles) {
