@@ -49,7 +49,8 @@ import javax.swing.JTree;
 public interface UIComponentFactory {
   JPanel makePanel();
 
-  JComponent makePanelWithOptions(DialogProvider dialogProvider, Set<AbstractParameter<?>> parameters);
+  JComponent makePanelWithOptions(DialogProvider dialogProvider,
+                                  Set<AbstractParameter<?>> parameters);
 
   <T> JComboBox<T> makeComboBox(Class<T> type);
 
@@ -78,6 +79,17 @@ public interface UIComponentFactory {
   JPasswordField makePasswordField();
 
   JTextField makeTextField();
+
+  default CustomTextEditorFactory findCustomTextEditorFactory() {
+    try {
+      // implemented call through reflection to avoid static link
+      return (CustomTextEditorFactory) Class.forName(
+              "com.igormaznitsa.mindmap.swing.services.JTextAreaTextEditorFactory")
+          .getField("INSTANCE").get(null);
+    } catch (Exception ex) {
+      throw new Error("Unexpectedly can't find default text area editor factory", ex);
+    }
+  }
 
   JEditorPane makeEditorPane();
 

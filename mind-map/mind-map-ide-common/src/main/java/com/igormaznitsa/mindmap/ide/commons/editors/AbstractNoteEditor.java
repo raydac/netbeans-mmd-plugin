@@ -10,6 +10,7 @@ import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.ui.PasswordPanel;
 import com.igormaznitsa.mindmap.swing.panel.utils.Focuser;
+import com.igormaznitsa.mindmap.swing.services.CustomTextEditor;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import java.awt.BorderLayout;
@@ -46,7 +47,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
-import javax.swing.JTextArea;
 import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
@@ -61,7 +61,6 @@ import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.TextAction;
-import javax.swing.text.Utilities;
 import javax.swing.undo.UndoManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -87,7 +86,7 @@ public abstract class AbstractNoteEditor {
   private JButton buttonPaste;
   private JButton buttonRedo;
   private JButton buttonUndo;
-  private JTextArea editorPane;
+  private CustomTextEditor editorPane;
   private final UndoManager undoManager = new UndoManager() {
     @Override
     public void undoableEditHappened(final UndoableEditEvent e) {
@@ -144,10 +143,10 @@ public abstract class AbstractNoteEditor {
       }
     });
 
-    this.editorPane.setComponentPopupMenu(
+    this.editorPane.getComponent().setComponentPopupMenu(
         SwingUtils.addTextActions(UIComponentFactoryProvider.findInstance().makePopupMenu()));
 
-    this.editorPane.getActionMap()
+    this.editorPane.getComponent().getActionMap()
         .put(DefaultEditorKit.selectWordAction, new TextAction(DefaultEditorKit.selectWordAction) {
           private static final long serialVersionUID = -6477916799997545798L;
           private final Action start = new TextAction("wordStart") { //NOI18N
@@ -220,7 +219,7 @@ public abstract class AbstractNoteEditor {
 
     this.mainPanel.setPreferredSize(
         new Dimension(Math.max(this.buttonBarPanel.getPreferredSize().width, 640), 480));
-    this.editorPane.setFont(this.findEditorFont(DEFAULT_FONT));
+    this.editorPane.getComponent().setFont(this.findEditorFont(DEFAULT_FONT));
     this.originalText = data.getText();
     this.editorPane.setText(data.getText());
 
@@ -234,7 +233,7 @@ public abstract class AbstractNoteEditor {
       @Override
       public void ancestorAdded(final AncestorEvent event) {
         SwingUtilities.invokeLater(() -> {
-          editorPane.grabFocus();
+          editorPane.getComponent().grabFocus();
           updateCaretPos();
         });
       }
@@ -248,45 +247,22 @@ public abstract class AbstractNoteEditor {
       }
     });
 
-    this.editorPane.addCaretListener(e -> updateCaretPos());
+    this.editorPane.addCaretPosChangeListener(e -> updateCaretPos());
 
     this.wrapping = Wrapping.WORD_WRAP;
-    editorPane.setCaretPosition(0);
+    this.editorPane.setCaretPos(0);
     updateWrapping();
 
-    this.editorPane.getDocument().addUndoableEditListener(this.undoManager);
+    this.editorPane.addUndoableEditListener(this.undoManager);
     updateRedoUndoState();
 
     SwingUtils.makeOwningDialogResizable(this.mainPanel);
 
-    new Focuser(this.editorPane);
+    new Focuser(this.editorPane.getComponent());
   }
 
   private static boolean isWhitespaceOrControl(final char c) {
     return Character.isISOControl(c) || Character.isWhitespace(c);
-  }
-
-  private static int getRow(final int pos, final JTextComponent editor) {
-    int rn = (pos == 0) ? 1 : 0;
-    try {
-      int offs = pos;
-      while (offs > 0) {
-        offs = Utilities.getRowStart(editor, offs) - 1;
-        rn++;
-      }
-    } catch (BadLocationException e) {
-      LOGGER.error("Bad location", e); //NOI18N
-    }
-    return rn;
-  }
-
-  private static int getColumn(final int pos, final JTextComponent editor) {
-    try {
-      return pos - Utilities.getRowStart(editor, pos) + 1;
-    } catch (BadLocationException e) {
-      LOGGER.error("Bad location", e); //NOI18N
-    }
-    return -1;
   }
 
   protected JComponent preprocessToolBarButton(final JComponent button) {
@@ -348,9 +324,8 @@ public abstract class AbstractNoteEditor {
   }
 
   private void updateCaretPos() {
-    final int pos = this.editorPane.getCaretPosition();
-    final int col = getColumn(pos, this.editorPane);
-    final int row = getRow(pos, this.editorPane);
+    final int col = this.editorPane.getCaretColumn();
+    final int row = this.editorPane.getCaretRow();
     this.labelCursorPos.setText(row + ":" + col); //NOI18N
 
     final String selectedText = this.editorPane.getSelectedText();
@@ -466,6 +441,7 @@ public abstract class AbstractNoteEditor {
     return null;
   }
 
+  @SuppressWarnings("unchecked")
   private void initComponents() {
     this.mainPanel = this.uiComponentFactory.makePanel();
     this.mainPanel.setLayout(new BorderLayout());
@@ -496,7 +472,7 @@ public abstract class AbstractNoteEditor {
         new Filler(new Dimension(16, 0), new Dimension(16, 0),
             new Dimension(16, 32767));
     this.editorScrollPane = this.uiComponentFactory.makeScrollPane();
-    this.editorPane = this.uiComponentFactory.makeTextArea();
+    this.editorPane = this.uiComponentFactory.findCustomTextEditorFactory().makeCustomTextEditor();
 
     this.buttonUndo
         .setIcon(this.findToolbarIconForId(IconId.UNDO));
@@ -584,7 +560,7 @@ public abstract class AbstractNoteEditor {
     this.buttonClear.setToolTipText(this.bundle.getString("NoteEditor.buttonClearAll.tooltip"));
     this.buttonClear.setFocusable(false);
     this.buttonClear.setHorizontalTextPosition(SwingConstants.CENTER);
-    this.buttonClear.setNextFocusableComponent(this.editorPane);
+    this.buttonClear.setNextFocusableComponent(this.editorPane.getComponent());
     this.buttonClear.setVerticalTextPosition(SwingConstants.BOTTOM);
     this.buttonClear.addActionListener(this::buttonClearActionPerformed);
     this.buttonBarPanel.add(this.preprocessToolBarButton(this.buttonClear), constraints);
@@ -630,11 +606,9 @@ public abstract class AbstractNoteEditor {
     this.bottomPanel.add(this.wrapFiller);
 
     this.mainPanel.add(this.bottomPanel, BorderLayout.PAGE_END);
-
-    this.editorPane.setColumns(20);
-    this.editorPane.setRows(5);
-    this.editorPane.setNextFocusableComponent(this.buttonUndo);
-    this.editorScrollPane.setViewportView(this.editorPane);
+    this.editorPane.setRowsColumns(5, 20);
+    this.editorPane.getComponent().setNextFocusableComponent(this.buttonUndo);
+    this.editorScrollPane.setViewportView(this.editorPane.getComponent());
 
     this.mainPanel.add(this.editorScrollPane, BorderLayout.CENTER);
   }
