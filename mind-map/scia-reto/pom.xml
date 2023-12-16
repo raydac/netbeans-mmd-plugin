@@ -5,7 +5,7 @@
   <parent>
     <groupId>com.igormaznitsa</groupId>
     <artifactId>mind-map</artifactId>
-    <version>1.6.5</version>
+    <version>1.6.6-SNAPSHOT</version>
   </parent>
 
   <artifactId>scia-reto</artifactId>
@@ -438,7 +438,7 @@
                 <fileVersion>${project.version.raw}.0</fileVersion>
                 <txtFileVersion>${project.version}</txtFileVersion>
                 <fileDescription>SciaReto Mind Map editor</fileDescription>
-                <copyright>2016-2023 Igor Maznitsa</copyright>
+                <copyright>2016-2024 Igor Maznitsa</copyright>
                 <productVersion>${project.version.raw}.0</productVersion>
                 <txtProductVersion>${project.version}</txtProductVersion>
                 <productName>${project.name}</productName>
