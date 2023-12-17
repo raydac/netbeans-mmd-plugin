@@ -116,7 +116,7 @@
                     <showWarnings>true</showWarnings>
                     <compilerArgument>-proc:none</compilerArgument>
                     <compilerArgs>
-                        <arg>-Xlint:all</arg>
+                        <!--<arg>-Xlint:all</arg>-->
                     </compilerArgs>
                 </configuration>
             </plugin>

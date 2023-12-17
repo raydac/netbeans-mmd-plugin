@@ -39,8 +39,7 @@ import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.editor.colors.EditorColorsManager;
-import com.intellij.openapi.editor.colors.EditorFontType;
+import com.intellij.openapi.editor.ex.util.EditorUtil;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.module.ModuleUtilCore;
@@ -76,6 +75,7 @@ import java.lang.reflect.Modifier;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
@@ -418,6 +418,7 @@ public final class IdeaUtils {
   public static AbstractNoteEditorData editText(final Component parent,final Project project, final DialogProvider dialogProvider,
                                         final String title, final AbstractNoteEditorData data) {
     final AbstractNoteEditor editor = new AbstractNoteEditor(() -> parent, UIComponentFactoryProvider.findInstance(), dialogProvider, data) {
+        
         @Override
         public void onBrowseUri(final URI uri, final boolean preferInternalBrowser) throws Exception {
             IdeaUtils.browseURI(uri, preferInternalBrowser);
@@ -452,7 +453,7 @@ public final class IdeaUtils {
         
         @Override
         protected Font findEditorFont(final Font defaultFont) {
-            return EditorColorsManager.getInstance().getGlobalScheme().getFont(EditorFontType.PLAIN);
+            return Objects.requireNonNullElse(EditorUtil.getEditorFont(), super.findEditorFont(DEFAULT_FONT));
         }
     };
     

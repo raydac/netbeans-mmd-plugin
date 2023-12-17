@@ -15,40 +15,42 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <gradle.executable>gradle</gradle.executable>
-        <idea.lib.path>/home/igorm/Programs/idea-IC/lib</idea.lib.path>
     </properties>
 
     <profiles>
         <profile>
-            <id>ideal-local-libs</id>
+            <id>local-idea-libs</id>
+            <properties>
+                <local.idea.lib.path>/home/igorm/Programs/idea-IC/lib</local.idea.lib.path>
+            </properties>    
             <dependencies>
                 <dependency>
                     <groupId>com.intellij</groupId>
                     <artifactId>idea-app</artifactId>
                     <version>0-SNAPSHOT</version>
                     <scope>system</scope>
-                    <systemPath>${idea.lib.path}/app.jar</systemPath>
+                    <systemPath>${local.idea.lib.path}/app.jar</systemPath>
                 </dependency>
                 <dependency>
                     <groupId>com.intellij</groupId>
                     <artifactId>idea-app-client</artifactId>
                     <version>0-SNAPSHOT</version>
                     <scope>system</scope>
-                    <systemPath>${idea.lib.path}/app-client.jar</systemPath>
+                    <systemPath>${local.idea.lib.path}/app-client.jar</systemPath>
                 </dependency>
                 <dependency>
                     <groupId>com.intellij</groupId>
                     <artifactId>idea-util</artifactId>
                     <version>0-SNAPSHOT</version>
                     <scope>system</scope>
-                    <systemPath>${idea.lib.path}/util.jar</systemPath>
+                    <systemPath>${local.idea.lib.path}/util.jar</systemPath>
                 </dependency>
                 <dependency>
                     <groupId>com.intellij</groupId>
                     <artifactId>idea-annotations</artifactId>
                     <version>0-SNAPSHOT</version>
                     <scope>system</scope>
-                    <systemPath>${idea.lib.path}/annotations.jar</systemPath>
+                    <systemPath>${local.idea.lib.path}/annotations.jar</systemPath>
                 </dependency>
             </dependencies>
         </profile>
@@ -56,30 +58,18 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.jsoup</groupId>
-            <artifactId>jsoup</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>com.igormaznitsa</groupId>
-            <artifactId>mind-map-ide-common</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
+            <artifactId>meta-annotations</artifactId>
         </dependency>
         <dependency>
             <groupId>com.igormaznitsa</groupId>
             <artifactId>mind-map-swing-panel</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.igormaznitsa</groupId>
-            <artifactId>meta-annotations</artifactId>
+            <artifactId>mind-map-ide-common</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

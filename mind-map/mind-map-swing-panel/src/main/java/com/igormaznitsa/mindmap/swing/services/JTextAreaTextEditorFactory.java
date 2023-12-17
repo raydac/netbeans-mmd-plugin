@@ -16,133 +16,20 @@
 
 package com.igormaznitsa.mindmap.swing.services;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import javax.swing.JTextArea;
-import javax.swing.event.UndoableEditListener;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Utilities;
+import com.igormaznitsa.mindmap.swing.panel.utils.JTextAreaCustomTextEditor;
 
 public final class JTextAreaTextEditorFactory implements CustomTextEditorFactory {
 
   public static final JTextAreaTextEditorFactory INSTANCE = new JTextAreaTextEditorFactory();
   private final UIComponentFactory componentFactory = UIComponentFactoryProvider.findInstance();
 
+  private JTextAreaTextEditorFactory() {
+
+  }
+
   @Override
   public CustomTextEditor makeCustomTextEditor() {
-    return new JTextAreaTextEditor(INSTANCE.componentFactory.makeTextArea());
+    return new JTextAreaCustomTextEditor(INSTANCE.componentFactory.makeTextArea());
   }
 
-  private static final class JTextAreaTextEditor implements CustomTextEditor {
-
-    private final JTextArea textArea;
-    private final List<CaretPosChangeListener> caretPosChangeListenerList =
-        new CopyOnWriteArrayList<>();
-
-    private JTextAreaTextEditor(final JTextArea textArea) {
-      this.textArea = textArea;
-      this.textArea.addCaretListener(
-          e -> this.caretPosChangeListenerList.forEach(x -> x.onCaretPosChange(e.getDot())));
-    }
-
-    @Override
-    public JTextArea getComponent() {
-      return this.textArea;
-    }
-
-    @Override
-    public void setWrapStyleWord(final boolean flag) {
-      this.textArea.setWrapStyleWord(flag);
-    }
-
-    @Override
-    public void setLineWrap(final boolean flag) {
-      this.textArea.setLineWrap(flag);
-    }
-
-    @Override
-    public void replaceSelection(final String text) {
-      this.textArea.replaceSelection(text);
-    }
-
-    @Override
-    public String getSelectedText() {
-      return this.textArea.getSelectedText();
-    }
-
-    @Override
-    public void addCaretPosChangeListener(final CaretPosChangeListener caretListener) {
-      this.caretPosChangeListenerList.add(caretListener);
-    }
-
-    @Override
-    public void removeCaretPosChangeListener(final CaretPosChangeListener caretListener) {
-      this.caretPosChangeListenerList.remove(caretListener);
-    }
-
-    @Override
-    public void addUndoableEditListener(UndoableEditListener listener) {
-      this.textArea.getDocument().addUndoableEditListener(listener);
-    }
-
-    @Override
-    public void removeUndoableEditListener(UndoableEditListener listener) {
-      this.textArea.getDocument().removeUndoableEditListener(listener);
-    }
-
-    @Override
-    public int getCaretPos() {
-      return this.textArea.getCaretPosition();
-    }
-
-    @Override
-    public void setCaretPos(final int pos) {
-      this.textArea.setCaretPosition(pos);
-    }
-
-    @Override
-    public int getCaretRow() {
-      final int caretPos = this.getCaretPos();
-      int result = (caretPos == 0) ? 1 : 0;
-      try {
-        int offs = caretPos;
-        while (offs > 0) {
-          offs = Utilities.getRowStart(this.textArea, offs) - 1;
-          result++;
-        }
-      } catch (BadLocationException e) {
-        // ignore
-      }
-      return result;
-    }
-
-    @Override
-    public int getCaretColumn() {
-      final int caretPos = this.getCaretPos();
-      try {
-        return caretPos - Utilities.getRowStart(this.textArea, caretPos) + 1;
-      } catch (BadLocationException e) {
-        // ignore
-      }
-      return -1;
-    }
-
-    @Override
-    public void setRowsColumns(final int rows, final int columns) {
-      this.textArea.setColumns(columns);
-      this.textArea.setRows(rows);
-    }
-
-    @Override
-    public String getText() {
-      return this.textArea.getText();
-    }
-
-    @Override
-    public void setText(final String text) {
-      this.textArea.setText(text);
-    }
-
-
-  }
 }

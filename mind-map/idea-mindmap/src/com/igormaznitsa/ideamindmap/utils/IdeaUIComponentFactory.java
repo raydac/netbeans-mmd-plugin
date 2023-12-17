@@ -30,6 +30,7 @@ import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.JBPasswordField;
 import com.intellij.ui.components.JBRadioButton;
 import com.intellij.ui.components.JBScrollPane;
+import com.intellij.ui.components.JBTabbedPane;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.ui.treeStructure.Tree;
 import java.util.Set;
@@ -98,7 +99,7 @@ public class IdeaUIComponentFactory implements UIComponentFactory {
   @Override
   @Nonnull
   public JTabbedPane makeTabbedPane() {
-    return new JTabbedPane();
+    return new JBTabbedPane();
   }
 
   @Override
