@@ -29,6 +29,7 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+import com.igormaznitsa.mindmap.swing.services.CustomTextEditor;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import com.igormaznitsa.nbmindmap.nb.explorer.MMKnowledgeSources;
 import com.igormaznitsa.nbmindmap.nb.options.MMDCfgOptionsPanelController;
@@ -57,10 +58,17 @@ import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.text.JTextComponent;
+import org.netbeans.api.editor.mimelookup.MimeLookup;
+import org.netbeans.api.editor.mimelookup.MimePath;
+import org.netbeans.api.editor.settings.FontColorNames;
+import org.netbeans.api.editor.settings.FontColorSettings;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.ProjectUtils;
 import org.netbeans.api.project.SourceGroup;
 import org.netbeans.api.project.Sources;
+import org.netbeans.editor.Coloring;
+import org.netbeans.lib.editor.util.swing.DocumentUtilities;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.HtmlBrowser;
@@ -286,8 +294,25 @@ public final class NbUtils {
                                                 @Nonnull final String title,
                                                 @Nonnull final AbstractNoteEditorData data) {
     final AbstractNoteEditor textEditor = new AbstractNoteEditor(() -> parentComponent,
-        UIComponentFactoryProvider.findInstance(), provider, data) {
+      UIComponentFactoryProvider.findInstance(), provider, data) {
+          
+      @Override
+      public CustomTextEditor makeCustomTextEditor() {
+          final CustomTextEditor editor = super.makeCustomTextEditor();
 
+          if (editor.getComponent() instanceof JTextComponent) {
+              final String mimeType = DocumentUtilities.getMimeType((JTextComponent)editor.getComponent());
+              final FontColorSettings fontColorSettings = MimeLookup.getLookup(MimePath.get(mimeType)).lookup(FontColorSettings.class);
+              if (fontColorSettings != null) {
+                  final Coloring defaultColoring = Coloring.fromAttributeSet(fontColorSettings.getFontColors(FontColorNames.DEFAULT_COLORING));
+                  if (defaultColoring != null) {
+                      editor.getComponent().setFont(defaultColoring.getFont());
+                  }
+              }
+          }
+          return editor;
+      }
+            
       @Nullable
       @Override
       protected Icon findToolbarIconForId(@Nonnull final IconId iconId) {

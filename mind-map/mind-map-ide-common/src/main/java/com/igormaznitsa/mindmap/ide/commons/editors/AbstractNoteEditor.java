@@ -219,7 +219,6 @@ public abstract class AbstractNoteEditor {
 
     this.mainPanel.setPreferredSize(
         new Dimension(Math.max(this.buttonBarPanel.getPreferredSize().width, 640), 480));
-    this.editorPane.getComponent().setFont(this.findEditorFont(DEFAULT_FONT));
     this.originalText = data.getText();
     this.editorPane.setText(data.getText());
 
@@ -441,6 +440,10 @@ public abstract class AbstractNoteEditor {
     return null;
   }
 
+  public CustomTextEditor makeCustomTextEditor() {
+    return this.uiComponentFactory.findCustomTextEditorFactory().makeCustomTextEditor();
+  }
+
   @SuppressWarnings("unchecked")
   private void initComponents() {
     this.mainPanel = this.uiComponentFactory.makePanel();
@@ -472,7 +475,7 @@ public abstract class AbstractNoteEditor {
         new Filler(new Dimension(16, 0), new Dimension(16, 0),
             new Dimension(16, 32767));
     this.editorScrollPane = this.uiComponentFactory.makeScrollPane();
-    this.editorPane = this.uiComponentFactory.findCustomTextEditorFactory().makeCustomTextEditor();
+    this.editorPane = this.makeCustomTextEditor();
 
     this.buttonUndo
         .setIcon(this.findToolbarIconForId(IconId.UNDO));
