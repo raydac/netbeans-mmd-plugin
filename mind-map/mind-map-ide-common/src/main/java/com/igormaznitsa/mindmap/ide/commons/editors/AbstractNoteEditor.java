@@ -441,7 +441,9 @@ public abstract class AbstractNoteEditor {
   }
 
   public CustomTextEditor makeCustomTextEditor() {
-    return this.uiComponentFactory.findCustomTextEditorFactory().makeCustomTextEditor();
+    final CustomTextEditor result = this.uiComponentFactory.findCustomTextEditorFactory().makeCustomTextEditor();
+    result.getComponent().setFont(this.findEditorFont(DEFAULT_FONT));
+    return result;
   }
 
   @SuppressWarnings("unchecked")

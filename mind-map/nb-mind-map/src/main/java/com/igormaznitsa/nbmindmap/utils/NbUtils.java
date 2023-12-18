@@ -312,7 +312,7 @@ public final class NbUtils {
           }
           return editor;
       }
-            
+
       @Nullable
       @Override
       protected Icon findToolbarIconForId(@Nonnull final IconId iconId) {
