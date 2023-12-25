@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2022 Igor A. Maznitsa
+ * Copyright (C) 2015-2023 Igor A. Maznitsa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,21 +22,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation allows to group multiple {@link MmdTopic} annotations for one element.
+ * Annotation allows mark a executable item (methods, initializer, constructor)
+ * and make the MMD annotation processor find MmdTopic and MmdTopics inside the marked element,
+ *
+ * @see MmdTopic
+ * @see MmdTopics
+ * @since 1.6.6
  */
 @Retention(RetentionPolicy.SOURCE)
-@Target({
-    ElementType.TYPE,
-    ElementType.FIELD,
-    ElementType.METHOD,
-    ElementType.CONSTRUCTOR,
-    ElementType.ANNOTATION_TYPE,
-    ElementType.PACKAGE,
-    ElementType.TYPE_PARAMETER,
-    ElementType.PARAMETER,
-    ElementType.TYPE_USE,
-    ElementType.LOCAL_VARIABLE
-})
-public @interface MmdTopics {
-  MmdTopic[] value() default {};
+@Target({ElementType.TYPE, ElementType.METHOD, ElementType.CONSTRUCTOR})
+public @interface HasMmdMarkedElements {
 }

@@ -23,6 +23,7 @@ import static javax.tools.Diagnostic.Kind.NOTE;
 import static javax.tools.Diagnostic.Kind.WARNING;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
+import com.igormaznitsa.mindmap.annotations.HasMmdMarkedElements;
 import com.igormaznitsa.mindmap.annotations.MmdFile;
 import com.igormaznitsa.mindmap.annotations.MmdFileRef;
 import com.igormaznitsa.mindmap.annotations.MmdFiles;
@@ -54,6 +55,7 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedOptions;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.util.Types;
@@ -102,7 +104,8 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
           MmdTopics.class.getName(), MmdTopics.class,
           MmdFiles.class.getName(), MmdFiles.class,
           MmdFile.class.getName(), MmdFile.class,
-          MmdFileRef.class.getName(), MmdFileRef.class);
+          MmdFileRef.class.getName(), MmdFileRef.class,
+          HasMmdMarkedElements.class.getName(), HasMmdMarkedElements.class);
   private Trees trees;
   private SourcePositions sourcePositions;
   private Messager messager;
@@ -170,14 +173,16 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
       }
     }
 
-    final String baseFolderPathAsString = processingEnv.getOptions().getOrDefault(KEY_MMD_FILE_LINK_BASE_FOLDER, null);
+    final String baseFolderPathAsString =
+        processingEnv.getOptions().getOrDefault(KEY_MMD_FILE_LINK_BASE_FOLDER, null);
     if (baseFolderPathAsString != null) {
       this.optionFileLinkBaseFolder =
           Paths.get(
               FilenameUtils.normalizeNoEndSeparator(baseFolderPathAsString));
       this.messager.printMessage(
           NOTE,
-          String.format("Found provided file link base folder for MMD files: %s", this.optionFileLinkBaseFolder));
+          String.format("Found provided file link base folder for MMD files: %s",
+              this.optionFileLinkBaseFolder));
     }
 
     if (processingEnv.getOptions().containsKey(KEY_MMD_FILE_ROOT_FOLDER)) {
@@ -243,19 +248,46 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
                   .map(x -> (MmdTopics) x)
                   .flatMap(x -> Stream.of(x.value()))
                   .forEach(
-                      file -> foundAnnotationList.add(
+                      mmdTopicAnno -> foundAnnotationList.add(
                           new MmdAnnotationWrapper(
-                              element, file, new File(position.getUri()).toPath(),
+                              element, mmdTopicAnno, new File(position.getUri()).toPath(),
                               position.getLine(), startPosition)));
             } else if (annotationClass == MmdFiles.class) {
               Arrays.stream(annotationInstances)
                   .map(x -> (MmdFiles) x)
                   .flatMap(x -> Stream.of(x.value()))
                   .forEach(
-                      file -> foundAnnotationList.add(
+                      mmdFile -> foundAnnotationList.add(
                           new MmdAnnotationWrapper(
-                              element, file, new File(position.getUri()).toPath(),
+                              element, mmdFile, new File(position.getUri()).toPath(),
                               position.getLine(), startPosition)));
+            } else if (annotationClass == HasMmdMarkedElements.class) {
+              Arrays.stream(annotationInstances)
+                  .map(x -> (HasMmdMarkedElements) x)
+                  .forEach(method -> {
+                    if (element instanceof ExecutableElement) {
+                      AnnotationUtils.findAllInternalMmdTopicAnnotations(trees,
+                              (ExecutableElement) element)
+                          .forEach(pair -> {
+                            final long localStartPosition =
+                                AnnotationUtils.findStartPosition(this.sourcePositions,
+                                    this.trees,
+                                    pair.getValue());
+                            final UriLine localPosition =
+                                AnnotationUtils.findPosition(this.sourcePositions, this.trees,
+                                    pair.getValue());
+                            foundAnnotationList.add(new MmdAnnotationWrapper(
+                                pair.getValue(),
+                                pair.getKey(),
+                                new File(localPosition.getUri()).toPath(),
+                                localPosition.getLine(), localStartPosition));
+                          });
+                    } else {
+                      this.messager.printMessage(WARNING,
+                          "Detected unexpected element marked by @MmdMarkedMethod: " +
+                              element.getClass().getSimpleName(), element);
+                    }
+                  });
             } else {
               Arrays.stream(annotationInstances)
                   .forEach(

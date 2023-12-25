@@ -37,7 +37,8 @@ import java.lang.annotation.Target;
     ElementType.PACKAGE,
     ElementType.TYPE_PARAMETER,
     ElementType.PARAMETER,
-    ElementType.TYPE_USE
+    ElementType.TYPE_USE,
+    ElementType.LOCAL_VARIABLE
 })
 public @interface MmdTopic {
 

@@ -16,14 +16,23 @@
 
 package com.igormaznitsa.mindmap.annotations.processor.builder;
 
+import static java.util.Map.entry;
 import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Stream.concat;
 
 import com.igormaznitsa.mindmap.annotations.MmdFile;
 import com.igormaznitsa.mindmap.annotations.MmdFileRef;
 import com.igormaznitsa.mindmap.annotations.MmdFiles;
+import com.igormaznitsa.mindmap.annotations.MmdTopic;
+import com.igormaznitsa.mindmap.annotations.MmdTopics;
 import com.sun.source.tree.CompilationUnitTree;
+import com.sun.source.tree.MethodTree;
+import com.sun.source.tree.StatementTree;
+import com.sun.source.tree.VariableTree;
 import com.sun.source.util.SourcePositions;
 import com.sun.source.util.TreePath;
+import com.sun.source.util.TreeScanner;
 import com.sun.source.util.Trees;
 import java.lang.annotation.Annotation;
 import java.net.URI;
@@ -31,11 +40,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.util.Types;
@@ -246,6 +259,77 @@ public final class AnnotationUtils {
   }
 
   /**
+   * Find all MmdTopic annotations inside executable element.
+   *
+   * @param trees             auxiliary utility class, must not be null
+   * @param executableElement scanned executable element
+   * @return list of pairs for all found MmdTopic annotations and their enclosing elements.
+   * @since 1.6.6
+   */
+  public static List<Map.Entry<MmdTopic, Element>> findAllInternalMmdTopicAnnotations(
+      final Trees trees,
+      final ExecutableElement executableElement) {
+    final CompilationUnitTree compilationUnitTree =
+        trees.getPath(executableElement).getCompilationUnit();
+
+    final List<Map.Entry<MmdTopic, Element>> result = new ArrayList<>();
+    final MethodTree methodTree = trees.getTree(executableElement);
+    methodTree.getBody().getStatements()
+        .forEach(statement -> result.addAll(
+            extractMmdTopicAnnotationsFromTree(compilationUnitTree, trees, statement)));
+    return result;
+  }
+
+  private static List<Map.Entry<MmdTopic, Element>> extractMmdTopicAnnotationsFromTree(
+      final CompilationUnitTree compilationUnitTree,
+      final Trees trees,
+      final StatementTree statementTree) {
+
+    final AtomicReference<CompilationUnitTree> compilationUnitTreeRef =
+        new AtomicReference<>(compilationUnitTree);
+
+    final TreeScanner<List<Map.Entry<MmdTopic, Element>>, Void> scanner =
+        new TreeScanner<>() {
+
+          @Override
+          public List<Map.Entry<MmdTopic, Element>> visitCompilationUnit(
+              final CompilationUnitTree node,
+              final Void unused) {
+            compilationUnitTreeRef.set(node);
+            return List.of();
+          }
+
+          @Override
+          public List<Map.Entry<MmdTopic, Element>> visitVariable(
+              final VariableTree node, final Void unused) {
+            final TreePath treePath = trees.getPath(compilationUnitTreeRef.get(), node);
+            final Element variableElement = trees.getElement(treePath);
+            return
+                concat(
+                    Arrays.stream(variableElement.getAnnotationsByType(MmdTopics.class))
+                        .flatMap(x -> Arrays.stream(x.value())),
+                    Arrays.stream(variableElement.getAnnotationsByType(MmdTopic.class)))
+                    .map(annotation -> entry(annotation, variableElement))
+                    .collect(toList());
+          }
+
+          @Override
+          public List<Map.Entry<MmdTopic, Element>> reduce(
+              List<Map.Entry<MmdTopic, Element>> r1,
+              List<Map.Entry<MmdTopic, Element>> r2) {
+            if (r1 == null) {
+              return r2;
+            }
+            if (r2 == null) {
+              return r1;
+            }
+            return concat(r1.stream(), r2.stream()).collect(toList());
+          }
+        };
+    return Objects.requireNonNullElse(scanner.scan(statementTree, null), List.of());
+  }
+
+  /**
    * Auxiliary container class to keep information about line and sources.
    */
   public static final class UriLine {
@@ -265,4 +349,5 @@ public final class AnnotationUtils {
       return this.line;
     }
   }
+
 }
