@@ -16,6 +16,8 @@
 
 package com.igormaznitsa.mindmap.annotations.processor;
 
+import static com.igormaznitsa.mindmap.annotations.processor.builder.AnnotationUtils.findAllInternalMmdTopicAnnotations;
+import static com.igormaznitsa.mindmap.annotations.processor.builder.AnnotationUtils.findMmdComments;
 import static java.lang.Boolean.FALSE;
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
@@ -166,7 +168,7 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
         if (Boolean.parseBoolean(
             processingEnv.getOptions().getOrDefault(KEY_MMD_FOLDER_CREATE, FALSE.toString()))) {
           try {
-            this.optionTargetFolder = Files.createDirectories(this.optionTargetFolder);
+            Files.createDirectories(this.optionTargetFolder);
             this.messager.printMessage(
                 NOTE, "Folder for MMD files successfully created: " + this.optionTargetFolder);
           } catch (IOException ex) {
@@ -295,7 +297,7 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
                                     AnnotationUtils.findPosition(this.sourcePositions, this.trees,
                                         element).getUri()).toPath();
                             final AtomicInteger counter = new AtomicInteger();
-                            AnnotationUtils.findMmdComments(position.getLine(), 0,
+                            findMmdComments(position.getLine(), 0,
                                 elementSources.get()).forEach(comment -> {
                               counter.incrementAndGet();
                               foundAnnotationList.add(
@@ -313,7 +315,7 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
                         }
                       }
 
-                      AnnotationUtils.findAllInternalMmdTopicAnnotations(
+                      findAllInternalMmdTopicAnnotations(
                               this.trees,
                               (ExecutableElement) element)
                           .forEach(pair -> {

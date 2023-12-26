@@ -135,7 +135,7 @@ final class InternalLayoutBlock {
     if (this.forceTitle != null) {
       return this.forceTitle;
     }
-    if (this.getAnnotation().title().length() == 0) {
+    if (this.getAnnotation().title().isEmpty()) {
       return this.baseItem.getElement().getSimpleName().toString();
     } else {
       return this.getAnnotation().title();

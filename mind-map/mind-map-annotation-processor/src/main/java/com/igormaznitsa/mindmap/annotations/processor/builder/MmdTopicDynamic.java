@@ -27,7 +27,6 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -40,23 +39,13 @@ public final class MmdTopicDynamic implements MmdTopic {
   private static final String[] EMPTY_STRINGS = new String[0];
 
   static {
-    final Map<String, Object> map = new HashMap<>();
-    map.put("uid", "");
-    map.put("fileuid", "");
-    map.put("path", EMPTY_STRINGS);
-    map.put("emoticon", MmdEmoticon.EMPTY);
-    map.put("filelink", "");
-    map.put("anchor", true);
-    map.put("jumpto", "");
-    map.put("note", "");
-    map.put("uri", "");
-    map.put("colortext", MmdColor.Default);
-    map.put("colorfill", MmdColor.Default);
-    map.put("colorborder", MmdColor.Default);
-    map.put("collapse", false);
-    map.put("direction", Direction.AUTO);
-    map.put("title", "");
-    CONFIG_DEFAULT = Collections.unmodifiableMap(map);
+    CONFIG_DEFAULT = Map.ofEntries(Map.entry("uid", ""), Map.entry("fileuid", ""),
+        Map.entry("path", EMPTY_STRINGS), Map.entry("emoticon", MmdEmoticon.EMPTY),
+        Map.entry("filelink", ""), Map.entry("anchor", true), Map.entry("jumpto", ""),
+        Map.entry("note", ""), Map.entry("uri", ""), Map.entry("colortext", MmdColor.Default),
+        Map.entry("colorfill", MmdColor.Default), Map.entry("colorborder", MmdColor.Default),
+        Map.entry("collapse", false), Map.entry("direction", Direction.AUTO),
+        Map.entry("title", ""));
   }
 
   public final String uid;
