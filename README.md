@@ -14,17 +14,17 @@ Initially I developed a plugin for NetBeans IDE then the IntellijIDEA plugin was
 ![Screenshots from all](./assets/screenshots_all.png)
 
 # Changelog
+__1.6.6 (SNAPSHOT)__
+- AP: improved annotation processor to extract marks from method bodies
+- SR: embedded Intellij fonts (`JetBrains Mono Kawkab` and `JetBrains Mono Vazir`) with Farsi char-set support [#120](https://github.com/raydac/netbeans-mmd-plugin/issues/120)
+- IJ,NB: Improved font configuration use for Note text editor [#120](https://github.com/raydac/netbeans-mmd-plugin/issues/120)
+
 __1.6.5 (13-dec-2023)__
 - IJ:  Fixed new topic focus lost if TAB pressed during edit [#91](https://github.com/raydac/netbeans-mmd-plugin/issues/91)
 - IJ:  Fixed error for access to private field in ApplicationInfo [#119](https://github.com/raydac/netbeans-mmd-plugin/issues/119)
 - SR:  embedded JDK updated to 21.0.1+12
 - SR:  PlantUML updated to 1.2023.13
 
-__1.6.4 (22-jul-2023)__
-- IJ:  "Knowledge folders" pane removed [#116](https://github.com/raydac/netbeans-mmd-plugin/issues/116)
-- SR:  improved rendering of KafkaStreams topology
-- SR:  PlantUML updated to 1.2023.10
-- SR:  improved full-screen activation
 
 
 [Full changelog](https://github.com/raydac/netbeans-mmd-plugin/blob/master/changelog.txt)   
