@@ -14,6 +14,9 @@ public class MarkedLocalVariablesTest extends AbstractMmdTest {
     findForPath(map, "root", "LOCAL_VARIABLES", "EEE");
     findForPath(map, "root", "LOCAL_VARIABLES", "hello");
     findForPath(map, "root", "LOCAL_VARIABLES", "system");
+    findForPath(map, "root", "LOCAL_VARIABLES", "some text1");
+    findForPath(map, "root", "LOCAL_VARIABLES", "some text2");
+    findForPath(map, "root", "LOCAL_VARIABLES", "visible");
 
     assertThrows(AssertionError.class, () -> findForPath(map, "root", "LOCAL_VARIABLES", "someB"));
   }

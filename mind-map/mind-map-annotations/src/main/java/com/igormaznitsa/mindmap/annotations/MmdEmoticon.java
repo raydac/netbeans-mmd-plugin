@@ -16,6 +16,11 @@
 
 package com.igormaznitsa.mindmap.annotations;
 
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.toList;
+
+import java.util.List;
+
 /**
  * Set of allowed emoticons for generated MMD topics.
  *
@@ -1658,6 +1663,36 @@ public enum MmdEmoticon {
   ZOOM("zoom");
 
   private final String id;
+
+  private static final List<MmdEmoticon> LIST_VALUES =
+      stream(MmdEmoticon.values()).collect(toList());
+
+  /**
+   * Get all values as immutable list.
+   *
+   * @return immutable list of all values.
+   * @since 1.6.6
+   */
+  public static List<MmdEmoticon> asList() {
+    return LIST_VALUES;
+  }
+
+  /**
+   * Safe case-insensitive emoticon search for name.
+   *
+   * @param name            emoticon name, can be null
+   * @param defaultEmoticon default emoticon, can be null
+   * @return found emoticon for name or the default one, the default one can be null
+   * @since 1.6.6
+   */
+  public static MmdEmoticon findForName(final String name, final MmdEmoticon defaultEmoticon) {
+    if (name == null) {
+      return defaultEmoticon;
+    }
+    return LIST_VALUES.stream().filter(x -> x.name().equalsIgnoreCase(name)).findFirst()
+        .orElse(defaultEmoticon);
+  }
+
 
   MmdEmoticon(final String id) {
     this.id = id;

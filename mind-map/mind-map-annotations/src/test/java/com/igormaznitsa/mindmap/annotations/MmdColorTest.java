@@ -23,7 +23,7 @@ public class MmdColorTest {
 
   @Test
   public void testHtmlColors() {
-    for (final MmdColor color : MmdColor.values()) {
+    for (final MmdColor color : MmdColor.asList()) {
       final String htmlColor = color.getHtmlColor();
       Assert.assertTrue(color.name(), htmlColor.startsWith("#"));
       Assert.assertEquals(7, htmlColor.length());

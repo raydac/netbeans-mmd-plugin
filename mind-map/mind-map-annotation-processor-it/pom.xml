@@ -94,6 +94,7 @@
                     <compilerArgs>
                         <compilerArg>-J-Djava.awt.headless=true</compilerArg>
                         <compilerArg>-Ammd.file.link.base.folder=${mmd.basedir}</compilerArg>
+                        <compilerArg>-Ammd.comment.scan=true</compilerArg>
                     </compilerArgs>
                     <release>${maven.compiler.target}</release>
                 </configuration>

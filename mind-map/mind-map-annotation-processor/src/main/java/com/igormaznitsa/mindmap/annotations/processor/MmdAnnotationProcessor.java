@@ -16,6 +16,7 @@
 
 package com.igormaznitsa.mindmap.annotations.processor;
 
+import static java.lang.Boolean.FALSE;
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 import static javax.tools.Diagnostic.Kind.ERROR;
@@ -46,7 +47,9 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Messager;
@@ -70,7 +73,8 @@ import org.apache.commons.io.FilenameUtils;
     MmdAnnotationProcessor.KEY_MMD_DRY_START,
     MmdAnnotationProcessor.KEY_MMD_FILE_OVERWRITE,
     MmdAnnotationProcessor.KEY_MMD_FILE_ROOT_FOLDER,
-    MmdAnnotationProcessor.KEY_MMD_FILE_LINK_BASE_FOLDER
+    MmdAnnotationProcessor.KEY_MMD_FILE_LINK_BASE_FOLDER,
+    MmdAnnotationProcessor.KEY_MMD_COMMENT_SCAN
 })
 public class MmdAnnotationProcessor extends AbstractProcessor {
 
@@ -95,6 +99,13 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
    */
   public static final String KEY_MMD_FOLDER_CREATE = "mmd.folder.create";
   /**
+   * Option to turn on comment scanning during marked method processing.
+   *
+   * @since HasMmdMarkedElements
+   * @since 1.6.6
+   */
+  public static final String KEY_MMD_COMMENT_SCAN = "mmd.comment.scan";
+  /**
    * Option to overwrite result MMD file if already exist
    */
   public static final String KEY_MMD_FILE_OVERWRITE = "mmd.file.overwrite";
@@ -115,6 +126,7 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
   private Path optionFileRootFolder;
   private boolean optionFileOverwrite;
   private boolean optionDryStart;
+  private boolean optionCommentScan;
 
   @Override
   public SourceVersion getSupportedSourceVersion() {
@@ -129,13 +141,18 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
   @Override
   public synchronized void init(final ProcessingEnvironment processingEnv) {
     super.init(processingEnv);
+
     this.trees = Trees.instance(processingEnv);
     this.sourcePositions = this.trees.getSourcePositions();
     this.messager = processingEnv.getMessager();
     this.types = processingEnv.getTypeUtils();
 
     this.optionDryStart =
-        Boolean.parseBoolean(processingEnv.getOptions().getOrDefault(KEY_MMD_DRY_START, "false"));
+        Boolean.parseBoolean(
+            processingEnv.getOptions().getOrDefault(KEY_MMD_DRY_START, FALSE.toString()));
+    this.optionCommentScan =
+        Boolean.parseBoolean(
+            processingEnv.getOptions().getOrDefault(KEY_MMD_COMMENT_SCAN, FALSE.toString()));
 
     if (this.optionDryStart) {
       this.messager.printMessage(WARNING, "MMD processor started in DRY mode");
@@ -147,7 +164,7 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
         this.messager.printMessage(
             WARNING, "Folder for MMD not-exists: " + this.optionTargetFolder);
         if (Boolean.parseBoolean(
-            processingEnv.getOptions().getOrDefault(KEY_MMD_FOLDER_CREATE, "false"))) {
+            processingEnv.getOptions().getOrDefault(KEY_MMD_FOLDER_CREATE, FALSE.toString()))) {
           try {
             this.optionTargetFolder = Files.createDirectories(this.optionTargetFolder);
             this.messager.printMessage(
@@ -266,7 +283,38 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
                   .map(x -> (HasMmdMarkedElements) x)
                   .forEach(method -> {
                     if (element instanceof ExecutableElement) {
-                      AnnotationUtils.findAllInternalMmdTopicAnnotations(trees,
+                      if (this.optionCommentScan) {
+                        try {
+                          final Optional<String> elementSources =
+                              AnnotationUtils.findElementSources(this.sourcePositions,
+                                  this.trees, element);
+
+                          if (elementSources.isPresent()) {
+                            final Path elementFile =
+                                new File(
+                                    AnnotationUtils.findPosition(this.sourcePositions, this.trees,
+                                        element).getUri()).toPath();
+                            final AtomicInteger counter = new AtomicInteger();
+                            AnnotationUtils.findMmdComments(position.getLine(), 0,
+                                elementSources.get()).forEach(comment -> {
+                              counter.incrementAndGet();
+                              foundAnnotationList.add(
+                                  new MmdAnnotationWrapper(element, comment, elementFile,
+                                      comment.line(), comment.position()));
+                            });
+                            if (counter.get() > 0) {
+                              this.messager.printMessage(NOTE,
+                                  "Found " + counter.get() + " internal comment-markers", element);
+                            }
+                          }
+                        } catch (Exception ex) {
+                          this.messager.printMessage(ERROR,
+                              "Can't read sources for element: " + ex.getMessage(), element);
+                        }
+                      }
+
+                      AnnotationUtils.findAllInternalMmdTopicAnnotations(
+                              this.trees,
                               (ExecutableElement) element)
                           .forEach(pair -> {
                             final long localStartPosition =
@@ -318,6 +366,7 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
           .setFileRootFolder(this.optionFileRootFolder)
           .setTargetFolder(this.optionTargetFolder)
           .setDryStart(this.optionDryStart)
+          .setCommentScan(this.optionCommentScan)
           .setOverwriteAllowed(this.optionFileOverwrite)
           .setFileLinkBaseFolder(this.optionFileLinkBaseFolder)
           .setAnnotations(foundAnnotationList)

@@ -34,6 +34,9 @@ import com.sun.source.util.SourcePositions;
 import com.sun.source.util.TreePath;
 import com.sun.source.util.TreeScanner;
 import com.sun.source.util.Trees;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.lang.annotation.Annotation;
 import java.net.URI;
 import java.util.ArrayList;
@@ -43,7 +46,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.lang.model.element.Element;
@@ -52,12 +58,21 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.util.Types;
+import javax.tools.JavaFileObject;
 import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * Auxiliary class contains annotation processing utility methods.
  */
 public final class AnnotationUtils {
+
+  /**
+   * Pattern to parse mmd mark comment.
+   *
+   * @since 1.6.6
+   */
+  private static final Pattern PATTERN_MMD_TOPIC_COMMENT =
+      Pattern.compile("^\\s*@MmdTopic\\s*(?:\\((.*)\\)(.*)|(.*))$", Pattern.CASE_INSENSITIVE);
 
   private AnnotationUtils() {
   }
@@ -128,6 +143,83 @@ public final class AnnotationUtils {
     final TreePath treePath = trees.getPath(element);
     final CompilationUnitTree compilationUnit = treePath.getCompilationUnit();
     return sourcePositions.getStartPosition(compilationUnit, treePath.getLeaf());
+  }
+
+  /**
+   * Find and read element sources.
+   *
+   * @param sourcePositions auxiliary utility class, must not be null
+   * @param trees           auxiliary utility class, must not be null
+   * @param element         element which position should be found
+   * @return found read sources if they are presented, empty if not provided
+   * @throws IOException if there is a problem to read sources of access error
+   * @since 1.6.6
+   */
+  public static Optional<String> findElementSources(final SourcePositions sourcePositions,
+                                                    final Trees trees, final Element element)
+      throws IOException {
+    final TreePath treePath = trees.getPath(element);
+    final CompilationUnitTree compilationUnit = treePath.getCompilationUnit();
+
+    final long startPosition = findStartPosition(sourcePositions, trees, element);
+    if (startPosition < 0) {
+      return Optional.empty();
+    }
+    final long endPosition = findEndPosition(sourcePositions, trees, element);
+    if (endPosition < 0) {
+      return Optional.empty();
+    }
+
+    final int textLength = (int) (endPosition - startPosition);
+    if (textLength < 0) {
+      return Optional.empty();
+    }
+    if (textLength == 0) {
+      return Optional.of("");
+    }
+
+    final char[] buffer = new char[textLength];
+    final JavaFileObject javaFileObject = compilationUnit.getSourceFile();
+    if (javaFileObject != null && javaFileObject.getKind() == JavaFileObject.Kind.SOURCE) {
+      int position = 0;
+      int restChars = textLength;
+      try (final Reader reader = compilationUnit.getSourceFile().openReader(true)) {
+        if (reader.skip(startPosition) != startPosition) {
+          throw new IOException("Can't skip " + startPosition + " chars in source file");
+        }
+        while (restChars > 0) {
+          final int read = reader.read(buffer, position, restChars);
+          if (read < 0) {
+            break;
+          }
+          position += read;
+          restChars -= read;
+        }
+        if (restChars != 0) {
+          throw new IOException(
+              "Can't read " + textLength + " chars from position " + startPosition);
+        }
+        return Optional.of(new String(buffer));
+      }
+    }
+    return Optional.empty();
+  }
+
+  /**
+   * Find ending position of element inside file.
+   *
+   * @param sourcePositions auxiliary utility class, must not be null
+   * @param trees           auxiliary utility class, must not be null
+   * @param element         element which position should be found
+   * @return end position of element inside file or -1 if not found
+   * @see javax.tools.Diagnostic#NOPOS
+   * @since 1.6.6
+   */
+  public static long findEndPosition(
+      final SourcePositions sourcePositions, final Trees trees, final Element element) {
+    final TreePath treePath = trees.getPath(element);
+    final CompilationUnitTree compilationUnit = treePath.getCompilationUnit();
+    return sourcePositions.getEndPosition(compilationUnit, treePath.getLeaf());
   }
 
   /**
@@ -259,6 +351,183 @@ public final class AnnotationUtils {
   }
 
   /**
+   * Find all mmd mark comments in sources provided as a String.
+   *
+   * @param initialLine     initial value for line counter
+   * @param initialPosition initial line position to start read
+   * @param text            text to be parsed, can be null
+   * @return list of found topics defined through mark comments
+   * @since 1.6.6
+   */
+  public static List<MmdTopicDynamic> findMmdComments(final long initialLine,
+                                                      final long initialPosition,
+                                                      final String text) {
+    if (text == null || text.isEmpty()) {
+      return List.of();
+    }
+
+    final List<MmdTopicDynamic> result = new ArrayList<>();
+
+    final StringReader reader = new StringReader(text);
+    final AtomicInteger positionCounter = new AtomicInteger((int) initialPosition);
+    final AtomicInteger lineCounter = new AtomicInteger((int) initialLine);
+    try {
+      while (true) {
+        final PositionedText nextLine =
+            findSingleLineCommentText(reader, lineCounter, positionCounter);
+        if (nextLine == null) {
+          break;
+        }
+
+        final Matcher matcher = PATTERN_MMD_TOPIC_COMMENT.matcher(nextLine.text);
+        if (matcher.find()) {
+          final String args = matcher.group(1);
+          final String others = matcher.group(2);
+          final String title = matcher.group(3);
+          if (title != null) {
+            result.add(MmdTopicDynamic.of(nextLine.line, nextLine.position, title));
+          } else {
+            result.add(MmdTopicDynamic.of(nextLine.line, nextLine.position, args, others));
+          }
+        }
+      }
+    } catch (IOException ex) {
+      throw new IllegalStateException("Unexpected IOException", ex);
+    }
+
+    return result;
+  }
+
+  private static void skipTillClosingJavaComments(final Reader reader,
+                                                  final AtomicInteger lineCounter,
+                                                  final AtomicInteger positionCounter)
+      throws IOException {
+    boolean starFound = false;
+
+    while (true) {
+      final int chr = reader.read();
+      if (chr < 0) {
+        return;
+      }
+      updateLinePositionCounters(chr, lineCounter, positionCounter);
+      if (starFound) {
+        if (chr == '/') {
+          return;
+        } else {
+          starFound = chr == '*';
+        }
+      } else if (chr == '*') {
+        starFound = true;
+      }
+    }
+  }
+
+  private static void updateLinePositionCounters(final int character, final AtomicInteger line,
+                                                 final AtomicInteger position) {
+    if (character >= 0) {
+      position.incrementAndGet();
+      if (character == '\n') {
+        position.set(0);
+        line.incrementAndGet();
+      }
+    }
+  }
+
+  private static PositionedText findSingleLineCommentText(
+      final Reader reader,
+      final AtomicInteger lineCounter,
+      final AtomicInteger positionCounter
+  ) throws IOException {
+    final int STATE_NORMAL = 0;
+    final int STATE_INSIDE_STRING = 1;
+    final int STATE_NEXT_SPECIAL_CHAR = 2;
+    final int STATE_FORWARD_SLASH = 3;
+    int state = STATE_NORMAL;
+
+    while (true) {
+      final int chr = reader.read();
+      if (chr < 0) {
+        break;
+      }
+      updateLinePositionCounters(chr, lineCounter, positionCounter);
+
+      switch (state) {
+        case STATE_NORMAL: {
+          switch (chr) {
+            case '\"': {
+              state = STATE_INSIDE_STRING;
+            }
+            break;
+            case '/': {
+              state = STATE_FORWARD_SLASH;
+            }
+            break;
+            default: {
+              // ignore
+            }
+            break;
+          }
+        }
+        break;
+        case STATE_FORWARD_SLASH: {
+          switch (chr) {
+            case '*': {
+              skipTillClosingJavaComments(reader, lineCounter, positionCounter);
+              state = STATE_NORMAL;
+            }
+            break;
+            case '/': {
+              final int startPosition = positionCounter.get();
+              final int startLine = lineCounter.get();
+
+              final StringBuilder builder = new StringBuilder();
+              while (true) {
+                final int nextChar = reader.read();
+                if (nextChar < 0) {
+                  break;
+                }
+                updateLinePositionCounters(nextChar, lineCounter, positionCounter);
+                if (nextChar == '\r' || nextChar == '\n') {
+                  break;
+                }
+                builder.append((char) nextChar);
+              }
+              return new PositionedText(builder.toString().trim(), startLine, startPosition);
+            }
+            default: {
+              state = STATE_NORMAL;
+            }
+            break;
+          }
+        }
+        break;
+        case STATE_INSIDE_STRING: {
+          switch (chr) {
+            case '\\': {
+              state = STATE_NEXT_SPECIAL_CHAR;
+            }
+            break;
+            case '\"': {
+              state = STATE_NORMAL;
+            }
+            break;
+            default:
+              break;
+          }
+        }
+        break;
+        case STATE_NEXT_SPECIAL_CHAR: {
+          state = STATE_INSIDE_STRING;
+        }
+        break;
+        default:
+          throw new IllegalStateException("Unexpected state: " + state);
+      }
+    }
+    return null;
+  }
+
+  /**
    * Find all MmdTopic annotations inside executable element.
    *
    * @param trees             auxiliary utility class, must not be null
@@ -269,6 +538,7 @@ public final class AnnotationUtils {
   public static List<Map.Entry<MmdTopic, Element>> findAllInternalMmdTopicAnnotations(
       final Trees trees,
       final ExecutableElement executableElement) {
+
     final CompilationUnitTree compilationUnitTree =
         trees.getPath(executableElement).getCompilationUnit();
 
@@ -327,6 +597,18 @@ public final class AnnotationUtils {
           }
         };
     return Objects.requireNonNullElse(scanner.scan(statementTree, null), List.of());
+  }
+
+  private static final class PositionedText {
+    private final String text;
+    private final int line;
+    private final int position;
+
+    PositionedText(final String text, final int line, final int position) {
+      this.line = line;
+      this.position = position;
+      this.text = text;
+    }
   }
 
   /**

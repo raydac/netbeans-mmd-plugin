@@ -223,6 +223,7 @@ public class MmdFileBuilder {
     private Path fileRootFolder;
     private boolean overwriteAllowed = true;
     private boolean dryStart;
+    private boolean commentScan;
     private Messager messager;
     private Types types;
 
@@ -257,8 +258,18 @@ public class MmdFileBuilder {
       return this;
     }
 
+    public boolean isCommentScan() {
+      return this.commentScan;
+    }
+
     public boolean isDryStart() {
       return this.dryStart;
+    }
+
+    public Builder setCommentScan(final boolean commentScan) {
+      this.assertNotCompleted();
+      this.commentScan = commentScan;
+      return this;
     }
 
     public Builder setDryStart(final boolean dryStart) {

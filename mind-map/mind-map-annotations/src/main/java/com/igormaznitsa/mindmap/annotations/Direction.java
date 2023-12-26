@@ -16,6 +16,11 @@
 
 package com.igormaznitsa.mindmap.annotations;
 
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.toList;
+
+import java.util.List;
+
 /**
  * Topic direction.
  */
@@ -31,5 +36,34 @@ public enum Direction {
   /**
    * Right
    */
-  RIGHT
+  RIGHT;
+
+  private static final List<Direction> LIST_VALUES = stream(Direction.values()).collect(toList());
+
+  /**
+   * Get all values as immutable list.
+   *
+   * @return immutable list of all values.
+   * @since 1.6.6
+   */
+  public static List<Direction> asList() {
+    return LIST_VALUES;
+  }
+
+  /**
+   * Safe case-insensitive emoticon search for name.
+   *
+   * @param name             emoticon name, can be null
+   * @param defaultDirection default direction, can be null
+   * @return found direction for name or the default one, the default one can be null
+   * @since 1.6.6
+   */
+  public static Direction findForName(final String name, final Direction defaultDirection) {
+    if (name == null) {
+      return defaultDirection;
+    }
+    return LIST_VALUES.stream().filter(x -> x.name().equalsIgnoreCase(name)).findFirst()
+        .orElse(defaultDirection);
+  }
+
 }

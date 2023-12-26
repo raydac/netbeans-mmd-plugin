@@ -16,6 +16,10 @@
 
 package com.igormaznitsa.mindmap.annotations;
 
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.toList;
+
+import java.util.List;
 import java.util.Locale;
 import java.util.NoSuchElementException;
 
@@ -596,6 +600,18 @@ public enum MmdColor {
   private final String htmlColor;
   private final int argb;
 
+  private static final List<MmdColor> LIST_VALUES = stream(MmdColor.values()).collect(toList());
+
+  /**
+   * Get all values as immutable list.
+   *
+   * @return immutable list of all values.
+   * @since 1.6.6
+   */
+  public static List<MmdColor> asList() {
+    return LIST_VALUES;
+  }
+
   MmdColor() {
     this.htmlColor = "#FFFFFF";
     this.argb = 0x00FFFFFF;
@@ -620,12 +636,28 @@ public enum MmdColor {
     if (htmlColor == null || htmlColor.isEmpty()) {
       return Default;
     }
-    for (final MmdColor color : MmdColor.values()) {
+    for (final MmdColor color : LIST_VALUES) {
       if (color.htmlColor.equalsIgnoreCase(htmlColor)) {
         return color;
       }
     }
     throw new NoSuchElementException("There is no color enum value for " + htmlColor);
+  }
+
+  /**
+   * Safe case-insensitive color search for name.
+   *
+   * @param name         color name, can be null
+   * @param defaultColor default color, can be null
+   * @return found color for name or the default one, the default one can be null
+   * @since 1.6.6
+   */
+  public static MmdColor findForName(final String name, final MmdColor defaultColor) {
+    if (name == null) {
+      return defaultColor;
+    }
+    return LIST_VALUES.stream().filter(x -> x.name().equalsIgnoreCase(name)).findFirst()
+        .orElse(defaultColor);
   }
 
   /**

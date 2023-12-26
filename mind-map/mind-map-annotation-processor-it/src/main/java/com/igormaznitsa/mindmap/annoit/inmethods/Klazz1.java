@@ -24,6 +24,22 @@ public class Klazz1 {
   }
 
   @HasMmdMarkedElements
+  private void withInternalComments() {
+
+    //@MmdTopic some text1
+    System.out.println("DaDaDa");
+
+    //@MmdTopic some text2
+    System.out.println("NeNeNe");
+
+    /* some multiline
+        comment contains //@MmdTopic line comment
+     */
+    String someText =
+        "//@MmdTopic must not be visible"; // @mmdTopic  (note="Hello note\ndadada", colorfill=yellow) visible
+  }
+
+  @HasMmdMarkedElements
   private void method2() {
     @MmdTopic(title = "system", colorFill = MmdColor.Green)
     int system;
