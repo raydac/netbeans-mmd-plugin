@@ -55,7 +55,7 @@ public class Root {
   }
 
 
-  @MmdTopic(path = "internals")
+  @MmdTopic(title = "MARKED")
   @HasMmdMarkedElements
   public int internalTopics() {
     @MmdTopic(order = 3)
@@ -65,7 +65,7 @@ public class Root {
     @MmdTopic(order = 1)
     int c = 3;
 
-    //@MmdTopic sum
+    //@MmdTopic(order=445) sum
     return a + b + c;
   }
 

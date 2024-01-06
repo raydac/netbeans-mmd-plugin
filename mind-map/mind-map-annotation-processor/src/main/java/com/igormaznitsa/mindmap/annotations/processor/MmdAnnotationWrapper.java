@@ -51,12 +51,20 @@ public class MmdAnnotationWrapper {
   private final Element element;
 
   /**
+   * Flag shows that wrapper created for some internal block of the element and not related to the element directly.
+   *
+   * @since 1.6.6
+   */
+  private final boolean internal;
+
+  /**
    * Constructor.
    *
    * @param element    element providing annotation, must not be null
    * @param annotation found annotation, must not be null
    * @param path       source class file path, must not be null
    * @param line       line number of the annotation in the source class file
+   * @param internal   flag shows that wrapper created for some internal block of the element and not related to the element directly
    * @throws NullPointerException     thrown if any argument is null
    * @throws IllegalArgumentException thrown if line is zero or negative one
    */
@@ -65,8 +73,10 @@ public class MmdAnnotationWrapper {
       final Annotation annotation,
       final Path path,
       final long line,
-      final long startPositionInsideFile
+      final long startPositionInsideFile,
+      final boolean internal
   ) {
+    this.internal = internal;
     this.element = requireNonNull(element);
     this.annotation = requireNonNull(annotation);
     this.path = requireNonNull(path);
@@ -79,6 +89,10 @@ public class MmdAnnotationWrapper {
 
   public long getStartPositionInsideFile() {
     return this.startPositionInsideFile;
+  }
+
+  public boolean isInternal() {
+    return this.internal;
   }
 
   @Override

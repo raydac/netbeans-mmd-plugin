@@ -17,6 +17,7 @@
 package com.igormaznitsa.mindmap.annotations.processor.builder.elements;
 
 import static com.igormaznitsa.mindmap.annotations.processor.builder.AnnotationUtils.findFirstAmongEnclosingAndAncestors;
+import static com.igormaznitsa.mindmap.annotations.processor.builder.AnnotationUtils.findFirstWithEnclosing;
 import static com.igormaznitsa.mindmap.annotations.processor.builder.elements.AbstractItem.MmdAttribute.COLOR_BORDER;
 import static com.igormaznitsa.mindmap.annotations.processor.builder.elements.AbstractItem.MmdAttribute.COLOR_FILL;
 import static com.igormaznitsa.mindmap.annotations.processor.builder.elements.AbstractItem.MmdAttribute.COLOR_TEXT;
@@ -229,14 +230,24 @@ final class InternalLayoutBlock {
 
   public Optional<InternalLayoutBlock> findParentAmong(Types types,
                                                        List<InternalLayoutBlock> children) {
-    final List<Pair<MmdTopic, Element>> found =
-        findFirstAmongEnclosingAndAncestors(this.baseItem.getElement(), MmdTopic.class, types);
+    final List<Pair<MmdTopic, Element>> found;
+
+    final boolean baseItemInternalOne = this.baseItem.getAnnotationContainer().isInternal();
+
+    if (baseItemInternalOne) {
+      found = findFirstWithEnclosing(this.baseItem.getElement(), MmdTopic.class, true);
+    } else {
+      found =
+          findFirstAmongEnclosingAndAncestors(this.baseItem.getElement(), MmdTopic.class, types);
+    }
+
     return found.stream()
         .flatMap(x ->
             children.stream()
-                .filter(y ->
-                    !this.baseItem.getElement().equals(y.baseItem.getElement())
-                        && y.baseItem.getElement().equals(x.getValue())))
+                .filter(y -> !y.getAnnotationItem().getAnnotationContainer().isInternal())
+                .filter(y -> baseItemInternalOne ||
+                    !this.baseItem.getElement().equals(y.baseItem.getElement()))
+                .filter(y -> y.baseItem.getElement().equals(x.getValue())))
         .findFirst();
   }
 

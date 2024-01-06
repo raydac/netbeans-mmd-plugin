@@ -35,11 +35,12 @@ public class AttributesTest extends AbstractMmdTest implements StandardTopicAttr
     assertEquals("SubMethod2", topic.getChildren().get(1).getText());
     assertEquals("SubMethod3", topic.getChildren().get(2).getText());
 
-    final Topic sum = findForTitle(map, "sum");
-    assertEquals(3, sum.getChildren().size());
-    assertEquals("c", sum.getChildren().get(0).getText());
-    assertEquals("b", sum.getChildren().get(1).getText());
-    assertEquals("a", sum.getChildren().get(2).getText());
+    final Topic marked = findForTitle(map, "MARKED");
+    assertEquals(4, marked.getChildren().size());
+    assertEquals("c", marked.getChildren().get(0).getText());
+    assertEquals("b", marked.getChildren().get(1).getText());
+    assertEquals("a", marked.getChildren().get(2).getText());
+    assertEquals("sum", marked.getChildren().get(3).getText());
   }
 
 }

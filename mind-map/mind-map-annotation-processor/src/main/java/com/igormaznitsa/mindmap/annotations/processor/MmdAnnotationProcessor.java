@@ -270,7 +270,7 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
                       mmdTopicAnno -> foundAnnotationList.add(
                           new MmdAnnotationWrapper(
                               element, mmdTopicAnno, new File(position.getUri()).toPath(),
-                              position.getLine(), startPosition)));
+                              position.getLine(), startPosition, false)));
             } else if (annotationClass == MmdFiles.class) {
               Arrays.stream(annotationInstances)
                   .map(x -> (MmdFiles) x)
@@ -279,7 +279,7 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
                       mmdFile -> foundAnnotationList.add(
                           new MmdAnnotationWrapper(
                               element, mmdFile, new File(position.getUri()).toPath(),
-                              position.getLine(), startPosition)));
+                              position.getLine(), startPosition, false)));
             } else if (annotationClass == HasMmdMarkedElements.class) {
               Arrays.stream(annotationInstances)
                   .map(x -> (HasMmdMarkedElements) x)
@@ -302,7 +302,7 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
                               counter.incrementAndGet();
                               foundAnnotationList.add(
                                   new MmdAnnotationWrapper(element, comment, elementFile,
-                                      comment.line(), comment.position()));
+                                      comment.line(), comment.position(), true));
                             });
                             if (counter.get() > 0) {
                               this.messager.printMessage(NOTE,
@@ -330,7 +330,7 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
                                 pair.getValue(),
                                 pair.getKey(),
                                 new File(localPosition.getUri()).toPath(),
-                                localPosition.getLine(), localStartPosition));
+                                localPosition.getLine(), localStartPosition, false));
                           });
                     } else {
                       this.messager.printMessage(WARNING,
@@ -344,7 +344,7 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
                       instance -> foundAnnotationList.add(
                           new MmdAnnotationWrapper(
                               element, instance, new File(position.getUri()).toPath(),
-                              position.getLine(), startPosition)
+                              position.getLine(), startPosition, false)
                       )
                   );
             }

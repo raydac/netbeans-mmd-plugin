@@ -92,7 +92,7 @@ public class FileItem extends AbstractItem {
 
     this.rootNode = new InternalLayoutBlock(
         new TopicItem(new MmdAnnotationWrapper(base.getElement(), mmdFile.rootTopic(),
-            this.getPath(), this.getLine(), this.getStartPosition())));
+            this.getPath(), this.getLine(), this.getStartPosition(), false)));
 
     this.layoutBlocks.add(this.rootNode);
   }

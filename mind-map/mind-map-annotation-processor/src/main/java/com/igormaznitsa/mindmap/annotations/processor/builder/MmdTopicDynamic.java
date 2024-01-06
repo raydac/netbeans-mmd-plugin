@@ -27,6 +27,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -45,6 +46,7 @@ public final class MmdTopicDynamic implements MmdTopic {
         Map.entry("note", ""), Map.entry("uri", ""), Map.entry("colortext", MmdColor.Default),
         Map.entry("colorfill", MmdColor.Default), Map.entry("colorborder", MmdColor.Default),
         Map.entry("collapse", false), Map.entry("direction", Direction.AUTO),
+        Map.entry("order", -1),
         Map.entry("title", ""));
   }
 
@@ -215,6 +217,10 @@ public final class MmdTopicDynamic implements MmdTopic {
         case "anchor":
         case "collapse": {
           config.put(loweCasedKey, Boolean.valueOf(value));
+        }
+        break;
+        case "order": {
+          config.put(loweCasedKey, Integer.valueOf(value.trim()));
         }
         break;
         case "direction": {
@@ -521,5 +527,29 @@ public final class MmdTopicDynamic implements MmdTopic {
   @Override
   public Class<? extends Annotation> annotationType() {
     return MmdTopic.class;
+  }
+
+  @Override
+  public String toString() {
+    return "MmdTopicDynamic{" +
+        "uid='" + uid + '\'' +
+        ", fileUid='" + fileUid + '\'' +
+        ", path=" + Arrays.toString(path) +
+        ", emoticon=" + emoticon +
+        ", fileLink='" + fileLink + '\'' +
+        ", anchor=" + anchor +
+        ", jumpTo='" + jumpTo + '\'' +
+        ", note='" + note + '\'' +
+        ", uri='" + uri + '\'' +
+        ", colorText=" + colorText +
+        ", colorFill=" + colorFill +
+        ", colorBorder=" + colorBorder +
+        ", collapse=" + collapse +
+        ", direction=" + direction +
+        ", title='" + title + '\'' +
+        ", position=" + position +
+        ", line=" + line +
+        ", order=" + order +
+        '}';
   }
 }

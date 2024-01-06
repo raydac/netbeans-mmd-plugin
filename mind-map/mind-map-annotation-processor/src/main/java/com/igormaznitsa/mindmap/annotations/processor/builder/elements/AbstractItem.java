@@ -46,8 +46,12 @@ public abstract class AbstractItem {
       Pattern.compile("^(.+)(?:\\:([0-9]+))|(.+)$");
   protected final MmdAnnotationWrapper annotationContainer;
 
-  public AbstractItem(final MmdAnnotationWrapper annotationContainer) {
+  protected AbstractItem(final MmdAnnotationWrapper annotationContainer) {
     this.annotationContainer = requireNonNull(annotationContainer);
+  }
+
+  public MmdAnnotationWrapper getAnnotationContainer() {
+    return this.annotationContainer;
   }
 
   @SuppressWarnings("SameParameterValue")
