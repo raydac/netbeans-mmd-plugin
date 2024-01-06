@@ -153,4 +153,12 @@ public @interface MmdTopic {
    * @return direction which should be used for the topic if it is possible
    */
   Direction direction() default Direction.AUTO;
+
+  /**
+   * Order of the topic among sibling topics.
+   *
+   * @return index of order of the topic among siblings
+   * @since 1.6.6
+   */
+  int order() default -1;
 }

@@ -65,6 +65,7 @@ public final class MmdTopicDynamic implements MmdTopic {
   public final String title;
   private final long position;
   private final long line;
+  private final int order;
 
   private MmdTopicDynamic(
       final long line,
@@ -83,7 +84,8 @@ public final class MmdTopicDynamic implements MmdTopic {
       final MmdColor colorBorder,
       final boolean collapse,
       final Direction direction,
-      final String title) {
+      final String title,
+      final int order) {
     this.line = line;
     this.position = position;
     this.uid = uid;
@@ -101,6 +103,7 @@ public final class MmdTopicDynamic implements MmdTopic {
     this.collapse = collapse;
     this.direction = direction;
     this.title = title;
+    this.order = order;
   }
 
   public static MmdTopicDynamic of(final long line, final long position,
@@ -122,7 +125,8 @@ public final class MmdTopicDynamic implements MmdTopic {
         MmdColor.Default,
         false,
         Direction.AUTO,
-        requireNonNullElse(title, "")
+        requireNonNullElse(title, ""),
+        -1
     );
   }
 
@@ -246,7 +250,8 @@ public final class MmdTopicDynamic implements MmdTopic {
         (MmdColor) config.get("colorborder"),
         (Boolean) config.get("collapse"),
         (Direction) config.get("direction"),
-        (String) config.get("title")
+        (String) config.get("title"),
+        (Integer) config.getOrDefault("order", -1)
     );
   }
 
@@ -433,66 +438,85 @@ public final class MmdTopicDynamic implements MmdTopic {
     return this.line;
   }
 
+  @Override
   public String uid() {
     return this.uid;
   }
 
+  @Override
   public String fileUid() {
     return this.fileUid;
   }
 
+  @Override
   public String[] path() {
     return this.path;
   }
 
+  @Override
   public MmdEmoticon emoticon() {
     return this.emoticon;
   }
 
+  @Override
   public String title() {
     return this.title;
   }
 
+  @Override
   public String fileLink() {
     return this.fileLink;
   }
 
+  @Override
   public boolean anchor() {
     return this.anchor;
   }
 
+  @Override
   public String jumpTo() {
     return this.jumpTo;
   }
 
+  @Override
   public String note() {
     return this.note;
   }
 
+  @Override
   public String uri() {
     return this.uri;
   }
 
+  @Override
   public MmdColor colorText() {
     return this.colorText;
   }
 
+  @Override
   public MmdColor colorFill() {
     return this.colorFill;
   }
 
+  @Override
   public MmdColor colorBorder() {
     return this.colorBorder;
   }
 
+  @Override
   public boolean collapse() {
     return this.collapse;
   }
 
+  @Override
   public Direction direction() {
     return this.direction;
   }
 
+  @Override
+  public int order() {
+    return this.order;
+  }
 
   @Override
   public Class<? extends Annotation> annotationType() {

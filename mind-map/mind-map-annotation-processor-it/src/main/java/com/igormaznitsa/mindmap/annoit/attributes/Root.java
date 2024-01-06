@@ -1,6 +1,7 @@
 package com.igormaznitsa.mindmap.annoit.attributes;
 
 import com.igormaznitsa.mindmap.annotations.Direction;
+import com.igormaznitsa.mindmap.annotations.HasMmdMarkedElements;
 import com.igormaznitsa.mindmap.annotations.MmdColor;
 import com.igormaznitsa.mindmap.annotations.MmdEmoticon;
 import com.igormaznitsa.mindmap.annotations.MmdFile;
@@ -28,13 +29,13 @@ public class Root {
 
   }
 
-  @MmdTopic(uid = "66722", title = "method two", emoticon = MmdEmoticon.ACCOUNT_BALANCES)
-  public void Method2() {
+  @MmdTopic(title = "method three", jumpTo = "66722", emoticon = MmdEmoticon.ANCHOR)
+  public void Method3() {
 
   }
 
-  @MmdTopic(title = "method three", jumpTo = "66722", emoticon = MmdEmoticon.ANCHOR)
-  public void Method3() {
+  @MmdTopic(uid = "66722", title = "method two", emoticon = MmdEmoticon.ACCOUNT_BALANCES)
+  public void Method2() {
 
   }
 
@@ -52,4 +53,20 @@ public class Root {
   public void SubMethod3() {
 
   }
+
+
+  @MmdTopic(path = "internals")
+  @HasMmdMarkedElements
+  public int internalTopics() {
+    @MmdTopic(order = 3)
+    int a = 0;
+    @MmdTopic(order = 2)
+    int b = 1;
+    @MmdTopic(order = 1)
+    int c = 3;
+
+    //@MmdTopic sum
+    return a + b + c;
+  }
+
 }
