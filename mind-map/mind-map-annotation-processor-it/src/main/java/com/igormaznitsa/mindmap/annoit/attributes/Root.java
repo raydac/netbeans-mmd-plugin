@@ -58,6 +58,8 @@ public class Root {
   @MmdTopic(title = "MARKED")
   @HasMmdMarkedElements
   public int internalTopics() {
+    //@MmdTopic(colorFill=white,path={"path1","path2","path3"}) pathCommentTopic
+
     @MmdTopic(order = 3)
     int a = 0;
     @MmdTopic(order = 2)

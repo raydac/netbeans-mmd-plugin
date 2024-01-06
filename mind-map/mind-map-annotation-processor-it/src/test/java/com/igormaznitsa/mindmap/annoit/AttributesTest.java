@@ -26,7 +26,7 @@ public class AttributesTest extends AbstractMmdTest implements StandardTopicAttr
   }
 
   @Test
-  public void testOrder() throws Exception {
+  public void testOrderAndPath() throws Exception {
     final MindMap map = this.findMindMap();
 
     final Topic topic = findForTitle(map, "method one");
@@ -41,6 +41,9 @@ public class AttributesTest extends AbstractMmdTest implements StandardTopicAttr
     assertEquals("b", marked.getChildren().get(1).getText());
     assertEquals("a", marked.getChildren().get(2).getText());
     assertEquals("sum", marked.getChildren().get(3).getText());
+
+    assertTopicPath(findForTitle(map, "pathCommentTopic"), "Root topic", "path1", "path2", "path3",
+        "pathCommentTopic");
   }
 
 }
