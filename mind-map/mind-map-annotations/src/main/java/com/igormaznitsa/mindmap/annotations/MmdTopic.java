@@ -155,7 +155,7 @@ public @interface MmdTopic {
   Direction direction() default Direction.AUTO;
 
   /**
-   * Order of the topic among sibling topics.
+   * Preferred order of the topic among sibling topics.
    *
    * @return index of order of the topic among siblings
    * @since 1.6.6

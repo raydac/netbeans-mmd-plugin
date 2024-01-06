@@ -72,7 +72,7 @@ public abstract class AbstractItem {
     final Properties properties = new Properties();
 
     final String filePath;
-    if (StringUtils.isNotBlank(topicAnnotation.fileLink())) {
+    if (isNotBlank(topicAnnotation.fileLink())) {
       final Matcher matcher = PATTERN_FILEPATH_LINE_NUMBER.matcher(topicAnnotation.fileLink());
       if (matcher.find()) {
         if (matcher.group(1) == null) {
