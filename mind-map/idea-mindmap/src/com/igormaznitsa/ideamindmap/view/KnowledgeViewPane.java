@@ -41,11 +41,13 @@ public class KnowledgeViewPane extends AbstractProjectViewPane {
   }
 
   @Override
+  @NotNull
   public String getTitle() {
     return "Knowledge folders";
   }
 
   @Override
+  @NotNull
   public Icon getIcon() {
     return requireNonNull(AllIcons.Logo.MINDMAP);
   }
@@ -62,18 +64,20 @@ public class KnowledgeViewPane extends AbstractProjectViewPane {
   }
 
   @Override
+  @NotNull
   public JComponent createComponent() {
     return new JLabel("Not implemented yet");
   }
 
   @Override
+  @NotNull
   public ActionCallback updateFromRoot(boolean b) {
     return ActionCallback.DONE;
   }
 
   @Override
   public void select(Object o, VirtualFile virtualFile, boolean b) {
-
+    throw new UnsupportedOperationException("Not implemented");
   }
 
   @Override
@@ -86,7 +90,7 @@ public class KnowledgeViewPane extends AbstractProjectViewPane {
 
       @Override
       public void selectIn(SelectInContext selectInContext, boolean b) {
-
+        throw new UnsupportedOperationException("Not implemented");
       }
     };
   }
