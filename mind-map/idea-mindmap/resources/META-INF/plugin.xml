@@ -14,6 +14,7 @@
     <change-notes><![CDATA[
         <p>1.6.6 (SNAPSHOT)</p>
         <ul>
+          <li>Added 'MMD Files' view panel</li>
           <li>Minimal supported Intellij IDEA platform lifted up to 202.8194.7</li>
         </ul>
         <p>1.6.5 (13-dec-2023)</p>
@@ -258,7 +259,7 @@
         <facetType implementation="com.igormaznitsa.ideamindmap.facet.MindMapFacetType"/>
         <framework.detector implementation="com.igormaznitsa.ideamindmap.facet.MindMapFacetDetector"/>
         <applicationConfigurable instance="com.igormaznitsa.ideamindmap.settings.MindMapSettingsComponent"/>
-<!--        <projectViewPane implementation="com.igormaznitsa.ideamindmap.view.KnowledgeViewPane"/>-->
+        <projectViewPane implementation="com.igormaznitsa.ideamindmap.view.MmdFilesViewPane"/>
         <annotator language="NBMindMap"
                    implementationClass="com.igormaznitsa.ideamindmap.lang.highlighter.MMAnnotator"/>
         <lang.syntaxHighlighterFactory language="NBMindMap"

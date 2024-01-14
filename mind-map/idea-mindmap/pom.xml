@@ -33,6 +33,20 @@
                 </dependency>
                 <dependency>
                     <groupId>com.intellij</groupId>
+                    <artifactId>idea-platform-xml</artifactId>
+                    <version>0-SNAPSHOT</version>
+                    <scope>system</scope>
+                    <systemPath>${local.idea.lib.path}/intellij-xml.jar</systemPath>
+                </dependency>
+                <dependency>
+                    <groupId>com.intellij</groupId>
+                    <artifactId>idea-dom-openapi</artifactId>
+                    <version>0-SNAPSHOT</version>
+                    <scope>system</scope>
+                    <systemPath>${local.idea.lib.path}/dom-openapi.jar</systemPath>
+                </dependency>
+                <dependency>
+                    <groupId>com.intellij</groupId>
                     <artifactId>idea-platform-jdom</artifactId>
                     <version>0-SNAPSHOT</version>
                     <scope>system</scope>

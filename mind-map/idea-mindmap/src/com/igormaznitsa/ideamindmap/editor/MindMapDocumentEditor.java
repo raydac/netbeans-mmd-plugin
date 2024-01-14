@@ -24,7 +24,6 @@ import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispat
 import com.igormaznitsa.ideamindmap.facet.MindMapFacet;
 import com.igormaznitsa.ideamindmap.findtext.FindTextPanel;
 import com.igormaznitsa.ideamindmap.findtext.FindTextScopeProvider;
-import com.igormaznitsa.ideamindmap.utils.IdeaIDEBridge;
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
 import com.igormaznitsa.ideamindmap.utils.SelectIn;
 import com.igormaznitsa.ideamindmap.utils.SwingUtils;
@@ -68,7 +67,6 @@ import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.editor.event.DocumentAdapter;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.fileEditor.*;
@@ -80,7 +78,6 @@ import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.components.JBPanel;
-import com.intellij.ui.components.JBScrollPane;
 import com.intellij.util.xml.ui.Committable;
 import com.intellij.util.xml.ui.UndoHelper;
 import java.awt.BorderLayout;
@@ -185,9 +182,9 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
     this.undoHelper = new UndoHelper(this.project, this);
     this.undoHelper.addWatchedDocument(getDocument());
 
-    this.documentListener = new DocumentAdapter() {
+    this.documentListener = new DocumentListener() {
       @Override
-      public void documentChanged(DocumentEvent e) {
+      public void documentChanged(final DocumentEvent event) {
         loadMindMapFromDocument();
       }
     };
@@ -202,7 +199,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
     this.mainScrollPane.getHorizontalScrollBar().addAdjustmentListener(this);
     this.mainScrollPane.getVerticalScrollBar().addAdjustmentListener(this);
 
-    this.mainPanel = new JBPanel(new BorderLayout());
+    this.mainPanel = new JBPanel<>(new BorderLayout());
     this.mainPanel.add(this.mainScrollPane, BorderLayout.CENTER);
     this.mainPanel.add(this.findTextPanel, BorderLayout.NORTH);
   }

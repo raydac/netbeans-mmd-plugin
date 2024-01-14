@@ -16,8 +16,11 @@
 
 package com.igormaznitsa.ideamindmap.utils;
 
+import static com.intellij.openapi.module.ModuleUtilCore.findModuleForFile;
+import static com.intellij.openapi.vfs.VfsUtilCore.isAncestor;
+
 import com.igormaznitsa.ideamindmap.editor.MindMapDocumentEditor;
-import com.igormaznitsa.ideamindmap.view.KnowledgeViewPane;
+import com.igormaznitsa.ideamindmap.view.MmdFilesViewPane;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.intellij.ide.projectView.ProjectView;
@@ -30,10 +33,8 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.NavigatableFileEditor;
 import com.intellij.openapi.fileEditor.TextEditor;
 import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
-import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowId;
@@ -42,8 +43,7 @@ import javax.annotation.Nonnull;
 
 public enum SelectIn {
   IDE,
-  SYSTEM,
-  ;
+  SYSTEM;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SelectIn.class);
 
@@ -52,14 +52,14 @@ public enum SelectIn {
 
     String viewToActivate = ProjectViewPane.ID;
 
-    if (KnowledgeViewPane.ID.equals(view.getCurrentViewId())) {
-      final Module theModule = ModuleUtil.findModuleForFile(file, project);
+    if (MmdFilesViewPane.ID.equals(view.getCurrentViewId())) {
+      final Module theModule = findModuleForFile(file, project);
       if (theModule == null) {
         viewToActivate = null;
       } else {
         final VirtualFile knowledgeFolder = IdeaUtils.findKnowledgeFolderForModule(theModule, false);
-        if (knowledgeFolder != null && VfsUtil.isAncestor(knowledgeFolder, file, true)) {
-          viewToActivate = KnowledgeViewPane.ID;
+        if (knowledgeFolder != null && isAncestor(knowledgeFolder, file, true)) {
+          viewToActivate = MmdFilesViewPane.ID;
         }
       }
     }
