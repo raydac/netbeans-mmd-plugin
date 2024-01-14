@@ -21,22 +21,43 @@
         <profile>
             <id>local-idea-libs</id>
             <properties>
-                <local.idea.lib.path>/home/igorm/Programs/idea-IC/lib</local.idea.lib.path>
+                <local.idea.lib.path>/home/igorm/Programs/idea-IC-202.8194.7/lib</local.idea.lib.path>
             </properties>    
             <dependencies>
                 <dependency>
                     <groupId>com.intellij</groupId>
-                    <artifactId>idea-app</artifactId>
+                    <artifactId>idea-platform-extensions</artifactId>
                     <version>0-SNAPSHOT</version>
                     <scope>system</scope>
-                    <systemPath>${local.idea.lib.path}/app.jar</systemPath>
+                    <systemPath>${local.idea.lib.path}/extensions.jar</systemPath>
                 </dependency>
                 <dependency>
                     <groupId>com.intellij</groupId>
-                    <artifactId>idea-app-client</artifactId>
+                    <artifactId>idea-platform-util-ui</artifactId>
                     <version>0-SNAPSHOT</version>
                     <scope>system</scope>
-                    <systemPath>${local.idea.lib.path}/app-client.jar</systemPath>
+                    <systemPath>${local.idea.lib.path}/platform-util-ui.jar</systemPath>
+                </dependency>
+                <dependency>
+                    <groupId>com.intellij</groupId>
+                    <artifactId>idea-platform-api</artifactId>
+                    <version>0-SNAPSHOT</version>
+                    <scope>system</scope>
+                    <systemPath>${local.idea.lib.path}/platform-api.jar</systemPath>
+                </dependency>
+                <dependency>
+                    <groupId>com.intellij</groupId>
+                    <artifactId>idea-platform-impl</artifactId>
+                    <version>0-SNAPSHOT</version>
+                    <scope>system</scope>
+                    <systemPath>${local.idea.lib.path}/platform-impl.jar</systemPath>
+                </dependency>
+                <dependency>
+                    <groupId>com.intellij</groupId>
+                    <artifactId>idea-jar</artifactId>
+                    <version>0-SNAPSHOT</version>
+                    <scope>system</scope>
+                    <systemPath>${local.idea.lib.path}/idea.jar</systemPath>
                 </dependency>
                 <dependency>
                     <groupId>com.intellij</groupId>
@@ -47,7 +68,7 @@
                 </dependency>
                 <dependency>
                     <groupId>com.intellij</groupId>
-                    <artifactId>idea-annotations</artifactId>
+                    <artifactId>idea-annotastions</artifactId>
                     <version>0-SNAPSHOT</version>
                     <scope>system</scope>
                     <systemPath>${local.idea.lib.path}/annotations.jar</systemPath>
