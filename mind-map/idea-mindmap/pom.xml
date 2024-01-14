@@ -33,6 +33,13 @@
                 </dependency>
                 <dependency>
                     <groupId>com.intellij</groupId>
+                    <artifactId>idea-platform-jdom</artifactId>
+                    <version>0-SNAPSHOT</version>
+                    <scope>system</scope>
+                    <systemPath>${local.idea.lib.path}/jdom.jar</systemPath>
+                </dependency>
+                <dependency>
+                    <groupId>com.intellij</groupId>
                     <artifactId>idea-platform-util-ui</artifactId>
                     <version>0-SNAPSHOT</version>
                     <scope>system</scope>
