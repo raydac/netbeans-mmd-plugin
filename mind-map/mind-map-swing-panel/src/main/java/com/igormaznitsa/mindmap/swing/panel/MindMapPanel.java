@@ -636,9 +636,8 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
       private boolean isDraggedDistanceReached(final MouseEvent dragEvent) {
         boolean result = false;
         if (lastMousePressed != null) {
-          final Point dragPoint = dragEvent.getPoint();
-          final int dx = lastMousePressed.x - dragEvent.getX();
-          final int dy = lastMousePressed.y - dragEvent.getY();
+          final double dx = (double) lastMousePressed.x - dragEvent.getX();
+          final double dy = (double) lastMousePressed.y - dragEvent.getY();
           final double distance = Math.sqrt(dx * dx + dy * dy);
           result = distance >= MIN_DISTANCE_FOR_TOPIC_DRAGGING_START;
         }
