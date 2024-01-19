@@ -39,10 +39,14 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.stream.Streams;
 
 public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
 
@@ -193,7 +197,7 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
         result.add(saveItem);
       }
 
-      if (title.getProvider().isSaveable()) {
+      if (title.getProvider().isSavable()) {
         final JMenuItem saveAsItem = new JMenuItem(SrI18n.getInstance().findBundle().getString("panelEditorTab.menuItemSaveAs"));
         saveAsItem.addActionListener((@Nonnull final ActionEvent e) -> {
           try {
@@ -308,6 +312,20 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
     return false;
   }
 
+  @Nonnull
+  public Optional<TabTitle> findForFile(@Nonnull final File file) {
+      final Path path = file.toPath();
+
+      for (int i = 0; i < this.getTabCount(); i++) {
+          final TabTitle item = (TabTitle) this.getTabComponentAt(i);
+          if (item.getAssociatedFile() != null && path.equals(item.getAssociatedFile().toPath())) {
+              return Optional.of(item);
+          }
+      }
+      
+      return Optional.empty();
+  }
+  
   public boolean removeTab(@Nonnull final TabTitle title) {
     int index = -1;
     for (int i = 0; i < this.getTabCount(); i++) {

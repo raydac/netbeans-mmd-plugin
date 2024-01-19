@@ -63,7 +63,7 @@ public interface TabProvider {
 
   boolean isEditable();
 
-  boolean isSaveable();
+  boolean isSavable();
 
   boolean isRedo();
 

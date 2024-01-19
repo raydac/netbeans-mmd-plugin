@@ -60,9 +60,11 @@ public final class PreferencesPanel extends AbstractPreferencesPanel
     implements AdditionalPreferences {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PreferencesPanel.class);
+  
   private FontSelectPanel fontSelectPanelTextEditor;
   private JComboBox<PlantUmlSecurityProfile> comboBoxPlantUmlSecurityProfile;
   private JCheckBox checkBoxShowHiddenFiles;
+  private JCheckBox checkBoxTryKeepNonSavedDocs;
   private JCheckBox checkboxTrimTopicText;
   private JCheckBox checkboxUseInsideBrowser;
   private JCheckBox checkboxEnableMetricsUpload;
@@ -112,6 +114,9 @@ public final class PreferencesPanel extends AbstractPreferencesPanel
     this.comboBoxPlantUmlSecurityProfile.setModel(
         new DefaultComboBoxModel<>(PlantUmlSecurityProfile.values()));
 
+    this.checkBoxTryKeepNonSavedDocs = uiComponentFactory.makeCheckBox();
+    this.checkBoxTryKeepNonSavedDocs.setText(bundle.getString("PreferencesPanel.tryKeepNonSavedDocs"));
+    
     this.checkBoxShowHiddenFiles = uiComponentFactory.makeCheckBox();
     this.checkBoxShowHiddenFiles.setText(bundle.getString("PreferencesPanel.checkShowHiddenFiles"));
 
@@ -290,6 +295,7 @@ public final class PreferencesPanel extends AbstractPreferencesPanel
     components.add(this.checkBoxUnfoldCollapsedTarget);
     components.add(this.checkBoxCopyColorInfoToNewAllowed);
     components.add(this.checkBoxKnowledgeFolderAutogenerationAllowed);
+    components.add(this.checkBoxTryKeepNonSavedDocs);
 
     return components;
   }
@@ -301,6 +307,8 @@ public final class PreferencesPanel extends AbstractPreferencesPanel
     config.setOptionalProperty(PROPERTY_PLANTUML_SECURITY_PROFILE,
         (PlantUmlSecurityProfile) this.comboBoxPlantUmlSecurityProfile.getSelectedItem());
 
+    config.setOptionalProperty(PROPERTY_TRY_KEEP_NON_SAVED_DOCS,
+        this.checkBoxTryKeepNonSavedDocs.isSelected());
     config.setOptionalProperty(PROPERTY_SHOW_HIDDEN_FILES,
         this.checkBoxShowHiddenFiles.isSelected());
     config.setOptionalProperty(PROPERTY_BACKUP_LAST_EDIT_BEFORE_SAVE,
@@ -349,6 +357,8 @@ public final class PreferencesPanel extends AbstractPreferencesPanel
 
     this.checkBoxShowHiddenFiles.setSelected(
         config.getOptionalProperty(PROPERTY_SHOW_HIDDEN_FILES, true));
+    this.checkBoxTryKeepNonSavedDocs.setSelected(
+        config.getOptionalProperty(PROPERTY_TRY_KEEP_NON_SAVED_DOCS, false));
     this.checkboxTrimTopicText.setSelected(
         config.getOptionalProperty(PROPERTY_TRIM_TOPIC_TEXT, false));
     this.checkboxUseInsideBrowser.setSelected(

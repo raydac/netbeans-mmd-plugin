@@ -84,6 +84,7 @@ import com.igormaznitsa.sciareto.ui.SrI18n;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.FileEditPanel;
 import com.igormaznitsa.sciareto.ui.editors.mmeditors.MindMapTreePanel;
+import com.igormaznitsa.sciareto.ui.misc.MultiFileContainer;
 import com.igormaznitsa.sciareto.ui.tabs.TabExporter;
 import com.igormaznitsa.sciareto.ui.tabs.TabImporter;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
@@ -115,6 +116,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -126,6 +128,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.Icon;
@@ -387,7 +390,7 @@ public final class MMDEditor extends AbstractTextEditor
   }
 
   @Override
-  public boolean isSaveable() {
+  public boolean isSavable() {
     return true;
   }
 
@@ -570,6 +573,47 @@ public final class MMDEditor extends AbstractTextEditor
     } finally {
       this.context.notifyUpdateRedoUndo();
     }
+  }
+
+  @Nullable
+  @Override
+  public MultiFileContainer.FileItem makeFileItem() throws IOException {
+    final byte [] content =this.mindMapPanel.getModel().write(new StringWriter()).toString().getBytes(
+        StandardCharsets.UTF_8);
+
+    final Topic first = this.mindMapPanel.getFirstSelected();
+    final String selectedPath = first == null ? "" : Arrays.stream(first.getPositionPath()).mapToObj(
+        Integer::toString).collect(
+        Collectors.joining(":"));
+
+    return new MultiFileContainer.FileItem(this.getTabTitle().isChanged(), selectedPath, this.currentTextFile.get()
+        .getFile(), null, content, this.undoStorage.historyAsBytes(5, str -> str.getBytes(StandardCharsets.UTF_8)));
+  }
+
+  @Override
+  public void restoreFromFileItem(@Nonnull final MultiFileContainer.FileItem fileItem)
+      throws IOException {
+    this.getTabTitle().setAssociatedFile(fileItem.getFile());
+    if (fileItem.getCurrent() != null) {
+      final String content = new String(fileItem.getCurrent(), StandardCharsets.UTF_8);
+      this.mindMapPanel.setModel(new MindMap(new StringReader(content)));
+    }
+
+    this.undoStorage.clearRedo();
+    this.undoStorage.clearUndo();
+
+    this.title.setChanged(fileItem.isChanged());
+    this.undoStorage.loadFromBytes(fileItem.getHistory(), bytes -> new String(bytes, StandardCharsets.UTF_8));
+
+    final String path = fileItem.getPosition();
+    if (!path.trim().isEmpty()) {
+      final int [] pathArray = Stream.of(path.split(":")).mapToInt(x -> Integer.parseInt(x.trim())).toArray();
+      final Topic topic = this.mindMapPanel.getModel().findAtPosition(pathArray);
+      if (topic != null) {
+        this.mindMapPanel.setSelectedTopics(List.of(topic));
+      }
+    }
+    this.scrollPane.revalidate();
   }
 
   @Override

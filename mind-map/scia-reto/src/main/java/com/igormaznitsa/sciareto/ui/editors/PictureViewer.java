@@ -306,7 +306,7 @@ public final class PictureViewer extends AbstractEditor {
   }
 
   @Override
-  public boolean isSaveable() {
+  public boolean isSavable() {
     return false;
   }
 

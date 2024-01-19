@@ -189,6 +189,12 @@ public class TextFileBackup {
 
   }
 
+  public void waitQueueEmpty() throws InterruptedException {
+    while (!this.contentQueue.isEmpty()) {
+      Thread.sleep(100L);
+    }
+  }
+
   public void add(@Nonnull final BackupContent content) {
     try {
       final boolean placed = this.contentQueue.offer(content, 1, TimeUnit.SECONDS);
@@ -209,7 +215,8 @@ public class TextFileBackup {
     private final byte[] content;
 
     public Restored(@Nonnull final File file) throws IOException {
-      try (final InputStream inStream = new BufferedInputStream(Files.newInputStream(file.toPath()))) {
+      try (final InputStream inStream = new BufferedInputStream(
+          Files.newInputStream(file.toPath()))) {
         this.timestamp = readLong(inStream);
         this.crc32 = readLong(inStream);
         this.unpackedSize = (int) readLong(inStream);

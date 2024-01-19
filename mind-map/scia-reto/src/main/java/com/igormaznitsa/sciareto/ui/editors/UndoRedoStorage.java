@@ -15,10 +15,13 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+
 package com.igormaznitsa.sciareto.ui.editors;
 
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -29,6 +32,29 @@ public final class UndoRedoStorage<T> {
   private final int maxSize;
 
   private boolean hasUndoStateRemovedForFullBuffer = false;
+
+  @Nonnull
+  @MustNotContainNull
+  public List<byte[]> historyAsBytes(final int limit,
+                                     @Nonnull final Function<T, byte[]> converter) {
+    final List<byte[]> result = new ArrayList<>();
+    for (int i = this.undoItems.size() - 1; i >= 0 && limit > 0; i--) {
+      result.add(0, converter.apply(this.undoItems.get(i)));
+    }
+    return result;
+  }
+
+  public void loadFromBytes(@Nonnull @MustNotContainNull final List<byte[]> items,
+                            final Function<byte[], T> converter) {
+    this.undoItems.clear();
+    this.redoItems.clear();
+    for (final byte[] item : items) {
+      if (this.undoItems.size() >= this.maxSize) {
+        break;
+      }
+      this.undoItems.add(converter.apply(item));
+    }
+  }
 
   public UndoRedoStorage(final int max) {
     this.maxSize = max;
@@ -68,10 +94,10 @@ public final class UndoRedoStorage<T> {
     this.undoItems.clear();
   }
 
-  public void setFlagThatSomeStateLost(){
+  public void setFlagThatSomeStateLost() {
     this.hasUndoStateRemovedForFullBuffer = true;
   }
-  
+
   public boolean hasRemovedUndoStateForFullBuffer() {
     return this.hasUndoStateRemovedForFullBuffer;
   }

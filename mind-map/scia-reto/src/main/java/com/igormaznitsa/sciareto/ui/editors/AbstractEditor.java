@@ -28,6 +28,7 @@ import com.igormaznitsa.sciareto.preferences.AdditionalPreferences;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.SrI18n;
+import com.igormaznitsa.sciareto.ui.misc.MultiFileContainer;
 import com.igormaznitsa.sciareto.ui.tabs.TabProvider;
 import java.io.File;
 import java.io.IOException;
@@ -51,7 +52,7 @@ public abstract class AbstractEditor implements TabProvider, Disposable {
   private final AtomicBoolean disposeFlag = new AtomicBoolean();
   protected MindMapPanelConfig mindMapPanelConfig;
 
-  public AbstractEditor() {
+  protected AbstractEditor() {
     super();
     this.logger = LoggerFactory.getLogger(this.getClass());
     this.mindMapPanelConfig = loadMindMapConfigFromPreferences();
@@ -74,6 +75,15 @@ public abstract class AbstractEditor implements TabProvider, Disposable {
       ICON_CACHE.put(name, loaded);
       return loaded;
     }
+  }
+
+  @Nullable
+  public MultiFileContainer.FileItem makeFileItem() throws IOException {
+    return null;
+  }
+
+  public void restoreFromFileItem(@Nonnull final MultiFileContainer.FileItem fileItem) throws IOException {
+
   }
 
   @Override
@@ -169,14 +179,12 @@ public abstract class AbstractEditor implements TabProvider, Disposable {
   }
 
   protected void backup(@Nullable final String text) {
-    if (this.isEditable() && !this.isDisposed()) {
-      if (text != null) {
+    if (this.isEditable() && !this.isDisposed() && text != null) {
         final File associatedFile = this.getTabTitle().getAssociatedFile();
         if (isAutoBackupAllowed() && associatedFile != null) {
           TextFileBackup.getInstance().add(new TextFileBackup.BackupContent(associatedFile, text));
         }
       }
-    }
   }
 
   protected void backup() {

@@ -29,7 +29,7 @@ public abstract class AbstractTextEditor extends AbstractEditor {
 
   protected final AtomicReference<TextFile> currentTextFile = new AtomicReference<>();
 
-  public AbstractTextEditor() {
+  protected AbstractTextEditor() {
     super();
   }
 

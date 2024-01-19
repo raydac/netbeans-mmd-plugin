@@ -23,6 +23,7 @@ import static org.apache.commons.text.StringEscapeUtils.escapeHtml3;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.annotation.UiThread;
 import com.igormaznitsa.meta.common.utils.Assertions;
+import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.print.MMDPrintPanel;
 import com.igormaznitsa.mindmap.print.PrintableObject;
 import com.igormaznitsa.mindmap.swing.panel.utils.ImageSelection;
@@ -38,6 +39,7 @@ import com.igormaznitsa.sciareto.ui.ScaleStatusIndicator;
 import com.igormaznitsa.sciareto.ui.SrI18n;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.misc.BigLoaderIconAnimationConroller;
+import com.igormaznitsa.sciareto.ui.misc.MultiFileContainer;
 import com.igormaznitsa.sciareto.ui.misc.SplitPaneExt;
 import com.igormaznitsa.sciareto.ui.tabs.TabExporter;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
@@ -68,12 +70,14 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -86,6 +90,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
@@ -109,6 +114,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
+import javax.swing.undo.UndoManager;
 import net.sourceforge.plantuml.FileFormat;
 import net.sourceforge.plantuml.FileFormatOption;
 import net.sourceforge.plantuml.OptionFlags;
@@ -160,7 +166,7 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
   private boolean ignoreChange;
   private int pageNumberToRender = 0;
 
-  public AbstractPlUmlEditor(@Nonnull final Context context, @Nonnull File file)
+  protected AbstractPlUmlEditor(@Nonnull final Context context, @Nonnull File file)
       throws IOException {
     super();
     initPlantUml();
@@ -670,6 +676,40 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
     return result;
   }
 
+  @Nullable
+  @Override
+  public MultiFileContainer.FileItem makeFileItem() throws IOException {
+    final byte [] content = this.editor.getText().getBytes(StandardCharsets.UTF_8);
+    final String caretPosition = Integer.toString(this.editor.getCaretPosition());
+
+    return new MultiFileContainer.FileItem(this.getTabTitle().isChanged(), caretPosition, this.currentTextFile.get()
+        .getFile(), null, content, this.editor.serializeEditHistory(5));
+  }
+
+  @Override
+  public void restoreFromFileItem(@Nonnull MultiFileContainer.FileItem fileItem)
+      throws IOException {
+    this.getTabTitle().setAssociatedFile(fileItem.getFile());
+    if (fileItem.getCurrent() != null) {
+      final String content = new String(fileItem.getCurrent(), StandardCharsets.UTF_8);
+      this.editor.setText(content);
+    }
+
+    this.editor.deserializeEditHistory(fileItem.getHistory());
+    this.title.setChanged(fileItem.isChanged());
+
+    final String position = fileItem.getPosition();
+    if (!position.trim().isEmpty()) {
+      try {
+        final int caretPosition = Integer.parseInt(position.trim());
+        this.editor.setCaretPosition(caretPosition);
+      } catch (Exception ex) {
+        // ignore
+      }
+    }
+  }
+
+
   public void hideTextPanel() {
     SwingUtilities.invokeLater(() -> mainPanel.setDividerLocation(0));
 
@@ -993,7 +1033,7 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
   }
 
   @Override
-  public boolean isSaveable() {
+  public boolean isSavable() {
     return true;
   }
 

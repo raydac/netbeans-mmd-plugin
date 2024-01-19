@@ -18,4 +18,7 @@ public interface AdditionalPreferences {
   String PROPERTY_BACKUP_LAST_EDIT_BEFORE_SAVE = "backup_last_edit_before_save";
 
   String PROPERTY_EXTENSIONS_TO_BE_OPENED_IN_SYSTEM = "extensions_open_in_system";
+
+  String PROPERTY_TRY_KEEP_NON_SAVED_DOCS = "try_keep_non_saved_docs";
+
 }

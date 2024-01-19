@@ -28,6 +28,7 @@ import com.igormaznitsa.sciareto.ui.DialogProviderManager;
 import com.igormaznitsa.sciareto.ui.FindTextScopeProvider;
 import com.igormaznitsa.sciareto.ui.SrI18n;
 import com.igormaznitsa.sciareto.ui.UiUtils;
+import com.igormaznitsa.sciareto.ui.misc.MultiFileContainer;
 import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
@@ -70,6 +71,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.undo.UndoManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
@@ -470,7 +472,7 @@ public final class SourceTextEditor extends AbstractTextEditor {
   }
 
   @Override
-  public boolean isSaveable() {
+  public boolean isSavable() {
     return true;
   }
 
@@ -757,4 +759,36 @@ public final class SourceTextEditor extends AbstractTextEditor {
     }
   }
 
+  @Nullable
+  @Override
+  public MultiFileContainer.FileItem makeFileItem() throws IOException {
+    final byte [] content = this.editor.getText().getBytes(StandardCharsets.UTF_8);
+    final String caretPosition = Integer.toString(this.editor.getCaretPosition());
+
+    return new MultiFileContainer.FileItem(this.getTabTitle().isChanged(), caretPosition, this.currentTextFile.get()
+        .getFile(), null, content, this.editor.serializeEditHistory(5));
+  }
+
+  @Override
+  public void restoreFromFileItem(@Nonnull MultiFileContainer.FileItem fileItem)
+      throws IOException {
+    this.getTabTitle().setAssociatedFile(fileItem.getFile());
+    if (fileItem.getCurrent() != null) {
+      final String content = new String(fileItem.getCurrent(), StandardCharsets.UTF_8);
+      this.editor.setText(content);
+    }
+
+    this.editor.deserializeEditHistory(fileItem.getHistory());
+    this.title.setChanged(fileItem.isChanged());
+
+    final String position = fileItem.getPosition();
+    if (!position.trim().isEmpty()) {
+      try {
+        final int caretPosition = Integer.parseInt(position.trim());
+        this.editor.setCaretPosition(caretPosition);
+      } catch (Exception ex) {
+        // ignore
+      }
+    }
+  }
 }
