@@ -796,7 +796,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
                             t -> {
                                 LOGGER.info("Restoring state for: " + file);
                                 try {
-                                    this.tabPane.getCurrentEditor().restoreFromFileItem(item);
+                                    t.getProvider().getEditor().restoreFromFileItem(item);
                                 } catch (Exception ex) {
                                     LOGGER.error("Can't restore content for file: " + file, ex);
                                 }

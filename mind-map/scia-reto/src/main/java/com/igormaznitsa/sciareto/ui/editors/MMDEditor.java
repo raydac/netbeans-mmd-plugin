@@ -128,7 +128,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.Icon;
@@ -155,7 +154,7 @@ public final class MMDEditor extends AbstractTextEditor
   private static final Set<TopicFinder> TOPIC_FINDERS = MindMapPluginRegistry.getInstance()
       .findAllTopicFinders();
   private final JPanel mainPanel;
-  private final MindMapPanel mindMapPanel;
+  private final MindMapPanelExt mindMapPanel;
   private final TabTitle title;
   private final Context context;
   private final transient UndoRedoStorage<String> undoStorage = new UndoRedoStorage<>(5);
@@ -166,11 +165,22 @@ public final class MMDEditor extends AbstractTextEditor
   private boolean dragAcceptableType;
   private boolean firstLayouting = true;
 
+  private static final class MindMapPanelExt extends MindMapPanel {
+    public MindMapPanelExt(@Nonnull final MindMapPanelController controller) {
+      super(controller);
+    }
+
+    @Override
+    protected void fireNotificationEnsureTopicVisibility(@Nonnull final Topic topic) {
+      super.fireNotificationEnsureTopicVisibility(topic);
+    }
+  }
+
   public MMDEditor(@Nonnull final Context context, @Nonnull File file) throws IOException {
     super();
     this.context = context;
     this.title = new TabTitle(context, this, file);
-    this.mindMapPanel = new MindMapPanel(this);
+    this.mindMapPanel = new MindMapPanelExt(this);
     this.mindMapPanel.addMindMapListener(this);
 
     this.scrollPane = new JScrollPane(this.mindMapPanel);
@@ -352,6 +362,10 @@ public final class MMDEditor extends AbstractTextEditor
           case KeyEvent.VK_ESCAPE: {
             e.consume();
             this.context.hideFindTextPane();
+          }
+          break;
+          default: {
+            // do nothing
           }
           break;
         }
@@ -560,9 +574,7 @@ public final class MMDEditor extends AbstractTextEditor
       backup(state);
       this.undoStorage.addToUndo(state);
       this.undoStorage.clearRedo();
-      if (addToHistory) {
-        this.title.setChanged(true);
-      }
+      this.title.setChanged(true);
     } else {
       this.currentModelState.set(source.getModel().asString());
     }
@@ -581,10 +593,11 @@ public final class MMDEditor extends AbstractTextEditor
     final byte [] content =this.mindMapPanel.getModel().write(new StringWriter()).toString().getBytes(
         StandardCharsets.UTF_8);
 
-    final Topic first = this.mindMapPanel.getFirstSelected();
-    final String selectedPath = first == null ? "" : Arrays.stream(first.getPositionPath()).mapToObj(
-        Integer::toString).collect(
-        Collectors.joining(":"));
+    final Topic [] selected = this.mindMapPanel.getSelectedTopics();
+    final String selectedPath = Arrays.stream(selected)
+        .map(Topic::getPositionPath)
+        .map(path -> Arrays.stream(path).mapToObj(Integer::toString).collect(Collectors.joining("/")))
+        .collect(Collectors.joining(":"));
 
     return new MultiFileContainer.FileItem(this.getTabTitle().isChanged(), selectedPath, this.currentTextFile.get()
         .getFile(), null, content, this.undoStorage.historyAsBytes(5, str -> str.getBytes(StandardCharsets.UTF_8)));
@@ -596,7 +609,11 @@ public final class MMDEditor extends AbstractTextEditor
     this.getTabTitle().setAssociatedFile(fileItem.getFile());
     if (fileItem.getCurrent() != null) {
       final String content = new String(fileItem.getCurrent(), StandardCharsets.UTF_8);
-      this.mindMapPanel.setModel(new MindMap(new StringReader(content)));
+      try {
+        this.mindMapPanel.setModel(new MindMap(new StringReader(content)));
+      } catch (Exception ex) {
+        logger.error("Can't restore mind map for error: " + content, ex);
+      }
     }
 
     this.undoStorage.clearRedo();
@@ -606,14 +623,28 @@ public final class MMDEditor extends AbstractTextEditor
     this.undoStorage.loadFromBytes(fileItem.getHistory(), bytes -> new String(bytes, StandardCharsets.UTF_8));
 
     final String path = fileItem.getPosition();
-    if (!path.trim().isEmpty()) {
-      final int [] pathArray = Stream.of(path.split(":")).mapToInt(x -> Integer.parseInt(x.trim())).toArray();
-      final Topic topic = this.mindMapPanel.getModel().findAtPosition(pathArray);
-      if (topic != null) {
-        this.mindMapPanel.setSelectedTopics(List.of(topic));
+    final List<Topic> focusedTopics;
+    if (path.trim().isEmpty()) {
+      focusedTopics = List.of();
+    } else {
+      focusedTopics = Arrays.stream(path.split(":"))
+          .map(topicPath -> {
+            final int[] indexPath =
+                Arrays.stream(topicPath.split("/")).mapToInt(x -> Integer.parseInt(x.trim()))
+                    .toArray();
+            return this.mindMapPanel.getModel().findAtPosition(indexPath);
+          }).filter(Objects::nonNull)
+          .collect(Collectors.toList());
+
+      if (!focusedTopics.isEmpty()) {
+        this.mindMapPanel.setSelectedTopics(focusedTopics);
       }
     }
     this.scrollPane.revalidate();
+
+    if (!focusedTopics.isEmpty()) {
+      SwingUtilities.invokeLater(() -> this.mindMapPanel.fireNotificationEnsureTopicVisibility(focusedTopics.get(0)));
+    }
   }
 
   @Override
@@ -661,6 +692,7 @@ public final class MMDEditor extends AbstractTextEditor
   @Override
   public void onMindMapModelRealigned(@Nonnull final MindMapPanel source,
                                       @Nonnull final Dimension coveredAreaSize) {
+    // do nothing
   }
 
   @Override
@@ -799,6 +831,10 @@ public final class MMDEditor extends AbstractTextEditor
           }
         }
         break;
+        default: {
+          // do nothing
+        }
+        break;
       }
     }
   }
@@ -806,6 +842,7 @@ public final class MMDEditor extends AbstractTextEditor
   @Override
   public void onChangedSelection(@Nonnull final MindMapPanel source,
                                  @Nonnull @MustNotContainNull final Topic[] currentSelectedTopics) {
+    // do nothing
   }
 
   @Override
@@ -860,10 +897,12 @@ public final class MMDEditor extends AbstractTextEditor
 
   @Override
   public void dropActionChanged(@Nonnull final DropTargetDragEvent dtde) {
+    // do nothing
   }
 
   @Override
   public void dragExit(@Nonnull final DropTargetEvent dte) {
+    // do nothing
   }
 
   @Nullable

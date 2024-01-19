@@ -15,6 +15,7 @@ Initially I developed a plugin for NetBeans IDE then the IntellijIDEA plugin was
 
 # Changelog
 __1.6.6 (SNAPSHOT)__
+- SR: Added option to keep non-saved documents between sessions
 - SR: Embedded JDK updated to 21.0.2+14
 - IJ: Added `MMD Files` view panel
 - IJ: Minimal supported Intellij IDEA platform lifted up to 202.8194.7
