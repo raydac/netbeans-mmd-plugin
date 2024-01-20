@@ -71,7 +71,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.filechooser.FileFilter;
-import javax.swing.undo.UndoManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
@@ -773,8 +772,8 @@ public final class SourceTextEditor extends AbstractTextEditor {
   public void restoreFromFileItem(@Nonnull MultiFileContainer.FileItem fileItem)
       throws IOException {
     this.getTabTitle().setAssociatedFile(fileItem.getFile());
-    if (fileItem.getCurrent() != null) {
-      final String content = new String(fileItem.getCurrent(), StandardCharsets.UTF_8);
+    if (fileItem.getMainData() != null) {
+      final String content = new String(fileItem.getMainData(), StandardCharsets.UTF_8);
       this.editor.setText(content);
     }
 

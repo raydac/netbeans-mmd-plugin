@@ -23,7 +23,6 @@ import static org.apache.commons.text.StringEscapeUtils.escapeHtml3;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.annotation.UiThread;
 import com.igormaznitsa.meta.common.utils.Assertions;
-import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.print.MMDPrintPanel;
 import com.igormaznitsa.mindmap.print.PrintableObject;
 import com.igormaznitsa.mindmap.swing.panel.utils.ImageSelection;
@@ -70,14 +69,12 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -90,7 +87,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
@@ -114,7 +110,6 @@ import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
-import javax.swing.undo.UndoManager;
 import net.sourceforge.plantuml.FileFormat;
 import net.sourceforge.plantuml.FileFormatOption;
 import net.sourceforge.plantuml.OptionFlags;
@@ -690,8 +685,8 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
   public void restoreFromFileItem(@Nonnull MultiFileContainer.FileItem fileItem)
       throws IOException {
     this.getTabTitle().setAssociatedFile(fileItem.getFile());
-    if (fileItem.getCurrent() != null) {
-      final String content = new String(fileItem.getCurrent(), StandardCharsets.UTF_8);
+    if (fileItem.getMainData() != null) {
+      final String content = new String(fileItem.getMainData(), StandardCharsets.UTF_8);
       this.editor.setText(content);
     }
 

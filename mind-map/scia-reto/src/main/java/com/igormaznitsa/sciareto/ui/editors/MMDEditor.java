@@ -607,8 +607,8 @@ public final class MMDEditor extends AbstractTextEditor
   public void restoreFromFileItem(@Nonnull final MultiFileContainer.FileItem fileItem)
       throws IOException {
     this.getTabTitle().setAssociatedFile(fileItem.getFile());
-    if (fileItem.getCurrent() != null) {
-      final String content = new String(fileItem.getCurrent(), StandardCharsets.UTF_8);
+    if (fileItem.getMainData() != null) {
+      final String content = new String(fileItem.getMainData(), StandardCharsets.UTF_8);
       try {
         this.mindMapPanel.setModel(new MindMap(new StringReader(content)));
       } catch (Exception ex) {

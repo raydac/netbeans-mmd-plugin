@@ -79,6 +79,14 @@ public final class MultiFileContainer {
   }
 
   @Nonnull
+  private static DeflateParameters makeDeflateParameters() {
+    final DeflateParameters deflateParameters = new DeflateParameters();
+    deflateParameters.setCompressionLevel(9);
+    deflateParameters.setWithZlibHeader(false);
+    return deflateParameters;
+  }
+
+  @Nonnull
   public Optional<File> write(@Nonnull final String fileName,
                               @Nonnull @MustNotContainNull final List<FileItem> fileItemList)
       throws IOException {
@@ -88,11 +96,10 @@ public final class MultiFileContainer {
     final File folder = findFolder();
     if (folder.isDirectory()) {
       final File target = new File(folder, fileName);
-      final DeflateParameters deflateParameters = new DeflateParameters();
-      deflateParameters.setCompressionLevel(9);
-      deflateParameters.setWithZlibHeader(false);
 
-      try (final DeflateCompressorOutputStream outputStream = new DeflateCompressorOutputStream(new BufferedOutputStream(Files.newOutputStream(target.toPath())), deflateParameters)){
+      try (final DeflateCompressorOutputStream outputStream = new DeflateCompressorOutputStream(
+          new BufferedOutputStream(Files.newOutputStream(target.toPath())),
+          makeDeflateParameters())) {
         outputStream.write(MAGIC);
         outputStream.write(fileItemList.size());
         outputStream.write(fileItemList.size() >> 8);
@@ -120,11 +127,8 @@ public final class MultiFileContainer {
   public List<FileItem> read(@Nonnull final String fileName) throws IOException {
     final File file = new File(findFolder(), fileName);
     if (file.isFile()) {
-      final DeflateParameters deflateParameters = new DeflateParameters();
-      deflateParameters.setCompressionLevel(9);
-      deflateParameters.setWithZlibHeader(false);
-
-      try (final DeflateCompressorInputStream inputStream = new DeflateCompressorInputStream(new BufferedInputStream(Files.newInputStream(file.toPath())), deflateParameters)) {
+      try (final DeflateCompressorInputStream inputStream = new DeflateCompressorInputStream(
+          new BufferedInputStream(Files.newInputStream(file.toPath())), makeDeflateParameters())) {
         final int magic = inputStream.read();
         if (magic != MAGIC) {
           throw new IOException("Illegal file format error");
@@ -153,33 +157,23 @@ public final class MultiFileContainer {
     @Nullable
     private final File file;
     @Nullable
-    private final byte[] original;
+    private final byte[] optionalData;
     @Nullable
-    private final byte[] current;
+    private final byte[] mainData;
 
     private final List<byte[]> history;
 
     public FileItem(final boolean changed, @Nonnull final String position,
                     @Nullable final File file,
-                    @Nullable final byte[] original,
-                    @Nullable final byte[] current,
+                    @Nullable final byte[] optionalData,
+                    @Nullable final byte[] mainData,
                     @Nonnull @MustNotContainNull List<byte[]> history) {
       this.changed = changed;
       this.position = Objects.requireNonNull(position);
       this.file = file;
-      this.original = original;
-      this.current = current;
+      this.optionalData = optionalData;
+      this.mainData = mainData;
       this.history = new ArrayList<>(history);
-    }
-
-    public boolean isChanged() {
-      return this.changed;
-    }
-
-    @Nonnull
-    @MustNotContainNull
-    public List<byte[]> getHistory() {
-      return this.history;
     }
 
     @Nonnull
@@ -205,15 +199,25 @@ public final class MultiFileContainer {
           current, history);
     }
 
+    public boolean isChanged() {
+      return this.changed;
+    }
+
+    @Nonnull
+    @MustNotContainNull
+    public List<byte[]> getHistory() {
+      return this.history;
+    }
+
     public void write(@Nonnull final OutputStream outputStream) throws IOException {
       final DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
       dataOutputStream.writeBoolean(this.changed);
       dataOutputStream.writeUTF(this.position);
       dataOutputStream.writeUTF(this.file == null ? "" : this.file.getAbsolutePath());
-      dataOutputStream.writeInt(this.original == null ? 0 : this.original.length);
-      dataOutputStream.write(this.original == null ? new byte[0] : this.original);
-      dataOutputStream.writeInt(this.current == null ? 0 : this.current.length);
-      dataOutputStream.write(this.current == null ? new byte[0] : this.current);
+      dataOutputStream.writeInt(this.optionalData == null ? 0 : this.optionalData.length);
+      dataOutputStream.write(this.optionalData == null ? new byte[0] : this.optionalData);
+      dataOutputStream.writeInt(this.mainData == null ? 0 : this.mainData.length);
+      dataOutputStream.write(this.mainData == null ? new byte[0] : this.mainData);
 
       dataOutputStream.writeInt(this.history.size());
       for (final byte[] bytes : this.history) {
@@ -223,13 +227,13 @@ public final class MultiFileContainer {
     }
 
     @Nullable
-    public byte[] getCurrent() {
-      return this.current;
+    public byte[] getMainData() {
+      return this.mainData;
     }
 
     @Nullable
-    public byte[] getOriginal() {
-      return this.original;
+    public byte[] getOptionalData() {
+      return this.optionalData;
     }
 
     @Nullable
