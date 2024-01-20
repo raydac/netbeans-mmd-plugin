@@ -40,7 +40,8 @@ public class MiscIcons {
   private static final String[] ICON_NAMES;
 
   static {
-    final InputStream iconListReadStream = MiscIcons.class.getResourceAsStream("/com/igormaznitsa/mindmap/swing/miscicons/icon.lst");
+    final InputStream iconListReadStream =
+        MiscIcons.class.getResourceAsStream("/com/igormaznitsa/mindmap/swing/miscicons/icon.lst");
     final Map<String, ImageContainer> imageContainers = new HashMap<>();
 
     try {
@@ -60,15 +61,12 @@ public class MiscIcons {
 
     IMAGE_CACHE = Collections.unmodifiableMap(imageContainers);
 
-    final Thread loadingDaemon = new Thread(new Runnable() {
-      @Override
-      public void run() {
-        LOGGER.info("Loadin daemon started");
-        for (final String s : ICON_NAMES) {
-          findForName(s);
-        }
-        LOGGER.info("Loadin daemon completed");
+    final Thread loadingDaemon = new Thread(() -> {
+      LOGGER.info("Loading daemon started");
+      for (final String s : ICON_NAMES) {
+        findForName(s);
       }
+      LOGGER.info("Loading daemon completed");
     }, "mindmap-emoticon-loading");
     loadingDaemon.setDaemon(true);
     loadingDaemon.setPriority(Thread.MIN_PRIORITY);

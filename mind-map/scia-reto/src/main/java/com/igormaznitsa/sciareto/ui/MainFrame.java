@@ -674,6 +674,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         final boolean tryKeepUnsaved = this.isTryKeepNonSavedDocs() && !this.stateless;
         final List<MultiFileContainer.FileItem> unsavedFileItems = new ArrayList<>();
 
+        LOGGER.info("Keep unsaved docs flag: " + tryKeepUnsaved);
+        
         boolean hasUnsaved = false;
         for (final TabTitle t : tabPane) {
             if (t.isChanged()) {
@@ -681,6 +683,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
                     try {
                         unsavedFileItems.add(t.getProvider().getEditor().makeFileItem());
                         hasUnsaved = false;
+                        LOGGER.info("Detected unsaved document: " + t.getAssociatedFile());
                     } catch (IOException ex) {
                         LOGGER.error("Can't serialize unsaved doc", ex);
                         hasUnsaved = true;
@@ -758,6 +761,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     }
 
     private void restoreState() {
+        LOGGER.info("Restoring state");
 
         List<MultiFileContainer.FileItem> restoredUnsavedDocs = new ArrayList<>();
 
@@ -820,6 +824,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     }
 
     private void saveState() {
+        LOGGER.info("Saving state");
         try {
             final List<File> files = new ArrayList<>();
             for (final NodeFileOrFolder p : this.explorerTree.getCurrentGroup()) {

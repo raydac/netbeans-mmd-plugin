@@ -17,16 +17,14 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+import static com.igormaznitsa.sciareto.preferences.PrefUtils.ENV_PLANTUML_LIMIT_SIZE;
+import static com.igormaznitsa.sciareto.preferences.PrefUtils.ENV_PLANTUML_SECURITY_PROFILE;
+
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.preferences.PrefUtils;
-
-import static com.igormaznitsa.sciareto.preferences.PrefUtils.ENV_PLANTUML_LIMIT_SIZE;
-import static com.igormaznitsa.sciareto.preferences.PrefUtils.ENV_PLANTUML_SECURITY_PROFILE;
-
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -62,6 +60,13 @@ public final class SciaReto {
   }
 
   public static void main(@Nonnull @MustNotContainNull final String... args) {
+    Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
+      if (System.err != null) {
+        System.err.println("Uncaught exception at " + t.getName() + ": " + e.getMessage());
+        e.printStackTrace();
+      }
+    });
+
     if (System.getProperty(ENV_PLANTUML_LIMIT_SIZE) == null) {
       System.setProperty(ENV_PLANTUML_LIMIT_SIZE, Integer.toString(32768));
     }

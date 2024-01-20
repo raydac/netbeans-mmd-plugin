@@ -33,10 +33,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.apache.commons.compress.compressors.deflate.DeflateCompressorInputStream;
+import org.apache.commons.compress.compressors.deflate.DeflateCompressorOutputStream;
+import org.apache.commons.compress.compressors.deflate.DeflateParameters;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
@@ -58,11 +59,19 @@ public final class MultiFileContainer {
   public static File findFolder() throws IOException {
     final CodeSource codeSource = MultiFileContainer.class.getProtectionDomain().getCodeSource();
     if (codeSource == null) {
-      return new File(System.getProperty("user.home"));
+      String folder = System.getProperty("user.dir");
+      if (folder == null) {
+        folder = System.getProperty("user.home");
+      }
+      if (folder == null) {
+        folder = ".";
+      }
+      return new File(folder);
     } else {
       final URL url = codeSource.getLocation();
       try {
-        return new File(url.toURI());
+        final File urlFile = new File(url.toURI());
+        return urlFile.isFile() ? urlFile.getParentFile() : urlFile;
       } catch (URISyntaxException ex) {
         throw new IOException(ex);
       }
@@ -71,7 +80,7 @@ public final class MultiFileContainer {
 
   @Nonnull
   public Optional<File> write(@Nonnull final String fileName,
-                    @Nonnull @MustNotContainNull final List<FileItem> fileItemList)
+                              @Nonnull @MustNotContainNull final List<FileItem> fileItemList)
       throws IOException {
     if (fileItemList.size() > 0xFFFF) {
       throw new IllegalArgumentException("Too many file items, allowed only 0..65535");
@@ -79,18 +88,22 @@ public final class MultiFileContainer {
     final File folder = findFolder();
     if (folder.isDirectory()) {
       final File target = new File(folder, fileName);
-      try (final GZIPOutputStream outputStream = new GZIPOutputStream(
-          new BufferedOutputStream(Files.newOutputStream(target.toPath())))) {
+      final DeflateParameters deflateParameters = new DeflateParameters();
+      deflateParameters.setCompressionLevel(9);
+      deflateParameters.setWithZlibHeader(false);
+
+      try (final DeflateCompressorOutputStream outputStream = new DeflateCompressorOutputStream(new BufferedOutputStream(Files.newOutputStream(target.toPath())), deflateParameters)){
         outputStream.write(MAGIC);
         outputStream.write(fileItemList.size());
         outputStream.write(fileItemList.size() >> 8);
         for (final FileItem item : fileItemList) {
           item.write(outputStream);
         }
+        outputStream.finish();
       }
       return Optional.of(target);
     } else {
-        return Optional.empty();
+      return Optional.empty();
     }
   }
 
@@ -107,8 +120,11 @@ public final class MultiFileContainer {
   public List<FileItem> read(@Nonnull final String fileName) throws IOException {
     final File file = new File(findFolder(), fileName);
     if (file.isFile()) {
-      try (final GZIPInputStream inputStream = new GZIPInputStream(
-          new BufferedInputStream(Files.newInputStream(file.toPath())))) {
+      final DeflateParameters deflateParameters = new DeflateParameters();
+      deflateParameters.setCompressionLevel(9);
+      deflateParameters.setWithZlibHeader(false);
+
+      try (final DeflateCompressorInputStream inputStream = new DeflateCompressorInputStream(new BufferedInputStream(Files.newInputStream(file.toPath())), deflateParameters)) {
         final int magic = inputStream.read();
         if (magic != MAGIC) {
           throw new IOException("Illegal file format error");
@@ -143,7 +159,8 @@ public final class MultiFileContainer {
 
     private final List<byte[]> history;
 
-    public FileItem(final boolean changed, @Nonnull final String position, @Nullable final File file,
+    public FileItem(final boolean changed, @Nonnull final String position,
+                    @Nullable final File file,
                     @Nullable final byte[] original,
                     @Nullable final byte[] current,
                     @Nonnull @MustNotContainNull List<byte[]> history) {
@@ -183,7 +200,8 @@ public final class MultiFileContainer {
         history.add(IOUtils.readFully(dataInputStream, length));
       }
 
-      return new FileItem(changed, position, fileName.isEmpty() ? null : new File(fileName), original,
+      return new FileItem(changed, position, fileName.isEmpty() ? null : new File(fileName),
+          original,
           current, history);
     }
 
