@@ -45,7 +45,7 @@ public final class UndoRedoStorage<T> {
   }
 
   public void loadFromBytes(@Nonnull @MustNotContainNull final List<byte[]> items,
-                            final Function<byte[], T> converter) {
+                            @Nonnull final Function<byte[], T> converter) {
     this.undoItems.clear();
     this.redoItems.clear();
     for (final byte[] item : items) {

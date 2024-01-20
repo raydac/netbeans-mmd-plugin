@@ -54,6 +54,7 @@ public final class MultiFileContainer {
     return INSTANCE;
   }
 
+  @Nonnull
   public static File findFolder() throws IOException {
     final CodeSource codeSource = MultiFileContainer.class.getProtectionDomain().getCodeSource();
     if (codeSource == null) {
