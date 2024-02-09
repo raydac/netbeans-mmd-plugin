@@ -15,11 +15,12 @@ Initially I developed a plugin for NetBeans IDE then the IntellijIDEA plugin was
 
 # Changelog
 __1.6.6 (SNAPSHOT)__
+- SR:  PlantUML updated to 1.2024.1
 - SR: Added option to keep non-saved documents between sessions
 - SR: Embedded JDK updated to 21.0.2+14
 - IJ: Added `MMD Files` view panel
 - IJ: Minimal supported Intellij IDEA platform lifted up to 202.8194.7
-- AP: improved annotation processor to extract marks from method bodies
+- AP: improved annotation processor to find and extract marks in method bodies
 - SR: embedded Intellij fonts (`JetBrains Mono Kawkab` and `JetBrains Mono Vazir`) with Farsi char-set support [#120](https://github.com/raydac/netbeans-mmd-plugin/issues/120)
 - IJ,NB: Improved font configuration use for Note text editor [#120](https://github.com/raydac/netbeans-mmd-plugin/issues/120)
 
