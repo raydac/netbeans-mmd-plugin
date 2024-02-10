@@ -16,7 +16,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <mvn.golang.go.version>1.21.6</mvn.golang.go.version>
+        <mvn.golang.go.version>1.22.0</mvn.golang.go.version>
         <maven.test.skip>true</maven.test.skip>
         <target.name>scia-reto</target.name>
         <final.extension>.exe</final.extension>
@@ -50,24 +50,26 @@
                 <extensions>true</extensions>
                 <configuration>
                     <strip>true</strip>
-                    <env>
-                        <GO111MODULE>auto</GO111MODULE>
-                    </env>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>default-get</id>
+                        <id>install-goversion-package</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>install</goal>
+                        </goals>
                         <configuration>
-                            <buildFlags>
-                                <flag>-u</flag>
-                            </buildFlags>
                             <packages>
-                                <package>github.com/josephspurrier/goversioninfo/cmd/goversioninfo/...</package>
+                                <package>github.com/josephspurrier/goversioninfo/cmd/goversioninfo@latest</package>
                             </packages>
                         </configuration>
                     </execution>
                     <execution>
                         <id>default-build</id>
+                        <phase>none</phase>
+                    </execution>
+                    <execution>
+                        <id>default-get</id>
                         <phase>none</phase>
                     </execution>
                     <execution>
