@@ -12,7 +12,7 @@
     ]]></description>
 
     <change-notes><![CDATA[
-        <p>1.6.6 (SNAPSHOT)</p>
+        <p>1.6.6 (11-feb-2024)</p>
         <ul>
           <li>Added 'MMD Files' view panel</li>
           <li>Minimal supported Intellij IDEA platform lifted up to 202.8194.7</li>
