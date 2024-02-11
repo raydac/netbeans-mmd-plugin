@@ -14,7 +14,7 @@ Initially I developed a plugin for NetBeans IDE then the IntellijIDEA plugin was
 ![Screenshots from all](./assets/screenshots_all.png)
 
 # Changelog
-__1.6.6 (SNAPSHOT)__
+__1.6.6 (11-feb-2024)__
 - SR:  PlantUML updated to 1.2024.1
 - SR: Added option to keep non-saved documents between sessions
 - SR: Embedded JDK updated to 21.0.2+14
