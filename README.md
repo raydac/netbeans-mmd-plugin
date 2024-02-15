@@ -14,6 +14,11 @@ Initially I developed a plugin for NetBeans IDE then the IntellijIDEA plugin was
 ![Screenshots from all](./assets/screenshots_all.png)
 
 # Changelog
+
+__1.6.7 (SNAPSHOT)__
+- IJ:    Plugin renamed to `SciaReto Mind Map`
+- SR:  PlantUML updated to 1.2024.2
+
 __1.6.6 (11-feb-2024)__
 - SR:  PlantUML updated to 1.2024.1
 - SR: Added option to keep non-saved documents between sessions
@@ -23,13 +28,6 @@ __1.6.6 (11-feb-2024)__
 - AP: improved annotation processor to find and extract marks in method bodies
 - SR: embedded Intellij fonts (`JetBrains Mono Kawkab` and `JetBrains Mono Vazir`) with Farsi char-set support [#120](https://github.com/raydac/netbeans-mmd-plugin/issues/120)
 - IJ,NB: Improved font configuration use for Note text editor [#120](https://github.com/raydac/netbeans-mmd-plugin/issues/120)
-
-__1.6.5 (13-dec-2023)__
-- IJ:  Fixed new topic focus lost if TAB pressed during edit [#91](https://github.com/raydac/netbeans-mmd-plugin/issues/91)
-- IJ:  Fixed error for access to private field in ApplicationInfo [#119](https://github.com/raydac/netbeans-mmd-plugin/issues/119)
-- SR:  embedded JDK updated to 21.0.1+12
-- SR:  PlantUML updated to 1.2023.13
-
 
 
 [Full changelog](https://github.com/raydac/netbeans-mmd-plugin/blob/master/changelog.txt)   
