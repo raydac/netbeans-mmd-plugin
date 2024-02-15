@@ -12,7 +12,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <elk.version>0.8.1</elk.version>
-        <plantuml.version>1.2024.1</plantuml.version>
+        <plantuml.version>1.2024.2</plantuml.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
@@ -96,7 +96,7 @@
             <dependency>
                 <groupId>io.projectreactor</groupId>
                 <artifactId>reactor-core</artifactId>
-                <version>3.6.2</version>
+                <version>3.6.3</version>
             </dependency>
             <dependency>
                 <groupId>net.sf.jung</groupId>
@@ -239,7 +239,7 @@
                 <plugin>
                     <groupId>de.perdian.maven.plugins</groupId>
                     <artifactId>macosappbundler-maven-plugin</artifactId>
-                    <version>1.19.0</version>
+                    <version>1.20.1</version>
                 </plugin>
                 <plugin>
                     <groupId>com.akathist.maven.plugins.launch4j</groupId>
