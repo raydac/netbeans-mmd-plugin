@@ -24,7 +24,20 @@ import static org.apache.commons.lang3.SystemUtils.IS_OS_WINDOWS;
 import com.formdev.flatlaf.FlatDarculaLaf;
 import com.formdev.flatlaf.FlatIntelliJLaf;
 import com.formdev.flatlaf.FlatLightLaf;
-import com.formdev.flatlaf.intellijthemes.*;
+import com.formdev.flatlaf.intellijthemes.FlatArcDarkIJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatArcDarkOrangeIJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatArcIJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatArcOrangeIJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatCarbonIJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatCobalt2IJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatCyanLightIJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatDraculaIJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatLightFlatIJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatMaterialDesignDarkIJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatNordIJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatSolarizedDarkIJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatVuesionIJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatXcodeDarkIJTheme;
 import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatAtomOneDarkIJTheme;
 import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatAtomOneLightIJTheme;
 import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatGitHubDarkIJTheme;
@@ -123,7 +136,7 @@ public class SciaRetoStarter {
   public static final String APP_TITLE = "Scia Reto";
   public static final Image APP_ICON = UiUtils.loadIcon("logo256x256.png");
   public static final long UPSTART = currentTimeMillis();
-  public static final Version IDE_VERSION = new Version("sciareto", new long[] {1L, 6L, 6L}, null);
+  public static final Version IDE_VERSION = new Version("sciareto", new long[] {1L, 6L, 7L}, null);
   public static final String PROPERTY_LOOKANDFEEL = "selected.look.and.feel"; //NOI18N
   public static final String PROPERTY_SCALE_GUI = "general.gui.scale"; //NOI18N
   //NOI18N

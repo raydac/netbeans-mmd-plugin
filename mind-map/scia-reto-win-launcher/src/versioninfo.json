@@ -3,13 +3,13 @@
     "FileVersion": {
       "Major": 1,
       "Minor": 6,
-      "Patch": 6,
+      "Patch": 7,
       "Build": 0
     },
     "ProductVersion": {
       "Major": 1,
       "Minor": 6,
-      "Patch": 6,
+      "Patch": 7,
       "Build": 0
     },
     "FileFlagsMask": "3f",
@@ -22,14 +22,14 @@
     "Comments": "Free OSS Scia-Reto Mind Map editor",
     "CompanyName": "Igor Maznitsa",
     "FileDescription": "Scia-Reto Mind Map editor",
-    "FileVersion": "v1.6.6.0",
+    "FileVersion": "v1.6.7.0",
     "InternalName": "scia-reto.exe",
     "LegalCopyright": "Copyright (C) 2016-2024 Igor Maznitsa",
     "LegalTrademarks": "",
     "OriginalFilename": "scia-reto.exe",
     "PrivateBuild": "",
     "ProductName": "Scia-Reto Mind Map editor",
-    "ProductVersion": "v1.6.6.0",
+    "ProductVersion": "v1.6.7.0",
     "SpecialBuild": ""
   },
   "VarFileInfo": {

@@ -1,8 +1,8 @@
 <!--suppress XmlUnboundNsPrefix -->
 <idea-plugin>
     <id>nb-mind-map-idea</id>
-    <name>IDEA Mind Map</name>
-    <version>1.6.6</version>
+    <name>SciaReto Mind Map</name>
+    <version>1.6.7</version>
     <vendor url="https://www.igormaznitsa.com">Igor Maznitsa</vendor>
 
     <category>Knowledge management</category>
@@ -12,6 +12,10 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <p>1.6.7 (SNAPSHOT)</p>
+        <ul>
+            <p>Plugin renamed by requirement of JetBrains</p>
+        </ul>
         <p>1.6.6 (11-feb-2024)</p>
         <ul>
           <li>Added 'MMD Files' view panel</li>
