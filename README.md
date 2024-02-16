@@ -17,7 +17,7 @@ Initially I developed a plugin for NetBeans IDE then the IntellijIDEA plugin was
 
 __1.6.7 (SNAPSHOT)__
 - IJ:    Plugin renamed to `SciaReto Mind Map`
-- SR:  PlantUML updated to 1.2024.2
+- SR:  PlantUML updated to 1.2024.3
 
 __1.6.6 (11-feb-2024)__
 - SR:  PlantUML updated to 1.2024.1
