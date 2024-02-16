@@ -12,7 +12,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <elk.version>0.8.1</elk.version>
-        <plantuml.version>1.2024.2</plantuml.version>
+        <plantuml.version>1.2024.3</plantuml.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
@@ -111,7 +111,7 @@
             <dependency>
                 <groupId>com.fifesoft</groupId>
                 <artifactId>rsyntaxtextarea</artifactId>
-                <version>3.3.4</version>
+                <version>3.4.0</version>
             </dependency>
             <dependency>
                 <groupId>com.fifesoft</groupId>
