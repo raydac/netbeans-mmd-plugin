@@ -28,11 +28,8 @@ import com.igormaznitsa.sciareto.ui.MainFrame;
 import com.igormaznitsa.sciareto.ui.SrI18n;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.editors.AbstractEditor;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.*;
-import javax.swing.event.ChangeEvent;
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -45,8 +42,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.stream.Streams;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.JSeparator;
+import javax.swing.JTabbedPane;
+import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
 
 public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
 
@@ -68,6 +71,11 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
     this.putClientProperty("JTabbedPane.tabType", "card");
     this.putClientProperty("JTabbedPane.hasFullBorder", false);
     this.putClientProperty("JTabbedPane.showContentSeparator", false);
+
+    this.addChangeListener(e -> {
+      final JTabbedPane sourceTabbedPane = (JTabbedPane) changeEvent.getSource();
+      this.notifyAboutTabChange(sourceTabbedPane.getSelectedComponent());
+    });
 
     this.addMouseListener(new MouseAdapter() {
       @Override
@@ -110,6 +118,19 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
       }
     });
 
+  }
+
+  private void notifyAboutTabChange(final Component component) {
+    if (component != null) {
+      if (component instanceof TabChangeListener) {
+        ((TabChangeListener) component).onTabChanged(this);
+      }
+      if (component instanceof Container) {
+        for (Component c : ((Container) component).getComponents()) {
+          this.notifyAboutTabChange(c);
+        }
+      }
+    }
   }
 
   public void addMaxMinEditorListener(@Nonnull final ActionListener l) {

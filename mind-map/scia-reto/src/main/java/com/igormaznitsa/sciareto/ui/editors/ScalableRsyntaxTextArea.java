@@ -24,6 +24,8 @@ import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.sciareto.preferences.AdditionalPreferences;
 import com.igormaznitsa.sciareto.ui.UiUtils;
+import com.igormaznitsa.sciareto.ui.tabs.TabChangeListener;
+import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.MouseWheelEvent;
 import java.io.ByteArrayInputStream;
@@ -37,14 +39,21 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JViewport;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.undo.UndoableEdit;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rsyntaxtextarea.Style;
+import org.fife.ui.rsyntaxtextarea.SyntaxScheme;
 import org.fife.ui.rsyntaxtextarea.Theme;
+import org.fife.ui.rtextarea.Gutter;
 import org.fife.ui.rtextarea.RTextArea;
+import org.fife.ui.rtextarea.RTextScrollPane;
 import org.fife.ui.rtextarea.RUndoManager;
 
-public final class ScalableRsyntaxTextArea extends RSyntaxTextArea {
+public final class ScalableRsyntaxTextArea extends RSyntaxTextArea implements TabChangeListener {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ScalableRsyntaxTextArea.class);
 
@@ -118,11 +127,39 @@ public final class ScalableRsyntaxTextArea extends RSyntaxTextArea {
   }
 
   private void updateFontForScale() {
-    final Font newFont = this.getFont().deriveFont(this.fontScale * this.fontOriginalSize);
-    if (newFont.getSize() > 0) {
-      this.setFont(newFont);
-    } else {
-      this.setFont(this.getFont().deriveFont(1.0f));
+    float fontSize = this.fontScale * this.fontOriginalSize;
+
+    if (fontSize < 1.0f) {
+      fontSize = 1.0f;
+    }
+
+    SyntaxScheme scheme = this.getSyntaxScheme();
+
+    int count = scheme.getStyleCount();
+    for (int i = 0; i < count; i++) {
+      Style ss = scheme.getStyle(i);
+      if (ss != null) {
+        Font font = ss.font;
+        if (font != null) {
+          ss.font = font.deriveFont(fontSize);
+        }
+      }
+    }
+
+    this.setFont(this.getFont().deriveFont(fontSize));
+
+    this.setSyntaxScheme(scheme);
+    Component parent = this.getParent();
+    if (parent instanceof JViewport) {
+      parent = parent.getParent();
+      if (parent instanceof RTextScrollPane) {
+        final Gutter gutter = ((RTextScrollPane) parent).getGutter();
+        gutter.setLineNumberFont(gutter.getLineNumberFont().deriveFont(fontSize));
+      }
+
+      if (parent instanceof JScrollPane) {
+        parent.repaint();
+      }
     }
   }
 
@@ -132,8 +169,6 @@ public final class ScalableRsyntaxTextArea extends RSyntaxTextArea {
         DEFAULT_FONT));
     this.fontOriginalSize = this.getFont().getSize2D();
     updateFontForScale();
-    this.revalidate();
-    this.repaint();
   }
 
   @Nonnull
@@ -209,5 +244,10 @@ public final class ScalableRsyntaxTextArea extends RSyntaxTextArea {
     } catch (Exception ex) {
       LOGGER.error("Can't deserialize edit history", ex);
     }
+  }
+
+  @Override
+  public void onTabChanged(JTabbedPane tabbedPane) {
+    this.updateFontForScale();
   }
 }
