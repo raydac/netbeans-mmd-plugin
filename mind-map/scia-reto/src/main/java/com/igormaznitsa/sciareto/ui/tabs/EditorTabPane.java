@@ -120,7 +120,7 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
 
   }
 
-  private void notifyAboutTabChange(final Component component) {
+  private void notifyAboutTabChange(@Nullable final Component component) {
     if (component != null) {
       if (component instanceof TabChangeListener) {
         ((TabChangeListener) component).onTabChanged(this);

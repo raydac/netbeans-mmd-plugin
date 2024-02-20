@@ -247,7 +247,7 @@ public final class ScalableRsyntaxTextArea extends RSyntaxTextArea implements Ta
   }
 
   @Override
-  public void onTabChanged(JTabbedPane tabbedPane) {
+  public void onTabChanged(@Nonnull final JTabbedPane tabbedPane) {
     this.updateFontForScale();
   }
 }

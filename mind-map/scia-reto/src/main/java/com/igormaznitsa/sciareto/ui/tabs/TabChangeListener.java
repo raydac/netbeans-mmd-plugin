@@ -16,9 +16,10 @@
 
 package com.igormaznitsa.sciareto.ui.tabs;
 
+import javax.annotation.Nonnull;
 import javax.swing.JTabbedPane;
 
 @FunctionalInterface
 public interface TabChangeListener {
-  void onTabChanged(JTabbedPane tabbedPane);
+  void onTabChanged(@Nonnull JTabbedPane tabbedPane);
 }
