@@ -14,7 +14,8 @@
     <change-notes><![CDATA[
         <p>1.6.7 (SNAPSHOT)</p>
         <ul>
-            <p>Plugin renamed by requirement of JetBrains</p>
+            <li>Fixed error during during scope processing, scope renamed to 'SR Mind Map Files'</li>
+            <li>Plugin renamed by requirement of JetBrains</li>
         </ul>
         <p>1.6.6 (11-feb-2024)</p>
         <ul>
@@ -129,7 +130,7 @@
           <li>Reworked MindMup import-export</li>
           <li>Improved import from FreeMind XHTML format</li>
           <li>#48 Paste plain text to add a new node</li>
-          <li>#17 improved procesing of fold/unfold keyboard shortcuts to fold and unfold all children</li>
+          <li>#17 improved processing of fold/unfold keyboard shortcuts to fold and unfold all children</li>
         </ul>
         <p>1.4.4 (04-aug-2018)</p>
         <ul>
@@ -158,7 +159,7 @@
           <li>#34 added logic to interpret zero-length MMD file as an empty mind map file with root.</li>
           <li>#33 added configuration flag to trim entered topic text, "Trim topic text before set`"</li>
           <li>added exporter for AsciiDoc</li>
-          <li>#31 Imrpoved FreeMind compatibility to support 1.0.1 FreeMind format</li>
+          <li>#31 Improved FreeMind compatibility to support 1.0.1 FreeMind format</li>
           <li>#30 Remember setting in "add file"</li>
           <li>#29 Remember per session last used directory for files</li>
           <li>Added standard text pop-up menu into text fields of both File dialog and URI dialog.</li>
@@ -263,7 +264,6 @@
         <facetType implementation="com.igormaznitsa.ideamindmap.facet.MindMapFacetType"/>
         <framework.detector implementation="com.igormaznitsa.ideamindmap.facet.MindMapFacetDetector"/>
         <applicationConfigurable instance="com.igormaznitsa.ideamindmap.settings.MindMapSettingsComponent"/>
-        <projectViewPane implementation="com.igormaznitsa.ideamindmap.view.MmdFilesViewPane"/>
         <annotator language="NBMindMap"
                    implementationClass="com.igormaznitsa.ideamindmap.lang.highlighter.MMAnnotator"/>
         <lang.syntaxHighlighterFactory language="NBMindMap"
@@ -275,6 +275,8 @@
                                   implementation="com.igormaznitsa.ideamindmap.lang.refactoring.references.MMReferenceContributor"/>
         <lang.elementManipulator forClass="com.igormaznitsa.ideamindmap.lang.psi.PsiExtraFile"
                                  implementationClass="com.igormaznitsa.ideamindmap.lang.refactoring.references.manipulators.PsiExtraFileManipulator"/>
+
+        <customScopesProvider implementation="com.igormaznitsa.ideamindmap.view.MmdFileScopesProvider"/>
     </extensions>
 
     <application-components>

@@ -43,13 +43,13 @@ public class MindMapFileType extends LanguageFileType {
   @Nonnull
   @Override
   public String getName() {
-    return "IDEA Mind Map";
+    return "SciaReto Mind Map";
   }
 
   @Nonnull
   @Override
   public String getDescription() {
-    return "IDEA Mind Map files";
+    return "SciaReto Mind Map files";
   }
 
   @Nonnull

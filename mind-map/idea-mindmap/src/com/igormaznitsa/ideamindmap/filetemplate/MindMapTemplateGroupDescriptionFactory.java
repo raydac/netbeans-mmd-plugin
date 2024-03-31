@@ -22,11 +22,11 @@ import com.intellij.ide.fileTemplates.FileTemplateGroupDescriptor;
 import com.intellij.ide.fileTemplates.FileTemplateGroupDescriptorFactory;
 
 public class MindMapTemplateGroupDescriptionFactory implements FileTemplateGroupDescriptorFactory {
-  public static final String MINDMAP_EMPTY_MAP = "SR Mind Map.mmd";
+  public static final String MINDMAP_EMPTY_MAP = "SR_Mind_Map.mmd";
 
   @Override
   public FileTemplateGroupDescriptor getFileTemplatesDescriptor() {
-    final FileTemplateGroupDescriptor group = new FileTemplateGroupDescriptor("SR Mind Map", AllIcons.Logo.MINDMAP);
+    final FileTemplateGroupDescriptor group = new FileTemplateGroupDescriptor("SciaReto Mind Map", AllIcons.Logo.MINDMAP);
     group.addTemplate(new FileTemplateDescriptor(MINDMAP_EMPTY_MAP, AllIcons.File.MINDMAP));
     return group;
   }

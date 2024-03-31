@@ -16,15 +16,10 @@
 
 package com.igormaznitsa.ideamindmap.utils;
 
-import static com.intellij.openapi.module.ModuleUtilCore.findModuleForFile;
-import static com.intellij.openapi.vfs.VfsUtilCore.isAncestor;
-
 import com.igormaznitsa.ideamindmap.editor.MindMapDocumentEditor;
-import com.igormaznitsa.ideamindmap.view.MmdFilesViewPane;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.intellij.ide.projectView.ProjectView;
-import com.intellij.ide.projectView.impl.ProjectViewPane;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.LogicalPosition;
 import com.intellij.openapi.editor.ScrollType;
@@ -32,7 +27,6 @@ import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.NavigatableFileEditor;
 import com.intellij.openapi.fileEditor.TextEditor;
-import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -49,25 +43,6 @@ public enum SelectIn {
 
   private static void projectFocusTo(final Project project, final VirtualFile file) {
     final ProjectView view = ProjectView.getInstance(project);
-
-    String viewToActivate = ProjectViewPane.ID;
-
-    if (MmdFilesViewPane.ID.equals(view.getCurrentViewId())) {
-      final Module theModule = findModuleForFile(file, project);
-      if (theModule == null) {
-        viewToActivate = null;
-      } else {
-        final VirtualFile knowledgeFolder = IdeaUtils.findKnowledgeFolderForModule(theModule, false);
-        if (knowledgeFolder != null && isAncestor(knowledgeFolder, file, true)) {
-          viewToActivate = MmdFilesViewPane.ID;
-        }
-      }
-    }
-
-    if (viewToActivate != null) {
-      view.changeView(viewToActivate);
-    }
-
     final ToolWindow toolwindow = ToolWindowManager.getInstance(project).getToolWindow(ToolWindowId.PROJECT_VIEW);
     if (toolwindow != null) {
       toolwindow.activate(() -> view.select(null, file, true));
