@@ -16,7 +16,8 @@ Initially I developed a plugin for NetBeans IDE then the IntellijIDEA plugin was
 # Changelog
 
 __1.6.7 (SNAPSHOT)__
-- IJ:    Plugin renamed to `SciaReto Mind Map`
+- IJ:  Fixed scope for MMD files
+- IJ:  Plugin renamed to `SciaReto Mind Map`
 - SR:  PlantUML updated to 1.2024.3
 
 __1.6.6 (11-feb-2024)__
