@@ -15,7 +15,7 @@
         <p>1.6.7 (SNAPSHOT)</p>
         <ul>
             <li>Fixed error during during scope processing, scope renamed to 'SR Mind Map Files'</li>
-            <li>Plugin renamed by requirement of JetBrains</li>
+            <li>Plugin renamed to 'SciaReto Mind Map' by requirement of JetBrains</li>
         </ul>
         <p>1.6.6 (11-feb-2024)</p>
         <ul>

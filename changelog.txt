@@ -1,6 +1,6 @@
 __1.6.7 (SNAPSHOT)__
 - IJ:  Fixed scope for MMD files
-- IJ:  Plugin renamed to `SciaReto Mind Map`
+- IJ:  Plugin renamed to 'SciaReto Mind Map' by requirement of JetBrains
 - SR:  PlantUML updated to 1.2024.3
 
 
