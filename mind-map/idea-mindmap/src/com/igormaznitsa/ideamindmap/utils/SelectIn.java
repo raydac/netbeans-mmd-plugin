@@ -43,13 +43,15 @@ public enum SelectIn {
 
   private static void projectFocusTo(final Project project, final VirtualFile file) {
     final ProjectView view = ProjectView.getInstance(project);
-    final ToolWindow toolwindow = ToolWindowManager.getInstance(project).getToolWindow(ToolWindowId.PROJECT_VIEW);
+    final ToolWindow toolwindow =
+        ToolWindowManager.getInstance(project).getToolWindow(ToolWindowId.PROJECT_VIEW);
     if (toolwindow != null) {
       toolwindow.activate(() -> view.select(null, file, true));
     }
   }
 
-  public void open(@Nonnull final MindMapDocumentEditor source, @Nonnull final VirtualFile file, final int line) {
+  public void open(@Nonnull final MindMapDocumentEditor source, @Nonnull final VirtualFile file,
+                   final int line) {
     final ProjectManager manager = ProjectManager.getInstance();
     switch (this) {
       case IDE: {
@@ -65,21 +67,23 @@ public enum SelectIn {
             }
           }
         } else {
-          projectFocusTo(source.getProject(), file);
-          final FileEditor[] editors = FileEditorManager.getInstance(source.getProject()).openFile(file, true);
+          SwingUtils.safeSwing(() -> {
+            final FileEditor[] editors =
+                FileEditorManager.getInstance(source.getProject()).openFile(file, true, true);
 
-          if (line > 0) {
-            for (final FileEditor e : editors) {
-              if (e instanceof NavigatableFileEditor) {
-                final TextEditor navigatedEditor = (TextEditor) e;
-                final Editor editor = navigatedEditor.getEditor();
-                if (editor != null && editor.getDocument().getLineCount() > line) {
-                  editor.getCaretModel().moveToLogicalPosition(new LogicalPosition(line - 1, 0));
-                  editor.getScrollingModel().scrollToCaret(ScrollType.CENTER);
+            if (line > 0) {
+              for (final FileEditor e : editors) {
+                if (e instanceof NavigatableFileEditor) {
+                  final TextEditor navigatedEditor = (TextEditor) e;
+                  final Editor editor = navigatedEditor.getEditor();
+                  if (editor != null && editor.getDocument().getLineCount() > line) {
+                    editor.getCaretModel().moveToLogicalPosition(new LogicalPosition(line - 1, 0));
+                    editor.getScrollingModel().scrollToCaret(ScrollType.CENTER);
+                  }
                 }
               }
             }
-          }
+          });
         }
       }
       break;
