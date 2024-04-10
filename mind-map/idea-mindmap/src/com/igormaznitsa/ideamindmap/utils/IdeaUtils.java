@@ -62,7 +62,6 @@ import com.intellij.util.ui.UIUtil;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Desktop;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
 import java.awt.Point;
@@ -70,6 +69,7 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URI;
@@ -89,7 +89,6 @@ import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 import org.apache.commons.text.StringEscapeUtils;
-import org.apache.velocity.exception.MethodInvocationException;
 
 public final class IdeaUtils {
 
@@ -197,7 +196,7 @@ public final class IdeaUtils {
         if (Modifier.isStatic(instanceMethod.getModifiers())) {
           result = instanceMethod.invoke(null);
         }
-      } catch (MethodInvocationException ex) {
+      } catch (InvocationTargetException ex) {
         LOGGER.error("Error during dynamic getInstance() call", ex);
       } catch (Exception ex) {
         result = null;
@@ -640,7 +639,7 @@ public final class IdeaUtils {
     public DialogComponent(final Project project, final String title, final JComponent component,
                            final JComponent prefferedComponent,
                            final boolean defaultButtonEnabled) {
-      super(project, false, IdeModalityType.PROJECT);
+      super(project, false, IdeModalityType.IDE);
       this.component = component;
       this.prefferedComponent = prefferedComponent == null ? component : prefferedComponent;
       init();
