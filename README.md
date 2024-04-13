@@ -18,6 +18,7 @@ Initially I developed a plugin for NetBeans IDE then the IntellijIDEA plugin was
 __1.6.7 (SNAPSHOT)__
 - IJ:  Fixed scope for MMD files
 - IJ:  Plugin renamed to 'SciaReto Mind Map' by requirement of JetBrains
+- SR:  Embedded JDK updated to 22+37
 - SR:  PlantUML updated to 1.2024.4
 
 __1.6.6 (11-feb-2024)__
