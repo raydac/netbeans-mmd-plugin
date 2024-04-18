@@ -24,7 +24,7 @@
 
   <properties>
     <app.name>sciareto-${project.version}</app.name>
-    <jre.version>22+37</jre.version>
+    <jre.version>22.0.1+10</jre.version>
     <maven.compiler.source>9</maven.compiler.source>
     <maven.compiler.target>9</maven.compiler.target>
   </properties>
