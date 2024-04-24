@@ -1,4 +1,5 @@
 __1.6.7 (SNAPSHOT)__
+- IJ:  Minimal supported Intellij IDEA platform lifted up to 2022.2 (Build: 222.3345.118)
 - IJ:  Fixed scope for MMD files
 - IJ:  Plugin renamed to 'SciaReto Mind Map' by requirement of JetBrains
 - SR:  Added version for Linux ARM (aarch64)

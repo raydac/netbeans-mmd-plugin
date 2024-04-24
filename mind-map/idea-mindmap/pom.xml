@@ -14,71 +14,29 @@
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <gradle.executable>gradle</gradle.executable>
+        <gradle.executable>gradle8</gradle.executable>
     </properties>
 
     <profiles>
         <profile>
             <id>local-idea-libs</id>
             <properties>
-                <local.idea.lib.path>/home/igorm/Programs/idea-IC-202.8194.7/lib</local.idea.lib.path>
+                <local.idea.lib.path>/home/igorm/Programs/idea-IC-222.3345.118/lib</local.idea.lib.path>
             </properties>    
             <dependencies>
                 <dependency>
                     <groupId>com.intellij</groupId>
-                    <artifactId>idea-platform-extensions</artifactId>
+                    <artifactId>idea-app</artifactId>
                     <version>0-SNAPSHOT</version>
                     <scope>system</scope>
-                    <systemPath>${local.idea.lib.path}/extensions.jar</systemPath>
+                    <systemPath>${local.idea.lib.path}/app.jar</systemPath>
                 </dependency>
                 <dependency>
                     <groupId>com.intellij</groupId>
-                    <artifactId>idea-platform-xml</artifactId>
+                    <artifactId>idea-3rd-party-rt</artifactId>
                     <version>0-SNAPSHOT</version>
                     <scope>system</scope>
-                    <systemPath>${local.idea.lib.path}/intellij-xml.jar</systemPath>
-                </dependency>
-                <dependency>
-                    <groupId>com.intellij</groupId>
-                    <artifactId>idea-dom-openapi</artifactId>
-                    <version>0-SNAPSHOT</version>
-                    <scope>system</scope>
-                    <systemPath>${local.idea.lib.path}/dom-openapi.jar</systemPath>
-                </dependency>
-                <dependency>
-                    <groupId>com.intellij</groupId>
-                    <artifactId>idea-platform-jdom</artifactId>
-                    <version>0-SNAPSHOT</version>
-                    <scope>system</scope>
-                    <systemPath>${local.idea.lib.path}/jdom.jar</systemPath>
-                </dependency>
-                <dependency>
-                    <groupId>com.intellij</groupId>
-                    <artifactId>idea-platform-util-ui</artifactId>
-                    <version>0-SNAPSHOT</version>
-                    <scope>system</scope>
-                    <systemPath>${local.idea.lib.path}/platform-util-ui.jar</systemPath>
-                </dependency>
-                <dependency>
-                    <groupId>com.intellij</groupId>
-                    <artifactId>idea-platform-api</artifactId>
-                    <version>0-SNAPSHOT</version>
-                    <scope>system</scope>
-                    <systemPath>${local.idea.lib.path}/platform-api.jar</systemPath>
-                </dependency>
-                <dependency>
-                    <groupId>com.intellij</groupId>
-                    <artifactId>idea-platform-impl</artifactId>
-                    <version>0-SNAPSHOT</version>
-                    <scope>system</scope>
-                    <systemPath>${local.idea.lib.path}/platform-impl.jar</systemPath>
-                </dependency>
-                <dependency>
-                    <groupId>com.intellij</groupId>
-                    <artifactId>idea-jar</artifactId>
-                    <version>0-SNAPSHOT</version>
-                    <scope>system</scope>
-                    <systemPath>${local.idea.lib.path}/idea.jar</systemPath>
+                    <systemPath>${local.idea.lib.path}/3rd-party-rt.jar</systemPath>
                 </dependency>
                 <dependency>
                     <groupId>com.intellij</groupId>
@@ -89,10 +47,31 @@
                 </dependency>
                 <dependency>
                     <groupId>com.intellij</groupId>
-                    <artifactId>idea-annotastions</artifactId>
+                    <artifactId>idea-util-rt</artifactId>
+                    <version>0-SNAPSHOT</version>
+                    <scope>system</scope>
+                    <systemPath>${local.idea.lib.path}/util_rt.jar</systemPath>
+                </dependency>
+                <dependency>
+                    <groupId>com.intellij</groupId>
+                    <artifactId>idea-rt</artifactId>
+                    <version>0-SNAPSHOT</version>
+                    <scope>system</scope>
+                    <systemPath>${local.idea.lib.path}/idea_rt.jar</systemPath>
+                </dependency>
+                <dependency>
+                    <groupId>com.intellij</groupId>
+                    <artifactId>idea-annotations</artifactId>
                     <version>0-SNAPSHOT</version>
                     <scope>system</scope>
                     <systemPath>${local.idea.lib.path}/annotations.jar</systemPath>
+                </dependency>
+                <dependency>
+                    <groupId>com.intellij</groupId>
+                    <artifactId>idea-forms-rt</artifactId>
+                    <version>0-SNAPSHOT</version>
+                    <scope>system</scope>
+                    <systemPath>${local.idea.lib.path}/forms_rt.jar</systemPath>
                 </dependency>
             </dependencies>
         </profile>
