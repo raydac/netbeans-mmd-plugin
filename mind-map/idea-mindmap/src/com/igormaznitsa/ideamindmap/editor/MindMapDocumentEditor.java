@@ -1037,4 +1037,10 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
     }
     return result;
   }
+
+  @Override
+  public ActionUpdateThread getActionUpdateThread() {
+      return ActionUpdateThread.BGT;
+  }
+
 }
