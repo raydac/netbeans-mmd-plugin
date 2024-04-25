@@ -19,6 +19,7 @@ package com.igormaznitsa.ideamindmap.swing;
 import com.igormaznitsa.ideamindmap.editor.MindMapDocumentEditor;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.fileEditor.FileEditor;
@@ -28,6 +29,11 @@ public class FindInMindMapAction extends AnAction {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(FindInMindMapAction.class);
 
+  @Override
+  public ActionUpdateThread getActionUpdateThread() {
+      return ActionUpdateThread.BGT;
+  }
+  
   @Override
   public void actionPerformed(@Nonnull AnActionEvent anActionEvent) {
     final FileEditor fileEditor = (FileEditor) anActionEvent.getDataContext().getData("fileEditor");
