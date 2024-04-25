@@ -37,7 +37,7 @@ public class FindTextToggleButton extends JBLabel {
     this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     this.setToolTipText(tooltipText);
     this.selectedIcon = icon;
-    this.normalIcon = IconLoader.getDisabledIcon(icon);
+    this.normalIcon = IconLoader.getTransparentIcon(icon);
     this.setSelected(true);
     this.listener = actionListener;
     this.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 8));
