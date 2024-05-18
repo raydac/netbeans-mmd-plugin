@@ -24,7 +24,7 @@
 
   <properties>
     <app.name>sciareto-${project.version}</app.name>
-    <jre.version>22.0.1+10</jre.version>
+    <jre.version>22.0.1+12</jre.version>
     <maven.compiler.source>9</maven.compiler.source>
     <maven.compiler.target>9</maven.compiler.target>
   </properties>
@@ -225,7 +225,7 @@
           <plugin>
             <groupId>com.igormaznitsa</groupId>
             <artifactId>mvn-jlink-wrapper</artifactId>
-            <version>1.2.1</version>
+            <version>1.2.2</version>
             <executions>
               <execution>
                 <id>cache-work-jdk</id>
