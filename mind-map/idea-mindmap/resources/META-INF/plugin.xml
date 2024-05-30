@@ -2,7 +2,7 @@
 <idea-plugin>
     <id>nb-mind-map-idea</id>
     <name>SciaReto Mind Map</name>
-    <version>1.6.7</version>
+    <version>1.6.7.1</version>
     <vendor url="https://www.igormaznitsa.com">Igor Maznitsa</vendor>
 
     <category>Knowledge management</category>
@@ -12,9 +12,9 @@
     ]]></description>
 
     <change-notes><![CDATA[
-        <p>1.6.7 (30-may-2024)</p>
+        <p>1.6.7.1 (30-may-2024)</p>
         <ul>
-            <li>Minimal supported Intellij IDEA platform lifted up to 2022.2 (Build: 222.3345.118)</li>
+            <li>Minimal supported Intellij IDEA platform lifted up to 2022.2.5 (Build: 222.4554.10)</li>
             <li-Fixed scope for MMD files</li>
             <li>Plugin renamed to 'SciaReto Mind Map' by requirement of JetBrains</li>
             <li>Improved and renamed empty new file template, now its title 'SciaReto Mind Map'</li>
@@ -252,7 +252,7 @@
     </change-notes>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-    <idea-version since-build="202.8194.7"/>
+    <idea-version since-build="222.4554.10"/>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html on how to target different products -->
     <depends>com.intellij.modules.lang</depends>
