@@ -21,7 +21,7 @@ __1.6.7 (SNAPSHOT)__
 - IJ:  Plugin renamed to 'SciaReto Mind Map' by requirement of JetBrains
 - SR:  Added version for Linux ARM (aarch64)
 - SR:  Embedded JDK updated to 22.0.1+12
-- SR:  PlantUML updated to 1.2024.4
+- SR:  PlantUML updated to 1.2024.5
 
 __1.6.6 (11-feb-2024)__
 - SR:  PlantUML updated to 1.2024.1
