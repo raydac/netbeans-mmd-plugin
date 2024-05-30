@@ -15,7 +15,7 @@ Initially I developed a plugin for NetBeans IDE then the IntellijIDEA plugin was
 
 # Changelog
 
-__1.6.7 (SNAPSHOT)__
+__1.6.7 (30-may-2024)__
 - IJ:  Minimal supported Intellij IDEA platform lifted up to 2022.2 (Build: 222.3345.118)
 - IJ:  Fixed scope for MMD files
 - IJ:  Plugin renamed to 'SciaReto Mind Map' by requirement of JetBrains
