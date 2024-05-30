@@ -12,10 +12,12 @@
     ]]></description>
 
     <change-notes><![CDATA[
-        <p>1.6.7 (SNAPSHOT)</p>
+        <p>1.6.7 (30-may-2024)</p>
         <ul>
-            <li>Fixed error during during scope processing, scope renamed to 'SR Mind Map Files'</li>
+            <li>Minimal supported Intellij IDEA platform lifted up to 2022.2 (Build: 222.3345.118)</li>
+            <li-Fixed scope for MMD files</li>
             <li>Plugin renamed to 'SciaReto Mind Map' by requirement of JetBrains</li>
+            <li>Improved and renamed empty new file template, now its title 'SciaReto Mind Map'</li>
         </ul>
         <p>1.6.6 (11-feb-2024)</p>
         <ul>
