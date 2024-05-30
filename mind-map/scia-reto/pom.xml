@@ -45,6 +45,17 @@
     <dependency>
       <groupId>net.sf.jung</groupId>
       <artifactId>jung-graph-impl</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>33.2.0-android</version>
     </dependency>
     <dependency>
       <groupId>com.fifesoft</groupId>
