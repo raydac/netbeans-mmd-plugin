@@ -2,7 +2,7 @@
 <idea-plugin>
     <id>nb-mind-map-idea</id>
     <name>SciaReto Mind Map</name>
-    <version>1.6.7.1</version>
+    <version>1.6.8</version>
     <vendor url="https://www.igormaznitsa.com">Igor Maznitsa</vendor>
 
     <category>Knowledge management</category>
@@ -12,6 +12,9 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <p>1.6.8 (SNAPSHOT)</p>
+        <ul>
+        </ul>
         <p>1.6.7.1 (30-may-2024)</p>
         <ul>
             <li>Minimal supported Intellij IDEA platform lifted up to 2022.2.5 (Build: 222.4554.10)</li>

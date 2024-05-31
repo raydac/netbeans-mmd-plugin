@@ -1,3 +1,6 @@
+__1.6.8 (SNAPSHOT)__
+- 
+
 __1.6.7 (30-may-2024)__
 - IJ:  Minimal supported Intellij IDEA platform lifted up to 2022.2 (Build: 222.4554.10)
 - IJ:  Fixed scope for MMD files
