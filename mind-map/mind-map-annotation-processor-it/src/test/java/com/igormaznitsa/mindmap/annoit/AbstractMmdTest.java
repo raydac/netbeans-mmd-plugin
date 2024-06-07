@@ -107,8 +107,12 @@ public abstract class AbstractMmdTest {
     throw new Error("Must not be called");
   }
 
+  protected Path findPath(final String path) {
+    return new File(FilenameUtils.normalizeNoEndSeparator(path)).toPath();
+  }
+
   protected MindMap loadMindMap(final String path) throws IOException {
-    final Path asPath = new File(FilenameUtils.normalizeNoEndSeparator(path)).toPath();
+    final Path asPath = findPath(path);
     assertFalse("path must be relative one", asPath.isAbsolute());
     final Path mindMapFile = this.getSrcDir().resolve(asPath);
     assertTrue("Can't find mind map file: " + mindMapFile, Files.isRegularFile(mindMapFile));
