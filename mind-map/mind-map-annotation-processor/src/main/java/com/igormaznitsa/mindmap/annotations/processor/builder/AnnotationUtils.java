@@ -146,6 +146,33 @@ public final class AnnotationUtils {
   }
 
   /**
+   * Find annotations for an element by their class and form pairs with their positions in sources.
+   *
+   * @param sourcePositions source positions must not be null
+   * @param trees           trees utility
+   * @param element         the element to find annotations
+   * @param annotationClass the annotation class
+   * @return list of found annotations and their positions or empty list
+   * @since 1.6.8
+   */
+  public static List<Pair<? extends Annotation, UriLine>> findAnnotationsWithPositions(
+      final SourcePositions sourcePositions,
+      final Trees trees,
+      final Element element,
+      final Class<? extends Annotation> annotationClass
+  ) {
+    final Annotation[] annotations = element.getAnnotationsByType(annotationClass);
+    if (annotations.length == 0) {
+      return List.of();
+    } else {
+      final UriLine uriLine = findPosition(sourcePositions, trees, element);
+      return Arrays.stream(annotations)
+          .map(x -> Pair.of(x, uriLine))
+          .collect(Collectors.toList());
+    }
+  }
+
+  /**
    * Find and read element sources.
    *
    * @param sourcePositions auxiliary utility class, must not be null

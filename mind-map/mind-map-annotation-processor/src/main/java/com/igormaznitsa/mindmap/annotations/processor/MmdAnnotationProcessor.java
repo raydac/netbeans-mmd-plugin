@@ -52,7 +52,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Stream;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -65,6 +64,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.util.Types;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * Annotation processor to collect MMD annotations and build MMD mind map files for them.
@@ -245,45 +245,49 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
 
       annotatedElements.forEach(
           element -> {
-            final Annotation[] annotationInstances = element.getAnnotationsByType(annotationClass);
+            final List<Pair<? extends Annotation, UriLine>> annotationInstances =
+                AnnotationUtils.findAnnotationsWithPositions(this.sourcePositions, this.trees,
+                    element, annotationClass);
             final long startPosition =
                 AnnotationUtils.findStartPosition(this.sourcePositions, this.trees, element);
-            final UriLine position =
-                AnnotationUtils.findPosition(this.sourcePositions, this.trees, element);
 
             if (annotationClass == MmdFileRef.class) {
-              Arrays.stream(annotationInstances)
-                  .map(ref -> (MmdFileRef) ref)
-                  .forEach(ref -> {
+              annotationInstances
+                  .forEach(pair -> {
                     try {
-                      assertValidMmdFileRef(element, ref);
+                      assertValidMmdFileRef(element, (MmdFileRef) pair.getLeft());
                     } catch (final MmdElementException ex) {
                       this.messager.printMessage(
                           ERROR, ex.getMessage(), ex.getSource());
                     }
                   });
             } else if (annotationClass == MmdTopics.class) {
-              Arrays.stream(annotationInstances)
-                  .map(x -> (MmdTopics) x)
-                  .flatMap(x -> Stream.of(x.value()))
+              annotationInstances.stream()
+                  .flatMap(pair -> {
+                    final MmdTopics mmdTopics = (MmdTopics) pair.getLeft();
+                    return Arrays.stream(mmdTopics.value())
+                        .map(x -> Pair.of(x, pair.getValue()));
+                  })
                   .forEach(
-                      mmdTopicAnno -> foundAnnotationList.add(
+                      pair -> foundAnnotationList.add(
                           new MmdAnnotationWrapper(
-                              element, mmdTopicAnno, new File(position.getUri()).toPath(),
-                              position.getLine(), startPosition, false)));
+                              element, pair.getKey(), new File(pair.getRight().getUri()).toPath(),
+                              pair.getRight().getLine(), startPosition, false)));
             } else if (annotationClass == MmdFiles.class) {
-              Arrays.stream(annotationInstances)
-                  .map(x -> (MmdFiles) x)
-                  .flatMap(x -> Stream.of(x.value()))
+              annotationInstances.stream()
+                  .flatMap(pair -> {
+                    final MmdFiles mmdFiles = (MmdFiles) pair.getLeft();
+                    return Arrays.stream(mmdFiles.value())
+                        .map(x -> Pair.of(x, pair.getValue()));
+                  })
                   .forEach(
-                      mmdFile -> foundAnnotationList.add(
+                      pair -> foundAnnotationList.add(
                           new MmdAnnotationWrapper(
-                              element, mmdFile, new File(position.getUri()).toPath(),
-                              position.getLine(), startPosition, false)));
+                              element, pair.getLeft(), new File(pair.getRight().getUri()).toPath(),
+                              pair.getRight().getLine(), startPosition, false)));
             } else if (annotationClass == HasMmdMarkedElements.class) {
-              Arrays.stream(annotationInstances)
-                  .map(x -> (HasMmdMarkedElements) x)
-                  .forEach(method -> {
+              annotationInstances
+                  .forEach(pair -> {
                     if (element instanceof ExecutableElement) {
                       if (this.optionCommentScan) {
                         try {
@@ -297,7 +301,7 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
                                     AnnotationUtils.findPosition(this.sourcePositions, this.trees,
                                         element).getUri()).toPath();
                             final AtomicInteger counter = new AtomicInteger();
-                            findMmdComments(position.getLine(), 0,
+                            findMmdComments(pair.getRight().getLine(), 0,
                                 elementSources.get()).forEach(comment -> {
                               counter.incrementAndGet();
                               foundAnnotationList.add(
@@ -316,19 +320,19 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
                       }
 
                       findAllInternalMmdTopicAnnotations(
-                              this.trees,
-                              (ExecutableElement) element)
-                          .forEach(pair -> {
+                          this.trees,
+                          (ExecutableElement) element)
+                          .forEach(pairInternalAnnotations -> {
                             final long localStartPosition =
                                 AnnotationUtils.findStartPosition(this.sourcePositions,
                                     this.trees,
-                                    pair.getValue());
+                                    pairInternalAnnotations.getValue());
                             final UriLine localPosition =
                                 AnnotationUtils.findPosition(this.sourcePositions, this.trees,
-                                    pair.getValue());
+                                    pairInternalAnnotations.getValue());
                             foundAnnotationList.add(new MmdAnnotationWrapper(
-                                pair.getValue(),
-                                pair.getKey(),
+                                pairInternalAnnotations.getValue(),
+                                pairInternalAnnotations.getKey(),
                                 new File(localPosition.getUri()).toPath(),
                                 localPosition.getLine(), localStartPosition, false));
                           });
@@ -339,12 +343,12 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
                     }
                   });
             } else {
-              Arrays.stream(annotationInstances)
+              annotationInstances
                   .forEach(
-                      instance -> foundAnnotationList.add(
+                      pair -> foundAnnotationList.add(
                           new MmdAnnotationWrapper(
-                              element, instance, new File(position.getUri()).toPath(),
-                              position.getLine(), startPosition, false)
+                              element, pair.getLeft(), new File(pair.getRight().getUri()).toPath(),
+                              pair.getRight().getLine(), startPosition, false)
                       )
                   );
             }
