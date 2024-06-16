@@ -9,7 +9,6 @@ import com.igormaznitsa.mindmap.model.ExtraFile;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class PathTest extends AbstractMmdTest {
@@ -40,23 +39,21 @@ public class PathTest extends AbstractMmdTest {
   }
 
   @Test
-  @Ignore("because not fixed yet")
   public void testFileAnchorOnAnnotationBetweenAnotherAnnotations() throws Exception {
     final MindMap map =
         this.loadMindMap("com/igormaznitsa/mindmap/annoit/paths/RootFile.mmd");
     final Topic topic = findForPath(map, "root", "goose", "between");
     final ExtraFile extraFile = (ExtraFile) topic.getExtras().get(Extra.ExtraType.FILE);
-    Assert.assertEquals("27", extraFile.getAsURI().getParameters().getProperty("line"));
+    Assert.assertEquals("29", extraFile.getAsURI().getParameters().getProperty("line"));
   }
 
   @Test
-  @Ignore("because not fixed yet")
   public void testFileAnchorPointsMmdTopicBeforeClass() throws Exception {
     final MindMap map =
         this.loadMindMap("com/igormaznitsa/mindmap/annoit/paths/RootFile.mmd");
     final Topic topic = findForPath(map, "root", "goose", "multi-root");
     final ExtraFile extraFile = (ExtraFile) topic.getExtras().get(Extra.ExtraType.FILE);
-    Assert.assertEquals("11", extraFile.getAsURI().getParameters().getProperty("line"));
+    Assert.assertEquals("10", extraFile.getAsURI().getParameters().getProperty("line"));
   }
 
 }

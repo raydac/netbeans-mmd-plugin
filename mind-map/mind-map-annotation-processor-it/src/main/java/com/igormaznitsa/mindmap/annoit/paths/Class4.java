@@ -7,8 +7,8 @@ import java.util.Objects;
 
 @MmdFileRef(target = RootFile.class)
 @Deprecated
-@SuppressWarnings("unchecked")
 @MmdTopic(title = "multi-root", path = "goose", anchor = true)
+@SuppressWarnings("unchecked")
 public class Class4 {
 
   @MmdTopic(title = "multi-path1", path = "goose")

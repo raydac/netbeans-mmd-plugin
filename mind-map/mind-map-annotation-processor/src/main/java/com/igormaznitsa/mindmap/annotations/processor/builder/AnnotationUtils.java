@@ -29,6 +29,7 @@ import com.igormaznitsa.mindmap.annotations.MmdTopics;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.MethodTree;
 import com.sun.source.tree.StatementTree;
+import com.sun.source.tree.Tree;
 import com.sun.source.tree.VariableTree;
 import com.sun.source.util.SourcePositions;
 import com.sun.source.util.TreePath;
@@ -165,11 +166,51 @@ public final class AnnotationUtils {
     if (annotations.length == 0) {
       return List.of();
     } else {
-      final UriLine uriLine = findPosition(sourcePositions, trees, element);
-      return Arrays.stream(annotations)
-          .map(x -> Pair.of(x, uriLine))
-          .collect(Collectors.toList());
+      final TreePath treePath = trees.getPath(element);
+      final CompilationUnitTree compilationUnit = treePath.getCompilationUnit();
+
+      final List<UriLine> lines = element.getAnnotationMirrors().stream()
+          .filter(x -> x.getAnnotationType().toString().equals(annotationClass.getCanonicalName()))
+          .map(
+              x -> findPosition(compilationUnit, trees, sourcePositions, trees.getTree(element, x)))
+          .collect(toList());
+
+      if (annotations.length != lines.size()) {
+        throw new IllegalStateException(
+            String.format(
+                "Unexpectedly can't find same number %d of annotation mirrors %d for type: %s",
+                annotations.length,
+                lines.size(),
+                annotationClass.getCanonicalName())
+        );
+      }
+
+      final List<Pair<? extends Annotation, UriLine>> result = new ArrayList<>();
+      for (int i = 0; i < annotations.length; i++) {
+        result.add(Pair.of(annotations[i], lines.get(i)));
+      }
+      return result;
     }
+  }
+
+  /**
+   * Find source line position for tree.
+   *
+   * @param compilationUnitTree compilation unit tree object, must not be null
+   * @param sourcePositions     auxiliary utility class, must not be null
+   * @param tree                tree element which position should be found
+   * @return formed container with URI and line number.
+   * @since 1.6.8
+   */
+  public static UriLine findPosition(
+      final CompilationUnitTree compilationUnitTree,
+      final Trees trees,
+      final SourcePositions sourcePositions, final Tree tree) {
+    final TreePath treePath = trees.getPath(compilationUnitTree, tree);
+    final long startPosition =
+        sourcePositions.getStartPosition(compilationUnitTree, treePath.getLeaf());
+    final long lineNumber = compilationUnitTree.getLineMap().getLineNumber(startPosition);
+    return new UriLine(compilationUnitTree.getSourceFile().toUri(), lineNumber);
   }
 
   /**
