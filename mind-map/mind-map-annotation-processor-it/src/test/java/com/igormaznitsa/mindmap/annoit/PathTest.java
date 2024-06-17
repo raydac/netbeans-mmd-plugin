@@ -39,12 +39,24 @@ public class PathTest extends AbstractMmdTest {
   }
 
   @Test
+  public void testFileAnchorOnAnnotationInRepeatableValues() throws Exception {
+    final MindMap map1 =
+        this.loadMindMap("com/igormaznitsa/mindmap/annoit/collectors/FileOne.mmd");
+    final MindMap map2 =
+        this.loadMindMap("com/igormaznitsa/mindmap/annoit/collectors/FileTwo.mmd");
+
+    final Topic topic1 = findForPath(map1, "Root", "Topic1");
+    final Topic topic2 = findForPath(map2, "Root", "Topic2");
+    assertLine(15, topic1);
+    assertLine(16, topic2);
+  }
+
+  @Test
   public void testFileAnchorOnAnnotationBetweenAnotherAnnotations() throws Exception {
     final MindMap map =
         this.loadMindMap("com/igormaznitsa/mindmap/annoit/paths/RootFile.mmd");
     final Topic topic = findForPath(map, "root", "goose", "between");
-    final ExtraFile extraFile = (ExtraFile) topic.getExtras().get(Extra.ExtraType.FILE);
-    Assert.assertEquals("29", extraFile.getAsURI().getParameters().getProperty("line"));
+    assertLine(29, topic);
   }
 
   @Test
@@ -52,8 +64,12 @@ public class PathTest extends AbstractMmdTest {
     final MindMap map =
         this.loadMindMap("com/igormaznitsa/mindmap/annoit/paths/RootFile.mmd");
     final Topic topic = findForPath(map, "root", "goose", "multi-root");
+    assertLine(10, topic);
+  }
+
+  private static void assertLine(final int line, final Topic topic) {
     final ExtraFile extraFile = (ExtraFile) topic.getExtras().get(Extra.ExtraType.FILE);
-    Assert.assertEquals("10", extraFile.getAsURI().getParameters().getProperty("line"));
+    Assert.assertEquals(Integer.toString(line), extraFile.getAsURI().getParameters().getProperty("line"));
   }
 
 }

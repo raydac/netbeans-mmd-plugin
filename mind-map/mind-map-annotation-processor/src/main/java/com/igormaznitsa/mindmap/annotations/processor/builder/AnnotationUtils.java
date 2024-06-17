@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.lang.annotation.Annotation;
+import java.lang.annotation.Repeatable;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,6 +54,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -146,6 +149,50 @@ public final class AnnotationUtils {
     return sourcePositions.getStartPosition(compilationUnit, treePath.getLeaf());
   }
 
+  private static AnnotationValue getAnnotationValue(final AnnotationMirror annotationMirror,
+                                                    final String key) {
+    for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : annotationMirror
+        .getElementValues().entrySet()) {
+      if (entry.getKey().getSimpleName().toString().equals(key)) {
+        return entry.getValue();
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Find repeated annotations,
+   *
+   * @param containerMirror         annotation mirror contains repeatable annotations, must not be null
+   * @param repeatedAnnotationClass target repeatable annotation class, must not be null
+   * @return list of found annotation mirrors, can't be null
+   * @since 1.6.8
+   */
+  public static List<AnnotationMirror> findRepeatedAnnotations(
+      final AnnotationMirror containerMirror,
+      final Class<? extends Annotation> repeatedAnnotationClass) {
+    final List<AnnotationMirror> result = new ArrayList<>();
+
+    final Repeatable repeatable = repeatedAnnotationClass.getAnnotation(Repeatable.class);
+    if (repeatable == null) {
+      return result;
+    }
+    final AnnotationValue value = getAnnotationValue(containerMirror, "value");
+    if (value == null) {
+      return result;
+    }
+    if (value.getValue() instanceof List<?>) {
+      for (Object a : (List<?>) value.getValue()) {
+        if (a instanceof AnnotationMirror
+            && (repeatedAnnotationClass.getName()
+            .equals(((AnnotationMirror) a).getAnnotationType().toString()))) {
+          result.add((AnnotationMirror) a);
+        }
+      }
+    }
+    return result;
+  }
+
   /**
    * Find annotations for an element by their class and form pairs with their positions in sources.
    *
@@ -169,8 +216,21 @@ public final class AnnotationUtils {
       final TreePath treePath = trees.getPath(element);
       final CompilationUnitTree compilationUnit = treePath.getCompilationUnit();
 
+      final Repeatable repeatable = annotationClass.getAnnotation(Repeatable.class);
+      final String repeatableClassName = repeatable == null ? "" : repeatable.value().getName();
+
       final List<UriLine> lines = element.getAnnotationMirrors().stream()
-          .filter(x -> x.getAnnotationType().toString().equals(annotationClass.getCanonicalName()))
+          .flatMap(x -> {
+            final String className = x.getAnnotationType().toString();
+            if (className.equals(annotationClass.getName())) {
+              return Stream.of(x);
+            } else if (className.equals(repeatableClassName)) {
+              return findRepeatedAnnotations(x, annotationClass).stream();
+            } else {
+              return Stream.empty();
+            }
+          })
+          .filter(x -> x.getAnnotationType().toString().equals(annotationClass.getName()))
           .map(
               x -> findPosition(compilationUnit, trees, sourcePositions, trees.getTree(element, x)))
           .collect(toList());
@@ -178,10 +238,10 @@ public final class AnnotationUtils {
       if (annotations.length != lines.size()) {
         throw new IllegalStateException(
             String.format(
-                "Unexpectedly can't find same number %d of annotation mirrors %d for type: %s",
+                "Unexpectedly can't find same number (%d) of annotation mirrors (%d) for type %s",
                 annotations.length,
                 lines.size(),
-                annotationClass.getCanonicalName())
+                annotationClass.getName())
         );
       }
 

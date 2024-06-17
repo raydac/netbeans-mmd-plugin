@@ -263,11 +263,7 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
                   });
             } else if (annotationClass == MmdTopics.class) {
               annotationInstances.stream()
-                  .flatMap(pair -> {
-                    final MmdTopics mmdTopics = (MmdTopics) pair.getLeft();
-                    return Arrays.stream(mmdTopics.value())
-                        .map(x -> Pair.of(x, pair.getValue()));
-                  })
+                  .flatMap(pair -> AnnotationUtils.findAnnotationsWithPositions(this.sourcePositions, trees, element, MmdTopic.class).stream())
                   .forEach(
                       pair -> foundAnnotationList.add(
                           new MmdAnnotationWrapper(
