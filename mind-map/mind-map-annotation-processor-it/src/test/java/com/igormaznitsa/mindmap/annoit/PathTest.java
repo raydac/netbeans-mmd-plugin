@@ -5,10 +5,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import com.igormaznitsa.mindmap.model.Extra;
-import com.igormaznitsa.mindmap.model.ExtraFile;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
-import org.junit.Assert;
 import org.junit.Test;
 
 public class PathTest extends AbstractMmdTest {
@@ -47,8 +45,8 @@ public class PathTest extends AbstractMmdTest {
 
     final Topic topic1 = findForPath(map1, "Root", "Topic1");
     final Topic topic2 = findForPath(map2, "Root", "Topic2");
-    assertLine(15, topic1);
-    assertLine(16, topic2);
+    assertFileLinkLine(15, topic1);
+    assertFileLinkLine(16, topic2);
   }
 
   @Test
@@ -56,7 +54,7 @@ public class PathTest extends AbstractMmdTest {
     final MindMap map =
         this.loadMindMap("com/igormaznitsa/mindmap/annoit/paths/RootFile.mmd");
     final Topic topic = findForPath(map, "root", "goose", "between");
-    assertLine(29, topic);
+    assertFileLinkLine(29, topic);
   }
 
   @Test
@@ -64,12 +62,7 @@ public class PathTest extends AbstractMmdTest {
     final MindMap map =
         this.loadMindMap("com/igormaznitsa/mindmap/annoit/paths/RootFile.mmd");
     final Topic topic = findForPath(map, "root", "goose", "multi-root");
-    assertLine(10, topic);
-  }
-
-  private static void assertLine(final int line, final Topic topic) {
-    final ExtraFile extraFile = (ExtraFile) topic.getExtras().get(Extra.ExtraType.FILE);
-    Assert.assertEquals(Integer.toString(line), extraFile.getAsURI().getParameters().getProperty("line"));
+    assertFileLinkLine(10, topic);
   }
 
 }

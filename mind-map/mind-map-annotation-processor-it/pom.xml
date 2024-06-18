@@ -83,21 +83,26 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <annotationProcessorPaths>
-                        <annotationProcessorPath>
-                            <groupId>com.igormaznitsa</groupId>
-                            <artifactId>mind-map-annotation-processor</artifactId>
-                            <version>${project.version}</version>
-                        </annotationProcessorPath>
-                    </annotationProcessorPaths>
-                    <compilerArgs>
-                        <compilerArg>-J-Djava.awt.headless=true</compilerArg>
-                        <compilerArg>-Ammd.file.link.base.folder=${mmd.basedir}</compilerArg>
-                        <compilerArg>-Ammd.comment.scan=true</compilerArg>
-                    </compilerArgs>
-                    <release>${maven.compiler.target}</release>
-                </configuration>
+                <executions>
+                    <execution>
+                        <id>default-compile</id>
+                        <configuration>
+                            <annotationProcessorPaths>
+                                <annotationProcessorPath>
+                                    <groupId>com.igormaznitsa</groupId>
+                                    <artifactId>mind-map-annotation-processor</artifactId>
+                                    <version>${project.version}</version>
+                                </annotationProcessorPath>
+                            </annotationProcessorPaths>
+                            <compilerArgs>
+                                <compilerArg>-J-Djava.awt.headless=true</compilerArg>
+                                <compilerArg>-Ammd.file.link.base.folder=${mmd.basedir}</compilerArg>
+                                <compilerArg>-Ammd.comment.scan=true</compilerArg>
+                            </compilerArgs>
+                            <release>${maven.compiler.target}</release>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

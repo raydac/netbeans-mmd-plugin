@@ -68,6 +68,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * Annotation processor to collect MMD annotations and build MMD mind map files for them.
+ *
  */
 @SupportedOptions({
     MmdAnnotationProcessor.KEY_MMD_TARGET_FOLDER,
@@ -263,7 +264,9 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
                   });
             } else if (annotationClass == MmdTopics.class) {
               annotationInstances.stream()
-                  .flatMap(pair -> AnnotationUtils.findAnnotationsWithPositions(this.sourcePositions, trees, element, MmdTopic.class).stream())
+                  .flatMap(
+                      pair -> AnnotationUtils.findAnnotationsWithPositions(this.sourcePositions,
+                          trees, element, MmdTopic.class).stream())
                   .forEach(
                       pair -> foundAnnotationList.add(
                           new MmdAnnotationWrapper(
@@ -294,7 +297,8 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
                           if (elementSources.isPresent()) {
                             final Path elementFile =
                                 new File(
-                                    AnnotationUtils.findPosition(this.sourcePositions, this.trees,
+                                    AnnotationUtils.findElementSrcPosition(this.sourcePositions,
+                                        this.trees,
                                         element).getUri()).toPath();
                             final AtomicInteger counter = new AtomicInteger();
                             findMmdComments(pair.getRight().getLine(), 0,
@@ -324,7 +328,8 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
                                     this.trees,
                                     pairInternalAnnotations.getValue());
                             final UriLine localPosition =
-                                AnnotationUtils.findPosition(this.sourcePositions, this.trees,
+                                AnnotationUtils.findElementSrcPosition(this.sourcePositions,
+                                    this.trees,
                                     pairInternalAnnotations.getValue());
                             foundAnnotationList.add(new MmdAnnotationWrapper(
                                 pairInternalAnnotations.getValue(),
@@ -334,7 +339,8 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
                           });
                     } else {
                       this.messager.printMessage(WARNING,
-                          "Detected unexpected element marked by @MmdMarkedMethod: " +
+                          "Detected unexpected element marked by @" +
+                              HasMmdMarkedElements.class.getSimpleName() + ": " +
                               element.getClass().getSimpleName(), element);
                     }
                   });

@@ -20,6 +20,7 @@ import static org.junit.Assert.fail;
 import com.igormaznitsa.mindmap.annotations.MmdColor;
 import com.igormaznitsa.mindmap.annotations.MmdEmoticon;
 import com.igormaznitsa.mindmap.model.Extra;
+import com.igormaznitsa.mindmap.model.ExtraFile;
 import com.igormaznitsa.mindmap.model.ExtraTopic;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
@@ -30,6 +31,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import org.apache.commons.io.FilenameUtils;
+import org.junit.Assert;
 
 public abstract class AbstractMmdTest {
   protected static void assertTopicJumpTo(final Topic source, final Topic target) {
@@ -117,6 +119,12 @@ public abstract class AbstractMmdTest {
     final Path mindMapFile = this.getSrcDir().resolve(asPath);
     assertTrue("Can't find mind map file: " + mindMapFile, Files.isRegularFile(mindMapFile));
     return new MindMap(new StringReader(readFileToString(mindMapFile.toFile(), UTF_8)));
+  }
+
+  protected static void assertFileLinkLine(final int expectedLine, final Topic topic) {
+    final ExtraFile extraFile = (ExtraFile) topic.getExtras().get(Extra.ExtraType.FILE);
+    Assert.assertEquals(Integer.toString(expectedLine),
+        extraFile.getAsURI().getParameters().getProperty("line"));
   }
 
 }

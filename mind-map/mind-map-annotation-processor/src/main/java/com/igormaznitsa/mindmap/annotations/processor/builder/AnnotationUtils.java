@@ -123,7 +123,7 @@ public final class AnnotationUtils {
    * @param element         element which position should be found
    * @return formed container with URI and line number.
    */
-  public static UriLine findPosition(
+  public static UriLine findElementSrcPosition(
       final SourcePositions sourcePositions, final Trees trees, final Element element) {
     final TreePath treePath = trees.getPath(element);
     final CompilationUnitTree compilationUnit = treePath.getCompilationUnit();
@@ -232,7 +232,8 @@ public final class AnnotationUtils {
           })
           .filter(x -> x.getAnnotationType().toString().equals(annotationClass.getName()))
           .map(
-              x -> findPosition(compilationUnit, trees, sourcePositions, trees.getTree(element, x)))
+              x -> findElementSrcPosition(compilationUnit, trees, sourcePositions,
+                  trees.getTree(element, x)))
           .collect(toList());
 
       if (annotations.length != lines.size()) {
@@ -262,7 +263,7 @@ public final class AnnotationUtils {
    * @return formed container with URI and line number.
    * @since 1.6.8
    */
-  public static UriLine findPosition(
+  public static UriLine findElementSrcPosition(
       final CompilationUnitTree compilationUnitTree,
       final Trees trees,
       final SourcePositions sourcePositions, final Tree tree) {
@@ -286,6 +287,7 @@ public final class AnnotationUtils {
   public static Optional<String> findElementSources(final SourcePositions sourcePositions,
                                                     final Trees trees, final Element element)
       throws IOException {
+
     final TreePath treePath = trees.getPath(element);
     final CompilationUnitTree compilationUnit = treePath.getCompilationUnit();
 
@@ -313,7 +315,8 @@ public final class AnnotationUtils {
       int restChars = textLength;
       try (final Reader reader = compilationUnit.getSourceFile().openReader(true)) {
         if (reader.skip(startPosition) != startPosition) {
-          throw new IOException("Can't skip " + startPosition + " chars in source file");
+          throw new IOException(
+              "Can't skip " + startPosition + " chars in source file: " + javaFileObject);
         }
         while (restChars > 0) {
           final int read = reader.read(buffer, position, restChars);
@@ -325,7 +328,8 @@ public final class AnnotationUtils {
         }
         if (restChars != 0) {
           throw new IOException(
-              "Can't read " + textLength + " chars from position " + startPosition);
+              "Can't read " + textLength + " chars from position " + startPosition + ": " +
+                  javaFileObject);
         }
         return Optional.of(new String(buffer));
       }
