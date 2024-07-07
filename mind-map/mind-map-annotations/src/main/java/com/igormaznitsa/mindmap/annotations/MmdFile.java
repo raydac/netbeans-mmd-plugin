@@ -63,4 +63,12 @@ public @interface MmdFile {
    * @return the root topic parameters for the file.
    */
   MmdTopic rootTopic() default @MmdTopic;
+
+  /**
+   * Flag shows that text fields contains some variables in format {@code ${variable.name}} and they should be replaced by values.
+   *
+   * @return true if text fields of the topic contains variables.
+   * @since 1.6.8
+   */
+  boolean substitute() default false;
 }

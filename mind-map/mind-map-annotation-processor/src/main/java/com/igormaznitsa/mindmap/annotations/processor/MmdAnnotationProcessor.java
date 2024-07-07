@@ -77,8 +77,7 @@ import org.apache.commons.lang3.tuple.Pair;
     MmdAnnotationProcessor.KEY_MMD_FILE_OVERWRITE,
     MmdAnnotationProcessor.KEY_MMD_FILE_ROOT_FOLDER,
     MmdAnnotationProcessor.KEY_MMD_FILE_LINK_BASE_FOLDER,
-    MmdAnnotationProcessor.KEY_MMD_COMMENT_SCAN,
-    MmdAnnotationProcessor.KEY_MMD_SYSTEM_PROPERTY_SUBSTITUTION
+    MmdAnnotationProcessor.KEY_MMD_COMMENT_SCAN
 })
 public class MmdAnnotationProcessor extends AbstractProcessor {
 
@@ -102,12 +101,6 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
    * Option to allow to create required folders during write operations.
    */
   public static final String KEY_MMD_FOLDER_CREATE = "mmd.folder.create";
-  /**
-   * Option to allow to make substitution of system properties in strings, format of substitution {@code ${system.property.name}}
-   * @since 1.6.8
-   */
-  public static final String KEY_MMD_SYSTEM_PROPERTY_SUBSTITUTION =
-      "mmd.system.properties.substitution";
   /**
    * Option to turn on comment scanning during marked method processing.
    *
@@ -137,7 +130,6 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
   private boolean optionFileOverwrite;
   private boolean optionDryStart;
   private boolean optionCommentScan;
-  private boolean optionSystemPropertiesSubstitution;
 
   @Override
   public SourceVersion getSupportedSourceVersion() {
@@ -164,17 +156,8 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
     this.optionCommentScan =
         Boolean.parseBoolean(
             processingEnv.getOptions().getOrDefault(KEY_MMD_COMMENT_SCAN, FALSE.toString()));
-    this.optionSystemPropertiesSubstitution =
-        Boolean.parseBoolean(
-            processingEnv.getOptions()
-                .getOrDefault(KEY_MMD_SYSTEM_PROPERTY_SUBSTITUTION, FALSE.toString()));
-
     if (this.optionDryStart) {
       this.messager.printMessage(WARNING, "MMD processor started in DRY mode");
-    }
-
-    if (this.optionSystemPropertiesSubstitution) {
-      this.messager.printMessage(WARNING, "MMD processor system property substitution mode is ON");
     }
 
     if (processingEnv.getOptions().containsKey(KEY_MMD_TARGET_FOLDER)) {
@@ -393,7 +376,6 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
           .setCommentScan(this.optionCommentScan)
           .setOverwriteAllowed(this.optionFileOverwrite)
           .setFileLinkBaseFolder(this.optionFileLinkBaseFolder)
-          .setSystemPropertySubstitution(this.optionSystemPropertiesSubstitution)
           .setAnnotations(foundAnnotationList)
           .build();
 

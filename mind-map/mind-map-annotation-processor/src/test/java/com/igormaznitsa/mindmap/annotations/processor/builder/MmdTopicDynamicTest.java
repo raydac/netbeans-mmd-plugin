@@ -134,7 +134,7 @@ public class MmdTopicDynamicTest {
   @Test
   public void testMakeAllParameters() {
     final MmdTopicDynamic topicDynamic = MmdTopicDynamic.of(111, 222,
-        "title = \"It's some title\", uid = \"UID666\", fileUid = \"FILE777\", path = {\"alpha\",\"beta\",\"gamma\"}, emoticon = MmdEmoticon.ABACUS, fileLink = \"fileLink000\", anchor = false, jumpTo = \"AAAA\", uri = \"http://google.com\", note = \"It's some note\\nnext line\", direction = Direction.LEFT, collapse = true, colorFill = MmdColor.Azure, colorBorder = MmdColor.Bisque, colorText = MmdColor.BlueViolet",
+        "title = \"It's some title\", uid = \"UID666\", fileUid = \"FILE777\", path = {\"alpha\",\"beta\",\"gamma\"}, emoticon = MmdEmoticon.ABACUS, fileLink = \"fileLink000\", anchor = false, jumpTo = \"AAAA\", uri = \"http://google.com\", note = \"It's some note\\nnext line\", direction = Direction.LEFT, collapse = true, substitute = true, colorFill = MmdColor.Azure, colorBorder = MmdColor.Bisque, colorText = MmdColor.BlueViolet",
         "empty");
     assertEquals(111L, topicDynamic.line());
     assertEquals(222L, topicDynamic.position());

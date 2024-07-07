@@ -45,7 +45,8 @@ public final class MmdTopicDynamic implements MmdTopic {
         Map.entry("filelink", ""), Map.entry("anchor", true), Map.entry("jumpto", ""),
         Map.entry("note", ""), Map.entry("uri", ""), Map.entry("colortext", MmdColor.Default),
         Map.entry("colorfill", MmdColor.Default), Map.entry("colorborder", MmdColor.Default),
-        Map.entry("collapse", false), Map.entry("direction", Direction.AUTO),
+        Map.entry("collapse", false), Map.entry("substitute", false),
+        Map.entry("direction", Direction.AUTO),
         Map.entry("order", -1),
         Map.entry("title", ""));
   }
@@ -63,6 +64,7 @@ public final class MmdTopicDynamic implements MmdTopic {
   public final MmdColor colorFill;
   public final MmdColor colorBorder;
   public final boolean collapse;
+  public final boolean substitute;
   public final Direction direction;
   public final String title;
   private final long position;
@@ -85,6 +87,7 @@ public final class MmdTopicDynamic implements MmdTopic {
       final MmdColor colorFill,
       final MmdColor colorBorder,
       final boolean collapse,
+      final boolean substitute,
       final Direction direction,
       final String title,
       final int order) {
@@ -106,6 +109,7 @@ public final class MmdTopicDynamic implements MmdTopic {
     this.direction = direction;
     this.title = title;
     this.order = order;
+    this.substitute = substitute;
   }
 
   public static MmdTopicDynamic of(final long line, final long position,
@@ -125,6 +129,7 @@ public final class MmdTopicDynamic implements MmdTopic {
         MmdColor.Default,
         MmdColor.Default,
         MmdColor.Default,
+        false,
         false,
         Direction.AUTO,
         requireNonNullElse(title, ""),
@@ -182,9 +187,9 @@ public final class MmdTopicDynamic implements MmdTopic {
       }
 
       final String value = unescapeAsJavaString(nextArg.getValue());
-      final String loweCasedKey = nextArg.getKey().toLowerCase(Locale.ENGLISH);
+      final String lowerCasedKey = nextArg.getKey().toLowerCase(Locale.ENGLISH);
 
-      switch (loweCasedKey) {
+      switch (lowerCasedKey) {
         case "uid":
         case "fileuid":
         case "filelink":
@@ -192,39 +197,40 @@ public final class MmdTopicDynamic implements MmdTopic {
         case "note":
         case "uri":
         case "title": {
-          config.put(loweCasedKey, value);
+          config.put(lowerCasedKey, value);
         }
         break;
         case "colortext":
         case "colorborder":
         case "colorfill": {
-          config.put(loweCasedKey,
+          config.put(lowerCasedKey,
               MmdColor.findForName(removePrefixTillDot(value),
                   MmdColor.Default));
         }
         break;
         case "emoticon": {
-          config.put(loweCasedKey, MmdEmoticon.findForName(
+          config.put(lowerCasedKey, MmdEmoticon.findForName(
               removePrefixTillDot(value), MmdEmoticon.EMPTY));
         }
         break;
         case "path": {
-          config.put(loweCasedKey, splitArrayLine(nextArg.getValue()).stream()
+          config.put(lowerCasedKey, splitArrayLine(nextArg.getValue()).stream()
               .map(MmdTopicDynamic::unescapeAsJavaString)
               .toArray(String[]::new));
         }
         break;
+        case "substitute":
         case "anchor":
         case "collapse": {
-          config.put(loweCasedKey, Boolean.valueOf(value));
+          config.put(lowerCasedKey, Boolean.valueOf(value));
         }
         break;
         case "order": {
-          config.put(loweCasedKey, Integer.valueOf(value.trim()));
+          config.put(lowerCasedKey, Integer.valueOf(value.trim()));
         }
         break;
         case "direction": {
-          config.put(loweCasedKey,
+          config.put(lowerCasedKey,
               Direction.findForName(removePrefixTillDot(value),
                   Direction.AUTO));
         }
@@ -255,6 +261,7 @@ public final class MmdTopicDynamic implements MmdTopic {
         (MmdColor) config.get("colorfill"),
         (MmdColor) config.get("colorborder"),
         (Boolean) config.get("collapse"),
+        (Boolean) config.get("substitute"),
         (Direction) config.get("direction"),
         (String) config.get("title"),
         (Integer) config.getOrDefault("order", -1)
@@ -522,6 +529,11 @@ public final class MmdTopicDynamic implements MmdTopic {
   @Override
   public int order() {
     return this.order;
+  }
+
+  @Override
+  public boolean substitute() {
+    return this.substitute;
   }
 
   @Override

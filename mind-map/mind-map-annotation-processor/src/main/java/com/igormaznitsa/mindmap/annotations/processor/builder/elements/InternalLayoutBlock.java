@@ -138,7 +138,8 @@ final class InternalLayoutBlock {
     if (this.getAnnotation().title().isEmpty()) {
       return this.baseItem.getElement().getSimpleName().toString();
     } else {
-      return this.getAnnotation().title();
+      return this.baseItem.findTextPreprocessor(this.baseItem.asAnnotation())
+          .apply(this.getAnnotation().title(), this.baseItem.getExtraSubstitutionProperties());
     }
   }
 

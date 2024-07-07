@@ -57,4 +57,12 @@ public @interface MmdFileRef {
    * @see MmdFile
    */
   Class<?> target() default MmdFileRef.class;
+
+  /**
+   * Flag shows that text fields contains some variables in format {@code ${variable.name}} and they should be replaced by values.
+   *
+   * @return true if text fields of the topic contains variables.
+   * @since 1.6.8
+   */
+  boolean substitute() default false;
 }

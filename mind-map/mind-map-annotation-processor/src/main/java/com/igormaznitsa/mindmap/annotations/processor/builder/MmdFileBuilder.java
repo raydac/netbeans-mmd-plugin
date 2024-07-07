@@ -120,7 +120,7 @@ public class MmdFileBuilder {
   private boolean processTopics(final Map<String, FileItem> fileMap) {
     return this.builder.getAnnotations().stream()
         .filter(x -> x.asAnnotation() instanceof MmdTopic)
-        .map(x -> new TopicItem(x, this.getTextPreprocessor()))
+        .map(x -> new TopicItem(x, this.getSubstitutor()))
         .map(
             x -> {
               boolean error = false;
@@ -163,19 +163,15 @@ public class MmdFileBuilder {
     return duplicatedCounter.get();
   }
 
-  private BiFunction<String, Map<String, String>, String> getTextPreprocessor() {
-    if (this.builder.isSystemPropertySubstitution()) {
-      return this::replaceSystemPropertySubstitutions;
-    } else {
-      return (a, b) -> a;
-    }
+  private BiFunction<String, Map<String, String>, String> getSubstitutor() {
+    return this::makeSubstitution;
   }
 
   private boolean fillMapByFiles(final Map<String, FileItem> fileMap,
                                  final Path forceTargetFolder) {
     return this.builder.getAnnotations().stream()
         .filter(x -> x.asAnnotation() instanceof MmdFile)
-        .map(wrapper -> new FileItem(wrapper, forceTargetFolder, this.getTextPreprocessor()))
+        .map(wrapper -> new FileItem(wrapper, forceTargetFolder, this.getSubstitutor()))
         .map(x -> {
           boolean error = false;
           if (fileMap.containsKey(x.getFileUid())) {
@@ -199,8 +195,8 @@ public class MmdFileBuilder {
         .noneMatch(error -> error);
   }
 
-  private String replaceSystemPropertySubstitutions(final String text,
-                                                    final Map<String, String> additionalMap) {
+  private String makeSubstitution(final String text,
+                                  final Map<String, String> additionalMap) {
     if (isBlank(text)) {
       return text;
     }
@@ -296,7 +292,6 @@ public class MmdFileBuilder {
     private Path fileRootFolder;
     private boolean overwriteAllowed = true;
     private boolean dryStart;
-    private boolean systemPropertySubstitution;
     private boolean commentScan;
     private Messager messager;
     private Types types;
@@ -400,16 +395,6 @@ public class MmdFileBuilder {
     public Builder setFileLinkBaseFolder(final Path value) {
       this.assertNotCompleted();
       this.fileLinkBaseFolder = value;
-      return this;
-    }
-
-    public boolean isSystemPropertySubstitution() {
-      return this.systemPropertySubstitution;
-    }
-
-    public Builder setSystemPropertySubstitution(final boolean value) {
-      this.assertNotCompleted();
-      this.systemPropertySubstitution = value;
       return this;
     }
 

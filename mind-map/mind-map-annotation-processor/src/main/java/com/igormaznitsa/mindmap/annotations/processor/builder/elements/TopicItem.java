@@ -60,35 +60,6 @@ public class TopicItem extends AbstractItem {
     }
   }
 
-  private static Optional<String> findFileUidAmongParentTopics(final Types typeUtils,
-                                                               final Element element) {
-    if (element == null) {
-      return Optional.empty();
-    }
-    final MmdTopic topicAnnotation = element.getAnnotation(MmdTopic.class);
-    final MmdTopics topicsAnnotation = element.getAnnotation(MmdTopics.class);
-    if (topicAnnotation != null && StringUtils.isNotBlank(topicAnnotation.fileUid())) {
-      return Optional.of(topicAnnotation.fileUid());
-    }
-
-    if (topicsAnnotation != null) {
-      final Optional<MmdTopic> topic = Stream.of(topicsAnnotation.value())
-          .filter(x -> StringUtils.isNotBlank(x.fileUid()))
-          .findFirst();
-      if (topic.isPresent()) {
-        return Optional.of(topic.get().fileUid());
-      }
-    }
-    final List<Pair<MmdFileRef, Element>> foundMmdFileRefs =
-        findFirstWithAncestors(element, MmdFileRef.class, typeUtils, true);
-    if (foundMmdFileRefs.isEmpty()) {
-      return findFileUidAmongParentTopics(typeUtils, element.getEnclosingElement());
-    } else {
-      final MmdFileRef fileLink = foundMmdFileRefs.get(0).getKey();
-      return ofNullable(isBlank(fileLink.uid()) ? null : fileLink.uid());
-    }
-  }
-
   private static List<Pair<MmdFile, Element>> findTargetFileAnnotations(
       final Types typeUtils,
       final Element element)
@@ -120,6 +91,36 @@ public class TopicItem extends AbstractItem {
     throw new MmdElementException(
         "Can't find any associated MMD target file mark for MmdTopic annotated element",
         element);
+  }
+
+  private Optional<String> findFileUidAmongParentTopics(final Types typeUtils,
+                                                        final Element element) {
+    if (element == null) {
+      return Optional.empty();
+    }
+    final MmdTopic topicAnnotation = element.getAnnotation(MmdTopic.class);
+    final MmdTopics topicsAnnotation = element.getAnnotation(MmdTopics.class);
+    if (topicAnnotation != null && StringUtils.isNotBlank(topicAnnotation.fileUid())) {
+      return Optional.of(topicAnnotation.fileUid());
+    }
+
+    if (topicsAnnotation != null) {
+      final Optional<MmdTopic> topic = Stream.of(topicsAnnotation.value())
+          .filter(x -> StringUtils.isNotBlank(x.fileUid()))
+          .findFirst();
+      if (topic.isPresent()) {
+        return Optional.of(topic.get().fileUid());
+      }
+    }
+    final List<Pair<MmdFileRef, Element>> foundMmdFileRefs =
+        findFirstWithAncestors(element, MmdFileRef.class, typeUtils, true);
+    if (foundMmdFileRefs.isEmpty()) {
+      return findFileUidAmongParentTopics(typeUtils, element.getEnclosingElement());
+    } else {
+      final MmdFileRef fileLink = foundMmdFileRefs.get(0).getKey();
+      return ofNullable(isBlank(fileLink.uid()) ? null : this.findTextPreprocessor(fileLink)
+          .apply(fileLink.uid(), this.getExtraSubstitutionProperties()));
+    }
   }
 
   public Optional<FileItem> findTargetFileItem(

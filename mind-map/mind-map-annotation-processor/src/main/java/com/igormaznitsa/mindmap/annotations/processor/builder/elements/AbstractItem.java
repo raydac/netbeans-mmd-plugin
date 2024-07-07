@@ -24,6 +24,7 @@ import com.igormaznitsa.mindmap.annotations.MmdColor;
 import com.igormaznitsa.mindmap.annotations.MmdEmoticon;
 import com.igormaznitsa.mindmap.annotations.MmdTopic;
 import com.igormaznitsa.mindmap.annotations.processor.MmdAnnotationWrapper;
+import com.igormaznitsa.mindmap.annotations.processor.builder.AnnotationUtils;
 import com.igormaznitsa.mindmap.annotations.processor.builder.exceptions.MmdAnnotationProcessorException;
 import com.igormaznitsa.mindmap.model.ExtraFile;
 import com.igormaznitsa.mindmap.model.ExtraLink;
@@ -47,12 +48,17 @@ public abstract class AbstractItem {
   private static final Pattern PATTERN_FILEPATH_LINE_NUMBER =
       Pattern.compile("^(.+)(?:\\:([0-9]+))|(.+)$");
   protected final MmdAnnotationWrapper annotationContainer;
-  protected final BiFunction<String, Map<String, String>, String> textPreprocessor;
+  private final BiFunction<String, Map<String, String>, String> textPreprocessor;
 
   protected AbstractItem(final MmdAnnotationWrapper annotationContainer,
                          final BiFunction<String, Map<String, String>, String> textPreprocessor) {
     this.textPreprocessor = requireNonNull(textPreprocessor);
     this.annotationContainer = requireNonNull(annotationContainer);
+  }
+
+  protected BiFunction<String, Map<String, String>, String> findTextPreprocessor(
+      final Annotation annotation) {
+    return AnnotationUtils.isSubstitution(annotation) ? this.textPreprocessor : (a, b) -> a;
   }
 
   public MmdAnnotationWrapper getAnnotationContainer() {
@@ -83,7 +89,7 @@ public abstract class AbstractItem {
     final String filePath;
     if (isNotBlank(topicAnnotation.fileLink())) {
       final Matcher matcher = PATTERN_FILEPATH_LINE_NUMBER.matcher(
-          this.textPreprocessor.apply(topicAnnotation.fileLink(),
+          this.findTextPreprocessor(topicAnnotation).apply(topicAnnotation.fileLink(),
               this.getExtraSubstitutionProperties()));
       if (matcher.find()) {
         if (matcher.group(1) == null) {
@@ -126,22 +132,24 @@ public abstract class AbstractItem {
     topic.setText(
         StringUtils.isBlank(topicAnnotation.title())
             ? element.getSimpleName().toString()
-            : this.textPreprocessor.apply(topicAnnotation.title(),
+            : this.findTextPreprocessor(topicAnnotation).apply(topicAnnotation.title(),
             this.getExtraSubstitutionProperties()));
 
     if (isNotBlank(topicAnnotation.note())) {
-      topic.setExtra(new ExtraNote(this.textPreprocessor.apply(topicAnnotation.note(),
+      topic.setExtra(
+          new ExtraNote(this.findTextPreprocessor(topicAnnotation).apply(topicAnnotation.note(),
           this.getExtraSubstitutionProperties())));
     }
 
     if (isNotBlank(topicAnnotation.uri())) {
-      topic.setExtra(new ExtraLink(this.textPreprocessor.apply(topicAnnotation.uri(),
+      topic.setExtra(
+          new ExtraLink(this.findTextPreprocessor(topicAnnotation).apply(topicAnnotation.uri(),
           this.getExtraSubstitutionProperties())));
     }
 
     if (isNotBlank(topicAnnotation.uid())) {
       topic.putAttribute(MmdAttribute.TOPIC_LINK_UID.getId(),
-          this.textPreprocessor.apply(topicAnnotation.uid(),
+          this.findTextPreprocessor(topicAnnotation).apply(topicAnnotation.uid(),
               this.getExtraSubstitutionProperties()));
     }
 

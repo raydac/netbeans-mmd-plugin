@@ -116,6 +116,26 @@ public final class AnnotationUtils {
   }
 
   /**
+   * Check substitution flag for wrapper annotation.
+   *
+   * @return substitute flag for an annotation, true if annotation needs substitution.
+   * @since 1.6.8
+   */
+  public static boolean isSubstitution(final Annotation annotation) {
+    boolean result = false;
+    if (annotation instanceof MmdTopicDynamic) {
+      result = ((MmdTopicDynamic) annotation).substitute();
+    } else if (annotation instanceof MmdFileRef) {
+      result = ((MmdFileRef) annotation).substitute();
+    } else if (annotation instanceof MmdTopic) {
+      result = ((MmdTopic) annotation).substitute();
+    } else if (annotation instanceof MmdFile) {
+      result = ((MmdFile) annotation).substitute();
+    }
+    return result;
+  }
+
+  /**
    * Find source line position for element.
    *
    * @param sourcePositions auxiliary utility class, must not be null

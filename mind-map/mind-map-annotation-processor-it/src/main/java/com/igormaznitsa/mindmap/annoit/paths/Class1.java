@@ -31,12 +31,12 @@ public class Class1 {
 
   }
 
-  @MmdTopic(path = RootFile.ROOT_ID, uid = "${os.name}-111")
+  @MmdTopic(substitute = true, path = RootFile.ROOT_ID, uid = "${os.name}-111")
   public void classABC2() {
 
   }
 
-  @MmdTopic(path = {"substitution",
+  @MmdTopic(substitute = true, path = {"substitution",
       "${os.name}"}, title = "${java.vendor}", uid = "666-${os.name}", note = "${user.name}", fileLink = "${user.home}/test.txt", uri = "http://${mmd.file.link.base.folder}", jumpTo = "${os.name}-111")
   public void classSubstitution() {
 
