@@ -163,10 +163,12 @@ public @interface MmdTopic {
   int order() default -1;
 
   /**
-   * Flag shows that text fields contains some variables in format {@code ${variable.name}} and they should be replaced by values.
+   * Flag to make substitution for found {@code ${variable.name}} in all text based fields.
+   * Supported variables depends on preprocessor, the standard one provides system properties as variables. If detected unknown variable then exception will be thrown.
    *
-   * @return true if text fields of the topic contains variables.
+   * @return true if text fields should be substituted
    * @since 1.6.8
+   * {@code  @MmdTopic(substitute=true, title="${os.name}")}
    */
   boolean substitute() default false;
 }
