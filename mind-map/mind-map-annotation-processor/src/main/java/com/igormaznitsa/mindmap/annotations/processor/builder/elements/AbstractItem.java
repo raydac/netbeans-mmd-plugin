@@ -34,8 +34,10 @@ import com.igormaznitsa.mindmap.model.Topic;
 import java.lang.annotation.Annotation;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.function.BiFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.lang.model.element.Element;
@@ -45,8 +47,11 @@ public abstract class AbstractItem {
   private static final Pattern PATTERN_FILEPATH_LINE_NUMBER =
       Pattern.compile("^(.+)(?:\\:([0-9]+))|(.+)$");
   protected final MmdAnnotationWrapper annotationContainer;
+  protected final BiFunction<String, Map<String, String>, String> textPreprocessor;
 
-  protected AbstractItem(final MmdAnnotationWrapper annotationContainer) {
+  protected AbstractItem(final MmdAnnotationWrapper annotationContainer,
+                         final BiFunction<String, Map<String, String>, String> textPreprocessor) {
+    this.textPreprocessor = requireNonNull(textPreprocessor);
     this.annotationContainer = requireNonNull(annotationContainer);
   }
 
@@ -63,7 +68,11 @@ public abstract class AbstractItem {
     }
   }
 
-  protected static void fillAnchorOrFileLink(
+  protected Map<String, String> getExtraSubstitutionProperties() {
+    return Map.of();
+  }
+
+  protected void fillAnchorOrFileLink(
       final Topic topic,
       final AbstractItem topicItem,
       final MmdTopic topicAnnotation,
@@ -73,7 +82,9 @@ public abstract class AbstractItem {
 
     final String filePath;
     if (isNotBlank(topicAnnotation.fileLink())) {
-      final Matcher matcher = PATTERN_FILEPATH_LINE_NUMBER.matcher(topicAnnotation.fileLink());
+      final Matcher matcher = PATTERN_FILEPATH_LINE_NUMBER.matcher(
+          this.textPreprocessor.apply(topicAnnotation.fileLink(),
+              this.getExtraSubstitutionProperties()));
       if (matcher.find()) {
         if (matcher.group(1) == null) {
           filePath = matcher.group(3);
@@ -101,29 +112,37 @@ public abstract class AbstractItem {
       fileUri = MMapURI.makeFromFilePath(baseFolder.toFile(), filePath, properties);
     } catch (Exception ex) {
       throw new MmdAnnotationProcessorException(
-          topicItem, "Can't create topic file path for error", ex);
+          topicItem, "Can't create topic file path for error, base folder='" + baseFolder.toFile() +
+          "', file path='" + filePath + '\'', ex);
     }
     topic.setExtra(new ExtraFile(fileUri));
   }
 
-  protected static void fillAttributesWithoutFileAndTopicLinks(
-      final Topic topic, final Element element, final MmdTopic topicAnnotation)
-      throws URISyntaxException {
+  protected void fillAttributesWithoutFileAndTopicLinks(
+      final Topic topic,
+      final Element element,
+      final MmdTopic topicAnnotation
+  ) throws URISyntaxException {
     topic.setText(
         StringUtils.isBlank(topicAnnotation.title())
             ? element.getSimpleName().toString()
-            : topicAnnotation.title());
+            : this.textPreprocessor.apply(topicAnnotation.title(),
+            this.getExtraSubstitutionProperties()));
 
     if (isNotBlank(topicAnnotation.note())) {
-      topic.setExtra(new ExtraNote(topicAnnotation.note()));
+      topic.setExtra(new ExtraNote(this.textPreprocessor.apply(topicAnnotation.note(),
+          this.getExtraSubstitutionProperties())));
     }
 
     if (isNotBlank(topicAnnotation.uri())) {
-      topic.setExtra(new ExtraLink(topicAnnotation.uri()));
+      topic.setExtra(new ExtraLink(this.textPreprocessor.apply(topicAnnotation.uri(),
+          this.getExtraSubstitutionProperties())));
     }
 
     if (isNotBlank(topicAnnotation.uid())) {
-      topic.putAttribute(MmdAttribute.TOPIC_LINK_UID.getId(), topicAnnotation.uid());
+      topic.putAttribute(MmdAttribute.TOPIC_LINK_UID.getId(),
+          this.textPreprocessor.apply(topicAnnotation.uid(),
+              this.getExtraSubstitutionProperties()));
     }
 
     if (topicAnnotation.colorBorder() != MmdColor.Default) {

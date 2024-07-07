@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.lang.model.element.Element;
@@ -51,8 +52,9 @@ import org.apache.commons.lang3.tuple.Pair;
  */
 public class TopicItem extends AbstractItem {
 
-  public TopicItem(final MmdAnnotationWrapper base) {
-    super(base);
+  public TopicItem(final MmdAnnotationWrapper base,
+                   BiFunction<String, Map<String, String>, String> textPreprocessor) {
+    super(base, textPreprocessor);
     if (!(base.asAnnotation() instanceof MmdTopic)) {
       throw new IllegalArgumentException("Expected annotation " + MmdTopic.class.getName());
     }

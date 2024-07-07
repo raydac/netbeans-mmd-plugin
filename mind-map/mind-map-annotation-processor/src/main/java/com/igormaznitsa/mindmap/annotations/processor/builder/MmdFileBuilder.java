@@ -17,9 +17,11 @@
 package com.igormaznitsa.mindmap.annotations.processor.builder;
 
 import static java.util.Collections.unmodifiableList;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import com.igormaznitsa.mindmap.annotations.MmdFile;
 import com.igormaznitsa.mindmap.annotations.MmdTopic;
+import com.igormaznitsa.mindmap.annotations.processor.MmdAnnotationProcessor;
 import com.igormaznitsa.mindmap.annotations.processor.MmdAnnotationWrapper;
 import com.igormaznitsa.mindmap.annotations.processor.builder.elements.FileItem;
 import com.igormaznitsa.mindmap.annotations.processor.builder.elements.TopicItem;
@@ -33,9 +35,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiFunction;
 import javax.annotation.processing.Messager;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
+import org.apache.commons.text.StringSubstitutor;
+import org.apache.commons.text.lookup.StringLookupFactory;
 
 /**
  * Main class to process found annotations, sort elements. layout and write as MMD files.
@@ -44,8 +49,50 @@ public class MmdFileBuilder {
 
   private final Builder builder;
 
+  private final Map<String, String> propertySubstisutorMap;
+
+  private final StringSubstitutor stringSubstitutor;
+
   private MmdFileBuilder(final Builder builder) {
     this.builder = builder;
+
+    final String UNDEFINED = "<UNDEFINED>";
+
+    this.propertySubstisutorMap = new HashMap<>();
+    if (builder.getFileLinkBaseFolder() == null) {
+      this.propertySubstisutorMap.put(MmdAnnotationProcessor.KEY_MMD_FILE_LINK_BASE_FOLDER,
+          UNDEFINED);
+    } else {
+      this.propertySubstisutorMap.put(MmdAnnotationProcessor.KEY_MMD_FILE_LINK_BASE_FOLDER,
+          builder.fileLinkBaseFolder.toString());
+    }
+    if (builder.getTargetFolder() == null) {
+      this.propertySubstisutorMap.put(MmdAnnotationProcessor.KEY_MMD_TARGET_FOLDER,
+          UNDEFINED);
+    } else {
+      this.propertySubstisutorMap.put(MmdAnnotationProcessor.KEY_MMD_TARGET_FOLDER,
+          builder.getTargetFolder().toString());
+    }
+    if (builder.getFileRootFolder() == null) {
+      this.propertySubstisutorMap.put(MmdAnnotationProcessor.KEY_MMD_FILE_ROOT_FOLDER,
+          UNDEFINED);
+    } else {
+      this.propertySubstisutorMap.put(MmdAnnotationProcessor.KEY_MMD_FILE_ROOT_FOLDER,
+          builder.getFileRootFolder().toString());
+    }
+
+    this.stringSubstitutor = new StringSubstitutor(key -> {
+      String result = StringLookupFactory.INSTANCE.systemPropertyStringLookup().lookup(key);
+      if (result == null) {
+        result = this.propertySubstisutorMap.get(key);
+      }
+      return result;
+    });
+    this.stringSubstitutor.setVariablePrefix("${");
+    this.stringSubstitutor.setVariableSuffix("}");
+    this.stringSubstitutor.setEnableSubstitutionInVariables(true);
+    this.stringSubstitutor.setEscapeChar('$');
+    this.stringSubstitutor.setEnableUndefinedVariableException(true);
   }
 
   public static Builder builder() {
@@ -73,7 +120,7 @@ public class MmdFileBuilder {
   private boolean processTopics(final Map<String, FileItem> fileMap) {
     return this.builder.getAnnotations().stream()
         .filter(x -> x.asAnnotation() instanceof MmdTopic)
-        .map(TopicItem::new)
+        .map(x -> new TopicItem(x, this.getTextPreprocessor()))
         .map(
             x -> {
               boolean error = false;
@@ -116,11 +163,19 @@ public class MmdFileBuilder {
     return duplicatedCounter.get();
   }
 
+  private BiFunction<String, Map<String, String>, String> getTextPreprocessor() {
+    if (this.builder.isSystemPropertySubstitution()) {
+      return this::replaceSystemPropertySubstitutions;
+    } else {
+      return (a, b) -> a;
+    }
+  }
+
   private boolean fillMapByFiles(final Map<String, FileItem> fileMap,
                                  final Path forceTargetFolder) {
     return this.builder.getAnnotations().stream()
         .filter(x -> x.asAnnotation() instanceof MmdFile)
-        .map(wrapper -> new FileItem(wrapper, forceTargetFolder))
+        .map(wrapper -> new FileItem(wrapper, forceTargetFolder, this.getTextPreprocessor()))
         .map(x -> {
           boolean error = false;
           if (fileMap.containsKey(x.getFileUid())) {
@@ -142,6 +197,24 @@ public class MmdFileBuilder {
           return error;
         }).takeWhile(error -> !error)
         .noneMatch(error -> error);
+  }
+
+  private String replaceSystemPropertySubstitutions(final String text,
+                                                    final Map<String, String> additionalMap) {
+    if (isBlank(text)) {
+      return text;
+    }
+    String result = this.stringSubstitutor.replace(text);
+    if (!additionalMap.isEmpty()) {
+      final StringSubstitutor localSubstitute = new StringSubstitutor();
+      localSubstitute.setVariablePrefix("${");
+      localSubstitute.setVariableSuffix("}");
+      localSubstitute.setEnableSubstitutionInVariables(true);
+      localSubstitute.setEscapeChar('$');
+      localSubstitute.setEnableUndefinedVariableException(true);
+      result = localSubstitute.replace(result, additionalMap);
+    }
+    return result;
   }
 
   private boolean writeAll(final Map<String, FileItem> fileMap) {
@@ -223,6 +296,7 @@ public class MmdFileBuilder {
     private Path fileRootFolder;
     private boolean overwriteAllowed = true;
     private boolean dryStart;
+    private boolean systemPropertySubstitution;
     private boolean commentScan;
     private Messager messager;
     private Types types;
@@ -262,14 +336,14 @@ public class MmdFileBuilder {
       return this.commentScan;
     }
 
-    public boolean isDryStart() {
-      return this.dryStart;
-    }
-
     public Builder setCommentScan(final boolean commentScan) {
       this.assertNotCompleted();
       this.commentScan = commentScan;
       return this;
+    }
+
+    public boolean isDryStart() {
+      return this.dryStart;
     }
 
     public Builder setDryStart(final boolean dryStart) {
@@ -326,6 +400,16 @@ public class MmdFileBuilder {
     public Builder setFileLinkBaseFolder(final Path value) {
       this.assertNotCompleted();
       this.fileLinkBaseFolder = value;
+      return this;
+    }
+
+    public boolean isSystemPropertySubstitution() {
+      return this.systemPropertySubstitution;
+    }
+
+    public Builder setSystemPropertySubstitution(final boolean value) {
+      this.assertNotCompleted();
+      this.systemPropertySubstitution = value;
       return this;
     }
 
