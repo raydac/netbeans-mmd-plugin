@@ -8,8 +8,7 @@ import org.junit.Test;
 public class MarkedLocalVariablesTest extends AbstractMmdTest {
   @Test
   public void testCreateLinksForAnnotatedLocalVariables() throws Exception {
-    final MindMap map =
-        this.loadMindMap("com/igormaznitsa/mindmap/annoit/paths/RootFile.mmd");
+    final MindMap map = this.loadRootMmd();
 
     findForPath(map, "root", "LOCAL_VARIABLES", "EEE");
     findForPath(map, "root", "LOCAL_VARIABLES", "hello");

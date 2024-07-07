@@ -61,6 +61,10 @@ public abstract class AbstractMmdTest {
     return requireNonNull(topic);
   }
 
+  protected static void assertNoExtensions(final Topic topic) {
+    assertTrue("Detected " + topic.getExtras().size() + " extras", topic.getExtras().isEmpty());
+  }
+
   protected static void assertTopicPath(final Topic topic, final String... path) {
     final String[] detectedPath = Arrays.stream(topic.getPath()).map(Topic::getText).toArray(
         String[]::new);
@@ -111,6 +115,13 @@ public abstract class AbstractMmdTest {
 
   protected Path findPath(final String path) {
     return new File(FilenameUtils.normalizeNoEndSeparator(path)).toPath();
+  }
+
+  protected MindMap loadRootMmd() throws IOException {
+    final MindMap map =
+        this.loadMindMap("com/igormaznitsa/mindmap/annoit/paths/" + System.getProperty("os.name") +
+            "-rootFile.mmd");
+    return map;
   }
 
   protected MindMap loadMindMap(final String path) throws IOException {
