@@ -12,7 +12,7 @@ repositories {
 version = project.getProperty('maven_project_version')
 
 intellij {
-    version = "IC-222.3345.118"
+    version = "IC-222.4554.10"
     type = "IC"
     downloadSources = false
     updateSinceUntilBuild = false

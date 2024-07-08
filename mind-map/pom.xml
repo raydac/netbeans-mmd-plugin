@@ -11,10 +11,10 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <elk.version>0.8.1</elk.version>
         <plantuml.version>1.2024.6</plantuml.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <max.jdk.version>9</max.jdk.version>
     </properties>
 
     <modules>
@@ -124,11 +124,6 @@
                 <version>3.7.0</version>
             </dependency>
             <dependency>
-                <groupId>org.scilab.forge</groupId>
-                <artifactId>jlatexmath</artifactId>
-                <version>1.0.7</version>
-            </dependency>
-            <dependency>
                 <groupId>org.apache.xmlgraphics</groupId>
                 <artifactId>batik-dom</artifactId>
                 <version>1.17</version>
@@ -167,21 +162,6 @@
                 <groupId>net.java.dev.jna</groupId>
                 <artifactId>jna-platform</artifactId>
                 <version>5.14.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.elk</groupId>
-                <artifactId>org.eclipse.elk.core</artifactId>
-                <version>${elk.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.elk</groupId>
-                <artifactId>org.eclipse.elk.alg.layered</artifactId>
-                <version>${elk.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.elk</groupId>
-                <artifactId>org.eclipse.elk.alg.mrtree</artifactId>
-                <version>${elk.version}</version>
             </dependency>
             <dependency>
                 <groupId>net.sourceforge.plantuml</groupId>
@@ -410,7 +390,7 @@
                                 <banCircularDependencies/>
                                 <reactorModuleConvergence/>
                                 <enforceBytecodeVersion>
-                                    <maxJdkVersion>9</maxJdkVersion>
+                                    <maxJdkVersion>${max.jdk.version}</maxJdkVersion>
                                     <ignoredScopes>
                                         <ignoredScope>test</ignoredScope>
                                         <ignoredScope>system</ignoredScope>
