@@ -15,6 +15,11 @@ Initially I developed a plugin for NetBeans IDE then the IntellijIDEA plugin was
 
 # Changelog
 
+__1.6.8 (SNAPSHOT)__
+- AP:  added system property substitution for text fields
+- AP:  improved annotation source line detection
+- SR:  PlantUML updated to 1.2024.5
+
 __1.6.7 (30-may-2024)__
 - IJ:  Minimal supported Intellij IDEA platform lifted up to 2022.2 (Build: 222.4554.10)
 - IJ:  Fixed scope for MMD files
@@ -22,17 +27,6 @@ __1.6.7 (30-may-2024)__
 - SR:  Added version for Linux ARM (aarch64)
 - SR:  Embedded JDK updated to 22.0.1+12
 - SR:  PlantUML updated to 1.2024.5
-
-__1.6.6 (11-feb-2024)__
-- SR:  PlantUML updated to 1.2024.1
-- SR: Added option to keep non-saved documents between sessions
-- SR: Embedded JDK updated to 21.0.2+14
-- IJ: Added `MMD Files` view panel
-- IJ: Minimal supported Intellij IDEA platform lifted up to 202.8194.7
-- AP: improved annotation processor to find and extract marks in method bodies
-- SR: embedded Intellij fonts (`JetBrains Mono Kawkab` and `JetBrains Mono Vazir`) with Farsi char-set support [#120](https://github.com/raydac/netbeans-mmd-plugin/issues/120)
-- IJ,NB: Improved font configuration use for Note text editor [#120](https://github.com/raydac/netbeans-mmd-plugin/issues/120)
-
 
 [Full changelog](https://github.com/raydac/netbeans-mmd-plugin/blob/master/changelog.txt)   
 
