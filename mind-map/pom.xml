@@ -111,7 +111,7 @@
             <dependency>
                 <groupId>com.fifesoft</groupId>
                 <artifactId>rsyntaxtextarea</artifactId>
-                <version>3.4.1</version>
+                <version>3.5.0</version>
             </dependency>
             <dependency>
                 <groupId>com.fifesoft</groupId>
@@ -121,7 +121,7 @@
             <dependency>
                 <groupId>org.apache.kafka</groupId>
                 <artifactId>kafka-streams</artifactId>
-                <version>3.7.0</version>
+                <version>3.7.1</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.xmlgraphics</groupId>
