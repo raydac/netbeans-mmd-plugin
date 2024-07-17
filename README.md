@@ -18,6 +18,7 @@ Initially I developed a plugin for NetBeans IDE then the IntellijIDEA plugin was
 __1.6.8 (SNAPSHOT)__
 - AP:  added system property substitution for text fields
 - AP:  improved annotation source line detection
+- SR:  Embedded JDK updated to 22.0.2+11
 - SR:  PlantUML updated to 1.2024.5
 
 __1.6.7 (30-may-2024)__
