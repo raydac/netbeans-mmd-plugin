@@ -17,6 +17,7 @@
 package com.igormaznitsa.mindmap.annotations.processor.builder;
 
 import static java.util.Collections.unmodifiableList;
+import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import com.igormaznitsa.mindmap.annotations.MmdFile;
@@ -27,13 +28,14 @@ import com.igormaznitsa.mindmap.annotations.processor.builder.elements.FileItem;
 import com.igormaznitsa.mindmap.annotations.processor.builder.elements.TopicItem;
 import com.igormaznitsa.mindmap.annotations.processor.builder.exceptions.MmdAnnotationProcessorException;
 import com.igormaznitsa.mindmap.annotations.processor.builder.exceptions.MmdElementException;
+import com.igormaznitsa.mindmap.annotations.processor.exporters.MindMapBinExporter;
+import com.igormaznitsa.mindmap.annotations.processor.exporters.MmdExporter;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 import javax.annotation.processing.Messager;
@@ -102,7 +104,8 @@ public class MmdFileBuilder {
   public boolean write() {
     final Map<String, FileItem> fileMap = new LinkedHashMap<>();
 
-    if (!this.fillMapByFiles(fileMap, this.builder.getTargetFolder())) {
+    if (!this.fillMapByFiles(this.builder.getExporter().getBinExporter(), fileMap,
+        this.builder.getTargetFolder())) {
       return false;
     }
 
@@ -167,11 +170,13 @@ public class MmdFileBuilder {
     return this::makeSubstitution;
   }
 
-  private boolean fillMapByFiles(final Map<String, FileItem> fileMap,
-                                 final Path forceTargetFolder) {
+  private boolean fillMapByFiles(
+      final MindMapBinExporter exporter,
+      final Map<String, FileItem> fileMap,
+      final Path forceTargetFolder) {
     return this.builder.getAnnotations().stream()
         .filter(x -> x.asAnnotation() instanceof MmdFile)
-        .map(wrapper -> new FileItem(wrapper, forceTargetFolder, this.getSubstitutor()))
+        .map(wrapper -> new FileItem(exporter, wrapper, forceTargetFolder, this.getSubstitutor()))
         .map(x -> {
           boolean error = false;
           if (fileMap.containsKey(x.getFileUid())) {
@@ -294,6 +299,7 @@ public class MmdFileBuilder {
     private boolean dryStart;
     private boolean commentScan;
     private Messager messager;
+    private MmdExporter exporter = MmdExporter.MMD;
     private Types types;
 
     private volatile boolean completed;
@@ -305,6 +311,16 @@ public class MmdFileBuilder {
       if (this.completed) {
         throw new IllegalStateException("Already completed");
       }
+    }
+
+    public MmdExporter getExporter() {
+      return this.exporter;
+    }
+
+    public Builder setExporter(final MmdExporter exporter) {
+      this.assertNotCompleted();
+      this.exporter = requireNonNull(exporter);
+      return this;
     }
 
     public Path getTargetFolder() {
@@ -363,7 +379,7 @@ public class MmdFileBuilder {
 
     public Builder setTypes(final Types types) {
       this.assertNotCompleted();
-      this.types = Objects.requireNonNull(types);
+      this.types = requireNonNull(types);
       return this;
     }
 
@@ -373,7 +389,7 @@ public class MmdFileBuilder {
 
     public Builder setMessager(final Messager messager) {
       this.assertNotCompleted();
-      this.messager = Objects.requireNonNull(messager);
+      this.messager = requireNonNull(messager);
       return this;
     }
 

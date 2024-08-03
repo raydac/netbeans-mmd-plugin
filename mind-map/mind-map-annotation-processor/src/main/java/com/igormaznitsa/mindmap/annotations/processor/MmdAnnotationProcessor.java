@@ -36,6 +36,7 @@ import com.igormaznitsa.mindmap.annotations.processor.builder.AnnotationUtils;
 import com.igormaznitsa.mindmap.annotations.processor.builder.AnnotationUtils.UriLine;
 import com.igormaznitsa.mindmap.annotations.processor.builder.MmdFileBuilder;
 import com.igormaznitsa.mindmap.annotations.processor.builder.exceptions.MmdElementException;
+import com.igormaznitsa.mindmap.annotations.processor.exporters.MmdExporter;
 import com.sun.source.util.SourcePositions;
 import com.sun.source.util.Trees;
 import java.io.File;
@@ -52,6 +53,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -68,7 +70,6 @@ import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * Annotation processor to collect MMD annotations and build MMD mind map files for them.
- *
  */
 @SupportedOptions({
     MmdAnnotationProcessor.KEY_MMD_TARGET_FOLDER,
@@ -77,10 +78,18 @@ import org.apache.commons.lang3.tuple.Pair;
     MmdAnnotationProcessor.KEY_MMD_FILE_OVERWRITE,
     MmdAnnotationProcessor.KEY_MMD_FILE_ROOT_FOLDER,
     MmdAnnotationProcessor.KEY_MMD_FILE_LINK_BASE_FOLDER,
+    MmdAnnotationProcessor.KEY_MMD_TARGET_FORMAT,
     MmdAnnotationProcessor.KEY_MMD_COMMENT_SCAN
 })
 public class MmdAnnotationProcessor extends AbstractProcessor {
 
+  /**
+   * Option to define target format for generated files, the default value is MMD
+   *
+   * @since 1.6.8
+   * @see MmdExporter
+   */
+  public static final String KEY_MMD_TARGET_FORMAT = "mmd.target.format";
   /**
    * Option to force target folder to place all generated MMD files.
    */
@@ -124,6 +133,7 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
   private SourcePositions sourcePositions;
   private Messager messager;
   private Types types;
+  private MmdExporter exporter;
   private Path optionTargetFolder;
   private Path optionFileLinkBaseFolder;
   private Path optionFileRootFolder;
@@ -160,6 +170,24 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
       this.messager.printMessage(WARNING, "MMD processor started in DRY mode");
     }
 
+    this.exporter = MmdExporter.MMD;
+    if (processingEnv.getOptions().containsKey(KEY_MMD_TARGET_FORMAT)) {
+      final String targetFormat = processingEnv.getOptions()
+          .getOrDefault(KEY_MMD_TARGET_FORMAT, MmdExporter.MMD.name());
+      try {
+        this.exporter = MmdExporter.find(targetFormat);
+
+      } catch (IllegalArgumentException ex) {
+        this.messager.printMessage(
+            ERROR,
+            "Unknown target format " + targetFormat + ", list of allowed target format names " +
+                MmdExporter.VALUES.stream().map(Enum::name)
+                    .collect(Collectors.joining(",", "[", "]")));
+      }
+    }
+    this.messager.printMessage(
+        NOTE, "Selected target file format: " + this.exporter.name());
+
     if (processingEnv.getOptions().containsKey(KEY_MMD_TARGET_FOLDER)) {
       this.optionTargetFolder = Paths.get(processingEnv.getOptions().get(KEY_MMD_TARGET_FOLDER));
       if (!(Files.isDirectory(this.optionTargetFolder) || this.optionDryStart)) {
@@ -187,7 +215,7 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
       if (this.optionTargetFolder != null) {
         this.messager.printMessage(
             WARNING,
-            String.format(
+            format(
                 "Directly provided target folder to write MMD files: %s", this.optionTargetFolder));
       }
     }
@@ -200,7 +228,7 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
               FilenameUtils.normalizeNoEndSeparator(baseFolderPathAsString));
       this.messager.printMessage(
           NOTE,
-          String.format("Found provided file link base folder for MMD files: %s",
+          format("Found provided file link base folder for MMD files: %s",
               this.optionFileLinkBaseFolder));
     }
 
@@ -369,6 +397,7 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
 
       final MmdFileBuilder fileBuilder = MmdFileBuilder.builder()
           .setMessager(this.messager)
+          .setExporter(this.exporter)
           .setTypes(this.types)
           .setFileRootFolder(this.optionFileRootFolder)
           .setTargetFolder(this.optionTargetFolder)

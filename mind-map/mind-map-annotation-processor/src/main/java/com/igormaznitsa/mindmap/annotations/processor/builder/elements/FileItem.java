@@ -30,13 +30,13 @@ import com.igormaznitsa.mindmap.annotations.MmdFile;
 import com.igormaznitsa.mindmap.annotations.MmdTopic;
 import com.igormaznitsa.mindmap.annotations.processor.MmdAnnotationWrapper;
 import com.igormaznitsa.mindmap.annotations.processor.builder.exceptions.MmdAnnotationProcessorException;
+import com.igormaznitsa.mindmap.annotations.processor.exporters.MindMapBinExporter;
 import com.igormaznitsa.mindmap.model.ExtraTopic;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.StandardMmdAttributes;
 import com.igormaznitsa.mindmap.model.Topic;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -68,13 +68,16 @@ public class FileItem extends AbstractItem {
   private final String fileUid;
   private final String baseFileName;
   private final Path targetFile;
+  private final MindMapBinExporter exporter;
   private final List<InternalLayoutBlock> layoutBlocks = new ArrayList<>();
 
   private final InternalLayoutBlock rootNode;
 
-  public FileItem(final MmdAnnotationWrapper base,
-                  final Path forceTargetFolder,
-                  BiFunction<String, Map<String, String>, String> textPreprocessor) {
+  public FileItem(
+      final MindMapBinExporter exporter,
+      final MmdAnnotationWrapper base,
+      final Path forceTargetFolder,
+      BiFunction<String, Map<String, String>, String> textPreprocessor) {
     super(base, textPreprocessor);
     if (!(base.asAnnotation() instanceof MmdFile)) {
       throw new IllegalArgumentException("Expected annotation " + MmdFile.class.getSimpleName());
@@ -87,6 +90,7 @@ public class FileItem extends AbstractItem {
           .apply(mmdFile.uid(), this.getExtraSubstitutionProperties());
     }
 
+    this.exporter = requireNonNull(exporter);
     this.targetFile = makeTargetFilePath(base, forceTargetFolder);
     this.baseFileName = findBaseFileName(base);
 
@@ -141,7 +145,7 @@ public class FileItem extends AbstractItem {
   private Path makeTargetFilePath(final MmdAnnotationWrapper annotationWrapper,
                                          final Path forceTargetFolder) {
     final MmdFile mmdFile = annotationWrapper.asAnnotation();
-    final String baseFileName = findBaseFileName(annotationWrapper);
+    final String fileNameWithoutExtension = findBaseFileName(annotationWrapper);
 
     final Path targetFolder =
         Objects.requireNonNullElseGet(
@@ -157,7 +161,7 @@ public class FileItem extends AbstractItem {
                                     annotationWrapper.getPath().getParent().toAbsolutePath()
                                         .toString())))));
 
-    return targetFolder.resolve(baseFileName + ".mmd");
+    return targetFolder.resolve(fileNameWithoutExtension + '.' + this.exporter.getFileExtension());
   }
 
   private void assertNoGraphLoops()
@@ -203,31 +207,33 @@ public class FileItem extends AbstractItem {
       final boolean dryStart)
       throws IOException, MmdAnnotationProcessorException {
 
-    final Path targetFile = this.getTargetFile().normalize();
+    final Path normalizedTargetFile = this.getTargetFile().normalize();
 
     final MindMap map;
     try {
       map =
           this.makeMindMap(
-              types, fileLinkBaseFolder == null ? targetFile.getParent() : fileLinkBaseFolder);
+              types,
+              fileLinkBaseFolder == null ? normalizedTargetFile.getParent() : fileLinkBaseFolder);
     } catch (final URISyntaxException ex) {
       throw new IOException("Can't write MMD file for URI syntax error", ex);
     }
 
-    final String mapText = map.asString();
-
-    if (rootFolder != null && !targetFile.startsWith(rootFolder)) {
-      throw new IOException("Target file is not bounded by the root folder: " + targetFile);
+    if (rootFolder != null && !normalizedTargetFile.startsWith(rootFolder)) {
+      throw new IOException(
+          "Target file is not bounded by the root folder: " + normalizedTargetFile);
     }
+
+    final byte[] mindMapFileData = this.exporter.export(rootFolder, normalizedTargetFile, map);
 
     if (!dryStart) {
-      PathUtils.createParentDirectories(targetFile);
-      if (Files.isRegularFile(targetFile) && !allowOverwrite) {
-        throw new IOException("MMD file already exists: " + targetFile);
+      PathUtils.createParentDirectories(normalizedTargetFile);
+      if (Files.isRegularFile(normalizedTargetFile) && !allowOverwrite) {
+        throw new IOException("Target file already exists: " + normalizedTargetFile);
       }
-      FileUtils.write(targetFile.toFile(), mapText, StandardCharsets.UTF_8);
+      FileUtils.writeByteArrayToFile(normalizedTargetFile.toFile(), mindMapFileData);
     }
-    return targetFile;
+    return normalizedTargetFile;
   }
 
   private MindMap makeMindMap(final Types types, final Path fileLinkBaseFolder)
@@ -235,7 +241,7 @@ public class FileItem extends AbstractItem {
     final MindMap map = new MindMap(false);
     map.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_SHOW_JUMPS, "true");
     map.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID,
-        "com.igormaznitsa:mind-map-annotation-processor:1.6.1");
+        "com.igormaznitsa:mind-map-annotation-processor:1.6.8");
     if (fileLinkBaseFolder == null) {
       map.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_NO_BASE_FOLDER, "true");
     }
