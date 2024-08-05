@@ -25,9 +25,10 @@ import java.util.List;
  * @since 1.6.8
  */
 public enum MmdExporter {
-  MMD(new MmdMindMapExporter());
+  MMD(new MmdMindMapExporter()),
+  MD(new MDMindMapExporter());
 
-  public static final List<MmdExporter> VALUES = Arrays.asList(MmdExporter.values());
+  public static final List<MmdExporter> LIST_VALUES = Arrays.asList(MmdExporter.values());
   private final MindMapBinExporter binExporter;
 
   MmdExporter(final MindMapBinExporter binExporter) {
@@ -36,7 +37,7 @@ public enum MmdExporter {
 
   public static MmdExporter find(final String name) {
     final String trimmed = name.trim();
-    return VALUES.stream()
+    return LIST_VALUES.stream()
         .filter(x -> x.name().equalsIgnoreCase(trimmed))
         .findFirst()
         .orElseThrow(() -> new IllegalArgumentException(name));

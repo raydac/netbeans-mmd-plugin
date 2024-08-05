@@ -181,7 +181,7 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
         this.messager.printMessage(
             ERROR,
             "Unknown target format " + targetFormat + ", list of allowed target format names " +
-                MmdExporter.VALUES.stream().map(Enum::name)
+                MmdExporter.LIST_VALUES.stream().map(Enum::name)
                     .collect(Collectors.joining(",", "[", "]")));
       }
     }
