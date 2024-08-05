@@ -146,12 +146,12 @@
             <dependency>
                 <groupId>com.formdev</groupId>
                 <artifactId>flatlaf</artifactId>
-                <version>3.5</version>
+                <version>3.5.1</version>
             </dependency>
             <dependency>
                 <groupId>com.formdev</groupId>
                 <artifactId>flatlaf-intellij-themes</artifactId>
-                <version>3.5</version>
+                <version>3.5.1</version>
             </dependency>
             <dependency>
                 <groupId>net.java.dev.jna</groupId>
@@ -219,7 +219,7 @@
                 <plugin>
                     <groupId>de.perdian.maven.plugins</groupId>
                     <artifactId>macosappbundler-maven-plugin</artifactId>
-                    <version>1.20.1</version>
+                    <version>1.21.0</version>
                 </plugin>
                 <plugin>
                     <groupId>com.akathist.maven.plugins.launch4j</groupId>
