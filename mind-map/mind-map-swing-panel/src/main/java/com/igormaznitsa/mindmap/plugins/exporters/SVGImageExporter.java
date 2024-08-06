@@ -241,7 +241,7 @@ public class SVGImageExporter extends AbstractExporter {
         .map(x -> ((BooleanParameter) x).getValue())
         .orElse(true);
 
-    final MindMap workMap = context.getPanel().getModel().makeCopy();
+    final MindMap workMap = context.getModel().makeCopy();
     workMap.clearAllPayloads();
 
     if (flagExpandAllNodes) {

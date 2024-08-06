@@ -16,16 +16,16 @@
 
 package com.igormaznitsa.mindmap.annotations.processor.exporters;
 
-import com.igormaznitsa.mindmap.plugins.exporters.MDExporter;
+import com.igormaznitsa.mindmap.plugins.exporters.MindmupExporter;
 
-public class MDMindMapExporter extends AbstractMmdPanelBasedExporter {
+public class MindMupMindMapExporter extends AbstractMmdPanelBasedExporter {
 
-  public MDMindMapExporter() {
-    super(new MDExporter());
+  public MindMupMindMapExporter() {
+    super(new MindmupExporter());
   }
 
   @Override
   public String getFileExtension() {
-    return "MD";
+    return "mup";
   }
 }

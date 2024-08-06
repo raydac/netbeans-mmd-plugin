@@ -16,16 +16,16 @@
 
 package com.igormaznitsa.mindmap.annotations.processor.exporters;
 
-import com.igormaznitsa.mindmap.plugins.exporters.MDExporter;
+import com.igormaznitsa.mindmap.plugins.exporters.PNGImageExporter;
 
-public class MDMindMapExporter extends AbstractMmdPanelBasedExporter {
+public class PngMindMapExporter extends AbstractMmdPanelBasedExporter {
 
-  public MDMindMapExporter() {
-    super(new MDExporter());
+  public PngMindMapExporter() {
+    super(new PNGImageExporter());
   }
 
   @Override
   public String getFileExtension() {
-    return "MD";
+    return "png";
   }
 }

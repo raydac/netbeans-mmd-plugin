@@ -99,6 +99,11 @@
         </dependency>
         <dependency>
             <groupId>com.igormaznitsa</groupId>
+            <artifactId>mind-map-swing-panel</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.igormaznitsa</groupId>
             <artifactId>mind-map-model</artifactId>
             <version>${project.version}</version>
         </dependency>

@@ -26,7 +26,15 @@ import java.util.List;
  */
 public enum MmdExporter {
   MMD(new MmdMindMapExporter()),
-  MD(new MDMindMapExporter());
+  ASCIIDOC(new AscIIdocMindMapExporter()),
+  FREEMIND(new FreeMindMindMapExporter()),
+  MD(new MDMindMapExporter()),
+  MINDMUP(new MindMupMindMapExporter()),
+  ORGMODE(new OrgModeMindMapExporter()),
+  PNG(new PngMindMapExporter()),
+  PLANTUML(new PumlMindMapExporter()),
+  SVG(new SvgMindMapExporter()),
+  TXT(new TxtMindMapExporter());
 
   public static final List<MmdExporter> LIST_VALUES = Arrays.asList(MmdExporter.values());
   private final MindMapBinExporter binExporter;

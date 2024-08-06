@@ -26,7 +26,6 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.api.parameters.AbstractParameter;
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute;
 import com.igormaznitsa.mindmap.swing.panel.ui.TextAlign;
@@ -86,9 +85,8 @@ public class PUMLExporter extends AbstractExporter {
   }
 
   private String makeContent(final PluginContext pluginContext) {
-    final MindMapPanel panel = pluginContext.getPanel();
-    final MindMapPanelConfig config = panel.getConfiguration();
-    final MindMap map = panel.getModel();
+    final MindMapPanelConfig config = pluginContext.getPanelConfig();
+    final MindMap map = pluginContext.getModel();
 
     final List<StyleItem> styles = new ArrayList<>();
     final Set<String> emoticons = new HashSet<>();

@@ -24,13 +24,13 @@ import com.igormaznitsa.mindmap.model.ExtraLink;
 import com.igormaznitsa.mindmap.model.ExtraNote;
 import com.igormaznitsa.mindmap.model.ExtraTopic;
 import com.igormaznitsa.mindmap.model.MMapURI;
+import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.ModelUtils;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.api.parameters.AbstractParameter;
 import com.igormaznitsa.mindmap.swing.ide.IDEBridgeFactory;
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.mindmap.swing.services.IconID;
@@ -283,10 +283,10 @@ public class ORGMODEExporter extends AbstractExporter {
     }
   }
 
-  private String makeContent(final MindMapPanel panel) {
+  private String makeContent(final MindMap model) {
     final State state = new State();
 
-    final Topic root = panel.getModel().getRoot();
+    final Topic root = model.getRoot();
 
     state.append("#+TITLE: ").append(escapeStr(root == null ? "" : root.getText(), true))
         .nextLine();
@@ -321,7 +321,7 @@ public class ORGMODEExporter extends AbstractExporter {
   @Override
   public void doExportToClipboard(final PluginContext context, final Set<AbstractParameter<?>> options)
       throws IOException {
-    final String text = makeContent(context.getPanel());
+    final String text = makeContent(context.getModel());
     SwingUtilities.invokeLater(() -> {
       final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
       if (clipboard != null) {
@@ -333,7 +333,7 @@ public class ORGMODEExporter extends AbstractExporter {
   @Override
   public void doExport(final PluginContext context, final Set<AbstractParameter<?>> options,
                        final OutputStream out) throws IOException {
-    final String text = makeContent(context.getPanel());
+    final String text = makeContent(context.getModel());
 
     File fileToSaveMap = null;
     OutputStream theOut = out;

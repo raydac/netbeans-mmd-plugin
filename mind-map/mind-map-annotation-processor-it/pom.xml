@@ -65,6 +65,15 @@
                             <directory>${project.basedir}</directory>
                             <includes>
                                 <include>**/*.mmd</include>
+                                <include>**/*.MD</include>
+                                <include>**/*.png</include>
+                                <include>**/*.svg</include>
+                                <include>**/*.mup</include>
+                                <include>**/*.txt</include>
+                                <include>**/*.mm</include>
+                                <include>**/*.puml</include>
+                                <include>**/*.org</include>
+                                <include>**/*.asciidoc</include>
                             </includes>
                             <followSymlinks>false</followSymlinks>
                         </fileset>
@@ -98,6 +107,7 @@
                                 <compilerArg>-J-Djava.awt.headless=true</compilerArg>
                                 <compilerArg>-Ammd.file.link.base.folder=${mmd.basedir}</compilerArg>
                                 <compilerArg>-Ammd.comment.scan=true</compilerArg>
+                                <compilerArg>-Ammd.target.format=MMD</compilerArg>
                             </compilerArgs>
                             <release>${maven.compiler.target}</release>
                         </configuration>

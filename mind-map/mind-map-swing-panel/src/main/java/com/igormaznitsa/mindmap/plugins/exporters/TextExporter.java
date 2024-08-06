@@ -201,7 +201,7 @@ public class TextExporter extends AbstractExporter {
 
     int shift = 0;
 
-    final Topic root = context.getPanel().getModel().getRoot();
+    final Topic root = context.getModel().getRoot();
     if (root != null) {
       writeTopic(root, '=', shift, state);
 

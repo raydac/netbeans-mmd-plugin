@@ -16,16 +16,16 @@
 
 package com.igormaznitsa.mindmap.annotations.processor.exporters;
 
-import com.igormaznitsa.mindmap.plugins.exporters.MDExporter;
+import com.igormaznitsa.mindmap.plugins.exporters.ASCIIDocExporter;
 
-public class MDMindMapExporter extends AbstractMmdPanelBasedExporter {
+public class AscIIdocMindMapExporter extends AbstractMmdPanelBasedExporter {
 
-  public MDMindMapExporter() {
-    super(new MDExporter());
+  public AscIIdocMindMapExporter() {
+    super(new ASCIIDocExporter());
   }
 
   @Override
   public String getFileExtension() {
-    return "MD";
+    return "asciidoc";
   }
 }

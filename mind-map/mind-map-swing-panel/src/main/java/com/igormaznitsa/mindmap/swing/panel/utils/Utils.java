@@ -884,7 +884,7 @@ public final class Utils {
         MindMapPluginRegistry.getInstance().findFor(PopUpMenuItemPlugin.class);
     final List<JMenuItem> tmpList = new ArrayList<>();
 
-    final boolean isModelNotEmpty = context.getPanel().getModel().getRoot() != null;
+    final boolean isModelNotEmpty = context.getModel().getRoot() != null;
 
     putAllItemsAsSection(result, null,
         findPopupMenuItems(context, PopUpSection.MAIN, fullScreenModeActive, tmpList,

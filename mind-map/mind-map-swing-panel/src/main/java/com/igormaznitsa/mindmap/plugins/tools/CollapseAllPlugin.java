@@ -34,7 +34,7 @@ public class CollapseAllPlugin extends AbstractPopupMenuItem {
     final JMenuItem result =
         UI_COMPO_FACTORY.makeMenuItem(this.getResourceBundle().getString("MMDGraphEditor.makePopUp.miCollapseAll"),
             ICO);
-    result.setEnabled(context.getPanel().getModel().getRoot() != null);
+    result.setEnabled(context.getModel().getRoot() != null);
     result.addActionListener(e -> context.getPanel().collapseOrExpandAll(true));
     return result;
   }

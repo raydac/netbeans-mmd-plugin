@@ -34,7 +34,7 @@ public class UnfoldAllPlugin extends AbstractPopupMenuItem {
   public JMenuItem makeMenuItem(final PluginContext context, final Topic topic) {
     final JMenuItem result =
         UI_COMPO_FACTORY.makeMenuItem(this.getResourceBundle().getString("MMDGraphEditor.makePopUp.miExpandAll"), ICO);
-    result.setEnabled(context.getPanel().getModel().getRoot() != null);
+    result.setEnabled(context.getModel().getRoot() != null);
     result.addActionListener(e -> context.getPanel().collapseOrExpandAll(false));
     return result;
   }

@@ -23,6 +23,7 @@ import com.igormaznitsa.mindmap.model.ExtraFile;
 import com.igormaznitsa.mindmap.model.ExtraLink;
 import com.igormaznitsa.mindmap.model.ExtraNote;
 import com.igormaznitsa.mindmap.model.ExtraTopic;
+import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.MiscUtils;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
@@ -30,7 +31,6 @@ import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.api.parameters.AbstractParameter;
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
@@ -224,16 +224,16 @@ public class MindmupExporter extends AbstractExporter {
     stringer.endObject();
   }
 
-  private String makeContent(final MindMapPanel panel) {
+  private String makeContent(final MindMap model, final MindMapPanelConfig config) {
     final JSONStringer stringer = new JSONStringer();
-    writeRoot(stringer, panel.getConfiguration(), panel.getModel().getRoot());
+    writeRoot(stringer, config, model.getRoot());
     return stringer.toString();
   }
 
   @Override
   public void doExportToClipboard(final PluginContext context, final Set<AbstractParameter<?>> options)
       throws IOException {
-    final String text = makeContent(context.getPanel());
+    final String text = makeContent(context.getModel(), context.getPanelConfig());
     SwingUtilities.invokeLater(() -> {
       final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
       if (clipboard != null) {
@@ -245,7 +245,7 @@ public class MindmupExporter extends AbstractExporter {
   @Override
   public void doExport(final PluginContext context, final Set<AbstractParameter<?>> options,
                        final OutputStream out) throws IOException {
-    final String text = makeContent(context.getPanel());
+    final String text = makeContent(context.getModel(), context.getPanelConfig());
 
     File fileToSaveMap = null;
     OutputStream theOut = out;

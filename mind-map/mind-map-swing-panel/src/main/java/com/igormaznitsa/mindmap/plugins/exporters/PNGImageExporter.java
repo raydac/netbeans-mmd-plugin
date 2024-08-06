@@ -154,7 +154,7 @@ public final class PNGImageExporter extends AbstractExporter {
     panelConfig.setDrawBackground(flagDrawBackground);
     panelConfig.setScale(1.0f);
 
-    return MindMapPanel.renderMindMapAsImage(context.getPanel().getModel(), panelConfig,
+    return MindMapPanel.renderMindMapAsImage(context.getModel(), panelConfig,
         flagExpandAllNodes, RenderQuality.QUALITY);
   }
 

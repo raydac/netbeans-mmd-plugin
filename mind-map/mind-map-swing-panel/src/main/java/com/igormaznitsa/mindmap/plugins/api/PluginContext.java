@@ -16,6 +16,7 @@
 
 package com.igormaznitsa.mindmap.plugins.api;
 
+import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
@@ -31,6 +32,10 @@ public interface PluginContext {
   MindMapPanelConfig getPanelConfig();
 
   MindMapPanel getPanel();
+
+  default MindMap getModel() {
+    return this.getPanel().getModel();
+  }
 
   DialogProvider getDialogProvider();
 

@@ -29,11 +29,14 @@ import com.igormaznitsa.mindmap.print.PrintableObject;
 import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.ui.SrI18n;
 import com.igormaznitsa.sciareto.ui.UiUtils;
-
+import java.awt.Image;
+import java.awt.Window;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.ImageIcon;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 public class PrinterPlugin extends AbstractPopupMenuItem implements MMDPrintPanel.Adaptor {
 
@@ -71,7 +74,7 @@ public class PrinterPlugin extends AbstractPopupMenuItem implements MMDPrintPane
   
   @Override
   public boolean isEnabled(@Nonnull final PluginContext context, @Nullable final Topic activeTopic) {
-    return !context.getPanel().getModel().isEmpty();
+    return !context.getModel().isEmpty();
   }
 
   @Nonnull
