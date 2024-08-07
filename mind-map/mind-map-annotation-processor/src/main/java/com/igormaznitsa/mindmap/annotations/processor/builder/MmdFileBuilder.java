@@ -36,11 +36,14 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 import javax.annotation.processing.Messager;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.commons.text.lookup.StringLookupFactory;
 
@@ -104,7 +107,9 @@ public class MmdFileBuilder {
   public boolean write() {
     final Map<String, FileItem> fileMap = new LinkedHashMap<>();
 
-    if (!this.fillMapByFiles(this.builder.getExporter().getBinExporter(), fileMap,
+    if (!this.fillMapByFiles(
+        this.builder.getExporters().stream().map(MmdExporter::getBinExporter).collect(
+            Collectors.toSet()), fileMap,
         this.builder.getTargetFolder())) {
       return false;
     }
@@ -153,14 +158,16 @@ public class MmdFileBuilder {
     final AtomicInteger duplicatedCounter = new AtomicInteger(0);
     final Map<Path, FileItem> processedPaths = new HashMap<>();
     fileItemMap.forEach((uid, fileItem) -> {
-      if (processedPaths.containsKey(fileItem.getTargetFile())) {
-        this.builder.getMessager()
-            .printMessage(Diagnostic.Kind.ERROR,
-                "Detected duplicated target file path for MMD file: " + fileItem.getTargetFile(),
-                fileItem.getElement());
-        duplicatedCounter.incrementAndGet();
-      } else {
-        processedPaths.put(fileItem.getTargetFile(), fileItem);
+      for (final Pair<Path, MindMapBinExporter> targetFile : fileItem.getTargetFiles()) {
+        if (processedPaths.containsKey(targetFile.getKey())) {
+          this.builder.getMessager()
+              .printMessage(Diagnostic.Kind.ERROR,
+                  "Detected duplicated target file path for MMD file: " + targetFile.getKey(),
+                  fileItem.getElement());
+          duplicatedCounter.incrementAndGet();
+        } else {
+          processedPaths.put(targetFile.getKey(), fileItem);
+        }
       }
     });
     return duplicatedCounter.get();
@@ -171,12 +178,12 @@ public class MmdFileBuilder {
   }
 
   private boolean fillMapByFiles(
-      final MindMapBinExporter exporter,
+      final Set<MindMapBinExporter> exporters,
       final Map<String, FileItem> fileMap,
       final Path forceTargetFolder) {
     return this.builder.getAnnotations().stream()
         .filter(x -> x.asAnnotation() instanceof MmdFile)
-        .map(wrapper -> new FileItem(exporter, wrapper, forceTargetFolder, this.getSubstitutor()))
+        .map(wrapper -> new FileItem(exporters, wrapper, forceTargetFolder, this.getSubstitutor()))
         .map(x -> {
           boolean error = false;
           if (fileMap.containsKey(x.getFileUid())) {
@@ -229,7 +236,7 @@ public class MmdFileBuilder {
                   String.format("Processing MMD file, uid=%s", fileItem.getFileUid()));
 
           try {
-            final Path filePath =
+            final List<Path> filePath =
                 fileItem.write(
                     this.builder.getFileRootFolder(),
                     this.builder.getTypes(),
@@ -299,7 +306,7 @@ public class MmdFileBuilder {
     private boolean dryStart;
     private boolean commentScan;
     private Messager messager;
-    private MmdExporter exporter = MmdExporter.MMD;
+    private Set<MmdExporter> exporters = Set.of(MmdExporter.MMD);
     private Types types;
 
     private volatile boolean completed;
@@ -313,13 +320,13 @@ public class MmdFileBuilder {
       }
     }
 
-    public MmdExporter getExporter() {
-      return this.exporter;
+    public Set<MmdExporter> getExporters() {
+      return this.exporters;
     }
 
-    public Builder setExporter(final MmdExporter exporter) {
+    public Builder setExporters(final Set<MmdExporter> exporters) {
       this.assertNotCompleted();
-      this.exporter = requireNonNull(exporter);
+      this.exporters = requireNonNull(exporters);
       return this;
     }
 

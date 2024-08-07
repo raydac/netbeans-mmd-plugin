@@ -133,7 +133,7 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
   private SourcePositions sourcePositions;
   private Messager messager;
   private Types types;
-  private MmdExporter exporter;
+  private Set<MmdExporter> exporters;
   private Path optionTargetFolder;
   private Path optionFileLinkBaseFolder;
   private Path optionFileRootFolder;
@@ -170,23 +170,26 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
       this.messager.printMessage(WARNING, "MMD processor started in DRY mode");
     }
 
-    this.exporter = MmdExporter.MMD;
+    this.exporters = Set.of(MmdExporter.MMD);
     if (processingEnv.getOptions().containsKey(KEY_MMD_TARGET_FORMAT)) {
       final String targetFormat = processingEnv.getOptions()
           .getOrDefault(KEY_MMD_TARGET_FORMAT, MmdExporter.MMD.name());
       try {
-        this.exporter = MmdExporter.find(targetFormat);
+        this.exporters = Arrays.stream(targetFormat.split("[,;:]"))
+            .map(MmdExporter::find).collect(Collectors.toSet());
 
       } catch (IllegalArgumentException ex) {
         this.messager.printMessage(
             ERROR,
-            "Unknown target format " + targetFormat + ", list of allowed target format names " +
+            "Contains unknown target format " + targetFormat +
+                ", list of allowed target format names " +
                 MmdExporter.LIST_VALUES.stream().map(Enum::name)
                     .collect(Collectors.joining(",", "[", "]")));
       }
     }
     this.messager.printMessage(
-        NOTE, "Selected target file format: " + this.exporter.name());
+        NOTE, "Selected target file format: " + this.exporters.stream().map(Enum::name).collect(
+            Collectors.joining(",")));
 
     if (processingEnv.getOptions().containsKey(KEY_MMD_TARGET_FOLDER)) {
       this.optionTargetFolder = Paths.get(processingEnv.getOptions().get(KEY_MMD_TARGET_FOLDER));
@@ -397,7 +400,7 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
 
       final MmdFileBuilder fileBuilder = MmdFileBuilder.builder()
           .setMessager(this.messager)
-          .setExporter(this.exporter)
+          .setExporters(this.exporters)
           .setTypes(this.types)
           .setFileRootFolder(this.optionFileRootFolder)
           .setTargetFolder(this.optionTargetFolder)

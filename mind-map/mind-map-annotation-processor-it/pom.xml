@@ -107,7 +107,9 @@
                                 <compilerArg>-J-Djava.awt.headless=true</compilerArg>
                                 <compilerArg>-Ammd.file.link.base.folder=${mmd.basedir}</compilerArg>
                                 <compilerArg>-Ammd.comment.scan=true</compilerArg>
-                                <compilerArg>-Ammd.target.format=MMD</compilerArg>
+                                <compilerArg>
+                                    -Ammd.target.format=MMD,MINDMUP,FREEMIND,PLANTUML,SVG,PNG,MD,TXT,ASCIIDOC,ORGMODE
+                                </compilerArg>
                             </compilerArgs>
                             <release>${maven.compiler.target}</release>
                         </configuration>

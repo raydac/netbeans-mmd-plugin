@@ -58,6 +58,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.file.PathUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * Class describes one MMD file defined through MMD file annotation.
@@ -67,14 +68,13 @@ import org.apache.commons.lang3.StringUtils;
 public class FileItem extends AbstractItem {
   private final String fileUid;
   private final String baseFileName;
-  private final Path targetFile;
-  private final MindMapBinExporter exporter;
+  private final List<Pair<Path, MindMapBinExporter>> targetFiles;
   private final List<InternalLayoutBlock> layoutBlocks = new ArrayList<>();
 
   private final InternalLayoutBlock rootNode;
 
   public FileItem(
-      final MindMapBinExporter exporter,
+      final Set<MindMapBinExporter> exporters,
       final MmdAnnotationWrapper base,
       final Path forceTargetFolder,
       BiFunction<String, Map<String, String>, String> textPreprocessor) {
@@ -90,8 +90,7 @@ public class FileItem extends AbstractItem {
           .apply(mmdFile.uid(), this.getExtraSubstitutionProperties());
     }
 
-    this.exporter = requireNonNull(exporter);
-    this.targetFile = makeTargetFilePath(base, forceTargetFolder);
+    this.targetFiles = makeTargetFilePath(base, exporters, forceTargetFolder);
     this.baseFileName = findBaseFileName(base);
 
     if (mmdFile.rootTopic().path().length > 0) {
@@ -142,8 +141,10 @@ public class FileItem extends AbstractItem {
     return buffer.toString();
   }
 
-  private Path makeTargetFilePath(final MmdAnnotationWrapper annotationWrapper,
-                                         final Path forceTargetFolder) {
+  private List<Pair<Path, MindMapBinExporter>> makeTargetFilePath(
+      final MmdAnnotationWrapper annotationWrapper,
+      final Set<MindMapBinExporter> exporters,
+      final Path forceTargetFolder) {
     final MmdFile mmdFile = annotationWrapper.asAnnotation();
     final String fileNameWithoutExtension = findBaseFileName(annotationWrapper);
 
@@ -160,8 +161,10 @@ public class FileItem extends AbstractItem {
                                 normalizeNoEndSeparator(
                                     annotationWrapper.getPath().getParent().toAbsolutePath()
                                         .toString())))));
-
-    return targetFolder.resolve(fileNameWithoutExtension + '.' + this.exporter.getFileExtension());
+    return exporters.stream()
+        .map(x -> Pair.of(
+            targetFolder.resolve(fileNameWithoutExtension + '.' + x.getFileExtension()), x))
+        .collect(Collectors.toList());
   }
 
   private void assertNoGraphLoops()
@@ -187,8 +190,8 @@ public class FileItem extends AbstractItem {
     return this.baseFileName;
   }
 
-  public Path getTargetFile() {
-    return this.targetFile;
+  public List<Pair<Path, MindMapBinExporter>> getTargetFiles() {
+    return this.targetFiles;
   }
 
   public MmdFile asMmdFileAnnotation() {
@@ -199,7 +202,7 @@ public class FileItem extends AbstractItem {
     this.layoutBlocks.add(new InternalLayoutBlock(requireNonNull(topic)));
   }
 
-  public Path write(
+  public List<Path> write(
       final Path rootFolder,
       final Types types,
       final Path fileLinkBaseFolder,
@@ -207,33 +210,41 @@ public class FileItem extends AbstractItem {
       final boolean dryStart)
       throws IOException, MmdAnnotationProcessorException {
 
-    final Path normalizedTargetFile = this.getTargetFile().normalize();
-
-    final MindMap map;
-    try {
-      map =
-          this.makeMindMap(
-              types,
-              fileLinkBaseFolder == null ? normalizedTargetFile.getParent() : fileLinkBaseFolder);
-    } catch (final URISyntaxException ex) {
-      throw new IOException("Can't write MMD file for URI syntax error", ex);
-    }
-
-    if (rootFolder != null && !normalizedTargetFile.startsWith(rootFolder)) {
-      throw new IOException(
-          "Target file is not bounded by the root folder: " + normalizedTargetFile);
-    }
-
-    final byte[] mindMapFileData = this.exporter.export(rootFolder, normalizedTargetFile, map);
-
-    if (!dryStart) {
-      PathUtils.createParentDirectories(normalizedTargetFile);
-      if (Files.isRegularFile(normalizedTargetFile) && !allowOverwrite) {
-        throw new IOException("Target file already exists: " + normalizedTargetFile);
+    final List<Path> result = new ArrayList<>();
+    MindMap map = null;
+    for (Pair<Path, MindMapBinExporter> targetFile : this.getTargetFiles()) {
+      final Path normalizedTargetFile = targetFile.getKey().normalize();
+      if (map == null) {
+        try {
+          map =
+              this.makeMindMap(
+                  types,
+                  fileLinkBaseFolder == null ? normalizedTargetFile.getParent() :
+                      fileLinkBaseFolder);
+        } catch (final URISyntaxException ex) {
+          throw new IOException("Can't write MMD file for URI syntax error", ex);
+        }
       }
-      FileUtils.writeByteArrayToFile(normalizedTargetFile.toFile(), mindMapFileData);
+
+      if (rootFolder != null && !normalizedTargetFile.startsWith(rootFolder)) {
+        throw new IOException(
+            "Target file is not bounded by the root folder: " + normalizedTargetFile);
+      }
+
+      final byte[] mindMapFileData =
+          targetFile.getRight().export(rootFolder, normalizedTargetFile, map);
+
+      if (!dryStart) {
+        PathUtils.createParentDirectories(normalizedTargetFile);
+        if (Files.isRegularFile(normalizedTargetFile) && !allowOverwrite) {
+          throw new IOException("Target file already exists: " + normalizedTargetFile);
+        }
+        FileUtils.writeByteArrayToFile(normalizedTargetFile.toFile(), mindMapFileData);
+      }
+
+      result.add(normalizedTargetFile);
     }
-    return normalizedTargetFile;
+    return result;
   }
 
   private MindMap makeMindMap(final Types types, final Path fileLinkBaseFolder)
@@ -528,7 +539,7 @@ public class FileItem extends AbstractItem {
       if (!block.isAutoGenerated() && isNoneBlank(topicAnnotation.jumpTo())) {
         final String targetTopicUid =
             this.findTextPreprocessor(topicAnnotation).apply(topicAnnotation.jumpTo(),
-            this.getExtraSubstitutionProperties());
+                this.getExtraSubstitutionProperties());
         if (!targetTopicUid.equals(topicAnnotation.uid())) {
           final Topic targetTopicByUid = uidMarkedTopics.get(targetTopicUid);
           final List<Topic> targetTopicsByTitle =
