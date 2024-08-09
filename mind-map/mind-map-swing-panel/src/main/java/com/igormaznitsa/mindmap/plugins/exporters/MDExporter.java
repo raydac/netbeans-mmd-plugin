@@ -56,10 +56,10 @@ public class MDExporter extends AbstractExporter {
   private static final int STARTING_INDEX_FOR_NUMERATION = 5;
   private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_EXPORT_MARKDOWN);
 
-  private static String generateString(final char chr, final int length) {
+  private static String generateString(final char symbol, final int length) {
     final StringBuilder buffer = new StringBuilder(length);
     for (int i = 0; i < length; i++) {
-      buffer.append(chr);
+      buffer.append(symbol);
     }
     return buffer.toString();
   }
@@ -83,24 +83,24 @@ public class MDExporter extends AbstractExporter {
   }
 
   private void writeTopic(final Topic topic, final String listPosition,
-                          final State state) {
+                          final MdWriter state) {
     final int level = topic.getTopicLevel();
 
     String prefix = "";
 
     final String topicUid = getTopicUid(topic);
     if (topicUid != null) {
-      state.append("<a name=\"").append(topicUid).append("\">").nextLine();
+      state.append("<a name=\"").append(topicUid).append("\"></a>").nextLine();
     }
 
     if (level < STARTING_INDEX_FOR_NUMERATION) {
       final String headerPrefix = generateString('#', topic.getTopicLevel() + 1);
-      state.append(headerPrefix).append(' ').append(escapeMarkdown(topic.getText()))
+      state.append(headerPrefix).append(' ').escape(topic.getText())
           .nextLine();
     } else {
       final String headerPrefix = generateString('#', STARTING_INDEX_FOR_NUMERATION + 1);
       state.append(prefix).append(headerPrefix).append(' ').append(listPosition).append(' ')
-          .append(escapeMarkdown(topic.getText())).nextLine();
+          .escape(topic.getText()).nextLine();
     }
 
     final ExtraFile file = (ExtraFile) this.findExtra(topic, Extra.ExtraType.FILE);
@@ -115,7 +115,7 @@ public class MDExporter extends AbstractExporter {
       if (linkedTopic != null) {
         state.append(prefix).append("*Related to: ")
             .append('[')
-            .append(escapeMarkdown(makeLineFromString(linkedTopic.getText())))
+            .escape(makeLineFromString(linkedTopic.getText()))
             .append("](")
             .append("#")
             .append(requireNonNull(getTopicUid(linkedTopic)))
@@ -132,22 +132,26 @@ public class MDExporter extends AbstractExporter {
     if (file != null) {
       final MMapURI fileURI = file.getValue();
       state.append(prefix)
-          .append("> File: ")
-          .append(escapeMarkdown(
-              fileURI.isAbsolute() ? fileURI.asFile(null).getAbsolutePath() : fileURI.toString()))
-          .nextStringMarker().nextLine();
+          .append("> File: [")
+          .escape(asLineInfo(fileURI))
+          .append("](")
+          .escape(
+              fileURI.isAbsolute() ? fileURI.asFile(null).getAbsolutePath() : fileURI.toString())
+          .append(')')
+          .nextStringMarker()
+          .nextLine();
       extrasPrinted = true;
     }
 
     if (link != null) {
       final String url = link.getValue().toString();
-      final String ascurl = link.getValue().asString(true, true);
+      final String urlAsAscII = link.getValue().asString(true, true);
       state.append(prefix)
           .append("> Url: ")
           .append('[')
-          .append(escapeMarkdown(url))
+          .escape(url)
           .append("](")
-          .append(ascurl)
+          .append(urlAsAscII)
           .append(')')
           .nextStringMarker()
           .nextLine();
@@ -182,12 +186,18 @@ public class MDExporter extends AbstractExporter {
     }
   }
 
-  private void writeInterTopicLine(final State state) {
+  private String asLineInfo(final MMapURI uri) {
+    final String line = uri.getParameters().getProperty("line");
+    final String resourceName = uri.getResourceName();
+    return line == null ? resourceName : resourceName + ':' + line;
+  }
+
+  private void writeInterTopicLine(final MdWriter state) {
     state.nextLine();
   }
 
   private void writeOtherTopicRecursively(final Topic t, final String topicListNumStr,
-                                          final int topicIndex, final State state) {
+                                          final int topicIndex, final MdWriter state) {
     writeInterTopicLine(state);
     final String prefix;
     if (t.getTopicLevel() >= STARTING_INDEX_FOR_NUMERATION) {
@@ -203,7 +213,7 @@ public class MDExporter extends AbstractExporter {
   }
 
   private String makeContent(final MindMap model) {
-    final State state = new State();
+    final MdWriter state = new MdWriter();
 
     state.append("<!--")
         .nextLine()
@@ -301,27 +311,32 @@ public class MDExporter extends AbstractExporter {
     return 4;
   }
 
-  private static class State {
+  private static final class MdWriter {
 
-    private static final String NEXT_LINE = System.getProperty("line.separator", "\n");
+    private static final String NEXT_LINE = "\n";
     private final StringBuilder buffer = new StringBuilder(16384);
 
-    public State append(final char ch) {
+    public MdWriter append(final char ch) {
       this.buffer.append(ch);
       return this;
     }
 
-    public State nextStringMarker() {
+    public MdWriter nextStringMarker() {
       this.buffer.append("  ");
       return this;
     }
 
-    public State append(final String str) {
+    public MdWriter escape(final String str) {
+      this.buffer.append(escapeMarkdown(str));
+      return this;
+    }
+
+    public MdWriter append(final String str) {
       this.buffer.append(str);
       return this;
     }
 
-    public State nextLine() {
+    public MdWriter nextLine() {
       this.buffer.append(NEXT_LINE);
       return this;
     }

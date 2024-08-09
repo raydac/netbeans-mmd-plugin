@@ -302,16 +302,27 @@ public class MMapURI implements Serializable {
   }
 
   /**
-   * Get resource extension
+   * Get resource name with extension
    *
-   * @return extension of the resource, can't be null, be empty if there is no extension
+   * @return found resource name found before last slash
+   * @since 1.6.8
    */
-  public String getExtension() {
+  public String getResourceName() {
     String text = this.uri.getPath();
     final int lastSlash = text.lastIndexOf('/');
     if (lastSlash >= 0) {
       text = text.substring(lastSlash + 1);
     }
+    return text;
+  }
+
+  /**
+   * Get resource extension
+   *
+   * @return extension of the resource, can't be null, be empty if there is no extension
+   */
+  public String getExtension() {
+    String text = this.getResourceName();
     String result = "";
     if (!text.isEmpty()) {
       final int dotIndex = text.lastIndexOf('.');
