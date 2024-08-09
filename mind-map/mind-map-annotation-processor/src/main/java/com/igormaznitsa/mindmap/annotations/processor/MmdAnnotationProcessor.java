@@ -26,6 +26,7 @@ import static javax.tools.Diagnostic.Kind.NOTE;
 import static javax.tools.Diagnostic.Kind.WARNING;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
+import com.igormaznitsa.commons.version.Version;
 import com.igormaznitsa.mindmap.annotations.HasMmdMarkedElements;
 import com.igormaznitsa.mindmap.annotations.MmdFile;
 import com.igormaznitsa.mindmap.annotations.MmdFileRef;
@@ -41,6 +42,7 @@ import com.sun.source.util.SourcePositions;
 import com.sun.source.util.Trees;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -51,6 +53,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -83,13 +86,27 @@ import org.apache.commons.lang3.tuple.Pair;
 })
 public class MmdAnnotationProcessor extends AbstractProcessor {
 
+  public static final Version VERSION;
   /**
    * Option to define target format for generated files, the default value is MMD
    *
-   * @since 1.6.8
    * @see MmdExporter
+   * @since 1.6.8
    */
   public static final String KEY_MMD_TARGET_FORMAT = "mmd.target.format";
+
+  static {
+    Version result;
+    try (final InputStream stream = requireNonNull(MmdAnnotationProcessor.class.getResourceAsStream(
+        "/application.properties"))) {
+      Properties props = new Properties();
+      props.load(stream);
+      result = new Version(props.getProperty("version"));
+    } catch (Exception ex) {
+      throw new Error("Can't load version info", ex);
+    }
+    VERSION = result;
+  }
   /**
    * Option to force target folder to place all generated MMD files.
    */

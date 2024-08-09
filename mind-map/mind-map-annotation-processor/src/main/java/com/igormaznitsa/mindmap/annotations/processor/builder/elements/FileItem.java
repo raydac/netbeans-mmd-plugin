@@ -28,6 +28,7 @@ import static org.apache.commons.lang3.StringUtils.isNoneBlank;
 
 import com.igormaznitsa.mindmap.annotations.MmdFile;
 import com.igormaznitsa.mindmap.annotations.MmdTopic;
+import com.igormaznitsa.mindmap.annotations.processor.MmdAnnotationProcessor;
 import com.igormaznitsa.mindmap.annotations.processor.MmdAnnotationWrapper;
 import com.igormaznitsa.mindmap.annotations.processor.builder.exceptions.MmdAnnotationProcessorException;
 import com.igormaznitsa.mindmap.annotations.processor.exporters.MindMapBinExporter;
@@ -252,7 +253,7 @@ public class FileItem extends AbstractItem {
     final MindMap map = new MindMap(false);
     map.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_SHOW_JUMPS, "true");
     map.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID,
-        "com.igormaznitsa:mind-map-annotation-processor:1.6.8");
+        "com.igormaznitsa:mind-map-annotation-processor:" + MmdAnnotationProcessor.VERSION);
     if (fileLinkBaseFolder == null) {
       map.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_NO_BASE_FOLDER, "true");
     }
