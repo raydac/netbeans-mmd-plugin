@@ -87,6 +87,7 @@ import org.apache.commons.lang3.tuple.Pair;
 public class MmdAnnotationProcessor extends AbstractProcessor {
 
   public static final Version VERSION;
+  public static final String NAME;
   /**
    * Option to define target format for generated files, the default value is MMD
    *
@@ -96,16 +97,15 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
   public static final String KEY_MMD_TARGET_FORMAT = "mmd.target.format";
 
   static {
-    Version result;
     try (final InputStream stream = requireNonNull(MmdAnnotationProcessor.class.getResourceAsStream(
         "/application.properties"))) {
       Properties props = new Properties();
       props.load(stream);
-      result = new Version(props.getProperty("version"));
+      VERSION = new Version(props.getProperty("version", "1.6.8"));
+      NAME = props.getProperty("name", "unknown");
     } catch (Exception ex) {
       throw new Error("Can't load version info", ex);
     }
-    VERSION = result;
   }
   /**
    * Option to force target folder to place all generated MMD files.

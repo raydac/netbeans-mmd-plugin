@@ -29,7 +29,7 @@ public class ProcessorBridge implements IDEBridge {
 
   @Override
   public String getIDEGeneratorId() {
-    return "mindmap-annotation-processor";
+    return MmdAnnotationProcessor.NAME;
   }
 
   @Override
