@@ -160,7 +160,8 @@ public final class PNGImageExporter extends AbstractExporter {
 
   @Override
   public void doExportToClipboard(final PluginContext context,
-                                  final Set<AbstractParameter<?>> options)
+                                  final Set<AbstractParameter<?>> options,
+                                  final ExtrasToStringConverter stringConverter)
       throws IOException {
     final BufferedImage image = makeImage(context, options);
     if (image != null) {
@@ -175,7 +176,8 @@ public final class PNGImageExporter extends AbstractExporter {
 
   @Override
   public void doExport(final PluginContext context, final Set<AbstractParameter<?>> options,
-                       final OutputStream out) throws IOException {
+                       final OutputStream out,
+                       final ExtrasToStringConverter stringConverter) throws IOException {
     final RenderedImage image = makeImage(context, options);
 
     if (image == null) {

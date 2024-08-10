@@ -16,15 +16,11 @@
 
 package com.igormaznitsa.mindmap.plugins.exporters;
 
-import static java.util.Objects.requireNonNull;
-
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.ExtraFile;
 import com.igormaznitsa.mindmap.model.ExtraLink;
 import com.igormaznitsa.mindmap.model.ExtraNote;
 import com.igormaznitsa.mindmap.model.ExtraTopic;
-import com.igormaznitsa.mindmap.model.MMapURI;
-import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.ModelUtils;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
@@ -56,6 +52,38 @@ public class ORGMODEExporter extends AbstractExporter {
   private static final int STARTING_INDEX_FOR_NUMERATION = 5;
   private static final Icon ICO =
       ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_EXPORT_ORGMODE);
+  private static final ExtrasToStringConverter DEFAULT_EXTRA_ORGMODE_STRING_CONVERTER =
+      new ExtrasToStringConverter() {
+        @Override
+        public String apply(final PluginContext context, final Extra<?> extra) {
+          switch (extra.getType()) {
+            case FILE: {
+              final ExtraFile fileURI = (ExtraFile) extra;
+              if (fileURI.isAbsolute()) {
+                return fileURI.getValue().asURI().toASCIIString();
+              } else {
+                return "file://./" + fileURI.getValue().asURI().toASCIIString();
+              }
+            }
+            case NOTE: {
+              return ((ExtraNote) extra).getValue();
+            }
+            case LINK: {
+              return ((ExtraLink) extra).getValue().asString(true, true);
+            }
+            case TOPIC: {
+              return ((ExtraTopic) extra).getValue();
+            }
+            default:
+              throw new IllegalArgumentException("Unsupported extra: " + extra);
+          }
+        }
+      };
+
+  @Override
+  public ExtrasToStringConverter getDefaultStringConverter() {
+    return DEFAULT_EXTRA_ORGMODE_STRING_CONVERTER;
+  }
 
   private static String generateString(final char chr, final int length) {
     final StringBuilder buffer = new StringBuilder(length);
@@ -168,8 +196,12 @@ public class ORGMODEExporter extends AbstractExporter {
     return result.toString();
   }
 
-  private void writeTopic(final Topic topic, final String listPosition,
-                          final State state) {
+  private void writeTopic(
+      final PluginContext context,
+      final Topic topic,
+      final String listPosition,
+      final State state,
+      final ExtrasToStringConverter stringConverter) {
     final int level = topic.getTopicLevel();
 
     String prefix = "";
@@ -202,7 +234,7 @@ public class ORGMODEExporter extends AbstractExporter {
       if (linkedTopic != null) {
         state.append(prefix).append("RELATED TO: ")
             .append("[[#sec:")
-            .append(requireNonNull(getTopicUid(linkedTopic)))
+            .append(stringConverter.apply(context, jump))
             .append("][")
             .append(escapeStr(makeLineFromString(linkedTopic.getText()), true))
             .append("]]")
@@ -213,21 +245,17 @@ public class ORGMODEExporter extends AbstractExporter {
     }
 
     if (file != null) {
-      final MMapURI fileURI = file.getValue();
-      state.append(prefix).append("FILE: [[");
-      if (fileURI.isAbsolute()) {
-        state.append(fileURI.asURI().toASCIIString());
-      } else {
-        state.append("file://./").append(fileURI.asURI().toASCIIString());
-      }
-      state.append("]] \\\\").nextLine();
+      state
+          .append(prefix)
+          .append("FILE: [[")
+          .append(stringConverter.apply(context, file))
+          .append("]] \\\\").nextLine();
       extrasPrinted = true;
     }
 
     if (link != null) {
-      final String ascurl = link.getValue().asString(true, true);
       state.append(prefix).append("URL: [[")
-          .append(ascurl)
+          .append(stringConverter.apply(context, link))
           .append("]] \\\\")
           .nextLine();
       extrasPrinted = true;
@@ -237,7 +265,7 @@ public class ORGMODEExporter extends AbstractExporter {
       if (extrasPrinted) {
         state.nextLine();
       }
-      printTextBlock(state, prefix, note.getValue());
+      printTextBlock(state, prefix, stringConverter.apply(context, note));
     }
 
     final Map<String, String> codeSnippets = topic.getCodeSnippets();
@@ -267,26 +295,32 @@ public class ORGMODEExporter extends AbstractExporter {
     state.nextLine();
   }
 
-  private void writeOtherTopicRecursively(final Topic t, final String topicListNumStr,
-                                          final int topicIndex, final State state) {
+  private void writeOtherTopicRecursively(
+      final PluginContext context,
+      final Topic topic,
+      final String topicListNumStr,
+      final int topicIndex,
+      final State state,
+      final ExtrasToStringConverter stringConverter) {
     writeInterTopicLine(state);
     final String prefix;
-    if (t.getTopicLevel() >= STARTING_INDEX_FOR_NUMERATION) {
+    if (topic.getTopicLevel() >= STARTING_INDEX_FOR_NUMERATION) {
       prefix = topicListNumStr + (topicIndex + 1) + '.';
     } else {
       prefix = "";
     }
-    writeTopic(t, prefix, state);
+    writeTopic(context, topic, prefix, state, stringConverter);
     int index = 0;
-    for (final Topic ch : t.getChildren()) {
-      writeOtherTopicRecursively(ch, prefix, index++, state);
+    for (final Topic ch : topic.getChildren()) {
+      writeOtherTopicRecursively(context, ch, prefix, index++, state, stringConverter);
     }
   }
 
-  private String makeContent(final MindMap model) {
+  private String makeContent(final PluginContext context,
+                             final ExtrasToStringConverter stringConverter) {
     final State state = new State();
 
-    final Topic root = model.getRoot();
+    final Topic root = context.getModel().getRoot();
 
     state.append("#+TITLE: ").append(escapeStr(root == null ? "" : root.getText(), true))
         .nextLine();
@@ -302,15 +336,16 @@ public class ORGMODEExporter extends AbstractExporter {
     state.nextLine();
 
     if (root != null) {
-      writeTopic(root, "", state);
+      writeTopic(context, root, "", state, stringConverter);
 
       final Topic[] children = Utils.getLeftToRightOrderedChildrens(root);
-      for (final Topic t : children) {
-        writeInterTopicLine(state);
-        writeTopic(t, "", state);
+      for (final Topic child : children) {
+        this.writeInterTopicLine(state);
+        this.writeTopic(context, child, "", state, stringConverter);
         int indexChild = 0;
-        for (final Topic tt : t.getChildren()) {
-          writeOtherTopicRecursively(tt, "", indexChild++, state);
+        for (final Topic subChild : child.getChildren()) {
+          this.writeOtherTopicRecursively(context, subChild, "", indexChild++, state,
+              stringConverter);
         }
       }
     }
@@ -319,9 +354,12 @@ public class ORGMODEExporter extends AbstractExporter {
   }
 
   @Override
-  public void doExportToClipboard(final PluginContext context, final Set<AbstractParameter<?>> options)
+  public void doExportToClipboard(
+      final PluginContext context,
+      final Set<AbstractParameter<?>> options,
+      final ExtrasToStringConverter stringConverter)
       throws IOException {
-    final String text = makeContent(context.getModel());
+    final String text = this.makeContent(context, stringConverter);
     SwingUtilities.invokeLater(() -> {
       final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
       if (clipboard != null) {
@@ -331,9 +369,12 @@ public class ORGMODEExporter extends AbstractExporter {
   }
 
   @Override
-  public void doExport(final PluginContext context, final Set<AbstractParameter<?>> options,
-                       final OutputStream out) throws IOException {
-    final String text = makeContent(context.getModel());
+  public void doExport(
+      final PluginContext context,
+      final Set<AbstractParameter<?>> options,
+      final OutputStream out,
+      final ExtrasToStringConverter stringConverter) throws IOException {
+    final String text = this.makeContent(context, stringConverter);
 
     File fileToSaveMap = null;
     OutputStream theOut = out;

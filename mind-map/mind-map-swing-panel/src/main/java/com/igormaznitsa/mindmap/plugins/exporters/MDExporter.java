@@ -54,7 +54,30 @@ import org.apache.commons.text.StringEscapeUtils;
 public class MDExporter extends AbstractExporter {
 
   private static final int STARTING_INDEX_FOR_NUMERATION = 5;
-  private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_EXPORT_MARKDOWN);
+  private static final Icon ICO =
+      ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_EXPORT_MARKDOWN);
+  private static final ExtrasToStringConverter DEFAULT_MD_EXTRAS_STRING_CONVERTER =
+      new ExtrasToStringConverter() {
+        @Override
+        public String apply(final PluginContext pluginContext, final Extra<?> extra) {
+          switch (extra.getType()) {
+            case FILE:
+              return ((ExtraFile) extra).getValue().asFile(pluginContext.getProjectFolder())
+                  .getAbsolutePath();
+            case LINK: {
+              final String url = ((ExtraLink) extra).getValue().toString();
+              final String urlAsAscII = ((ExtraLink) extra).getValue().asString(true, true);
+              return '[' + url + "](" + urlAsAscII + ')';
+            }
+            case NOTE:
+              return StringEscapeUtils.escapeHtml3(((ExtraNote) extra).getValue());
+            case TOPIC:
+              return ((ExtraTopic) extra).getValue();
+            default:
+              throw new IllegalArgumentException("Unknown extras: " + extra);
+          }
+        }
+      };
 
   private static String generateString(final char symbol, final int length) {
     final StringBuilder buffer = new StringBuilder(length);
@@ -82,8 +105,17 @@ public class MDExporter extends AbstractExporter {
     return topic.getAttribute(ExtraTopic.TOPIC_UID_ATTR);
   }
 
-  private void writeTopic(final Topic topic, final String listPosition,
-                          final MdWriter state) {
+  @Override
+  public ExtrasToStringConverter getDefaultStringConverter() {
+    return DEFAULT_MD_EXTRAS_STRING_CONVERTER;
+  }
+
+  private void writeTopic(
+      final PluginContext pluginContext,
+      final Topic topic,
+      final String listPosition,
+      final MdWriter state,
+      final ExtrasToStringConverter stringConverter) {
     final int level = topic.getTopicLevel();
 
     String prefix = "";
@@ -118,7 +150,7 @@ public class MDExporter extends AbstractExporter {
             .escape(makeLineFromString(linkedTopic.getText()))
             .append("](")
             .append("#")
-            .append(requireNonNull(getTopicUid(linkedTopic)))
+            .append(requireNonNull(stringConverter.apply(pluginContext, transition)))
             .append(")*")
             .nextStringMarker()
             .nextLine();
@@ -135,8 +167,7 @@ public class MDExporter extends AbstractExporter {
           .append("> File: [")
           .escape(asLineInfo(fileURI))
           .append("](")
-          .escape(
-              fileURI.isAbsolute() ? fileURI.asFile(null).getAbsolutePath() : fileURI.toString())
+          .escape(stringConverter.apply(pluginContext, file))
           .append(')')
           .nextStringMarker()
           .nextLine();
@@ -144,15 +175,9 @@ public class MDExporter extends AbstractExporter {
     }
 
     if (link != null) {
-      final String url = link.getValue().toString();
-      final String urlAsAscII = link.getValue().asString(true, true);
       state.append(prefix)
           .append("> Url: ")
-          .append('[')
-          .escape(url)
-          .append("](")
-          .append(urlAsAscII)
-          .append(')')
+          .escape(stringConverter.apply(pluginContext, link))
           .nextStringMarker()
           .nextLine();
       extrasPrinted = true;
@@ -164,7 +189,7 @@ public class MDExporter extends AbstractExporter {
       }
       state.append(prefix)
           .append("<pre>")
-          .append(StringEscapeUtils.escapeHtml3(note.getValue()))
+          .append(stringConverter.apply(pluginContext, note))
           .append("</pre>")
           .nextLine();
     }
@@ -196,8 +221,11 @@ public class MDExporter extends AbstractExporter {
     state.nextLine();
   }
 
-  private void writeOtherTopicRecursively(final Topic t, final String topicListNumStr,
-                                          final int topicIndex, final MdWriter state) {
+  private void writeOtherTopicRecursively(final PluginContext pluginContext, final Topic t,
+                                          final String topicListNumStr,
+                                          final int topicIndex,
+                                          final MdWriter state,
+                                          final ExtrasToStringConverter stringConverter) {
     writeInterTopicLine(state);
     final String prefix;
     if (t.getTopicLevel() >= STARTING_INDEX_FOR_NUMERATION) {
@@ -205,14 +233,15 @@ public class MDExporter extends AbstractExporter {
     } else {
       prefix = "";
     }
-    writeTopic(t, prefix, state);
+    writeTopic(pluginContext, t, prefix, state, stringConverter);
     int index = 0;
     for (final Topic ch : t.getChildren()) {
-      writeOtherTopicRecursively(ch, prefix, index++, state);
+      writeOtherTopicRecursively(pluginContext, ch, prefix, index++, state, stringConverter);
     }
   }
 
-  private String makeContent(final MindMap model) {
+  private String makeContent(final PluginContext pluginContext, final MindMap model,
+                             final ExtrasToStringConverter stringConverter) {
     final MdWriter state = new MdWriter();
 
     state.append("<!--")
@@ -226,15 +255,15 @@ public class MDExporter extends AbstractExporter {
 
     final Topic root = model.getRoot();
     if (root != null) {
-      writeTopic(root, "", state);
+      writeTopic(pluginContext, root, "", state, stringConverter);
 
       final Topic[] children = Utils.getLeftToRightOrderedChildrens(root);
       for (final Topic t : children) {
         writeInterTopicLine(state);
-        writeTopic(t, "", state);
+        writeTopic(pluginContext, t, "", state, stringConverter);
         int indexChild = 0;
         for (final Topic tt : t.getChildren()) {
-          writeOtherTopicRecursively(tt, "", indexChild++, state);
+          writeOtherTopicRecursively(pluginContext, tt, "", indexChild++, state, stringConverter);
         }
       }
     }
@@ -243,9 +272,12 @@ public class MDExporter extends AbstractExporter {
   }
 
   @Override
-  public void doExportToClipboard(final PluginContext context, final Set<AbstractParameter<?>> options)
+  public void doExportToClipboard(
+      final PluginContext context,
+      final Set<AbstractParameter<?>> options,
+      final ExtrasToStringConverter stringConverter)
       throws IOException {
-    final String text = makeContent(context.getModel());
+    final String text = makeContent(context, context.getModel(), stringConverter);
     SwingUtilities.invokeLater(() -> {
       final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
       if (clipboard != null) {
@@ -255,9 +287,12 @@ public class MDExporter extends AbstractExporter {
   }
 
   @Override
-  public void doExport(final PluginContext context, final Set<AbstractParameter<?>> options,
-                       final OutputStream out) throws IOException {
-    final String text = makeContent(context.getModel());
+  public void doExport(
+      final PluginContext context,
+      final Set<AbstractParameter<?>> options,
+      final OutputStream out,
+      final ExtrasToStringConverter stringConverter) throws IOException {
+    final String text = makeContent(context, context.getModel(), stringConverter);
 
     File fileToSaveMap = null;
     OutputStream theOut = out;

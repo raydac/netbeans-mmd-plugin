@@ -980,13 +980,16 @@ public class SciaRetoStarter {
 
     @Override
     public void doExport(@Nonnull PluginContext context, @Nullable Set<AbstractParameter<?>> options,
-                         @Nullable OutputStream out) throws IOException {
+                         @Nullable OutputStream out,
+                         @Nonnull ExtrasToStringConverter stringConverter) throws IOException {
       final MindMap map = context.getModel();
       IOUtils.write(map.write(new StringWriter()).toString(), out, "UTF-8"); //NOI18N
     }
 
     @Override
-    public void doExportToClipboard(@Nonnull PluginContext context, @Nullable Set<AbstractParameter<?>> options)
+    public void doExportToClipboard(@Nonnull PluginContext context,
+                                    @Nullable Set<AbstractParameter<?>> options,
+                                    @Nonnull ExtrasToStringConverter stringConverter)
         throws IOException {
       final MindMap map = context.getModel();
       final StringWriter writer = map.write(new StringWriter());

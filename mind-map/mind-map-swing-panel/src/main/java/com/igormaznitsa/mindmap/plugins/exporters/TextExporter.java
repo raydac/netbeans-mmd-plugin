@@ -109,8 +109,34 @@ public class TextExporter extends AbstractExporter {
     return max;
   }
 
-  private void writeTopic(final Topic topic, final char ch, final int shift,
-                          final State state) {
+  private static final ExtrasToStringConverter DEFAULT_TEXT_EXTRAS_CONVERTER =
+      new ExtrasToStringConverter() {
+        @Override
+        public String apply(final PluginContext pluginContext, final Extra<?> extra) {
+          switch (extra.getType()) {
+            case FILE:
+              return ((ExtraFile) extra).getValue().asString(false, false);
+            case LINK:
+              return ((ExtraLink) extra).getValue().asString(false, true);
+            case NOTE:
+              return ((ExtraNote) extra).getValue();
+            case TOPIC:
+              return ((ExtraTopic) extra).getValue();
+            default:
+              throw new IllegalArgumentException("Unknown extras: " + extra);
+          }
+        }
+      };
+
+  @Override
+  public ExtrasToStringConverter getDefaultStringConverter() {
+    return DEFAULT_TEXT_EXTRAS_CONVERTER;
+  }
+
+  private void writeTopic(
+      final PluginContext pluginContext,
+      final Topic topic, final char ch, final int shift,
+      final State state, final ExtrasToStringConverter stringConverter) {
     final int maxLen = getMaxLineWidth(topic.getText());
     state.append(shiftString(topic.getText(), ' ', shift)).nextLine()
         .append(shiftString(generateString(ch, maxLen + 2), ' ', shift)).nextLine();
@@ -123,23 +149,30 @@ public class TextExporter extends AbstractExporter {
     boolean extrasPrinted = false;
 
     if (file != null) {
-      final String uri = file.getValue().asString(false, false);
-      state.append(shiftString("FILE: ", ' ', shift)).append(uri).nextLine();
+      state.append(shiftString("FILE: ", ' ', shift))
+          .append(stringConverter.apply(pluginContext, file)).nextLine();
       extrasPrinted = true;
     }
 
     if (link != null) {
-      final String uri = link.getValue().asString(false, false);
-      state.append(shiftString("URL: ", ' ', shift)).append(uri).nextLine();
+      state.append(shiftString("URL: ", ' ', shift))
+          .append(stringConverter.apply(pluginContext, link)).nextLine();
       extrasPrinted = true;
     }
 
     if (transition != null) {
       final Topic linkedTopic = topic.getMap().findTopicForLink(transition);
-      state.append(shiftString("Related to: ", ' ', shift)).append(
-          linkedTopic == null ? "<UNKNOWN>" :
-              '\"' + makeLineFromString(linkedTopic.getText()) + "\"").nextLine();
-      extrasPrinted = true;
+      if (linkedTopic != null) {
+        state.append(shiftString("Related to: ", ' ', shift))
+            .append('\"')
+            .append(makeLineFromString(linkedTopic.getText()))
+            .append("\" [")
+            .append(stringConverter.apply(pluginContext, transition))
+            .append(']')
+            .nextLine();
+
+        extrasPrinted = true;
+      }
     }
 
     if (note != null) {
@@ -178,16 +211,22 @@ public class TextExporter extends AbstractExporter {
     state.nextLine();
   }
 
-  private void writeOtherTopicRecursively(final Topic t, int shift, final State state) {
+  private void writeOtherTopicRecursively(
+      final PluginContext context,
+      final Topic topic,
+      int shift,
+      final State state,
+      final ExtrasToStringConverter stringConverter) {
     writeInterTopicLine(state);
-    writeTopic(t, '.', shift, state);
+    writeTopic(context, topic, '.', shift, state, stringConverter);
     shift += SHIFT_STEP;
-    for (final Topic ch : t.getChildren()) {
-      writeOtherTopicRecursively(ch, shift, state);
+    for (final Topic ch : topic.getChildren()) {
+      writeOtherTopicRecursively(context, ch, shift, state, stringConverter);
     }
   }
 
-  private String makeContent(final PluginContext context) {
+  private String makeContent(final PluginContext context,
+                             final ExtrasToStringConverter stringConverter) {
     final State state = new State();
 
     state.append(
@@ -203,17 +242,17 @@ public class TextExporter extends AbstractExporter {
 
     final Topic root = context.getModel().getRoot();
     if (root != null) {
-      writeTopic(root, '=', shift, state);
+      writeTopic(context, root, '=', shift, state, stringConverter);
 
       shift += SHIFT_STEP;
 
       final Topic[] children = Utils.getLeftToRightOrderedChildrens(root);
       for (final Topic t : children) {
         writeInterTopicLine(state);
-        writeTopic(t, '-', shift, state);
+        writeTopic(context, t, '-', shift, state, stringConverter);
         shift += SHIFT_STEP;
         for (final Topic tt : t.getChildren()) {
-          writeOtherTopicRecursively(tt, shift, state);
+          writeOtherTopicRecursively(context, tt, shift, state, stringConverter);
         }
         shift -= SHIFT_STEP;
       }
@@ -224,9 +263,10 @@ public class TextExporter extends AbstractExporter {
 
   @Override
   public void doExportToClipboard(final PluginContext context,
-                                  final Set<AbstractParameter<?>> options)
+                                  final Set<AbstractParameter<?>> options,
+                                  final ExtrasToStringConverter stringConverter)
       throws IOException {
-    final String text = makeContent(context);
+    final String text = makeContent(context, stringConverter);
     SwingUtilities.invokeLater(() -> {
       final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
       if (clipboard != null) {
@@ -236,9 +276,13 @@ public class TextExporter extends AbstractExporter {
   }
 
   @Override
-  public void doExport(final PluginContext context, final Set<AbstractParameter<?>> options,
-                       final OutputStream out) throws IOException {
-    final String text = makeContent(context);
+  public void doExport(
+      final PluginContext context,
+      final Set<AbstractParameter<?>> options,
+      final OutputStream out,
+      final ExtrasToStringConverter stringConverter
+  ) throws IOException {
+    final String text = makeContent(context, stringConverter);
 
     File fileToSaveMap = null;
     OutputStream theOut = out;

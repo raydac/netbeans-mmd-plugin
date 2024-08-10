@@ -23,7 +23,6 @@ import com.igormaznitsa.mindmap.model.ExtraFile;
 import com.igormaznitsa.mindmap.model.ExtraLink;
 import com.igormaznitsa.mindmap.model.ExtraNote;
 import com.igormaznitsa.mindmap.model.ExtraTopic;
-import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.MiscUtils;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
@@ -31,7 +30,6 @@ import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.api.parameters.AbstractParameter;
-import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
@@ -64,20 +62,46 @@ public class MindmupExporter extends AbstractExporter {
       ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_EXPORT_MINDMUP);
   private static final Logger LOGGER = LoggerFactory.getLogger(MindmupExporter.class);
 
-  private static String makeHtmlFromExtras(final ExtraLink link, final ExtraFile file) {
+  private static final ExtrasToStringConverter DEFAULT_MINDMUP_EXTRAS_STRING_CONVERTER =
+      new ExtrasToStringConverter() {
+        @Override
+        public String apply(PluginContext context, Extra<?> extra) {
+          switch (extra.getType()) {
+            case FILE:
+              return ((ExtraFile) extra).getValue().asString(true, false);
+            case LINK:
+              return ((ExtraLink) extra).getValue().asString(true, true);
+            case NOTE:
+              return ((ExtraNote) extra).getValue();
+            case TOPIC:
+              return ((ExtraTopic) extra).getValue();
+            default:
+              throw new IllegalArgumentException("Unsupported extras: " + extra);
+          }
+        }
+      };
+
+  private static String makeHtmlFromExtras(final PluginContext context, final ExtraLink link,
+                                           final ExtraFile file,
+                                           final ExtrasToStringConverter stringConverter) {
     final StringBuilder result = new StringBuilder();
 
     if (file != null) {
-      final String uri = file.getValue().asString(true, false);
+      final String uri = stringConverter.apply(context, file);
       result.append("FILE: <a href=\"").append(uri).append("\">").append(uri)
           .append("</a><br>");
     }
     if (link != null) {
-      final String uri = link.getValue().asString(true, true);
+      final String uri = stringConverter.apply(context, link);
       result.append("LINK: <a href=\"").append(uri).append("\">").append(uri)
           .append("</a><br>");
     }
     return result.toString();
+  }
+
+  @Override
+  public ExtrasToStringConverter getDefaultStringConverter() {
+    return DEFAULT_MINDMUP_EXTRAS_STRING_CONVERTER;
   }
 
   @Override
@@ -86,12 +110,13 @@ public class MindmupExporter extends AbstractExporter {
   }
 
   private void writeTopic(
+      final PluginContext context,
       final JSONStringer stringer,
-      final MindMapPanelConfig cfg,
       final AtomicInteger idCounter,
       final Topic topic,
       final Map<String, String> linkMap,
-      final Map<String, TopicId> uuidMap
+      final Map<String, TopicId> uuidMap,
+      final ExtrasToStringConverter stringConverter
   ) {
     stringer.key("title").value(MiscUtils.ensureNotNull(topic.getText(), ""));
     final int topicId = idCounter.getAndIncrement();
@@ -110,20 +135,21 @@ public class MindmupExporter extends AbstractExporter {
     final String encodedImage = topic.getAttribute(MMD_TOPIC_ATTRIBUTE_IMAGE_DATA);
 
     if (jump != null) {
-      linkMap.put(uuid, jump.getValue());
+      linkMap.put(uuid, stringConverter.apply(context, jump));
     }
 
     stringer.key("attr").object();
 
     stringer.key("style").object();
     stringer.key("background")
-        .value(Utils.color2html(MindMapUtils.getBackgroundColor(cfg, topic), false));
+        .value(Utils.color2html(MindMapUtils.getBackgroundColor(context.getPanelConfig(), topic),
+            false));
     stringer.endObject();
 
     if (note != null) {
       stringer.key("note").object();
       stringer.key("index").value(3);
-      stringer.key("text").value(note.getValue());
+      stringer.key("text").value(stringConverter.apply(context, note));
       stringer.endObject();
     }
 
@@ -153,7 +179,7 @@ public class MindmupExporter extends AbstractExporter {
     if (link != null || file != null) {
       stringer.key("attachment").object();
       stringer.key("contentType").value("text/html");
-      stringer.key("content").value(makeHtmlFromExtras(link, file));
+      stringer.key("content").value(makeHtmlFromExtras(context, link, file, stringConverter));
       stringer.endObject();
     }
 
@@ -163,14 +189,16 @@ public class MindmupExporter extends AbstractExporter {
       final boolean left = AbstractCollapsableElement.isLeftSidedTopic(child);
       stringer.key(Integer.toString(left ? -childIdCounter : childIdCounter)).object();
       childIdCounter++;
-      writeTopic(stringer, cfg, idCounter, child, linkMap, uuidMap);
+      writeTopic(context, stringer, idCounter, child, linkMap, uuidMap, stringConverter);
       stringer.endObject();
     }
     stringer.endObject();
   }
 
-  private void writeRoot(final JSONStringer stringer, final MindMapPanelConfig cfg,
-                         final Topic root) {
+  private void writeRoot(
+      final PluginContext context,
+      final JSONStringer stringer,
+      final ExtrasToStringConverter stringConverter) {
     stringer.object();
 
     stringer.key("formatVersion").value(3L);
@@ -180,9 +208,12 @@ public class MindmupExporter extends AbstractExporter {
     final Map<String, String> linkMap = new HashMap<>();
     final Map<String, TopicId> uuidTopicMap = new HashMap<>();
 
+    final Topic root = context.getModel().getRoot();
+
     if (root != null) {
       stringer.key("1").object();
-      writeTopic(stringer, cfg, new AtomicInteger(1), root, linkMap, uuidTopicMap);
+      writeTopic(context, stringer, new AtomicInteger(1), root, linkMap, uuidTopicMap,
+          stringConverter);
       stringer.endObject();
       stringer.key("title").value(Objects.requireNonNull(root.getText(), "[Root]"));
     } else {
@@ -208,7 +239,8 @@ public class MindmupExporter extends AbstractExporter {
           stringer.key("style").object();
 
           stringer.key("arrow").value("to");
-          stringer.key("color").value(Utils.color2html(cfg.getJumpLinkColor(), false));
+          stringer.key("color")
+              .value(Utils.color2html(context.getPanelConfig().getJumpLinkColor(), false));
           stringer.key("lineStyle").value("dashed");
 
           stringer.endObject();
@@ -224,16 +256,19 @@ public class MindmupExporter extends AbstractExporter {
     stringer.endObject();
   }
 
-  private String makeContent(final MindMap model, final MindMapPanelConfig config) {
+  private String makeContent(final PluginContext context,
+                             final ExtrasToStringConverter stringConverter) {
     final JSONStringer stringer = new JSONStringer();
-    writeRoot(stringer, config, model.getRoot());
+    writeRoot(context, stringer, stringConverter);
     return stringer.toString();
   }
 
   @Override
-  public void doExportToClipboard(final PluginContext context, final Set<AbstractParameter<?>> options)
+  public void doExportToClipboard(final PluginContext context,
+                                  final Set<AbstractParameter<?>> options,
+                                  final ExtrasToStringConverter stringConverter)
       throws IOException {
-    final String text = makeContent(context.getModel(), context.getPanelConfig());
+    final String text = makeContent(context, stringConverter);
     SwingUtilities.invokeLater(() -> {
       final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
       if (clipboard != null) {
@@ -243,9 +278,12 @@ public class MindmupExporter extends AbstractExporter {
   }
 
   @Override
-  public void doExport(final PluginContext context, final Set<AbstractParameter<?>> options,
-                       final OutputStream out) throws IOException {
-    final String text = makeContent(context.getModel(), context.getPanelConfig());
+  public void doExport(
+      final PluginContext context,
+      final Set<AbstractParameter<?>> options,
+      final OutputStream out,
+      final ExtrasToStringConverter stringConverter) throws IOException {
+    final String text = this.makeContent(context, stringConverter);
 
     File fileToSaveMap = null;
     OutputStream theOut = out;

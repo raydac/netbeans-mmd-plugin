@@ -309,7 +309,8 @@ public class SVGImageExporter extends AbstractExporter {
 
   @Override
   public void doExportToClipboard(final PluginContext context,
-                                  final Set<AbstractParameter<?>> options)
+                                  final Set<AbstractParameter<?>> options,
+                                  final ExtrasToStringConverter stringConverter)
       throws IOException {
     final String text = makeContent(context, options);
     SwingUtilities.invokeLater(() -> {
@@ -321,8 +322,12 @@ public class SVGImageExporter extends AbstractExporter {
   }
 
   @Override
-  public void doExport(final PluginContext context, final Set<AbstractParameter<?>> options,
-                       final OutputStream out) throws IOException {
+  public void doExport(
+      final PluginContext context,
+      final Set<AbstractParameter<?>> options,
+      final OutputStream out,
+      final ExtrasToStringConverter stringConverter
+  ) throws IOException {
     final String text = makeContent(context, options);
 
     File fileToSaveMap = null;

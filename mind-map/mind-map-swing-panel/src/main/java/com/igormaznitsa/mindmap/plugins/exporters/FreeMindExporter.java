@@ -26,7 +26,6 @@ import com.igormaznitsa.mindmap.model.ExtraLink;
 import com.igormaznitsa.mindmap.model.ExtraLinkable;
 import com.igormaznitsa.mindmap.model.ExtraNote;
 import com.igormaznitsa.mindmap.model.ExtraTopic;
-import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
@@ -60,12 +59,27 @@ import org.apache.commons.text.StringEscapeUtils;
 
 public class FreeMindExporter extends AbstractExporter {
 
-  private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_EXPORT_FREEMIND);
+  private static final Icon ICO =
+      ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_EXPORT_FREEMIND);
+  private static final ExtrasToStringConverter DEFAULT_STRING_CONVERTER_FREEMIND =
+      new ExtrasToStringConverter() {
+        @Override
+        public String apply(PluginContext pluginContext, Extra<?> extra) {
+          if (extra instanceof ExtraLinkable) {
+            return ((ExtraLinkable) extra).getAsURI()
+                .asString(true, extra.getType() != Extra.ExtraType.FILE);
+          }
+          if (extra instanceof ExtraNote) {
+            return StringEscapeUtils.escapeHtml3(((ExtraNote) extra).getValue());
+          }
+          return StringEscapeUtils.escapeHtml3(extra.getAsString());
+        }
+      };
 
-  private static String generateString(final char chr, final int length) {
+  private static String generateString(final char symbol, final int length) {
     final StringBuilder buffer = new StringBuilder(length);
     for (int i = 0; i < length; i++) {
-      buffer.append(chr);
+      buffer.append(symbol);
     }
     return buffer.toString();
   }
@@ -83,9 +97,18 @@ public class FreeMindExporter extends AbstractExporter {
     return escapeXml10(text).replace("\n", "&#10;");
   }
 
-  private void writeTopicRecursively(final Topic topic,
-                                     final MindMapPanelConfig cfg, int shift,
-                                     final State state) {
+  @Override
+  public ExtrasToStringConverter getDefaultStringConverter() {
+    return DEFAULT_STRING_CONVERTER_FREEMIND;
+  }
+
+  private void writeTopicRecursively(
+      final PluginContext pluginContext,
+      final Topic topic,
+      final MindMapPanelConfig cfg,
+      int shift,
+      final State state,
+      final ExtrasToStringConverter stringConverter) {
     final String mainShiftStr = generateString(' ', shift);
 
 //    final Color edge = cfg.getConnectorColor();
@@ -116,13 +139,13 @@ public class FreeMindExporter extends AbstractExporter {
     final ExtraLink link = (ExtraLink) this.findExtra(topic, Extra.ExtraType.LINK);
     final ExtraTopic transition = (ExtraTopic) this.findExtra(topic, Extra.ExtraType.TOPIC);
 
-    final String thelink;
+    final String theLink;
 
     final List<Extra<?>> extrasToSaveInText = new ArrayList<>();
 
     // make some prioritization for only attribute
     if (transition != null) {
-      thelink = '#' + makeUID(requireNonNull(topic.getMap().findTopicForLink(transition)));
+      theLink = '#' + makeUID(requireNonNull(topic.getMap().findTopicForLink(transition)));
       if (file != null) {
         extrasToSaveInText.add(file);
       }
@@ -130,18 +153,18 @@ public class FreeMindExporter extends AbstractExporter {
         extrasToSaveInText.add(link);
       }
     } else if (file != null) {
-      thelink = file.getValue().toString();
+      theLink = file.getValue().toString();
       if (link != null) {
         extrasToSaveInText.add(link);
       }
     } else if (link != null) {
-      thelink = link.getValue().toString();
+      theLink = link.getValue().toString();
     } else {
-      thelink = "";
+      theLink = "";
     }
 
-    if (!thelink.isEmpty()) {
-      state.append(" LINK=\"").append(escapeXML(thelink)).append("\"");
+    if (!theLink.isEmpty()) {
+      state.append(" LINK=\"").append(escapeXML(theLink)).append("\"");
     }
     state.append(">").nextLine();
 
@@ -157,14 +180,15 @@ public class FreeMindExporter extends AbstractExporter {
       htmlTextForNode.append("<ul>");
       for (final Extra<?> e : extrasToSaveInText) {
         htmlTextForNode.append("<li>");
+
         if (e instanceof ExtraLinkable) {
-          final String linkAsText = ((ExtraLinkable) e).getAsURI().asString(true, e.getType() != Extra.ExtraType.FILE);
+          final String linkAsText = stringConverter.apply(pluginContext, e);
           htmlTextForNode.append("<b>").append(StringEscapeUtils.escapeHtml3(e.getType().name()))
               .append(": </b>").append("<a href=\"").append(linkAsText).append("\">")
               .append(linkAsText).append("</a>");
         } else {
           htmlTextForNode.append("<b>").append(StringEscapeUtils.escapeHtml3(e.getType().name()))
-              .append(": </b>").append(StringEscapeUtils.escapeHtml3(e.getAsString()));
+              .append(": </b>").append(stringConverter.apply(pluginContext, e));
         }
         htmlTextForNode.append("</li>");
       }
@@ -172,7 +196,7 @@ public class FreeMindExporter extends AbstractExporter {
     }
 
     if (note != null) {
-      htmlTextForNode.append("<p><pre>").append(StringEscapeUtils.escapeHtml3(note.getValue()))
+      htmlTextForNode.append("<p><pre>").append(stringConverter.apply(pluginContext, note))
           .append("</pre></p>");
     }
 
@@ -183,26 +207,33 @@ public class FreeMindExporter extends AbstractExporter {
     }
 
     for (final Topic ch : topic.getChildren()) {
-      writeTopicRecursively(ch, cfg, shift, state);
+      writeTopicRecursively(pluginContext, ch, cfg, shift, state, stringConverter);
     }
 
     state.append(mainShiftStr).append("</node>").nextLine();
   }
 
-  private String makeContent(final MindMap model, final MindMapPanelConfig config) {
-    final State state = new State();
-    state.append("<map version=\"1.0.1\">").nextLine();
-
-    state.append("<!--").nextLine()
-        .append("Generated by " + IDEBridgeFactory.findInstance().getIDEGeneratorId() + ' ' +
-            IDEBridgeFactory.findInstance().getIDEVersion() + " (https://sciareto.org)")
+  private String makeContent(final PluginContext context,
+                             final ExtrasToStringConverter stringConverter) {
+    final State state = new State()
+        .append("<map version=\"1.0.1\">")
+        .nextLine()
+        .append("<!--").nextLine()
+        .append("Generated by ")
+        .append(IDEBridgeFactory.findInstance().getIDEGeneratorId())
+        .append(' ')
+        .append(IDEBridgeFactory.findInstance().getIDEVersion().toString())
+        .append(" (https://sciareto.org)")
+        .nextLine()
+        .append(
+            DateTimeFormatter.ISO_DATE_TIME.format(Instant.now().atZone(ZoneId.systemDefault())))
+        .nextLine()
+        .append("-->")
         .nextLine();
-    state.append(DateTimeFormatter.ISO_DATE_TIME.format(Instant.now().atZone(ZoneId.systemDefault()))).nextLine().append("-->")
-        .nextLine();
 
-    final Topic root = model.getRoot();
+    final Topic root = context.getModel().getRoot();
     if (root != null) {
-      writeTopicRecursively(root, config, 1, state);
+      writeTopicRecursively(context, root, context.getPanelConfig(), 1, state, stringConverter);
     }
 
     state.append("</map>");
@@ -211,10 +242,12 @@ public class FreeMindExporter extends AbstractExporter {
   }
 
   @Override
-  public void doExportToClipboard(final PluginContext context, final Set<AbstractParameter<?>> options)
+  public void doExportToClipboard(
+      final PluginContext context,
+      final Set<AbstractParameter<?>> options,
+      final ExtrasToStringConverter extrasToStringConverter)
       throws IOException {
-    final String text = makeContent(context.getModel(), context.getPanelConfig());
-
+    final String text = makeContent(context, extrasToStringConverter);
     SwingUtilities.invokeLater(() -> {
       final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
       if (clipboard != null) {
@@ -224,9 +257,12 @@ public class FreeMindExporter extends AbstractExporter {
   }
 
   @Override
-  public void doExport(final PluginContext context, final Set<AbstractParameter<?>> options,
-                       final OutputStream out) throws IOException {
-    final String text = makeContent(context.getModel(), context.getPanelConfig());
+  public void doExport(
+      final PluginContext context,
+      final Set<AbstractParameter<?>> options,
+      final OutputStream out,
+      final ExtrasToStringConverter stringConverter) throws IOException {
+    final String text = makeContent(context, stringConverter);
 
     File fileToSaveMap = null;
     OutputStream theOut = out;

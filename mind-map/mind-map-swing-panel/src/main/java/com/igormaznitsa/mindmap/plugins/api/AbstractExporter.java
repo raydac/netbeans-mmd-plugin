@@ -17,6 +17,10 @@
 package com.igormaznitsa.mindmap.plugins.api;
 
 import com.igormaznitsa.mindmap.model.Extra;
+import com.igormaznitsa.mindmap.model.ExtraFile;
+import com.igormaznitsa.mindmap.model.ExtraLink;
+import com.igormaznitsa.mindmap.model.ExtraNote;
+import com.igormaznitsa.mindmap.model.ExtraTopic;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
@@ -35,6 +39,7 @@ import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Set;
+import java.util.function.BiFunction;
 import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
@@ -50,6 +55,9 @@ public abstract class AbstractExporter extends AbstractPopupMenuItem implements 
   protected static final Format DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
   protected static final Format TIME_FORMAT = new SimpleDateFormat("HH:mm:ss z");
   protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractExporter.class);
+  private static final ExtrasToStringConverter DEFAULT_STRING_CONVERTER =
+      new ExtrasToStringConverter() {
+      };
 
   public Set<AbstractParameter<?>> makeDefaultParameters() {
     return Collections.emptySet();
@@ -66,6 +74,10 @@ public abstract class AbstractExporter extends AbstractPopupMenuItem implements 
     } catch (Exception ex) {
       throw new IOException(ex.getMessage(), ex);
     }
+  }
+
+  public ExtrasToStringConverter getDefaultStringConverter() {
+    return DEFAULT_STRING_CONVERTER;
   }
 
   @Override
@@ -139,26 +151,62 @@ public abstract class AbstractExporter extends AbstractPopupMenuItem implements 
   /**
    * Export into output stream.
    *
-   * @param context plugin context, must not be null
-   * @param options set of parameters to be used during export, must not be null
-   * @param out     target output stream, must not be null
+   * @param context                 plugin context, must not be null
+   * @param options                 set of parameters to be used during export, must not be null
+   * @param out                     target output stream, can be null
+   * @param extrasToStringConverter converter to get strings from extras
    * @throws IOException thrown if any error
-   * @since 1.6.0
+   * @see ExtrasToStringConverter
+   * @since 1.6.8
    */
   public abstract void doExport(final PluginContext context,
                                 final Set<AbstractParameter<?>> options,
-                                final OutputStream out) throws IOException;
+                                final OutputStream out,
+                                final ExtrasToStringConverter extrasToStringConverter)
+      throws IOException;
 
   /**
-   * Export data into clipboard.
+   * Export into output stream with default extra string converter.
+   *
+   * @param context plugin context, must not be null
+   * @param options set of parameters to be used during export, must not be null
+   * @param out     target output stream, can be null
+   * @throws IOException thrown if any error
+   * @see ExtrasToStringConverter
+   * @since 1.6.0
+   */
+  public void doExport(final PluginContext context,
+                       final Set<AbstractParameter<?>> options,
+                       final OutputStream out) throws IOException {
+    this.doExport(context, options, out, this.getDefaultStringConverter());
+  }
+
+  /**
+   * Export data into clipboard with default extras string converter.
    *
    * @param context plugin context, must not be null
    * @param options set of parameters to be used during export, must not be null
    * @throws IOException it will be thrown if any error
    * @since 1.6.0
    */
+  public void doExportToClipboard(final PluginContext context,
+                                  final Set<AbstractParameter<?>> options) throws IOException {
+    this.doExportToClipboard(context, options, this.getDefaultStringConverter());
+  }
+
+
+  /**
+   * Export data into clipboard.
+   *
+   * @param context                 plugin context, must not be null
+   * @param options                 set of parameters to be used during export, must not be null
+   * @param extrasToStringConverter converter to get strings from extras
+   * @throws IOException it will be thrown if any error
+   * @since 1.6.8
+   */
   public abstract void doExportToClipboard(final PluginContext context,
-                                           final Set<AbstractParameter<?>> options)
+                                           final Set<AbstractParameter<?>> options,
+                                           final ExtrasToStringConverter extrasToStringConverter)
       throws IOException;
 
   public abstract String getName(final PluginContext context, final Topic activeTopic);
@@ -166,5 +214,27 @@ public abstract class AbstractExporter extends AbstractPopupMenuItem implements 
   public abstract String getReference(final PluginContext context, final Topic activeTopic);
 
   public abstract Icon getIcon(final PluginContext context, final Topic activeTopic);
+
+  public interface ExtrasToStringConverter extends BiFunction<PluginContext, Extra<?>, String> {
+    @Override
+    default String apply(final PluginContext pluginContext, final Extra<?> extra) {
+      if (extra == null) {
+        return null;
+      }
+      switch (extra.getType()) {
+        case FILE:
+          return ((ExtraFile) extra).getAsURI().asString(true, false);
+        case NOTE:
+          return ((ExtraNote) extra).getValue();
+        case LINK:
+          return ((ExtraLink) extra).getValue().asString(true, true);
+        case TOPIC:
+          return ((ExtraTopic) extra).getValue();
+        default:
+          throw new IllegalArgumentException(
+              "Unknown extra type: " + extra.getClass().getCanonicalName());
+      }
+    }
+  }
 
 }

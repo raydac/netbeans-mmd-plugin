@@ -298,7 +298,8 @@ public class PUMLExporter extends AbstractExporter {
 
   @Override
   public void doExportToClipboard(final PluginContext context,
-                                  final Set<AbstractParameter<?>> options)
+                                  final Set<AbstractParameter<?>> options,
+                                  final ExtrasToStringConverter stringConverter)
       throws IOException {
     final String text = makeContent(context);
     SwingUtilities.invokeLater(() -> {
@@ -311,7 +312,8 @@ public class PUMLExporter extends AbstractExporter {
 
   @Override
   public void doExport(final PluginContext context, final Set<AbstractParameter<?>> options,
-                       final OutputStream out) throws IOException {
+                       final OutputStream out, final ExtrasToStringConverter stringConverter)
+      throws IOException {
     final String text = makeContent(context);
 
     File fileToSaveMap = null;

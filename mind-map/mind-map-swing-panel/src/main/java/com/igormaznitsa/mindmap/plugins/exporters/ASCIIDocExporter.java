@@ -24,12 +24,12 @@ import com.igormaznitsa.mindmap.model.ExtraLink;
 import com.igormaznitsa.mindmap.model.ExtraNote;
 import com.igormaznitsa.mindmap.model.ExtraTopic;
 import com.igormaznitsa.mindmap.model.MMapURI;
-import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.ModelUtils;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.api.parameters.AbstractParameter;
+import com.igormaznitsa.mindmap.swing.ide.IDEBridgeFactory;
 import com.igormaznitsa.mindmap.swing.panel.utils.MindMapUtils;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
@@ -60,19 +60,53 @@ public class ASCIIDocExporter extends AbstractExporter {
     return result;
   }
 
-  private static String generateString(final char chr, final int length) {
-    final StringBuilder buffer = new StringBuilder(length);
-    for (int i = 0; i < length; i++) {
-      buffer.append(chr);
-    }
-    return buffer.toString();
-  }
+  private static final ExtrasToStringConverter ASCII_STRING_CONVERTER =
+      new ExtrasToStringConverter() {
+        @Override
+        public String apply(PluginContext pluginContext, Extra<?> extra) {
+          switch (extra.getType()) {
+            case FILE: {
+              final MMapURI fileURI = ((ExtraFile) extra).getValue();
+              return fileURI.isAbsolute() ? fileURI.asFile(null).getAbsolutePath() :
+                  fileURI.toString();
+            }
+            case LINK: {
+              return ((ExtraLink) extra).getValue().asString(true, true);
+            }
+            case TOPIC: {
+              return ((ExtraTopic) extra).getValue();
+            }
+            case NOTE: {
+              return ((ExtraNote) extra).getValue();
+            }
+            default:
+              throw new IllegalArgumentException("Unsupported extra: " + extra);
+          }
+        }
+      };
 
   private static String getTopicUid(final Topic topic) {
     return topic.getAttribute(ExtraTopic.TOPIC_UID_ATTR);
   }
 
-  private void writeTopic(final Topic topic, final State state) {
+  private static String generateString(final char symbol, final int length) {
+    final StringBuilder buffer = new StringBuilder(length);
+    for (int i = 0; i < length; i++) {
+      buffer.append(symbol);
+    }
+    return buffer.toString();
+  }
+
+  @Override
+  public ExtrasToStringConverter getDefaultStringConverter() {
+    return ASCII_STRING_CONVERTER;
+  }
+
+  private void writeTopic(
+      final PluginContext pluginContext,
+      final Topic topic,
+      final State state,
+      final ExtrasToStringConverter stringConverter) {
     final int level = topic.getTopicLevel();
     final String uid = getTopicUid(topic);
 
@@ -94,28 +128,26 @@ public class ASCIIDocExporter extends AbstractExporter {
     final ExtraTopic transition = (ExtraTopic) this.findExtra(topic, Extra.ExtraType.TOPIC);
 
     if (note != null) {
-      state.appendParagraphText(note.getValue());
+      state.appendParagraphText(stringConverter.apply(pluginContext, note));
       state.appendNextLine();
     }
 
     if (file != null) {
-      final MMapURI fileURI = file.getValue();
-      final String filePathAsText =
-          fileURI.isAbsolute() ? fileURI.asFile(null).getAbsolutePath() : fileURI.toString();
+      final String filePathAsText = stringConverter.apply(pluginContext, file);
       state.append("link:++").append(filePathAsText).append("++[File]").appendNextLine()
           .appendNextLine();
     }
 
     if (link != null) {
-      final String url = link.getValue().toString();
-      final String ascUrl = link.getValue().asString(true, true);
-      state.append("link:").append(ascUrl).append("[Link]").appendNextLine().appendNextLine();
+      state.append("link:").append(stringConverter.apply(pluginContext, link)).append("[Link]")
+          .appendNextLine().appendNextLine();
     }
 
     if (transition != null) {
       final Topic linkedTopic = topic.getMap().findTopicForLink(transition);
       if (linkedTopic != null) {
-        state.append("<<").append(requireNonNull(getTopicUid(linkedTopic))).append(",Go to>>")
+        final String topicUid = stringConverter.apply(pluginContext, transition);
+        state.append("<<").append(requireNonNull(topicUid)).append(",Go to>>")
             .appendNextLine().appendNextLine();
       }
     }
@@ -128,27 +160,35 @@ public class ASCIIDocExporter extends AbstractExporter {
       state.append("----").appendNextLine().appendNextLine();
     }
 
-    for (final Topic t : topic.getChildren()) {
-      writeTopic(t, state);
+    for (final Topic childTopic : topic.getChildren()) {
+      writeTopic(pluginContext, childTopic, state, stringConverter);
     }
   }
 
-  private String makeContent(final MindMap model) {
+  private String makeContent(final PluginContext context,
+                             final ExtrasToStringConverter stringConverter) {
     final State state = new State();
-    state.append(
-            "// Generated by NB-MindMap AsciiDoc exporter https://github.com/raydac/netbeans-mmd-plugin")
+    state.append("// Generated by ")
+        .append(IDEBridgeFactory.findInstance().getIDEGeneratorId())
+        .append(' ')
+        .append(IDEBridgeFactory.findInstance().getIDEVersion().toString())
+        .append(" (https://sciareto.org)")
         .appendNextLine();
-    final Topic root = model.getRoot();
+
+    final Topic root = context.getModel().getRoot();
     if (root != null) {
-      writeTopic(root, state);
+      this.writeTopic(context, root, state, stringConverter);
     }
     return state.toString();
   }
 
   @Override
-  public void doExportToClipboard(final PluginContext context, final Set<AbstractParameter<?>> options)
+  public void doExportToClipboard(
+      final PluginContext context,
+      final Set<AbstractParameter<?>> options,
+      final ExtrasToStringConverter stringConverter)
       throws IOException {
-    final String text = makeContent(context.getModel());
+    final String text = makeContent(context, stringConverter);
     SwingUtilities.invokeLater(() -> {
       final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
       if (clipboard != null) {
@@ -159,8 +199,9 @@ public class ASCIIDocExporter extends AbstractExporter {
 
   @Override
   public void doExport(final PluginContext context, final Set<AbstractParameter<?>> options,
-                       final OutputStream out) throws IOException {
-    final String text = makeContent(context.getModel());
+                       final OutputStream out, final ExtrasToStringConverter stringConverter)
+      throws IOException {
+    final String text = makeContent(context, stringConverter);
 
     File fileToSaveMap = null;
     OutputStream theOut = out;
