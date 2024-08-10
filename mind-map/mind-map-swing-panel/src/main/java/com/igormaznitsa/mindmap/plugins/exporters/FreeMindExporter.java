@@ -98,7 +98,7 @@ public class FreeMindExporter extends AbstractExporter {
   }
 
   @Override
-  public ExtrasToStringConverter getDefaultStringConverter() {
+  public ExtrasToStringConverter getDefaultExtrasStringConverter() {
     return DEFAULT_STRING_CONVERTER_FREEMIND;
   }
 

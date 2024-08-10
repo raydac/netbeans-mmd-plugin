@@ -98,7 +98,7 @@ public class ASCIIDocExporter extends AbstractExporter {
   }
 
   @Override
-  public ExtrasToStringConverter getDefaultStringConverter() {
+  public ExtrasToStringConverter getDefaultExtrasStringConverter() {
     return ASCII_STRING_CONVERTER;
   }
 

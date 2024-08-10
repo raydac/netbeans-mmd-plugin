@@ -76,7 +76,7 @@ public abstract class AbstractExporter extends AbstractPopupMenuItem implements 
     }
   }
 
-  public ExtrasToStringConverter getDefaultStringConverter() {
+  public ExtrasToStringConverter getDefaultExtrasStringConverter() {
     return DEFAULT_STRING_CONVERTER;
   }
 
@@ -178,7 +178,7 @@ public abstract class AbstractExporter extends AbstractPopupMenuItem implements 
   public void doExport(final PluginContext context,
                        final Set<AbstractParameter<?>> options,
                        final OutputStream out) throws IOException {
-    this.doExport(context, options, out, this.getDefaultStringConverter());
+    this.doExport(context, options, out, this.getDefaultExtrasStringConverter());
   }
 
   /**
@@ -191,7 +191,7 @@ public abstract class AbstractExporter extends AbstractPopupMenuItem implements 
    */
   public void doExportToClipboard(final PluginContext context,
                                   final Set<AbstractParameter<?>> options) throws IOException {
-    this.doExportToClipboard(context, options, this.getDefaultStringConverter());
+    this.doExportToClipboard(context, options, this.getDefaultExtrasStringConverter());
   }
 
 

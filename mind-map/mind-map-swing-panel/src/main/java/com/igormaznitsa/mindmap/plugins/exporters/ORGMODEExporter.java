@@ -81,7 +81,7 @@ public class ORGMODEExporter extends AbstractExporter {
       };
 
   @Override
-  public ExtrasToStringConverter getDefaultStringConverter() {
+  public ExtrasToStringConverter getDefaultExtrasStringConverter() {
     return DEFAULT_EXTRA_ORGMODE_STRING_CONVERTER;
   }
 

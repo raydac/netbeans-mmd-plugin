@@ -106,7 +106,7 @@ public class MDExporter extends AbstractExporter {
   }
 
   @Override
-  public ExtrasToStringConverter getDefaultStringConverter() {
+  public ExtrasToStringConverter getDefaultExtrasStringConverter() {
     return DEFAULT_MD_EXTRAS_STRING_CONVERTER;
   }
 

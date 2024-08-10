@@ -16,9 +16,51 @@
 
 package com.igormaznitsa.mindmap.annotations.processor.exporters;
 
+import com.igormaznitsa.mindmap.model.Extra;
+import com.igormaznitsa.mindmap.model.ExtraFile;
+import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
+import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.exporters.MDExporter;
+import java.io.File;
+import java.nio.file.Path;
 
 public class MDMindMapExporter extends AbstractMmdPanelBasedExporter {
+
+  private final AbstractExporter.ExtrasToStringConverter baseFolderAwareConverter =
+      new AbstractExporter.ExtrasToStringConverter() {
+        @Override
+        public String apply(final PluginContext pluginContext, final Extra<?> extra) {
+          if (extra.getType() == Extra.ExtraType.FILE) {
+            final Path thisFile = pluginContext.getMindMapFile().toPath();
+            final Path linkedFile =
+                ((ExtraFile) extra).getValue().asFile(pluginContext.getProjectFolder()).toPath();
+
+            try {
+              String normalized = thisFile.relativize(linkedFile).normalize().toString();
+              while (normalized.startsWith(".." + File.separatorChar + ".." + File.separatorChar)) {
+                normalized = normalized.substring(3);
+              }
+              if (normalized.startsWith(".." + File.separatorChar) &&
+                  normalized.lastIndexOf(File.separatorChar) == 2) {
+                normalized = normalized.substring(3);
+              }
+              return normalized;
+            } catch (IllegalArgumentException ex) {
+              // can't relativize
+              return linkedFile.toAbsolutePath().toString();
+            }
+
+          } else {
+            return MDMindMapExporter.this.getDelegate().getDefaultExtrasStringConverter()
+                .apply(pluginContext, extra);
+          }
+        }
+      };
+
+  @Override
+  protected AbstractExporter.ExtrasToStringConverter getExtrasStringConverter() {
+    return this.baseFolderAwareConverter;
+  }
 
   public MDMindMapExporter() {
     super(new MDExporter());

@@ -100,7 +100,7 @@ public class MindmupExporter extends AbstractExporter {
   }
 
   @Override
-  public ExtrasToStringConverter getDefaultStringConverter() {
+  public ExtrasToStringConverter getDefaultExtrasStringConverter() {
     return DEFAULT_MINDMUP_EXTRAS_STRING_CONVERTER;
   }
 

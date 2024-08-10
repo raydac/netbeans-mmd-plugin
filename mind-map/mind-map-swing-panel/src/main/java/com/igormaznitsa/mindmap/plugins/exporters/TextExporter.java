@@ -129,7 +129,7 @@ public class TextExporter extends AbstractExporter {
       };
 
   @Override
-  public ExtrasToStringConverter getDefaultStringConverter() {
+  public ExtrasToStringConverter getDefaultExtrasStringConverter() {
     return DEFAULT_TEXT_EXTRAS_CONVERTER;
   }
 

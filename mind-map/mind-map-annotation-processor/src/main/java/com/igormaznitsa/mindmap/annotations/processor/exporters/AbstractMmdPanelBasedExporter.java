@@ -39,6 +39,14 @@ public abstract class AbstractMmdPanelBasedExporter implements MindMapBinExporte
     this.delegate = requireNonNull(delegate);
   }
 
+  public AbstractExporter getDelegate() {
+    return this.delegate;
+  }
+
+  protected AbstractExporter.ExtrasToStringConverter getExtrasStringConverter() {
+    return this.delegate.getDefaultExtrasStringConverter();
+  }
+
   @Override
   public byte[] export(final Path rootFolder, final Path targetFile, final MindMap map)
       throws IOException {
@@ -89,7 +97,7 @@ public abstract class AbstractMmdPanelBasedExporter implements MindMapBinExporte
       }
     };
     final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-    this.delegate.doExport(context, Set.of(), buffer);
+    this.delegate.doExport(context, Set.of(), buffer, this.getExtrasStringConverter());
     return buffer.toByteArray();
   }
 }
