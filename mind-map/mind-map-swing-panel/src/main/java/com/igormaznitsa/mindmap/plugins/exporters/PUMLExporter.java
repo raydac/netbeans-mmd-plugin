@@ -266,9 +266,6 @@ public class PUMLExporter extends AbstractExporter {
         case '>':
           result.append("&#62;");
           break;
-        case '$':
-          result.append("&#36;");
-          break;
         case '#':
           result.append("&#35;");
           break;

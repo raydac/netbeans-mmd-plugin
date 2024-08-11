@@ -59,7 +59,11 @@ public class TextExporter extends AbstractExporter {
   }
 
   private static String replaceAllNextLineSeq(final String text, final String newNextLine) {
-    return text.replace("\r", "").replace("\n", newNextLine);
+    String result = text.replace("\r", "");
+    if (!"\n".equals(newNextLine)) {
+      result = result.replace("\n", newNextLine);
+    }
+    return result;
   }
 
   private static String shiftString(final String text, final char fill, final int shift) {
@@ -149,8 +153,11 @@ public class TextExporter extends AbstractExporter {
     boolean extrasPrinted = false;
 
     if (file != null) {
+      final String line = file.getValue().getParameters().getProperty("line");
       state.append(shiftString("FILE: ", ' ', shift))
-          .append(stringConverter.apply(pluginContext, file)).nextLine();
+          .append(stringConverter.apply(pluginContext, file))
+          .append(line == null ? "" : ':' + line)
+          .nextLine();
       extrasPrinted = true;
     }
 
