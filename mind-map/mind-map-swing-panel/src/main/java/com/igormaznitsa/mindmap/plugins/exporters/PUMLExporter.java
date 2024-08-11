@@ -66,6 +66,7 @@ import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.SwingUtilities;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.text.StringEscapeUtils;
 
 public class PUMLExporter extends AbstractExporter {
 
@@ -306,7 +307,7 @@ public class PUMLExporter extends AbstractExporter {
       if (url != null) {
         final String urlAsText = stringConverter.apply(context, url);
         buffer.append(EOL).append("<i>[[")
-            .append(escapePlantUml(urlAsText, true))
+            .append(StringEscapeUtils.escapeHtml3(urlAsText))
             .append("]]</i>");
       }
     } else {
