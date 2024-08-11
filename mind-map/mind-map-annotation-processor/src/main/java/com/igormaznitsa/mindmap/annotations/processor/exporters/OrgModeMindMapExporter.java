@@ -16,12 +16,50 @@
 
 package com.igormaznitsa.mindmap.annotations.processor.exporters;
 
+import com.igormaznitsa.mindmap.model.Extra;
+import com.igormaznitsa.mindmap.model.MMapURI;
+import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
+import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.exporters.ORGMODEExporter;
+import java.net.URISyntaxException;
 
 public class OrgModeMindMapExporter extends AbstractMmdPanelBasedExporter {
 
+  private final AbstractExporter.ExtrasToStringConverter extrasToStringConverter =
+      new AbstractExporter.ExtrasToStringConverter() {
+        @Override
+        public String apply(PluginContext pluginContext, Extra<?> extra) {
+          if (extra.getType() == Extra.ExtraType.FILE) {
+            try {
+              final MMapURI thisFile = MMapURI.makeFromFilePath(
+                  pluginContext.getProjectFolder().getParentFile(),
+                  OrgModeMindMapExporter.super.getExtrasStringConverter()
+                      .apply(pluginContext, extra),
+                  null);
+
+              if (thisFile.isAbsolute()) {
+                return thisFile.asURI().toASCIIString();
+              } else {
+                return "file://./" + thisFile.asURI().toASCIIString();
+              }
+            } catch (URISyntaxException ex) {
+              return "file://" + OrgModeMindMapExporter.super.getExtrasStringConverter()
+                  .apply(pluginContext, extra);
+            }
+          } else {
+            return OrgModeMindMapExporter.this.getDelegate().getDefaultExtrasStringConverter()
+                .apply(pluginContext, extra);
+          }
+        }
+      };
+
   public OrgModeMindMapExporter() {
     super(new ORGMODEExporter());
+  }
+
+  @Override
+  protected AbstractExporter.ExtrasToStringConverter getExtrasStringConverter() {
+    return this.extrasToStringConverter;
   }
 
   @Override

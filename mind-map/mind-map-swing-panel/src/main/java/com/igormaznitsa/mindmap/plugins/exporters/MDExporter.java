@@ -67,7 +67,7 @@ public class MDExporter extends AbstractExporter {
             case LINK: {
               final String url = ((ExtraLink) extra).getValue().toString();
               final String urlAsAscII = ((ExtraLink) extra).getValue().asString(true, true);
-              return '[' + url + "](" + urlAsAscII + ')';
+              return '[' + escapeMarkdown(url) + "](" + escapeMarkdown(urlAsAscII) + ')';
             }
             case NOTE:
               return StringEscapeUtils.escapeHtml3(((ExtraNote) extra).getValue());
@@ -177,7 +177,7 @@ public class MDExporter extends AbstractExporter {
     if (link != null) {
       state.append(prefix)
           .append("> Url: ")
-          .escape(stringConverter.apply(pluginContext, link))
+          .append(stringConverter.apply(pluginContext, link))
           .nextStringMarker()
           .nextLine();
       extrasPrinted = true;

@@ -18,6 +18,8 @@ package com.igormaznitsa.mindmap.annotations.processor.exporters;
 
 import static java.util.Objects.requireNonNull;
 
+import com.igormaznitsa.mindmap.model.Extra;
+import com.igormaznitsa.mindmap.model.ExtraFile;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.api.AbstractExporter;
@@ -34,9 +36,11 @@ import java.util.Set;
 
 public abstract class AbstractMmdPanelBasedExporter implements MindMapBinExporter {
   protected final AbstractExporter delegate;
+  protected final BaseFolderAwareConverter baseFolderAwareConverter;
 
   protected AbstractMmdPanelBasedExporter(final AbstractExporter delegate) {
     this.delegate = requireNonNull(delegate);
+    this.baseFolderAwareConverter = new BaseFolderAwareConverter(this);
   }
 
   public AbstractExporter getDelegate() {
@@ -44,7 +48,7 @@ public abstract class AbstractMmdPanelBasedExporter implements MindMapBinExporte
   }
 
   protected AbstractExporter.ExtrasToStringConverter getExtrasStringConverter() {
-    return this.delegate.getDefaultExtrasStringConverter();
+    return this.baseFolderAwareConverter;
   }
 
   @Override
@@ -99,5 +103,34 @@ public abstract class AbstractMmdPanelBasedExporter implements MindMapBinExporte
     final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
     this.delegate.doExport(context, Set.of(), buffer, this.getExtrasStringConverter());
     return buffer.toByteArray();
+  }
+
+  protected static final class BaseFolderAwareConverter
+      implements AbstractExporter.ExtrasToStringConverter {
+    private final AbstractMmdPanelBasedExporter delegatingExporter;
+
+    BaseFolderAwareConverter(final AbstractMmdPanelBasedExporter delegatingExporter) {
+      this.delegatingExporter = delegatingExporter;
+    }
+
+    @Override
+    public String apply(final PluginContext pluginContext, final Extra<?> extra) {
+      if (extra.getType() == Extra.ExtraType.FILE) {
+        final Path thisFileFolder = pluginContext.getMindMapFile().getParentFile().toPath();
+        final Path linkedFile =
+            ((ExtraFile) extra).getValue().asFile(pluginContext.getProjectFolder()).toPath();
+
+        try {
+          return thisFileFolder.relativize(linkedFile).normalize().toString();
+        } catch (IllegalArgumentException ex) {
+          // can't relativize
+          return linkedFile.toAbsolutePath().toString();
+        }
+
+      } else {
+        return this.delegatingExporter.getDelegate().getDefaultExtrasStringConverter()
+            .apply(pluginContext, extra);
+      }
+    }
   }
 }
