@@ -332,6 +332,11 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
                               element, pair.getLeft(), new File(pair.getRight().getUri()).toPath(),
                               pair.getRight().getLine(), startPosition, false)));
             } else if (annotationClass == HasMmdMarkedElements.class) {
+              final UriLine elementSrcPosition =
+                  AnnotationUtils.findElementSrcPosition(this.sourcePositions,
+                      this.trees,
+                      element);
+
               annotationInstances
                   .forEach(pair -> {
                     if (element instanceof ExecutableElement) {
@@ -343,12 +348,9 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
 
                           if (elementSources.isPresent()) {
                             final Path elementFile =
-                                new File(
-                                    AnnotationUtils.findElementSrcPosition(this.sourcePositions,
-                                        this.trees,
-                                        element).getUri()).toPath();
+                                new File(elementSrcPosition.getUri()).toPath();
                             final AtomicInteger counter = new AtomicInteger();
-                            findMmdComments(pair.getRight().getLine(), 0,
+                            findMmdComments(elementSrcPosition.getLine(), 0,
                                 elementSources.get()).forEach(comment -> {
                               counter.incrementAndGet();
                               foundAnnotationList.add(

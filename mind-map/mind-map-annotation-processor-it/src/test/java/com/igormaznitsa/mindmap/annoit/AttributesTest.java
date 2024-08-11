@@ -36,14 +36,20 @@ public class AttributesTest extends AbstractMmdTest implements StandardTopicAttr
     assertEquals("SubMethod3", topic.getChildren().get(2).getText());
 
     final Topic marked = findForTitle(map, "MARKED");
+    assertFileLinkLine(58, marked);
     assertEquals(4, marked.getChildren().size());
     assertEquals("c", marked.getChildren().get(0).getText());
     assertEquals("b", marked.getChildren().get(1).getText());
     assertEquals("a", marked.getChildren().get(2).getText());
     assertEquals("sum", marked.getChildren().get(3).getText());
 
-    assertTopicPath(findForTitle(map, "pathCommentTopic"), "Root topic", "path1", "path2", "path3",
+    final Topic topicSum = findForTitle(map, "sum");
+    assertFileLinkLine(70, topicSum);
+
+    final Topic pathCommentTopic = findForTitle(map, "pathCommentTopic");
+    assertTopicPath(pathCommentTopic, "Root topic", "path1", "path2", "path3",
         "pathCommentTopic");
+    assertFileLinkLine(61, pathCommentTopic);
   }
 
 }
