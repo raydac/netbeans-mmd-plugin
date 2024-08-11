@@ -20,6 +20,10 @@ import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_B
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_FILL_COLOR;
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_TEXT_COLOR;
 
+import com.igormaznitsa.mindmap.model.Extra;
+import com.igormaznitsa.mindmap.model.ExtraFile;
+import com.igormaznitsa.mindmap.model.ExtraLink;
+import com.igormaznitsa.mindmap.model.ExtraNote;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.StandardTopicAttributes;
 import com.igormaznitsa.mindmap.model.Topic;
@@ -84,7 +88,8 @@ public class PUMLExporter extends AbstractExporter {
     return DecimalFormat.getInstance(Locale.ENGLISH).format(value);
   }
 
-  private String makeContent(final PluginContext pluginContext) {
+  private String makeContent(final PluginContext pluginContext,
+                             final ExtrasToStringConverter stringConverter) {
     final MindMapPanelConfig config = pluginContext.getPanelConfig();
     final MindMap map = pluginContext.getModel();
 
@@ -182,7 +187,21 @@ public class PUMLExporter extends AbstractExporter {
     });
     images.clear();
 
-    map.forEach(x -> writeTopic(buffer, x, mapImageId, config, styles));
+    final Topic root = map.getRoot();
+    if (root != null) {
+      writeTopic(pluginContext, buffer, root, mapImageId, config, styles, stringConverter, false);
+
+      for (final Topic child : root.getChildren()) {
+        final boolean left =
+            "true".equals(child.getAttribute(StandardTopicAttribute.ATTR_LEFTSIDE.getText()));
+        if (left) {
+          buffer.append("left side").append(EOL);
+        } else {
+          buffer.append("right side").append(EOL);
+        }
+        writeTopic(pluginContext, buffer, child, mapImageId, config, styles, stringConverter, true);
+      }
+    }
 
     buffer.append("@endmindmap");
 
@@ -190,21 +209,22 @@ public class PUMLExporter extends AbstractExporter {
   }
 
   private void writeTopic(
-      final StringBuilder buffer, final Topic topic,
+      final PluginContext context,
+      final StringBuilder buffer,
+      final Topic topic,
       final Map<Topic, String> imageMap,
       final MindMapPanelConfig config,
-      final List<StyleItem> styles
+      final List<StyleItem> styles,
+      final ExtrasToStringConverter stringConverter,
+      final boolean processChildren
   ) {
+    final ExtraNote note = (ExtraNote) topic.getExtras().get(Extra.ExtraType.NOTE);
+    final ExtraFile file = (ExtraFile) topic.getExtras().get(Extra.ExtraType.FILE);
+    final ExtraLink url = (ExtraLink) topic.getExtras().get(Extra.ExtraType.LINK);
+    final boolean multiline =
+        topic.getText().trim().contains("\n") || note != null || file != null || url != null;
+
     final int level = topic.getPath().length;
-    final char prefix;
-    if (level > 1) {
-      final Topic firstLevel = topic.getPath()[1];
-      prefix =
-          "true".equals(firstLevel.getAttribute(StandardTopicAttribute.ATTR_LEFTSIDE.getText())) ?
-              '-' : '+';
-    } else {
-      prefix = '+';
-    }
 
     final String emoticon =
         topic.getAttribute(StandardTopicAttributes.MMD_TOPIC_ATTRIBUTE_EMOTICON);
@@ -226,6 +246,7 @@ public class PUMLExporter extends AbstractExporter {
       textColor = extractColor(topic, ATTR_TEXT_COLOR, config.getOtherLevelTextColor());
       backColor = extractColor(topic, ATTR_FILL_COLOR, config.getOtherLevelBackgroundColor());
     }
+
     final TextAlign textAlign = TextAlign.findForName(
         topic.getAttribute(StandardTopicAttributes.MMD_TOPIC_ATTRIBUTE_TITLE_ALIGN));
 
@@ -235,22 +256,99 @@ public class PUMLExporter extends AbstractExporter {
             .orElseThrow(() -> new Error(
                 "Impossible situation, can't find any style for topic record"));
 
-    IntStream.range(0, level).forEach(x -> buffer.append(prefix));
+    IntStream.range(0, level).forEach(x -> buffer.append('*'));
+    boolean needSpace = true;
+    if (multiline) {
+      buffer.append(':');
+      needSpace = false;
+    }
+
     if (emoticon != null) {
-      buffer.append(" $emoticon_").append(emoticon).append(' ');
+      if (needSpace) {
+        buffer.append(' ');
+      }
+      buffer.append("$emoticon_").append(emoticon).append(' ');
+      needSpace = false;
     }
     if (image != null) {
-      buffer.append(' ').append(image).append(' ');
+      if (needSpace) {
+        buffer.append(' ');
+      }
+      buffer.append(image).append(' ');
+      needSpace = false;
     }
-    buffer.append(' ').append(escapePlantUml(topic.getText())).append(" <<")
+
+    if (needSpace) {
+      buffer.append(' ');
+    }
+
+    if (multiline) {
+      buffer.append("<b>").append(escapePlantUml(topic.getText(), false)).append("</b>");
+      if (note != null) {
+        buffer.append(EOL).append("<code>").append(EOL)
+            .append(escapePlantUml(note.getValue(), false))
+            .append(EOL).append("</code>");
+      }
+      if (file != null) {
+        final String line = file.getValue().getParameters().getProperty("line");
+        final String fileUrl = stringConverter.apply(context, file);
+        final String fileNameWithLine =
+            file.getValue().getResourceName() + (line == null ? "" : ':' + line);
+
+        buffer.append(EOL).append("<b>[[")
+            .append(escapePlantUml(fileUrl, true))
+            .append(line == null ? "" : ':' + line)
+            .append(' ')
+            .append(escapePlantUml(fileNameWithLine, true))
+            .append("]]</b>");
+      }
+
+      if (url != null) {
+        final String urlAsText = stringConverter.apply(context, url);
+        buffer.append(EOL).append("<i>[[")
+            .append(escapePlantUml(urlAsText, true))
+            .append("]]</i>");
+      }
+    } else {
+      buffer
+          .append("<b>")
+          .append(escapePlantUml(topic.getText().trim(), false))
+          .append("</b>");
+    }
+
+    if (multiline) {
+      buffer.append(EOL).append(';');
+    }
+
+
+    buffer
+        .append(" <<")
         .append(styleItem.getUid())
         .append(">>").append(EOL);
+
+    if (processChildren) {
+      for (final Topic child : topic.getChildren()) {
+        writeTopic(context, buffer, child, imageMap, config, styles, stringConverter, true);
+      }
+    }
   }
 
-  private String escapePlantUml(final String text) {
+  private String escapePlantUml(final String text, final boolean escapeNextLine) {
     final StringBuilder result = new StringBuilder();
     for (final char c : text.toCharArray()) {
       switch (c) {
+        case '[':
+          result.append("&#91;");
+          break;
+        case ']':
+          result.append("&#93;");
+          break;
+        case ':':
+          result.append("&#58;");
+          break;
+        case ';':
+          result.append("&#59;");
+          break;
         case '{':
           result.append("&#123;");
           break;
@@ -275,9 +373,14 @@ public class PUMLExporter extends AbstractExporter {
         case '~':
           result.append("&#126;");
           break;
-        case '\n':
-          result.append("\\n");
-          break;
+        case '\n': {
+          if (escapeNextLine) {
+            result.append("\\n");
+          } else {
+            result.append(c);
+          }
+        }
+        break;
         case '\t':
           result.append("\\t");
           break;
@@ -298,7 +401,7 @@ public class PUMLExporter extends AbstractExporter {
                                   final Set<AbstractParameter<?>> options,
                                   final ExtrasToStringConverter stringConverter)
       throws IOException {
-    final String text = makeContent(context);
+    final String text = makeContent(context, stringConverter);
     SwingUtilities.invokeLater(() -> {
       final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
       if (clipboard != null) {
@@ -311,7 +414,7 @@ public class PUMLExporter extends AbstractExporter {
   public void doExport(final PluginContext context, final Set<AbstractParameter<?>> options,
                        final OutputStream out, final ExtrasToStringConverter stringConverter)
       throws IOException {
-    final String text = makeContent(context);
+    final String text = makeContent(context, stringConverter);
 
     File fileToSaveMap = null;
     OutputStream theOut = out;
