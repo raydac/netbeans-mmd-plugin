@@ -296,12 +296,12 @@ public class PUMLExporter extends AbstractExporter {
         final String fileNameWithLine =
             file.getValue().getResourceName() + (line == null ? "" : ':' + line);
 
-        buffer.append(EOL).append("<b>File:</b>  <b>[[")
+        buffer.append(EOL).append("<b>File:</b>  <i>[[")
             .append(escapePlantUml(fileUrl, true))
             .append(line == null ? "" : ':' + line)
             .append(' ')
             .append(escapePlantUml(fileNameWithLine, true))
-            .append("]]</b>");
+            .append("]]</i>");
       }
 
       if (url != null) {
