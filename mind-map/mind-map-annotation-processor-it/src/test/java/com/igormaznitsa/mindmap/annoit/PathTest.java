@@ -91,7 +91,7 @@ public class PathTest extends AbstractMmdTest {
     assertFalse(extraLink.getAsString().contains("${"));
     assertEquals(System.getProperty("user.home") + "/test.txt", extraFile.getAsString());
     assertEquals(System.getProperty("java.vendor"), topic2.getText());
-    assertEquals(System.getProperty("user.name"), extraNote.getAsString());
+    assertEquals(":<[" + System.getProperty("user.name") + "]>;", extraNote.getAsString());
     assertEquals("666-" + System.getProperty("os.name"),
         topic2.getAttribute(ExtraTopic.TOPIC_UID_ATTR));
   }

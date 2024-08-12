@@ -37,7 +37,7 @@ public class Class1 {
   }
 
   @MmdTopic(substitute = true, path = {"substitution",
-      "${os.name}"}, title = "${java.vendor}", uid = "666-${os.name}", note = "${user.name}", fileLink = "${user.home}/test.txt", uri = "http://${mmd.file.link.base.folder}", jumpTo = "${os.name}-111")
+      "${os.name}"}, title = "${java.vendor}", uid = "666-${os.name}", note = ":<[${user.name}]>;", fileLink = "${user.home}/test.txt", uri = "http://${mmd.file.link.base.folder}", jumpTo = "${os.name}-111")
   public void classSubstitution() {
 
   }

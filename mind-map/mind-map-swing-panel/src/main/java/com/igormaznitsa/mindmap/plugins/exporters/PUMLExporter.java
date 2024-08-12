@@ -286,9 +286,9 @@ public class PUMLExporter extends AbstractExporter {
     if (multiline) {
       buffer.append("<b>").append(escapePlantUml(topic.getText(), false)).append("</b>");
       if (note != null) {
-        buffer.append(EOL).append("<code>").append(EOL)
+        buffer.append(EOL).append(EOL)
             .append(escapePlantUml(note.getValue(), false))
-            .append(EOL).append("</code>");
+            .append(EOL);
       }
       if (file != null) {
         final String line = file.getValue().getParameters().getProperty("line");
@@ -296,7 +296,7 @@ public class PUMLExporter extends AbstractExporter {
         final String fileNameWithLine =
             file.getValue().getResourceName() + (line == null ? "" : ':' + line);
 
-        buffer.append(EOL).append("<b>[[")
+        buffer.append(EOL).append("<b>File:</b>  <b>[[")
             .append(escapePlantUml(fileUrl, true))
             .append(line == null ? "" : ':' + line)
             .append(' ')
@@ -306,7 +306,7 @@ public class PUMLExporter extends AbstractExporter {
 
       if (url != null) {
         final String urlAsText = stringConverter.apply(context, url);
-        buffer.append(EOL).append("<i>[[")
+        buffer.append(EOL).append("<b>URI:</b>  <i>[[")
             .append(StringEscapeUtils.escapeHtml3(urlAsText))
             .append("]]</i>");
       }
@@ -318,9 +318,8 @@ public class PUMLExporter extends AbstractExporter {
     }
 
     if (multiline) {
-      buffer.append(EOL).append(';');
+      buffer.append(';');
     }
-
 
     buffer
         .append(" <<")
@@ -339,40 +338,40 @@ public class PUMLExporter extends AbstractExporter {
     for (final char c : text.toCharArray()) {
       switch (c) {
         case '[':
-          result.append("&#91;");
+          result.append("<U+005B>");
           break;
         case ']':
-          result.append("&#93;");
+          result.append("<U+005D>");
           break;
         case ':':
-          result.append("&#58;");
+          result.append("<U+003A>");
           break;
         case ';':
-          result.append("&#59;");
+          result.append("<U+003B>");
           break;
         case '{':
-          result.append("&#123;");
+          result.append("<U+007B>");
           break;
         case '|':
-          result.append("&#124;");
+          result.append("<U+007C>");
           break;
         case '}':
-          result.append("&#125;");
+          result.append("<U+007D>");
           break;
         case '<':
-          result.append("&#60;");
+          result.append("<U+003C>");
           break;
         case '>':
-          result.append("&#62;");
+          result.append("<U+003E>");
           break;
         case '#':
-          result.append("&#35;");
+          result.append("<U+0023>");
           break;
         case '&':
-          result.append("&#38;");
+          result.append("<U+0026>");
           break;
         case '~':
-          result.append("&#126;");
+          result.append("<U+007E>");
           break;
         case '\n': {
           if (escapeNextLine) {
