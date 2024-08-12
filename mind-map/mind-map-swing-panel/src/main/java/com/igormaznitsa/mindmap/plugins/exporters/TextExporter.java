@@ -16,6 +16,8 @@
 
 package com.igormaznitsa.mindmap.plugins.exporters;
 
+import static com.igormaznitsa.mindmap.model.StandardTopicAttributes.MMD_TOPIC_ATTRIBUTE_LINK_UID;
+
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.ExtraFile;
 import com.igormaznitsa.mindmap.model.ExtraLink;
@@ -142,7 +144,10 @@ public class TextExporter extends AbstractExporter {
       final Topic topic, final char ch, final int shift,
       final State state, final ExtrasToStringConverter stringConverter) {
     final int maxLen = getMaxLineWidth(topic.getText());
-    state.append(shiftString(topic.getText(), ' ', shift)).nextLine()
+    final String uid = topic.getAttribute(MMD_TOPIC_ATTRIBUTE_LINK_UID);
+    state.append(shiftString(topic.getText(), ' ', shift))
+        .append(uid == null ? "" : " [" + uid + ']')
+        .nextLine()
         .append(shiftString(generateString(ch, maxLen + 2), ' ', shift)).nextLine();
 
     final ExtraFile file = (ExtraFile) this.findExtra(topic, Extra.ExtraType.FILE);
