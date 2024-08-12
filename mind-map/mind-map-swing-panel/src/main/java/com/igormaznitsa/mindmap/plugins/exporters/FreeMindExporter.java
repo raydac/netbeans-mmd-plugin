@@ -153,12 +153,12 @@ public class FreeMindExporter extends AbstractExporter {
         extrasToSaveInText.add(link);
       }
     } else if (file != null) {
-      theLink = file.getValue().toString();
+      theLink = stringConverter.apply(pluginContext, file);
       if (link != null) {
         extrasToSaveInText.add(link);
       }
     } else if (link != null) {
-      theLink = link.getValue().toString();
+      theLink = stringConverter.apply(pluginContext, link);
     } else {
       theLink = "";
     }
