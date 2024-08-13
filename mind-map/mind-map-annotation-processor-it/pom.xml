@@ -74,6 +74,9 @@
                                 <include>**/*.puml</include>
                                 <include>**/*.org</include>
                                 <include>**/*.asciidoc</include>
+                                <include>**/*.pdf</include>
+                                <include>**/*.html</include>
+                                <include>**/*.xdoc</include>
                             </includes>
                             <followSymlinks>false</followSymlinks>
                         </fileset>

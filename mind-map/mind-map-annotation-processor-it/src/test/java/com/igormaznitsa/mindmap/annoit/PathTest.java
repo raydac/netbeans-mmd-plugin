@@ -86,7 +86,7 @@ public class PathTest extends AbstractMmdTest {
     assertNotNull(extraTopic);
     assertNotNull(extraLink);
 
-    assertEquals("${root}", map.getRoot().getText());
+    assertEquals(":<[${root}]>;", map.getRoot().getText());
     assertEquals(System.getProperty("os.name") + "-111", extraTopic.getAsString());
     assertFalse(extraLink.getAsString().contains("${"));
     assertEquals(System.getProperty("user.home") + "/test.txt", extraFile.getAsString());
