@@ -283,30 +283,38 @@ public class PUMLExporter extends AbstractExporter {
       buffer.append(' ');
     }
 
+    String separator = EOL + "====" + EOL;
+
     if (multiline) {
       buffer.append("<b>").append(escapePlantUml(topic.getText(), false)).append("</b>");
       if (note != null) {
-        buffer.append(EOL).append(EOL)
-            .append(escapePlantUml(note.getValue(), false))
-            .append(EOL);
+        buffer.append(separator)
+            .append(escapePlantUml(note.getValue(), false));
+        separator = EOL + "...." + EOL;
       }
+
       if (file != null) {
         final String line = file.getValue().getParameters().getProperty("line");
         final String fileUrl = stringConverter.apply(context, file);
         final String fileNameWithLine =
             file.getValue().getResourceName() + (line == null ? "" : ':' + line);
 
-        buffer.append(EOL).append("<b>File:</b>  <i>[[")
+        buffer.append(separator).append("<b>File:</b>  <i>[[")
             .append(escapePlantUml(fileUrl, true))
             .append(line == null ? "" : ':' + line)
             .append(' ')
             .append(escapePlantUml(fileNameWithLine, true))
             .append("]]</i>");
+
+        separator = EOL;
       }
 
       if (url != null) {
         final String urlAsText = stringConverter.apply(context, url);
-        buffer.append(EOL).append("<b>URI:</b>  <i>[[")
+        buffer.append(separator);
+        separator = EOL;
+
+        buffer.append("<b>URI:</b>  <i>[[")
             .append(StringEscapeUtils.escapeHtml3(urlAsText))
             .append("]]</i>");
       }
