@@ -25,12 +25,8 @@ import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.ui.SrI18n;
 import com.igormaznitsa.sciareto.ui.UiUtils;
-
-import javax.annotation.Nonnull;
-import javax.swing.*;
-import javax.swing.event.TableModelListener;
-import javax.swing.table.TableModel;
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Image;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -40,6 +36,11 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import javax.annotation.Nonnull;
+import javax.swing.ImageIcon;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.TableModel;
 
 public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.LinkListener {
 
@@ -96,8 +97,6 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
     this.thirdParts.add(new ThirdPartLicense("RSynaxTextArea", "https://github.com/bobbylight/RSyntaxTextArea", "modified BSD license", "https://raw.githubusercontent.com/bobbylight/RSyntaxTextArea/master/src/main/dist/RSyntaxTextArea.License.txt"));
     this.thirdParts.add(new ThirdPartLicense("FlatLaf", "https://github.com/JFormDesigner/FlatLaf", "Apache License, Version 2.0", "https://raw.githubusercontent.com/JFormDesigner/FlatLaf/main/LICENSE"));
     this.thirdParts.add(new ThirdPartLicense("PlantUML", "http://plantuml.com/", "GPL License", "https://www.gnu.org/copyleft/gpl.html"));
-    this.thirdParts.add(new ThirdPartLicense("Eclipse ELK", "https://github.com/eclipse/elk", "Eclipse Public License 2.0", "https://github.com/eclipse/elk/blob/master/LICENSE.md"));
-    this.thirdParts.add(new ThirdPartLicense("JLaTeXMath Library", "https://github.com/opencollab/jlatexmath", "GPL License", "https://github.com/opencollab/jlatexmath/blob/master/LICENSE"));
     this.thirdParts.add(new ThirdPartLicense("Apache Batik", "https://xmlgraphics.apache.org/batik/", "Apache License, Version 2.0", "https://xmlgraphics.apache.org/batik/license.html"));
     
     this.tableThirdPartLibraries.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
