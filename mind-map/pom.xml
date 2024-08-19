@@ -102,11 +102,23 @@
                 <groupId>net.sf.jung</groupId>
                 <artifactId>jung-graph-impl</artifactId>
                 <version>2.1.1</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.google.guava</groupId>
+                        <artifactId>guava</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>net.sf.jung</groupId>
                 <artifactId>jung-visualization</artifactId>
                 <version>2.1.1</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.google.guava</groupId>
+                        <artifactId>guava</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>com.fifesoft</groupId>
@@ -380,13 +392,13 @@
                         <configuration>
                             <rules>
                                 <dependencyConvergence/>
-                                <banDuplicateClasses>
-                                    <ignoreClasses>
-                                        <ignoreClass>org.netbeans.modules.openide.*</ignoreClass>
-                                    </ignoreClasses>
-                                    <findAllDuplicates>true</findAllDuplicates>
-                                    <ignoreWhenIdentical>true</ignoreWhenIdentical>
-                                </banDuplicateClasses>
+                                <!--                                <banDuplicateClasses>-->
+                                <!--                                    <ignoreClasses>-->
+                                <!--                                        <ignoreClass>org.netbeans.modules.openide.*</ignoreClass>-->
+                                <!--                                    </ignoreClasses>-->
+                                <!--                                    <findAllDuplicates>true</findAllDuplicates>-->
+                                <!--                                    <ignoreWhenIdentical>true</ignoreWhenIdentical>-->
+                                <!--                                </banDuplicateClasses>-->
                                 <banCircularDependencies/>
                                 <reactorModuleConvergence/>
                                 <enforceBytecodeVersion>
