@@ -153,12 +153,12 @@
       <div class="col-lg-6 mx-auto">
         <blockquote class="top-quote blockquote blockquote-custom bg-white p-5 shadow rounded">
           <div class="blockquote-custom-icon bg-info shadow-sm"><i class="fa fa-quote-left text-white"></i></div>
-          <p class="mb-0 mt-2 font-italic">"The main part of any project is not its implementation but knowledge
-            produced during the project. I am sure that knowledge is the main part of each business today and it is
-            super-important to raise the produced knowledge from the non-formal level to the formal one to avoid its
-            loss. Also it is very important to keep the "distance" between projects and produced knowledge as short as
-            possible and the ideal variant is to keep the formalized knowledge just directly among artifacts of the
-            project."</p>
+          <p class="mb-0 mt-2 font-italic">"The most critical aspect of any project is not just its implementation but
+            the knowledge generated throughout the process. In today's business environment, knowledge is a key asset,
+            and it is crucial to elevate this knowledge from an informal to a formal level to prevent its loss.
+            Additionally, it is essential to minimize the gap between projects and the knowledge produced, with the
+            ideal approach being to integrate formalized knowledge directly within the project artifacts.
+            "</p>
           <footer class="blockquote-footer pt-4 mt-4 border-top"><a
               href="https://www.linkedin.com/in/igormaznitsa/">Igor Maznitsa
               <cite>a very lazy coder</cite></a>
@@ -171,54 +171,64 @@
       <div class="col-lg-2 col-md-2 col-sm-0"></div>
       <div id="about" class="info-block col-lg-8 col-md-8 col-sm-12">
         <h1>About</h1>
-        <p>Now it is very often to meet projects without any documentation (or to hear phrase that "all our
-          documentation somewhere in confluence and out of sync"). I saw a lot of such projects and was unhappy to worke
-          with them. In 2015 I decided that mind mapping is a good way also for software project documentation and made
-          small plugin for NetBeans IDE (which was my main work tool). Such solution allowed me to provide and keep
-          documentation and references just among project files and keep them more or less in sync. In 2016 I develped
-          plugin for Inellij IDEA and then (because some my friends who actively used the tool were not from Java-world
-          at all), I developed standalone version of the plugin and called it Scia Reto (Knowledge Network in
-          Esperanto).</p>
+        <p>It has become increasingly common to encounter projects lacking proper documentation, or to hear phrases like
+          "our documentation is somewhere in Confluence, but it's out of sync." After facing this challenge in several
+          projects, I found it frustrating to work without reliable references. In 2015, I realized that mind mapping could be a
+          useful approach for software documentation. As a result, I created a small plugin for NetBeans IDE, which was my
+          primary tool at the time. This solution enabled me to maintain and organize documentation directly within project files,
+          keeping everything reasonably in sync. In 2016, I developed a similar plugin for IntelliJ IDEA. Later, when some of my
+          non-Java colleagues expressed interest, I created a standalone version of the tool and named it Scia Reto, which means
+          "Knowledge Network" in Esperanto.</p>
       </div>
     </div>
     <div class="row">
       <div class="col-lg-2 col-md-2 col-sm-0"></div>
       <div id="features" class="info-block col-lg-8 col-md-8 col-sm-12">
         <h1>Features</h1>
-        <p>The editor allows create mind maps as trees. In opposite to many another mind map editors, it doesn't allows
-          cyclic and multi-root mind maps, only canonic single-root trees. Each mind map node has title but also several
-          extra details like icon, note, file link and link to another topic can be set. Rich set of icons is provided
-          with the editor but custom images also can be used to be shown at topics. Since 1.4.10, it supports password
-          protected encryption of notes with AES-256.
+        <p>
+          Mind maps are a visual tool used to organize information, ideas, or tasks in a hierarchical structure. They
+          help users brainstorm, plan, and understand complex topics by representing them as interconnected nodes
+          branching from a central idea. Mind maps are widely used for project planning, knowledge management,
+          problem-solving, and learning.
+        </p>  
+        <p>
+          This editor enables the creation of mind maps as single-rooted trees. Unlike many other editors, it uses a
+          Markdown-based format, making the files highly compatible with version control systems (VCS), which simplifies
+          collaboration and change tracking. It supports only single-rooted, hierarchical structures, ensuring clear and
+          organized maps. Each node can be enhanced with a title, icons, notes, file links, and cross-references to
+          other topics. The editor provides a rich collection of icons and supports custom images. It allows for
+          exporting in various document formats, enabling seamless integration with other tools, and offers
+          visualization of Kafka Streams topologies. Starting with version 1.4.10, AES-256 encryption is available for
+          password-protected notes, ensuring security for sensitive information.
         </p>
         <h2>Format</h2>
-        <p>The editor keeps all information as a single human-readable
-          UTF8-encoded text file. Sctructure of the file is compatible with <a
-            href="https://www.markdownguide.org/basic-syntax/">MARKDOWN</a> format so that extension is MMD.
-        </p>
+        <p>As mentioned earlier, the editor stores all information in a single human-readable UTF-8 encoded text file.
+          The file structure is compatible with <a href="https://www.markdownguide.org/basic-syntax/">Markdown</a>
+          format, and uses the ".mmd" extension. </p>
         <h2>Import</h2>
-        <p>Some formats can be imported into mind map as tree structure:
-          <ul>
-            <li>Tab formatted text</li>
-            <li>Mindmup mind map</li>
-            <li>Freemind mind map</li>
-            <li>XMind mind map</li>
-            <li>Coggle mind map</li>
-            <li>Novamind mind map</li>
-          </ul>
+        <p>The editor supports the import of various formats, allowing them to be converted into a tree-structured mind
+          map:
+        <ul>
+          <li>Tab formatted text</li>
+          <li>Mindmup mind map</li>
+          <li>Freemind mind map</li>
+          <li>XMind mind map</li>
+          <li>Coggle mind map</li>
+          <li>Novamind mind map</li>
+        </ul>
         </p>
         <h2>Export</h2>
-        <p>Any mind map can be exported as:
-          <ul>
-            <li>Freemind mind map</li>
-            <li>Mindmup mind map</li>
-            <li>Markdown text format</li>
-            <li>PNG image</li>
-            <li>SVG image</li>
-            <li>Plain text</li>
-            <li>ORG mode text</li>
-            <li>AscIIdoc text</li>
-          </ul>
+        <p>Mind maps can be exported in the following formats:
+        <ul>
+          <li>Freemind mind map</li>
+          <li>Mindmup mind map</li>
+          <li>Markdown text format</li>
+          <li>PNG image</li>
+          <li>SVG image</li>
+          <li>Plain text</li>
+          <li>ORG mode text</li>
+          <li>AscIIdoc text</li>
+        </ul>
         </p>
       </div>
     </div>
@@ -237,17 +247,23 @@
                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Download</a>
               <div class="dropdown-menu" aria-labelledby="dropdownDownload">
                 <a class="dd-a dropdown-item"
-                  href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.6.7/sciareto-1.6.7-windows-jdk-amd64.zip">Windows (x64 ZIP)</a>
+                  href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.6.7/sciareto-1.6.7-windows-jdk-amd64.zip">Windows
+                  (x64 ZIP)</a>
                 <a class="dd-a dropdown-item"
-                  href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.6.7/sciareto-1.6.7-macos-jdk-amd64.zip">MacOS (x64 ZIP)</a>
+                  href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.6.7/sciareto-1.6.7-macos-jdk-amd64.zip">MacOS
+                  (x64 ZIP)</a>
                 <a class="dd-a dropdown-item"
-                  href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.6.7/sciareto-1.6.7-macos-jdk-aarch64.zip">MacOS (arm64 ZIP)</a>
+                  href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.6.7/sciareto-1.6.7-macos-jdk-aarch64.zip">MacOS
+                  (arm64 ZIP)</a>
                 <a class="dd-a dropdown-item"
-                  href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.6.7/sciareto-1.6.7-macos.dmg">MacOS (DMG)</a>
+                  href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.6.7/sciareto-1.6.7-macos.dmg">MacOS
+                  (DMG)</a>
                 <a class="dd-a dropdown-item"
-                  href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.6.7/sciareto-1.6.7-x86_64.AppImage">Linux (x64 AppImage)</a>
+                  href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.6.7/sciareto-1.6.7-x86_64.AppImage">Linux
+                  (x64 AppImage)</a>
                 <a class="dd-a dropdown-item"
-                  href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.6.7/sciareto-1.6.7-linux-jdk-amd64.tar.gz">Linux (x64 TAR.GZ) </a>
+                  href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.6.7/sciareto-1.6.7-linux-jdk-amd64.tar.gz">Linux
+                  (x64 TAR.GZ) </a>
                 <!-- <a class="dd-a dropdown-item"
                   href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.6.7/sciareto-1.6.7-SNAPSHOT-windows-x64-openjdk.zip">Snapshot
                   Windows</a>
