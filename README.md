@@ -1,9 +1,9 @@
 ![Banner](https://raw.githubusercontent.com/raydac/netbeans-mmd-plugin/master/misc/banner.png)  
 
 [![License Apache 2.0](https://img.shields.io/badge/license-Apache%20License%202.0-green.svg)](http://www.apache.org/licenses/LICENSE-2.0)
-[![Java 8.0+](https://img.shields.io/badge/java-8.0%2b-green.svg)](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
+[![Java 11+](https://img.shields.io/badge/java-11%2b-green.svg)](https://bell-sw.com/pages/downloads/)
 [![NetBeans](https://img.shields.io/badge/netbeans-9.0%2b-green.svg)](http://plugins.netbeans.org/plugin/60188/nb-mindmap-editor)
-[![Intellij IDEA](https://img.shields.io/badge/idea-2018.1%2b-green.svg)](https://plugins.jetbrains.com/plugin/8045)
+[![Intellij IDEA](https://img.shields.io/badge/idea-2022.2%2b-green.svg)](https://plugins.jetbrains.com/plugin/8045)
 [![PayPal donation](https://img.shields.io/badge/donation-PayPal-cyan.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=AHWJHJFBAWGL2)
 [![YooMoney donation](https://img.shields.io/badge/donation-Yoo.money-blue.svg)](https://yoomoney.ru/to/41001158080699)
 
@@ -15,7 +15,8 @@ Initially I developed a plugin for NetBeans IDE then the IntellijIDEA plugin was
 
 # Changelog
 
-__1.6.8 (SNAPSHOT)__
+__1.6.8 (09-sep-2024)__
+- ALL: improvements and refactoring of exporters
 - AP:  added system property substitution for text fields
 - AP:  improved annotation source line detection
 - SR:  Embedded JDK updated to 22.0.2+11
@@ -33,7 +34,7 @@ __1.6.7 (30-may-2024)__
 
 # Implementation
 
-All parts of the application are written in Java and it needs Java 1.8+ for work.   
+All parts of the application are written in Java and it needs Java 11+ for work.   
 
 The editor has three implementations
 - standalone editor (including also [PlantUML](http://plantuml.com/) support) [Scia Reto](https://sciareto.org)

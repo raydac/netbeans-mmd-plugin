@@ -1,4 +1,5 @@
-__1.6.8 (SNAPSHOT)__
+__1.6.8 (09-sep-2024)__
+- ALL: improvements and refactoring of exporters
 - AP:  added system property substitution for text fields
 - AP:  improved annotation source line detection
 - SR:  Embedded JDK updated to 22.0.2+11

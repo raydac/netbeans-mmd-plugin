@@ -12,8 +12,9 @@
     ]]></description>
 
     <change-notes><![CDATA[
-        <p>1.6.8 (SNAPSHOT)</p>
+        <p>1.6.8 (09-sep-2024)</p>
         <ul>
+            <li>Improvements and refactoring of exporters</li>
         </ul>
         <p>1.6.7.1 (30-may-2024)</p>
         <ul>
