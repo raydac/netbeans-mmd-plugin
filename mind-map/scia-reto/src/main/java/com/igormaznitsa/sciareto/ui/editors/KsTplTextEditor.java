@@ -19,9 +19,10 @@
 package com.igormaznitsa.sciareto.ui.editors;
 
 import static com.igormaznitsa.sciareto.ui.UiUtils.loadIcon;
-import static java.lang.String.format;
-import static net.sourceforge.plantuml.StringUtils.unicode;
+import static java.util.Objects.requireNonNull;
 
+import com.igormaznitsa.ksrender.KStreamsTopologyDescriptionParser;
+import com.igormaznitsa.ksrender.PlantUmlFlag;
 import com.igormaznitsa.sciareto.Context;
 import com.igormaznitsa.sciareto.ui.SrI18n;
 import java.awt.GridBagConstraints;
@@ -31,16 +32,11 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.regex.Pattern;
-import java.util.stream.Stream;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -61,10 +57,9 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
   private static final String PROPERTY_ORTHOGONAL = "edge.ortho";
   private static final String PROPERTY_TOPICS_GROUP = "group.topics";
   private static final String PROPERTY_STORE_GROUP = "group.stores";
-  private static final Icon ICON_PLANTUML = new ImageIcon(loadIcon("clipboard_plantuml16.png"));
+  private static final Icon ICON_PLANTUML =
+      new ImageIcon(requireNonNull(loadIcon("clipboard_plantuml16.png")));
   private static final String PROPERTY_LAYOUT_HORIZ = "layout.horiz";
-  private static final Pattern GLOBAL_STORAGE_SUBTOPOLOGY =
-      Pattern.compile(".*global.*store.*", Pattern.CASE_INSENSITIVE);
   public final FileFilter sourceFileFilter = makeFileFilter();
   private volatile boolean modeOrtho;
   private volatile boolean modeHoriz;
@@ -77,17 +72,6 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
 
   public KsTplTextEditor(@Nonnull final Context context, @Nonnull File file) throws IOException {
     super(context, file);
-  }
-
-  @Nonnull
-  private static String makePumlMultiline(@Nonnull final String text,
-                                          final int maxNonSplittedLength) {
-    if (text.length() < maxNonSplittedLength) {
-      return text;
-    }
-    return text.replace("-", "-\\n")
-        .replace(" ", "\\n")
-        .replace("_", "_\\n");
   }
 
   @Nonnull
@@ -112,18 +96,6 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
     };
   }
 
-  @Nonnull
-  private static String preprocessId(@Nonnull final IdType idType, @Nonnull final String elementId) {
-    switch (idType) {
-      case STORES:
-        return "store_" + elementId;
-      case TOPICS:
-        return "topic_" + elementId;
-      default:
-        return elementId;
-    }
-  }
-
   @Override
   protected boolean isPageAllowed() {
     return false;
@@ -143,73 +115,12 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
     this.checkBoxOrtho.setSelected(this.modeOrtho);
   }
 
-  @Nonnull
-  private String makeOptions() {
-    final StringBuilder result = new StringBuilder();
-
-    if (this.modeHoriz) {
-      result.append("left to right direction\n");
-    } else {
-      result.append("top to bottom direction\n");
-    }
-
-    if (this.modeOrtho) {
-      result.append("skinparam linetype ortho\n");
-    }
-
-    return result.toString();
-  }
-
-  @Nonnull
-  private Map<String, String> generateKeyMap(
-      @Nonnull final KStreamsTopologyDescriptionParser parser) {
-    final AtomicInteger counter = new AtomicInteger(0);
-    final Map<String, String> result = new HashMap<>();
-    parser.getTopologies().forEach(x -> {
-      x.orphans.forEach(z -> {
-        if (!result.containsKey(z.id)) {
-          result.put(z.id, "__orph_" + counter.incrementAndGet());
-        }
-      });
-
-      x.subTopologies.stream().flatMap(a -> a.children.values().stream())
-          .forEach(e -> {
-            if (!result.containsKey(e.id)) {
-              result.put(e.id, "__tel_" + counter.incrementAndGet());
-            }
-            e.dataItems.forEach((k, v) -> v.forEach(z -> {
-              final String processedId = preprocessId(IdType.find(k), z);
-              if (!result.containsKey(processedId)) {
-                result.put(processedId,
-                    "__dta_" + (k.hashCode() & 0x7FFFFFFF) + "_" + counter.incrementAndGet());
-              }
-            }));
-          });
-      x.orphans.forEach(a -> {
-        if (!result.containsKey(a.id)) {
-          result.put(a.id, "__tel_" + counter.incrementAndGet());
-        }
-      });
-    });
-    return result;
-  }
 
   @Override
   protected boolean isCopyAsAscIIImageInClipboardAllowed() {
     return false;
   }
 
-  @Nonnull
-  private String makeCommentNote(@Nullable String componentId, @Nonnull
-  final KStreamsTopologyDescriptionParser.TopologyElement element) {
-    if (element.comment == null || element.comment.isEmpty()) {
-      return "";
-    }
-    final String noteId = "nte_" + Integer.toHexString(element.id.hashCode()) + '_' +
-        Long.toHexString(System.nanoTime());
-    return format("note \"%s\" as %s%n%s%n", unicode(element.comment), noteId,
-        componentId == null ? "" : componentId + " --> " + noteId);
-  }
 
   @Override
   public boolean isSyntaxCorrect(@Nonnull final String text) {
@@ -233,172 +144,30 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
     return KStreamsTopologyDescriptionParser.replaceProperties(textInEditor, properties);
   }
 
-  private boolean isGlobalStorageSubTopology(
-      @Nonnull final KStreamsTopologyDescriptionParser.SubTopology topology) {
-    final String comment = topology.comment;
-    if (comment == null || comment.isEmpty()) {
-      return false;
-    }
-    return GLOBAL_STORAGE_SUBTOPOLOGY.matcher(comment).matches();
-  }
-
   @Override
   @Nonnull
   protected String preprocessEditorText(@Nonnull final String text) {
+    final Set<PlantUmlFlag> flags = new HashSet<>();
+    if (this.modeOrtho) {
+      flags.add(PlantUmlFlag.ORTHOGONAL);
+    }
+    if (this.modeHoriz) {
+      flags.add(PlantUmlFlag.HORIZONTAL);
+    }
+    if (this.modeGroupStores) {
+      flags.add(PlantUmlFlag.GROUP_STORES);
+    }
+    if (this.modeGroupTopics) {
+      flags.add(PlantUmlFlag.GROUP_TOPICS);
+    }
+
+    final String title = "KStreams topology \""
+        + (this.getTabTitle().getAssociatedFile() == null ? "none" :
+        this.getTabTitle().getAssociatedFile().getName()) + '\"';
     try {
-      final KStreamsTopologyDescriptionParser parser = new KStreamsTopologyDescriptionParser(text);
-      final StringBuilder builder = new StringBuilder();
-
-      builder.append("@startuml\n")
-          .append(makeOptions()).append('\n')
-          .append("hide stereotype\n")
-          .append("skinparam ArrowThickness 3\n")
-          .append("skinparam rectangle {\n")
-          .append("borderStyle<<Sub-Topologies>> dotted\n")
-          .append("borderColor<<Sub-Topologies>> Gray\n")
-          .append("borderThickness<<Sub-Topologies>> 2\n")
-          .append("roundCorner<<Sub-Topologies>> 25\n")
-          .append("shadowing<<Sub-Topologies>> false\n")
-          .append("}\n")
-          .append("title ").append(unicode("KStreams topology \""
-              + (this.getTabTitle().getAssociatedFile() == null ? "none" :
-              this.getTabTitle().getAssociatedFile().getName()) + '\"')).append('\n');
-      final Map<String, String> keys = generateKeyMap(parser);
-
-      for (final KStreamsTopologyDescriptionParser.Topologies t : parser.getTopologies()) {
-        builder.append("rectangle \"Sub-topologies\" <<Sub-Topologies>> {\n");
-        t.getSubTopologies().stream().sorted().forEach(subTopology -> {
-          builder.append(format("package \"Sub-topology %s\" %s {%n", unicode(subTopology.id),
-              isGlobalStorageSubTopology(subTopology) ? "#FFDFFF" : "#DFDFFF"));
-          builder.append(makeCommentNote(null, subTopology));
-          subTopology.children.values().forEach(elem -> {
-            final String elemKey = keys.get(elem.id);
-            final String element = KStreamType.find(elem).makePuml(elem, elemKey);
-            final String elementComment = makeCommentNote(elemKey, elem);
-            builder.append(element).append('\n');
-            if (!elementComment.isEmpty()) {
-              builder.append(elementComment).append('\n');
-            }
-          });
-          builder.append("}\n");
-        });
-        builder.append("}\n");
-
-        t.orphans.forEach(elem -> {
-          final String elementKey = keys.get(elem.id);
-          final String element = KStreamType.find(elem).makePuml(elem, elementKey);
-          final String elementComment = makeCommentNote(elementKey, elem);
-          builder.append(element).append('\n');
-          if (!elementComment.isEmpty()) {
-            builder.append(elementComment).append('\n');
-          }
-        });
-
-        final StringBuilder bufferBroker = new StringBuilder();
-        final StringBuilder bufferStores = new StringBuilder();
-        final StringBuilder bufferOthers = new StringBuilder();
-
-        t.subTopologies.stream().flatMap(st -> st.children.values().stream())
-            .flatMap(el -> el.dataItems.entrySet().stream())
-            .forEach(es -> {
-              final IdType idType = IdType.find(es.getKey());
-              es.getValue().forEach(elem -> {
-                switch (idType) {
-                  case TOPICS: {
-                    bufferBroker.append(
-                        format("%s \"%s\" as %s%n", "queue", makePumlMultiline(unicode(elem), 32),
-                            keys.get(preprocessId(IdType.TOPICS, elem))));
-                  }
-                  break;
-                  case STORES: {
-                    bufferStores.append(
-                        format("%s \"%s\" as %s%n", "database",
-                            makePumlMultiline(unicode(elem), 10),
-                            keys.get(preprocessId(IdType.STORES, elem))));
-                  }
-                  break;
-                  default: {
-                    bufferOthers.append(
-                        format("%s \"%s\" as %s%n", "file", makePumlMultiline(unicode(elem), 10),
-                            keys.get(preprocessId(IdType.OTHERS, elem))));
-                  }
-                  break;
-                }
-              });
-            });
-
-        if (bufferBroker.length() > 0) {
-          final boolean groupTopics = this.modeGroupTopics;
-          if (groupTopics) {
-            builder.append("package \"Topics\" #DFFFDF {\n");
-          }
-          builder.append(bufferBroker);
-          if (groupTopics) {
-            builder.append("}\n");
-          }
-        }
-
-        if (bufferStores.length() > 0) {
-          final boolean groupStores = this.modeGroupStores;
-          if (groupStores) {
-            builder.append("package \"Stores\" #FED8B1 {\n");
-          }
-          builder.append(bufferStores);
-          if (groupStores) {
-            builder.append("}\n");
-          }
-        }
-
-        if (bufferOthers.length() > 0) {
-          builder.append("package \"Others\" #DDDDDD {\n");
-          builder.append(bufferOthers);
-          builder.append("}\n");
-        }
-      }
-
-      parser.getTopologies().forEach(topology -> Stream.concat(
-              topology.subTopologies.stream().flatMap(st -> st.children.values().stream()),
-              topology.orphans.stream())
-          .forEach(element -> {
-            final String elemKey = keys.get(element.id);
-            element.to.forEach(
-                dst -> builder.append(format("%s -->> %s%n", elemKey, keys.get(dst.id))));
-            element.from.stream()
-                .filter(src -> src.to.stream().noneMatch(tl -> tl.id.equals(element.id)))
-                .forEach(src -> builder.append(format("%s -->> %s%n", keys.get(src.id), elemKey)));
-
-            element.dataItems.entrySet().forEach(e -> {
-              final IdType idType = IdType.find(e.getKey());
-              e.getValue().forEach(dataItemName -> {
-                final String link;
-                switch (KStreamType.find(element)) {
-                  case SOURCE:
-                    link = "<<=.=";
-                    break;
-                  case SINK:
-                    link = "=.=>>";
-                    break;
-                  default:
-                    link = "=.=";
-                    break;
-                }
-                builder.append(format("%s %s %s%n", elemKey, link,
-                    keys.get(preprocessId(idType, dataItemName))));
-              });
-            });
-          }));
-
-      builder.append("@enduml\n");
-
-//      System.out.println(builder.toString());
-      return builder.toString();
+      return new KStreamsTopologyDescriptionParser(text).asPlantUml(title, flags);
     } catch (Exception ex) {
-      final String errorText = ex.getMessage() == null ? ex.getClass().getName() : ex.getMessage();
-      return "@startuml\n"
-          + "skinparam shadowing false\n"
-          + "scale 3\n"
-          + "rectangle \"<&circle-x><b>" + unicode(errorText) + "</b>\" #FF6666\n"
-          + "@enduml";
+      return ex.getMessage();
     }
   }
 
@@ -497,115 +266,4 @@ public final class KsTplTextEditor extends AbstractPlUmlEditor {
     return sourceFileFilter;
   }
 
-  private enum IdType {
-    STORES,
-    TOPICS,
-    OTHERS;
-
-    static IdType find(final String elementType) {
-      final String normalized = elementType.trim().toLowerCase(Locale.ENGLISH);
-      if (normalized.startsWith("topic")) {
-        return TOPICS;
-      }
-      if (normalized.startsWith("store")) {
-        return STORES;
-      }
-      return OTHERS;
-    }
-  }
-
-  private enum PartitioningFlag {
-    INHERITED,
-    MAY_ON,
-    ON
-  }
-
-  private enum KStreamType {
-    SOURCE(".*source.*", ".*kstream.*source.*", "node \"%s\" as %s %s", PartitioningFlag.INHERITED),
-    PRINT("", ".*kstream.*printer.*", "file \"%s\" as %s", PartitioningFlag.INHERITED),
-    SINK(".*sink.*", ".*kstream.*sink.*", "node \"%s\" as %s %s", PartitioningFlag.INHERITED),
-    PEEK("", ".*kstream.*peek.*", "file \"%s\" as %s %s", PartitioningFlag.INHERITED),
-    FOREACH("", ".*kstream.*foreach.*", "node \"%s\" as %s %s", PartitioningFlag.INHERITED),
-
-    PROCESSOR("", ".*kstream.*processor.*", "node \"%s\" as %s %s", PartitioningFlag.INHERITED),
-    TRANSFORMVALUES("", ".*kstream.*transformvalues.*", "cloud \"%s\" as %s %s",
-        PartitioningFlag.INHERITED),
-    TRANSFORM("", ".*kstream.*transform.*", "cloud \"%s\" as %s %s", PartitioningFlag.ON),
-
-    KEY_SELECT("", ".*kstream.*key.*select.*", "rectangle \"%s\" as %s %s", PartitioningFlag.ON),
-
-    FLATMAPVALUES("", ".*kstream.*flatmapvalues.*", "rectangle \"%s\" as %s %s",
-        PartitioningFlag.INHERITED),
-    FLATMAP("", ".*kstream.*flatmap.*", "rectangle \"%s\" as %s %s", PartitioningFlag.ON),
-    FILTER("", ".*kstream.*filter.*", "rectangle \"%s\" as %s %s", PartitioningFlag.INHERITED),
-
-    MAPVALUES("", ".*kstream.*mapvalues.*", "rectangle \"%s\" as %s %s",
-        PartitioningFlag.INHERITED),
-    MAP("", ".*kstream.*map.*", "rectangle \"%s\" as %s %s", PartitioningFlag.ON),
-    MERGE("", ".*kstream.*merge.*", "usecase \"%s\" as %s %s", PartitioningFlag.MAY_ON),
-
-    WINDOWED("", ".*kstream.*windowed.*", "frame \"%s\" as %s %s", PartitioningFlag.INHERITED),
-    JOINTHIS("", ".*kstream.*jointhis.*", "usecase \"%s\" as %s %s", PartitioningFlag.MAY_ON),
-    JOINOTHER("", ".*kstream.*joinother.*", "usecase \"%s\" as %s %s", PartitioningFlag.MAY_ON),
-    JOIN("", ".*kstream.*join.*", "usecase \"%s\" as %s %s", PartitioningFlag.MAY_ON),
-
-    OUTERTHIS("", ".*kstream.*outerthis.*", "usecase \"%s\" as %s %s", PartitioningFlag.MAY_ON),
-    OUTEROTHER("", ".*kstream.*outerother.*", "usecase \"%s\" as %s %s", PartitioningFlag.MAY_ON),
-
-    BRANCHCHILD("", ".*kstream.*branchchild.*", "usecase \"%s\" as %s %s",
-        PartitioningFlag.INHERITED),
-    BRANCH("", ".*kstream.*branch.*", "usecase \"%s\" as %s %s", PartitioningFlag.INHERITED);
-
-    private final Pattern patternType;
-    private final Pattern patternId;
-    private final String pumlPattern;
-    private final PartitioningFlag partitioning;
-
-    KStreamType(final String patternType,
-                final String patternId,
-                final String pumlPattern,
-                final PartitioningFlag partitioning
-    ) {
-      this.partitioning = partitioning;
-      this.patternId = Pattern.compile(patternId, Pattern.CASE_INSENSITIVE);
-      this.patternType = Pattern.compile(patternType, Pattern.CASE_INSENSITIVE);
-      this.pumlPattern = pumlPattern;
-    }
-
-    static KStreamType find(final KStreamsTopologyDescriptionParser.TopologyElement element) {
-      for (final KStreamType t : KStreamType.values()) {
-        if (t.patternType.matcher(element.type).matches()) {
-          return t;
-        }
-        if (t.patternId.matcher(element.id).matches()) {
-          return t;
-        }
-      }
-      return FILTER;
-    }
-
-    PartitioningFlag getPartitioning() {
-      return this.partitioning;
-    }
-
-    String makePuml(final KStreamsTopologyDescriptionParser.TopologyElement element,
-                    @Nonnull final String alias) {
-      final String color;
-      switch (this.partitioning) {
-        case ON:
-          color = "#FFDEDE";
-          break;
-        case MAY_ON:
-          color = "#FFFFBB";
-          break;
-        case INHERITED:
-          color = "#BBFFBB";
-          break;
-        default:
-          color = "#BBBBFF";
-          break;
-      }
-      return format(this.pumlPattern, makePumlMultiline(unicode(element.id), 0), alias, color);
-    }
-  }
 }

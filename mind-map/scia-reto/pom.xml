@@ -82,6 +82,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>com.igormaznitsa</groupId>
+      <artifactId>ks-render-lib</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
     </dependency>

@@ -25,6 +25,7 @@
         <module>mind-map-swing-panel</module>
         <module>mind-map-ide-common</module>
         <module>scia-reto</module>
+        <module>ks-render-lib</module>
     </modules>
 
     <developers>
