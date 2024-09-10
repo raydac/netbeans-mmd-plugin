@@ -101,7 +101,7 @@ public class MmdAnnotationProcessor extends AbstractProcessor {
         "/application.properties"))) {
       Properties props = new Properties();
       props.load(stream);
-      VERSION = new Version(props.getProperty("version", "1.6.8"));
+      VERSION = new Version(props.getProperty("version", "1.6.9"));
       NAME = props.getProperty("name", "unknown");
     } catch (Exception ex) {
       throw new Error("Can't load version info", ex);
