@@ -16,11 +16,11 @@
 
 package com.igormaznitsa.ksrender;
 
-import static com.igormaznitsa.ksrender.KdRenderUtils.isGlobalStorageSubTopology;
-import static com.igormaznitsa.ksrender.KdRenderUtils.makeCommentNote;
-import static com.igormaznitsa.ksrender.KdRenderUtils.makePumlMultiline;
-import static com.igormaznitsa.ksrender.KdRenderUtils.preprocessId;
-import static com.igormaznitsa.ksrender.KdRenderUtils.unicodeString;
+import static com.igormaznitsa.ksrender.KsRenderUtils.isGlobalStorageSubTopology;
+import static com.igormaznitsa.ksrender.KsRenderUtils.makeCommentNote;
+import static com.igormaznitsa.ksrender.KsRenderUtils.makePumlMultiline;
+import static com.igormaznitsa.ksrender.KsRenderUtils.preprocessId;
+import static com.igormaznitsa.ksrender.KsRenderUtils.unicodeString;
 import static java.lang.String.format;
 
 import java.util.ArrayList;

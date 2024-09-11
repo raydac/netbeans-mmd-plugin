@@ -20,20 +20,19 @@ import static java.lang.String.format;
 
 import java.util.regex.Pattern;
 
-public final class KdRenderUtils {
+public final class KsRenderUtils {
   private static final Pattern GLOBAL_STORAGE_SUBTOPOLOGY =
       Pattern.compile(".*global.*store.*", Pattern.CASE_INSENSITIVE);
 
-  private KdRenderUtils() {
+  private KsRenderUtils() {
   }
 
   public static String unicodeString(final String text) {
-    final StringBuilder result = new StringBuilder();
+    final StringBuilder result = new StringBuilder(text.length() + 4);
     final char[] chars = text.toCharArray();
     for (final char c : chars) {
       if (c > 127 || c == '&' || c == '|') {
-        final int i = c;
-        result.append("&#").append(i).append(";");
+        result.append("&#").append((int) c).append(';');
       } else {
         result.append(c);
       }

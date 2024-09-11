@@ -16,8 +16,8 @@
 
 package com.igormaznitsa.ksrender;
 
-import static com.igormaznitsa.ksrender.KdRenderUtils.makePumlMultiline;
-import static com.igormaznitsa.ksrender.KdRenderUtils.unicodeString;
+import static com.igormaznitsa.ksrender.KsRenderUtils.makePumlMultiline;
+import static com.igormaznitsa.ksrender.KsRenderUtils.unicodeString;
 import static com.igormaznitsa.ksrender.PartitioningFlag.INHERITED;
 import static com.igormaznitsa.ksrender.PartitioningFlag.MAY_ON;
 import static com.igormaznitsa.ksrender.PartitioningFlag.ON;
