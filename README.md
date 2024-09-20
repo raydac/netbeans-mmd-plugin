@@ -15,20 +15,15 @@ Initially I developed a plugin for NetBeans IDE then the IntellijIDEA plugin was
 
 # Changelog
 
+__1.6.9 (SNAPSHOT)__
+- SR: updated embedded JDK to 23+38
+
 __1.6.8 (09-sep-2024)__
 - ALL: improvements and refactoring of exporters
 - AP:  added system property substitution for text fields
 - AP:  improved annotation source line detection
 - SR:  Embedded JDK updated to 22.0.2+11
 - SR:  PlantUML updated to 1.2024.7
-
-__1.6.7 (30-may-2024)__
-- IJ:  Minimal supported Intellij IDEA platform lifted up to 2022.2 (Build: 222.4554.10)
-- IJ:  Fixed scope for MMD files
-- IJ:  Plugin renamed to 'SciaReto Mind Map' by requirement of JetBrains
-- SR:  Added version for Linux ARM (aarch64)
-- SR:  Embedded JDK updated to 22.0.1+12
-- SR:  PlantUML updated to 1.2024.5
 
 [Full changelog](https://github.com/raydac/netbeans-mmd-plugin/blob/master/changelog.txt)   
 
