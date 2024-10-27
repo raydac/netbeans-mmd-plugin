@@ -751,5 +751,8 @@ public class KStreamsTopologyTokenMaker extends AbstractJFlexTokenMaker {
     }
   }
 
-
+  @Override
+  public int yystate() {
+    return this.zzLexicalState;
+  }
 }

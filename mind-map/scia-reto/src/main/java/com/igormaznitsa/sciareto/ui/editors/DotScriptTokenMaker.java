@@ -1807,5 +1807,8 @@ public class DotScriptTokenMaker extends AbstractJFlexCTokenMaker {
     }
   }
 
-
+  @Override
+  public int yystate() {
+    return this.zzLexicalState;
+  }
 }
