@@ -17,6 +17,7 @@ Initially I developed a plugin for NetBeans IDE then the IntellijIDEA plugin was
 
 __1.6.9 (SNAPSHOT)__
 - SR: updated embedded JDK to 23.0.1+13
+- SR:  PlantUML updated to 1.2024.8
 
 __1.6.8 (09-sep-2024)__
 - ALL: improvements and refactoring of exporters
