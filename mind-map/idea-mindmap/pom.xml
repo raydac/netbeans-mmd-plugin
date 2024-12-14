@@ -14,6 +14,7 @@
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <meta.version>1.1.3</meta.version>
         <gradle.executable>gradle8</gradle.executable>
     </properties>
 
@@ -177,6 +178,7 @@
                                 <argument>build</argument>
                                 <!--                <argument>-i</argument>-->
                                 <argument>-S</argument>
+                                <argument>-Pmeta_version=${com.igormaznitsa:meta-annotations:jar.version}</argument>
                                 <argument>-Pjsoup_version=${org.jsoup:jsoup:jar.version}</argument>
                                 <argument>-Pjson_version=${org.json:json:jar.version}</argument>
                                 <argument>-Pmaven_project_version=${project.version}</argument>

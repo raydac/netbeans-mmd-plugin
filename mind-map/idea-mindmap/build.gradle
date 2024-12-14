@@ -20,6 +20,7 @@ intellij {
 
 def jsoupVersion = project.getProperty('jsoup_version')
 def jsonVersion = project.getProperty('json_version')
+def metaVersion = project.getProperty('meta_version')
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -28,8 +29,8 @@ defaultTasks 'clean', 'build'
 
 dependencies {
     implementation('com.igormaznitsa:commons-version:1.0.0')
-    implementation('com.igormaznitsa:meta-annotations:1.1.3')
-    implementation('com.igormaznitsa:meta-utils:1.1.3')
+    implementation('com.igormaznitsa:meta-annotations:' + metaVersion)
+    implementation('com.igormaznitsa:meta-utils:' + metaVersion)
 
     implementation('org.json:json:' + jsonVersion)
     implementation('org.jsoup:jsoup:' + jsoupVersion)
