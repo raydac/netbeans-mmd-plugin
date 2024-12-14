@@ -107,7 +107,7 @@ public abstract class AbstractDotEditor extends AbstractPlUmlEditor {
     if (state == ExeState.OK) {
       final ByteArrayOutputStream bos = new ByteArrayOutputStream();
       final ProcessState processState = wizard.createFile3(bos);
-      IOUtils.closeQuetly(bos);
+      IOUtils.closeQuietly(bos);
       final byte[] formedContent = bos.toByteArray();
 
       if (processState.differs(ProcessState.TERMINATED_OK())) {

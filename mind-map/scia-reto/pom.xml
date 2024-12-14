@@ -943,6 +943,7 @@
               <checkMayContainNull>true</checkMayContainNull>
               <checkNullable>true</checkNullable>
               <ignoreClasses>
+                <ignore>META-INF.*</ignore>
                 <ignore>*.KStreamsTopologyTokenMaker</ignore>
                 <ignore>*.DotScriptTokenMaker</ignore>
                 <ignore>*.NoteEditor</ignore>

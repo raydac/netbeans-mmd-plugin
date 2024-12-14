@@ -26,7 +26,6 @@ import com.igormaznitsa.meta.common.utils.IOUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.sciareto.Context;
-import com.igormaznitsa.sciareto.preferences.PrefUtils;
 import com.igormaznitsa.sciareto.ui.MainFrame;
 import java.io.File;
 import java.io.IOException;
@@ -198,7 +197,7 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
             }
           };
         }
-      }, Flux::fromIterable, IOUtils::closeQuetly)
+          }, Flux::fromIterable, IOUtils::closeQuietly)
           .parallel()
           .runOn(MainFrame.REACTOR_SCHEDULER)
           .doOnError(error -> {

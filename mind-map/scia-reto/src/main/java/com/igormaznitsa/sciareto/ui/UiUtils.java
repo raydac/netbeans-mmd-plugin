@@ -34,7 +34,6 @@ import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
-import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.preferences.PreferencesManager;
@@ -333,7 +332,7 @@ public final class UiUtils {
       } catch (IOException ex) {
         result = null;
       } finally {
-        IOUtils.closeQuetly(inStream);
+        IOUtils.closeQuietly(inStream);
       }
     }
     return result;
