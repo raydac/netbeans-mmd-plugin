@@ -21,6 +21,7 @@ package com.igormaznitsa.sciareto.ui.editors;
 import static com.igormaznitsa.meta.common.utils.Assertions.fail;
 import static java.util.Objects.requireNonNull;
 
+import com.igormaznitsa.meta.annotation.MayContainNull;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -41,13 +42,13 @@ public class PlantUmlTokenMaker extends AbstractTokenMaker {
 
   private static final List<String> RESERVED_WORDS;
 
-  private static final String PLANTUML_KEWORD_RESOURCE = "/puml/pumlkeywords.txt";
+  private static final String PLANTUML_KEYWORDS_RESOURCE = "/puml/pumlkeywords.txt";
 
   static {
     final List<String> loaded = new ArrayList<>();
     try (final BufferedReader reader = new BufferedReader(new InputStreamReader(
-        requireNonNull(PlantUmlTokenMaker.class.getResourceAsStream(PLANTUML_KEWORD_RESOURCE),
-            "Can't find PlantUML keywords list for resource: " + PLANTUML_KEWORD_RESOURCE)))) {
+        requireNonNull(PlantUmlTokenMaker.class.getResourceAsStream(PLANTUML_KEYWORDS_RESOURCE),
+            "Can't find PlantUML keywords list for resource: " + PLANTUML_KEYWORDS_RESOURCE)))) {
       String line;
       while ((line = reader.readLine()) != null) {
         final String trimmed = line.trim();
@@ -57,7 +58,7 @@ public class PlantUmlTokenMaker extends AbstractTokenMaker {
         loaded.add(trimmed);
       }
     } catch (IOException ex) {
-      throw new Error("Can't read PlantUML keyword list from " + PLANTUML_KEWORD_RESOURCE, ex);
+      throw new Error("Can't read PlantUML keyword list from " + PLANTUML_KEYWORDS_RESOURCE, ex);
     }
     Collections.sort(loaded);
     RESERVED_WORDS = Collections.unmodifiableList(loaded);
@@ -82,6 +83,13 @@ public class PlantUmlTokenMaker extends AbstractTokenMaker {
     result.setAutoActivationRules(false, "@");
 
     return result;
+  }
+
+  @Nonnull
+  @MayContainNull
+  @Override
+  public String[] getLineCommentStartAndEnd(int languageIndex) {
+    return new String[] {"'", null};
   }
 
   @Override
