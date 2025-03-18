@@ -11,7 +11,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <plantuml.version>1.2025.1</plantuml.version>
+        <plantuml.version>1.2025.2</plantuml.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <max.jdk.version>9</max.jdk.version>
@@ -125,7 +125,7 @@
             <dependency>
                 <groupId>com.fifesoft</groupId>
                 <artifactId>rsyntaxtextarea</artifactId>
-                <version>3.5.4</version>
+                <version>3.6.0</version>
             </dependency>
             <dependency>
                 <groupId>com.fifesoft</groupId>
@@ -170,12 +170,12 @@
             <dependency>
                 <groupId>net.java.dev.jna</groupId>
                 <artifactId>jna</artifactId>
-                <version>5.16.0</version>
+                <version>5.17.0</version>
             </dependency>
             <dependency>
                 <groupId>net.java.dev.jna</groupId>
                 <artifactId>jna-platform</artifactId>
-                <version>5.16.0</version>
+                <version>5.17.0</version>
             </dependency>
             <dependency>
                 <groupId>net.sourceforge.plantuml</groupId>
@@ -185,7 +185,7 @@
             <dependency>
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
-                <version>1.17.2</version>
+                <version>1.18.0</version>
             </dependency>
             <dependency>
                 <groupId>com.igormaznitsa</groupId>
