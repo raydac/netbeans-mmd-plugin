@@ -140,6 +140,7 @@ public final class SourceTextEditor extends AbstractTextEditor {
         asList("bat", "cmd")); //NOI18N
     SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_XML, List.of("xml")); //NOI18N
     SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_YAML, asList("yaml", "yml")); //NOI18N
+    SRC_EXTENSIONS.put(SyntaxConstants.SYNTAX_STYLE_VHDL, asList("vhdl", "vhd")); //NOI18N
 
     final Set<String> allEtensinsions = new HashSet<>();
 
