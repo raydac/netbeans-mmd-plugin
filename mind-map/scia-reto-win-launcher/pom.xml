@@ -10,80 +10,147 @@
     </parent>
 
     <artifactId>scia-reto-win-launcher</artifactId>
-    <packaging>mvn-golang</packaging>
+    <packaging>pom</packaging>
 
     <description>Windows launcher for Scia-Reto editor.</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <mvn.golang.go.version>1.24.1</mvn.golang.go.version>
-        <maven.test.skip>true</maven.test.skip>
+        <go.plugin.version>1.0.3</go.plugin.version>
+        <go.target.folder>${project.basedir}${file.separator}bin</go.target.folder>
+        <go.source.folder>${project.basedir}${file.separator}src</go.source.folder>
+        <go.resource.folder>${project.basedir}${file.separator}res</go.resource.folder>
+        <go.target.temp.build>${project.basedir}${file.separator}.build</go.target.temp.build>
+
+        <maven.install.skip>true</maven.install.skip>
+        <maven.deploy.skip>true</maven.deploy.skip>
         <target.name>scia-reto</target.name>
         <final.extension>.exe</final.extension>
     </properties>
 
     <build>
-        <sourceDirectory>${basedir}${file.separator}src</sourceDirectory>
-        <directory>${basedir}${file.separator}bin</directory>
         <defaultGoal>clean package</defaultGoal>
         <finalName>${target.name}${final.extension}</finalName>
-
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>
                 <configuration>
                     <followSymLinks>false</followSymLinks>
                     <excludeDefaultDirectories>true</excludeDefaultDirectories>
                     <filesets>
                         <fileset>
-                            <directory>${basedir}${file.separator}pkg</directory>
-                            <directory>${basedir}${file.separator}bin</directory>
+                            <directory>${go.target.folder}</directory>
+                            <directory>${go.target.temp.build}</directory>
                         </fileset>
                     </filesets>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>remove-folders-process-resources</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>default-clean</id>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
-
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-resources-to-temp-build</id>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <phase>process-resources</phase>
+                        <configuration>
+                            <outputDirectory>${go.target.temp.build}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${go.resource.folder}</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                                <resource>
+                                    <directory>${go.source.folder}</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>com.igormaznitsa</groupId>
-                <artifactId>mvn-golang-wrapper</artifactId>
-                <extensions>true</extensions>
+                <artifactId>gosdk-wrapper-maven-plugin</artifactId>
+                <version>${go.plugin.version}</version>
                 <configuration>
-                    <strip>true</strip>
+                    <workDir>${go.target.temp.build}</workDir>
+                    <env>
+                        <GOBIN>${go.target.temp.build}</GOBIN>
+                    </env>
+                    <envLast>
+                        <PATH>${path.separator}${go.target.temp.build}</PATH>
+                    </envLast>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>install-goversion-package</id>
-                        <phase>initialize</phase>
+                        <id>go-get-goversioninfo-get</id>
                         <goals>
-                            <goal>install</goal>
+                            <goal>execute</goal>
                         </goals>
                         <configuration>
-                            <packages>
-                                <package>github.com/josephspurrier/goversioninfo/cmd/goversioninfo@latest</package>
-                            </packages>
+                            <args>
+                                <arg>get</arg>
+                                <arg>github.com/josephspurrier/goversioninfo/cmd/goversioninfo@latest</arg>
+                            </args>
                         </configuration>
                     </execution>
                     <execution>
-                        <id>default-build</id>
-                        <phase>none</phase>
-                    </execution>
-                    <execution>
-                        <id>default-get</id>
-                        <phase>none</phase>
-                    </execution>
-                    <execution>
-                        <id>build-for-amd64</id>
-                        <phase>compile</phase>
+                        <id>go-get-goversioninfo-install</id>
                         <goals>
-                            <goal>build</goal>
+                            <goal>execute</goal>
                         </goals>
                         <configuration>
-                            <targetOs>windows</targetOs>
-                            <targetArch>amd64</targetArch>
-                            <ldFlags>
-                                <flag>-H=windowsgui</flag>
-                            </ldFlags>
+                            <args>
+                                <arg>install</arg>
+                                <arg>github.com/josephspurrier/goversioninfo/cmd/goversioninfo@latest</arg>
+                            </args>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>go-generate</id>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                        <configuration>
+                            <args>
+                                <arg>generate</arg>
+                            </args>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>go-build</id>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                        <configuration>
+                            <env>
+                                <GOOS>windows</GOOS>
+                                <GOARCH>amd64</GOARCH>
+                            </env>
+                            <args>
+                                <arg>build</arg>
+                                <arg>-ldflags=-s -w</arg>
+                                <arg>-o</arg>
+                                <arg>${go.target.folder}${file.separator}${project.build.finalName}</arg>
+                            </args>
                         </configuration>
                     </execution>
                 </executions>
