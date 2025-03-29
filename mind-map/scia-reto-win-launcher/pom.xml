@@ -23,7 +23,7 @@
         <go.resource.folder>${project.basedir}${file.separator}res</go.resource.folder>
         <go.target.temp.build>${project.basedir}${file.separator}.build</go.target.temp.build>
 
-        <maven.install.skip>true</maven.install.skip>
+        <maven.install.skip>false</maven.install.skip>
         <maven.deploy.skip>true</maven.deploy.skip>
         <target.name>scia-reto</target.name>
         <final.extension>.exe</final.extension>

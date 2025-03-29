@@ -54,3 +54,4 @@ versioninfo.go
 resource.syso
 resource_windows.syso
 jkslink
+.build

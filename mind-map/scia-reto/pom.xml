@@ -158,7 +158,7 @@
           <groupId>com.igormaznitsa</groupId>
           <artifactId>scia-reto-win-launcher</artifactId>
           <version>${project.version}</version>
-          <type>mvn-golang</type>
+          <type>pom</type>
           <scope>provided</scope>
         </dependency>
       </dependencies>

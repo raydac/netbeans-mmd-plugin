@@ -29,10 +29,12 @@ import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.JoinWindows;
 import org.apache.kafka.streams.kstream.KStream;
-import org.apache.kafka.streams.kstream.ValueTransformerWithKey;
-import org.apache.kafka.streams.processor.AbstractProcessor;
-import org.apache.kafka.streams.processor.ProcessorContext;
+import org.apache.kafka.streams.kstream.Repartitioned;
 import org.apache.kafka.streams.processor.WallclockTimestampExtractor;
+import org.apache.kafka.streams.processor.api.ContextualProcessor;
+import org.apache.kafka.streams.processor.api.FixedKeyProcessor;
+import org.apache.kafka.streams.processor.api.FixedKeyRecord;
+import org.apache.kafka.streams.processor.api.Record;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.apache.kafka.streams.state.StoreBuilder;
 import org.apache.kafka.streams.state.Stores;
@@ -96,8 +98,11 @@ public class KStreamsTopologyDescriptionParserTest {
     final KStreamsTopologyDescriptionParser parsed = new KStreamsTopologyDescriptionParser(text);
 
     assertEquals(4, parsed.size());
-    assertEquals(1, parsed.findForId("KSTREAM-SINK-0000000003").get().dataItems.get("topic").size());
-    assertEquals("c", parsed.findForId("KSTREAM-SINK-0000000003").get().dataItems.get("topic").stream().findFirst().get());
+    assertEquals(1,
+        parsed.findForId("KSTREAM-SINK-0000000003").get().dataItems.get("topic").size());
+    assertEquals("c",
+        parsed.findForId("KSTREAM-SINK-0000000003").get().dataItems.get("topic").stream()
+            .findFirst().get());
   }
 
   @Test
@@ -114,14 +119,16 @@ public class KStreamsTopologyDescriptionParserTest {
     final KStreamsTopologyDescriptionParser graph = new KStreamsTopologyDescriptionParser(text);
 
     assertEquals(3, graph.size());
-    Optional<KStreamsTopologyDescriptionParser.TopologyElement> source = graph.findForId("sensor-a");
+    Optional<KStreamsTopologyDescriptionParser.TopologyElement> source =
+        graph.findForId("sensor-a");
     assertTrue(source.isPresent());
     assertEquals(1, source.get().dataItems.get("topics").size());
     assertTrue(source.get().from.isEmpty());
     assertEquals(1, source.get().to.size());
     assertEquals("to-the-world", source.get().to.get(0).id);
 
-    Optional<KStreamsTopologyDescriptionParser.TopologyElement> sink = graph.findForId("to-the-world");
+    Optional<KStreamsTopologyDescriptionParser.TopologyElement> sink =
+        graph.findForId("to-the-world");
     assertTrue(sink.isPresent());
     assertEquals(2, sink.get().from.size());
   }
@@ -131,9 +138,12 @@ public class KStreamsTopologyDescriptionParserTest {
     final StreamsBuilder builder = new StreamsBuilder();
     final KStream<String, String> streamOne = builder.stream("input-topic-one");
     final KStream<String, String> streamTwo = builder.stream("input-topic-two");
-    final KStream<String, String> streamOneNewKey = streamOne.selectKey((k, v) -> v.substring(0, 5));
-    final KStream<String, String> streamTwoNewKey = streamTwo.selectKey((k, v) -> v.substring(4, 9));
-    streamOneNewKey.join(streamTwoNewKey, (v1, v2) -> v1 + ":" + v2, JoinWindows.of(ofMinutes(5))).to("joined-output");
+    final KStream<String, String> streamOneNewKey =
+        streamOne.selectKey((k, v) -> v.substring(0, 5));
+    final KStream<String, String> streamTwoNewKey =
+        streamTwo.selectKey((k, v) -> v.substring(4, 9));
+    streamOneNewKey.join(streamTwoNewKey, (v1, v2) -> v1 + ":" + v2, JoinWindows.of(ofMinutes(5)))
+        .to("joined-output");
 
     final Topology topology = builder.build();
     final String text = topology.describe().toString();
@@ -154,16 +164,25 @@ public class KStreamsTopologyDescriptionParserTest {
         Stores.persistentKeyValueStore(storeName),
         Serdes.String(),
         Serdes.String());
-    final StoreBuilder<KeyValueStore<String, String>> globalStoreBuilder = Stores.keyValueStoreBuilder(
-        Stores.persistentKeyValueStore(globalStoreName),
-        Serdes.String(),
-        Serdes.String());
-    builder.addGlobalStore(globalStoreBuilder, "some-global-topic", Consumed.with(Serdes.Short(), Serdes.String(), new WallclockTimestampExtractor(), Topology.AutoOffsetReset.EARLIEST), FakeProcessor::new);
+    final StoreBuilder<KeyValueStore<String, String>> globalStoreBuilder =
+        Stores.keyValueStoreBuilder(
+            Stores.persistentKeyValueStore(globalStoreName),
+            Serdes.String(),
+            Serdes.String());
+    builder.addGlobalStore(
+        globalStoreBuilder,
+        "some-global-topic",
+        Consumed.with(Serdes.String(), Serdes.String())
+            .withTimestampExtractor(new WallclockTimestampExtractor())
+            .withOffsetResetPolicy(Topology.AutoOffsetReset.EARLIEST),
+        () -> new FakeProcessor()
+    );
     builder.addStateStore(storeBuilder);
     builder.<String, String>stream("input")
         .filter((k, v) -> v.endsWith("FOO"))
-        .through("some-through-topic")
-        .transformValues(() -> new SimpleValueTransformer(storeName), storeName)
+        .repartition(Repartitioned.as("some-through-topic"))
+        .processValues(() -> new SimpleValueTransformer(storeName))
+        .processValues(() -> new SimpleValueTransformer(storeName), storeName)
         .to("output");
 
     final Topology topology = builder.build();
@@ -171,7 +190,7 @@ public class KStreamsTopologyDescriptionParserTest {
     System.out.println(text);
 
     final KStreamsTopologyDescriptionParser parsed = new KStreamsTopologyDescriptionParser(text);
-    assertEquals(8, parsed.size());
+    assertEquals(10, parsed.size());
   }
 
   @Test
@@ -210,7 +229,7 @@ public class KStreamsTopologyDescriptionParserTest {
     assertEquals(9, graph.size());
   }
 
-  static class SimpleValueTransformer implements ValueTransformerWithKey<String, String, String> {
+  static class SimpleValueTransformer implements FixedKeyProcessor<String, String, String> {
 
     private String storeName;
     private KeyValueStore<String, String> store;
@@ -220,21 +239,15 @@ public class KStreamsTopologyDescriptionParserTest {
     }
 
     @Override
-    public void init(final ProcessorContext context) {
-      store = (KeyValueStore) context.getStateStore(storeName);
-    }
-
-    @Override
-    public String transform(final String key, final String value) {
-      String persistedValue = store.get(key);
-      final String updatedValue = value + "_" + Instant.now().toString();
+    public void process(FixedKeyRecord<String, String> record) {
+      String persistedValue = store.get(record.key());
+      final String updatedValue = record.value() + "_" + Instant.now().toString();
 
       if (persistedValue == null) {
         persistedValue = updatedValue;
       }
 
-      store.put(key, updatedValue);
-      return persistedValue;
+      store.put(record.key(), updatedValue);
     }
 
     @Override
@@ -243,15 +256,16 @@ public class KStreamsTopologyDescriptionParserTest {
     }
   }
 
-  private class FakeProcessor extends AbstractProcessor<Short, String> {
+  private static class FakeProcessor extends ContextualProcessor<String, String, Void, Void> {
     public FakeProcessor() {
       super();
     }
 
     @Override
-    public void process(Short k, String v) {
-      throw new UnsupportedOperationException("Not supported yet.");
+    public void process(Record record) {
+
     }
+
   }
 
 }
