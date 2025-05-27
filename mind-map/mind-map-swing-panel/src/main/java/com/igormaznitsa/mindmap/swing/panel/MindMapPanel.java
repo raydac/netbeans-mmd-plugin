@@ -1363,7 +1363,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
       this.doLayout();
       this.revalidate();
       this.repaint();
-      this.fireNotificationMindMapChanged(true);
+      // this.fireNotificationMindMapChanged(true);
     }
   }
 
@@ -1818,7 +1818,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
       }
 
       doLayout();
-      fireNotificationMindMapChanged(false);
+      // fireNotificationMindMapChanged(false);
       removeEditedTopicForRollback.set(true);
 
       fireNotificationEnsureTopicVisibility(newTopic);
