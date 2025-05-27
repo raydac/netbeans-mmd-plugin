@@ -139,9 +139,10 @@ public final class ModelUtils implements Constants {
         continue;
       } else if (Character.isISOControl(c)) {
         continue;
-      } else if (MD_ESCAPED_CHARS.indexOf(c) >= 0) {
+      } /* else if (MD_ESCAPED_CHARS.indexOf(c) >= 0) {
         buffer.append('\\');
       }
+      */  // wang jun
 
       buffer.append(c);
     }
@@ -203,6 +204,8 @@ public final class ModelUtils implements Constants {
    */
   public static String unescapeMarkdown(final String text) {
     String unescaped = UNESCAPE_BR.matcher(text).replaceAll(NEXT_LINE);
+    return unescaped;
+/*
     final StringBuffer result = new StringBuffer(text.length());
     final Matcher escaped = MD_ESCAPED_PATTERN.matcher(unescaped);
     while (escaped.find()) {
@@ -211,6 +214,8 @@ public final class ModelUtils implements Constants {
     }
     escaped.appendTail(result);
     return result.toString();
+*/  // 不做转义了 wang jun
+
   }
 
   /**
