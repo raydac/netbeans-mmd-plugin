@@ -118,6 +118,7 @@ public abstract class AbstractPreferencesPanel {
   private final KeyModifiersSelector keyModifiersFastNavigation;
   private final JButton buttonKeyShortcutEditor;
   private final JCheckBox checkBoxSmartTextPaste;
+  private final JCheckBox checkBoxNoEscape;
   private final Map<String, KeyShortcut> keyShortcutMap = new HashMap<>();
   protected MindMapPanelConfig lastLoadedConfig;
   private boolean trapChangeAllowed;
@@ -198,6 +199,7 @@ public abstract class AbstractPreferencesPanel {
             this.panel.getFont());
 
     this.checkBoxSmartTextPaste = this.uiComponentFactory.makeCheckBox();
+    this.checkBoxNoEscape = this.uiComponentFactory.makeCheckBox();
 
     this.comboBoxRenderQuality = this.uiComponentFactory.makeComboBox(RenderQuality.class);
     this.comboBoxRenderQuality.setModel(new DefaultComboBoxModel<>(RenderQuality.values()));
@@ -603,15 +605,26 @@ public abstract class AbstractPreferencesPanel {
     panel.setLayout(new GridBagLayout());
 
     final GridBagConstraints constraints = new GridBagConstraints();
-    constraints.gridx = 0;
     constraints.weightx = 1;
     constraints.fill = GridBagConstraints.HORIZONTAL;
     constraints.anchor = GridBagConstraints.WEST;
 
+    constraints.gridx = 0;
+    constraints.gridy = 0;
     this.checkBoxSmartTextPaste.setText(bundle.getString("PreferencesPanel.checkSmartTextPaste"));
     panel.add(this.checkBoxSmartTextPaste, constraints);
 
-    this.findFeaturesComponents(this.uiComponentFactory).forEach(c -> panel.add(c, constraints));
+    constraints.gridx = 1; // 1st line, 2nd column
+    constraints.gridy = 0;
+    this.checkBoxNoEscape.setText(bundle.getString("PreferencesPanel.checkNoEscape"));
+    panel.add(this.checkBoxNoEscape, constraints);
+
+    this.findFeaturesComponents(this.uiComponentFactory).forEach(c -> {
+      constraints.gridx = 0;
+      constraints.gridy++;
+      constraints.gridwidth = 2; // use two columns
+      panel.add(c, constraints);
+    });
 
     return panel;
   }
@@ -814,6 +827,8 @@ public abstract class AbstractPreferencesPanel {
     config.setFont(this.fontChooserPanelMindMapTopicTitleFont.getValue());
 
     config.setSmartTextPaste(this.checkBoxSmartTextPaste.isSelected());
+    config.setNoEscape(this.checkBoxNoEscape.isSelected());
+
     config.setKeyShortcutMap(this.keyShortcutMap);
 
     config.setScaleModifiers(this.keyModifiersWheelScale.getModifiers());
@@ -904,6 +919,7 @@ public abstract class AbstractPreferencesPanel {
       this.fontChooserPanelMindMapTopicTitleFont.setValue(config.getFont());
 
       this.checkBoxSmartTextPaste.setSelected(config.isSmartTextPaste());
+      this.checkBoxNoEscape.setSelected(config.isNoEscape());
 
       this.keyShortcutMap.clear();
       this.keyShortcutMap.putAll(config.getKeyShortcutMap());
