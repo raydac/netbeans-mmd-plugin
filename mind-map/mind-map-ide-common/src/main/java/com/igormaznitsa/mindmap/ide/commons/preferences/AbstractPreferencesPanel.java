@@ -466,14 +466,14 @@ public abstract class AbstractPreferencesPanel {
       panel.add(makeColumn(
               this.makePaperOptions(bundle),
               this.makeConnectorAndCollapsatorOptions(bundle),
-              this.makeFontAndKeyboardPanel(bundle)
+              this.makeFontAndKeyboardPanel(bundle),
+              features
           ), constraints
       );
 
       panel.add(makeColumn(
               makeElementOptions(bundle),
               makeSelectionFrameOptions(bundle),
-              features,
               misc
           ), constraints
       );
