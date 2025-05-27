@@ -247,6 +247,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
             endEdit(false);
             if (edited != null && controller.canTopicBeDeleted(MindMapPanel.this, edited)) {
               // deleteTopics(false, edited);
+              // 把这里注销，因为前面 endEdit(false) 已经删除了这个新主题 wang jun
               if (pathToPrevTopicBeforeEdit != null) {
                 final int[] path = pathToPrevTopicBeforeEdit;
                 pathToPrevTopicBeforeEdit = null;
@@ -1364,6 +1365,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
       this.revalidate();
       this.repaint();
       // this.fireNotificationMindMapChanged(true);
+      // wang jun 这个注释掉，不会保存折叠
     }
   }
 
@@ -1819,6 +1821,9 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
 
       doLayout();
       // fireNotificationMindMapChanged(false);
+      // wang jun
+      // 不要添加历史记录，也不更新当前的 MMDEditor.onMindMapModelChanged ->  MMDEditor.currentModelState
+      // 当前的 currentModelState 还是添加新节点之前的数据，等确认之后再更新；也许取消
       removeEditedTopicForRollback.set(true);
 
       fireNotificationEnsureTopicVisibility(newTopic);
