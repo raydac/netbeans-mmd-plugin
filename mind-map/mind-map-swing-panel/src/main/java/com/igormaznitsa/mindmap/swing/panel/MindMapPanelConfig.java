@@ -121,6 +121,7 @@ public final class MindMapPanelConfig implements Serializable {
   private float selectLineWidth = 3.0f;
   private float jumpLinkWidth = 1.5f;
   private boolean smartTextPaste = false;
+  private boolean noEscape = false;
   private Font font;
   private double scale = 1.0d;
   private boolean dropShadow = true;
@@ -798,6 +799,17 @@ public final class MindMapPanelConfig implements Serializable {
   @SettingsAccessor(name = "smartTextPaste")
   public void setSmartTextPaste(final boolean flag) {
     this.smartTextPaste = flag;
+    notifyCfgListenersAboutChange();
+  }
+
+  @SettingsAccessor(name = "noEscape")
+  public boolean isNoEscape() {
+    return this.noEscape;
+  }
+
+  @SettingsAccessor(name = "noEscape")
+  public void setNoEscape(final boolean flag) {
+    this.noEscape = flag;
     notifyCfgListenersAboutChange();
   }
 
