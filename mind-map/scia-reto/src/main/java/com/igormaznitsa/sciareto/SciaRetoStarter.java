@@ -38,13 +38,13 @@ import com.formdev.flatlaf.intellijthemes.FlatNordIJTheme;
 import com.formdev.flatlaf.intellijthemes.FlatSolarizedDarkIJTheme;
 import com.formdev.flatlaf.intellijthemes.FlatVuesionIJTheme;
 import com.formdev.flatlaf.intellijthemes.FlatXcodeDarkIJTheme;
-import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatAtomOneDarkIJTheme;
-import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatAtomOneLightIJTheme;
-import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatGitHubDarkIJTheme;
-import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatGitHubIJTheme;
-import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMaterialDarkerIJTheme;
-import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMaterialPalenightIJTheme;
-import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatSolarizedLightIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTAtomOneDarkIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTAtomOneLightIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTGitHubDarkIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTGitHubIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTMaterialDarkerIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTMaterialPalenightIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTSolarizedLightIJTheme;
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import com.igormaznitsa.commons.version.Version;
@@ -453,11 +453,11 @@ public class SciaRetoStarter {
     FlatArcIJTheme.installLafInfo();
     FlatArcDarkOrangeIJTheme.installLafInfo();
 
-    FlatAtomOneDarkIJTheme.installLafInfo();
-    FlatAtomOneLightIJTheme.installLafInfo();
+    FlatMTAtomOneDarkIJTheme.installLafInfo();
+    FlatMTAtomOneLightIJTheme.installLafInfo();
 
-    FlatMaterialDarkerIJTheme.installLafInfo();
-    FlatMaterialPalenightIJTheme.installLafInfo();
+    FlatMTMaterialDarkerIJTheme.installLafInfo();
+    FlatMTMaterialPalenightIJTheme.installLafInfo();
     FlatMaterialDesignDarkIJTheme.installLafInfo();
 
     FlatIntelliJLaf.installLafInfo();
@@ -466,11 +466,11 @@ public class SciaRetoStarter {
     FlatCyanLightIJTheme.installLafInfo();
     FlatDraculaIJTheme.installLafInfo();
 
-    FlatSolarizedLightIJTheme.installLafInfo();
+    FlatMTSolarizedLightIJTheme.installLafInfo();
     FlatSolarizedDarkIJTheme.installLafInfo();
 
-    FlatGitHubIJTheme.installLafInfo();
-    FlatGitHubDarkIJTheme.installLafInfo();
+    FlatMTGitHubIJTheme.installLafInfo();
+    FlatMTGitHubDarkIJTheme.installLafInfo();
 
     FlatLightFlatIJTheme.installLafInfo();
     FlatNordIJTheme.installLafInfo();
