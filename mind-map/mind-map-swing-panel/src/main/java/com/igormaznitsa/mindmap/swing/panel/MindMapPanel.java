@@ -548,6 +548,11 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
         }
         if (!e.isConsumed()) {
           lastMousePressed = e.getPoint();
+
+          // record the beginning postion of drag
+          setLastViewPosition();
+          lastMouseScreenPressed = e.getLocationOnScreen();
+
           if (!controller.isMouseClickProcessingAllowed(MindMapPanel.this)) {
             return;
           }
