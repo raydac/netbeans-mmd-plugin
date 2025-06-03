@@ -679,6 +679,43 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
           } else if (popupMenuActive.get()) {
             mouseDragSelection = null;
           } else {
+            // drag the viewport when button3 is pressed down
+            if ((e.getModifiersEx() & MouseEvent.BUTTON3_DOWN_MASK) == MouseEvent.BUTTON3_DOWN_MASK) {
+              setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+
+              if (lastMouseScreenPressed != null) {
+                Container parent = getParent();
+                if (parent instanceof JViewport) {
+                  Point newPos = e.getLocationOnScreen();
+
+                  int dx = newPos.x - lastMouseScreenPressed.x;
+                  int dy = newPos.y - lastMouseScreenPressed.y;
+
+                  int newX = lastViewPosition.x - dx;
+                  int newY = lastViewPosition.y - dy;
+
+                  // limit scrool rect
+                  JViewport viewport = (JViewport) parent;
+                  Dimension viewSize = viewport.getView().getSize();
+                  Dimension extentSize = viewport.getExtentSize();
+
+                  // bounds check
+                  newX = Math.max(0, Math.min(newX, viewSize.width - extentSize.width));
+                  newY = Math.max(0, Math.min(newY, viewSize.height - extentSize.height));
+
+                  // move the viewport only when the mouse is moved
+                  if (!lastViewPosition.equals(new Point(newX, newY))) {
+                    viewport.setViewPosition(new Point(newX, newY));
+                  }
+                }
+              }
+
+              e.consume();
+              return;
+            } else {
+              setCursor(Cursor.getDefaultCursor());
+            }
+
             if (draggedElement == null && mouseDragSelection == null) {
               final AbstractElement elementUnderMouse = findTopicUnderPoint(e.getPoint());
               if (elementUnderMouse == null) {
