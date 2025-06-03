@@ -1937,7 +1937,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
       doLayout();
       revalidate();
       repaint();
-      fireNotificationMindMapChanged(true);
+      // fireNotificationMindMapChanged(true);
     }
   }
 
