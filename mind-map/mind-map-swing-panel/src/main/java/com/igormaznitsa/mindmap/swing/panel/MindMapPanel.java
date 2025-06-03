@@ -164,8 +164,21 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   private transient AbstractElement destinationElement = null;
   private Point lastMousePressed = null;
 
+  private Point lastMouseScreenPressed = null;
+  private Point lastViewPosition = null;
+
+  private void setLastViewPosition() {
+    Container parent = getParent();
+    if (parent instanceof JViewport) {
+      JViewport viewport = (JViewport) parent;
+        lastViewPosition = viewport.getViewPosition();
+    }
+  }
+
+
+
   /**
-   * COnstructor.
+   * Constructor.
    *
    * @param controller object providing information for panel which operations allowed and take part in some functions, must not be null
    * @throws NullPointerException if controller is null
