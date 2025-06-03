@@ -624,15 +624,28 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
                     select(m, false);
                   }
                 }
-              } else if (isPopupEvent(e)) {
-                mouseDragSelection = null;
-                MindMap theMap = model;
-                AbstractElement element = null;
-                if (theMap != null) {
-                  element = findTopicUnderPoint(e.getPoint());
+              } else {
+                Point newPos = e.getLocationOnScreen();
+                if (
+                  lastMouseScreenPressed == null
+                        || ( newPos.x == lastMouseScreenPressed.x && newPos.y == lastMouseScreenPressed.y )
+                ) {
+                  if (isPopupEvent(e)) {
+                    mouseDragSelection = null;
+                    MindMap theMap = model;
+                    AbstractElement element = null;
+                    if (theMap != null) {
+                      element = findTopicUnderPoint(e.getPoint());
+                    }
+                    processPopUp(e.getPoint(), element);
+                    e.consume();
+                  }
                 }
-                processPopUp(e.getPoint(), element);
-                e.consume();
+
+                lastMouseScreenPressed = null;
+                lastViewPosition = null;
+
+                setCursor(Cursor.getDefaultCursor());
               }
             } catch (Exception ex) {
               LOGGER.error("Error during mouseReleased()", ex);
