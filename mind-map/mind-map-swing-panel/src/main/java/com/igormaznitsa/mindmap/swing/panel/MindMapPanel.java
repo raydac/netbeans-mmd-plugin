@@ -684,7 +684,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
           if (!controller.isMouseMoveProcessingAllowed(MindMapPanel.this)) {
             return;
           }
-          scrollRectToVisible(new Rectangle(e.getX(), e.getY(), 1, 1));
+          // scrollRectToVisible(new Rectangle(e.getX(), e.getY(), 1, 1));
 
           if (birdsEyeMode) {
             processMouseEventInBirdsEyeMode(e);
