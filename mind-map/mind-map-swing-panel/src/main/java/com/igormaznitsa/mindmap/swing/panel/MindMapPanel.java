@@ -763,7 +763,46 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
 
               fireNotificationScaledByMouse(e.getPoint(), oldScale, newScale, oldSize, newSize);
             } else {
-              if (!e.isConsumed()) {
+              if ( (e.getModifiersEx() & MouseEvent.BUTTON3_DOWN_MASK) == MouseEvent.BUTTON3_DOWN_MASK ) {
+
+                // horizontal scroll
+                e.consume();
+
+                // get the viewport
+                Container parent = getParent();
+                if (parent instanceof JViewport) {
+                  JViewport viewport = (JViewport) parent;
+                  Point viewPosition = viewport.getViewPosition();
+
+                  int unitsToScroll = e.getUnitsToScroll();
+                  int scrollDelta = unitsToScroll * 15;
+
+                  int newX = viewPosition.x + scrollDelta;
+                  int newY = viewPosition.y;
+
+                  // limit scrolling to viewport size
+                  Dimension viewSize = viewport.getView().getSize();
+                  Dimension extentSize = viewport.getExtentSize();
+
+                  // bounds check
+                  newX = Math.max(0, Math.min(newX, viewSize.width - extentSize.width));
+                  newY = Math.max(0, Math.min(newY, viewSize.height - extentSize.height));
+
+                  int realDeltaX = newX - viewPosition.x;
+                  int realDeltaY = newY - viewPosition.y;
+
+                  viewport.setViewPosition(new Point(newX, newY));
+
+                  // record two postion values when mouse pressed
+                  if (lastMouseScreenPressed == null) {
+                    lastMouseScreenPressed = e.getLocationOnScreen();
+                    setLastViewPosition();
+                  } else {
+                    lastMouseScreenPressed.x += realDeltaX;
+                    lastMouseScreenPressed.y += realDeltaY;
+                  }
+                }
+              } else if (!e.isConsumed()) {
                 sendToParent(e);
               }
             }
