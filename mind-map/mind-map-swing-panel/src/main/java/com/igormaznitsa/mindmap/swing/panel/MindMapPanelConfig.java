@@ -727,7 +727,7 @@ public final class MindMapPanelConfig implements Serializable {
 
   @SettingsAccessor(name = "jumpLinkColor")
   public Color getJumpLinkColor() {
-    return this.jumpLinkColor;
+    return new Color( this.jumpLinkColor.getRGB() & 0xFFFFFF | ( 0x70 << 24), true );
   }
 
   @SettingsAccessor(name = "jumpLinkColor")
