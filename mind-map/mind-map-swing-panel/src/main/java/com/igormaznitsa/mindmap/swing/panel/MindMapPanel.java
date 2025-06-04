@@ -1179,6 +1179,10 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
       polygon.closePath();
       gfx.draw(polygon, null, color);
 
+      int startSize = (int) (arrowSize * 0.8f);
+
+      gfx.drawOval((int) startX - startSize / 2, (int) startY - startSize / 2,startSize,startSize, color,color.darker().darker());
+
       gfx.setStroke(lineWidth, StrokeType.DOTS);
       gfx.drawLine((int) startX, (int) startY, (int) (arrowPoint.getX() + cx),
           (int) (arrowPoint.getY() + cy), color);
