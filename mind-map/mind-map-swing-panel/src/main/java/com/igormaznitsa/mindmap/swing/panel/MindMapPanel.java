@@ -1072,13 +1072,13 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   private static void drawTopics(final MMGraphics g, final MindMapPanelConfig cfg,
                                  final MindMap map) {
     if (map != null) {
-      if (Boolean.parseBoolean(map.findAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_SHOW_JUMPS))) {
-        drawJumps(g, map, cfg);
-      }
-
       final Topic root = map.getRoot();
       if (root != null) {
         drawTopicTree(g, root, cfg);
+      }
+
+      if (Boolean.parseBoolean(map.findAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_SHOW_JUMPS))) {
+        drawJumps(g, map, cfg);
       }
     }
   }
