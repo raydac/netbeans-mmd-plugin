@@ -116,7 +116,7 @@ import net.sourceforge.plantuml.OptionFlags;
 import net.sourceforge.plantuml.SourceStringReader;
 import net.sourceforge.plantuml.core.Diagram;
 import net.sourceforge.plantuml.core.DiagramDescription;
-import net.sourceforge.plantuml.dot.GraphvizUtils;
+import net.sourceforge.plantuml.dot.GraphvizRuntimeEnvironment;
 import net.sourceforge.plantuml.error.PSystemError;
 import org.apache.commons.io.FileUtils;
 import org.fife.ui.autocomplete.AutoCompletion;
@@ -768,7 +768,7 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
   private void updateGraphvizLabelVisibility() {
     boolean show;
     try {
-      final File graphvizFile = GraphvizUtils.create(null, "png").getDotExe();
+      final File graphvizFile = GraphvizRuntimeEnvironment.getInstance().getDotExe();
       show = graphvizFile == null || !graphvizFile.isFile();
     } catch (Exception ex) {
       show = false;

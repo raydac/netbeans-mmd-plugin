@@ -24,10 +24,10 @@
 
   <properties>
     <app.name>sciareto-${project.version}</app.name>
-    <jre.version>24+37</jre.version>
-    <maven.compiler.source>11</maven.compiler.source>
-    <maven.compiler.target>11</maven.compiler.target>
-    <max.jdk.version>11</max.jdk.version>
+    <jre.version>24.0.1+11</jre.version>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <max.jdk.version>17</max.jdk.version>
   </properties>
 
   <dependencies>
@@ -495,7 +495,7 @@
                   <jar>scia-reto.jar</jar>
                   <jre>
                     <minVersion>${max.jdk.version}</minVersion>
-                    <path>%VAR%</path>
+                    <jdkPreference>preferJdk</jdkPreference>
                     <opts>
                       <opt>-Xmx2G</opt>
                     </opts>

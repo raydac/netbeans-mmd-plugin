@@ -37,7 +37,7 @@ import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import net.sourceforge.plantuml.dot.ExeState;
 import net.sourceforge.plantuml.dot.Graphviz;
-import net.sourceforge.plantuml.dot.GraphvizUtils;
+import net.sourceforge.plantuml.dot.GraphvizRuntimeEnvironment;
 import net.sourceforge.plantuml.dot.ProcessState;
 
 public abstract class AbstractDotEditor extends AbstractPlUmlEditor {
@@ -101,7 +101,8 @@ public abstract class AbstractDotEditor extends AbstractPlUmlEditor {
 
   @Nonnull
   protected byte[] executeDot(@Nonnull final String script, @Nonnull final String type) {
-    final Graphviz wizard = GraphvizUtils.create(null, script, type);
+    final Graphviz wizard = GraphvizRuntimeEnvironment.getInstance()
+        .create(null, script, type);
 
     final ExeState state = wizard.getExeState();
     if (state == ExeState.OK) {

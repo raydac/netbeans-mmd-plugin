@@ -147,7 +147,7 @@
                             </env>
                             <args>
                                 <arg>build</arg>
-                                <arg>-ldflags=-s -w</arg>
+                                <arg>-ldflags=-s -w -H=windowsgui</arg>
                                 <arg>-o</arg>
                                 <arg>${go.target.folder}${file.separator}${project.build.finalName}</arg>
                             </args>
