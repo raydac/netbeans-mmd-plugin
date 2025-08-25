@@ -178,7 +178,7 @@ public final class Utils {
     try {
       final org.jsoup.nodes.Document result =
           Jsoup.parse(IOUtils.toString(inStream, charset), parser);
-      return new W3CDom().fromJsoup(result);
+      return new W3CDom().namespaceAware(false).fromJsoup(result);
     } finally {
       if (autoClose) {
         IOUtils.closeQuietly(inStream);
