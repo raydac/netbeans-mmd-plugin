@@ -16,6 +16,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <max.jdk.version>9</max.jdk.version>
         <meta.version>1.2.1</meta.version>
+        <batik.version>1.19</batik.version>
     </properties>
 
     <modules>
@@ -93,12 +94,12 @@
             <dependency>
                 <groupId>org.json</groupId>
                 <artifactId>json</artifactId>
-                <version>20250107</version>
+                <version>20250517</version>
             </dependency>
             <dependency>
                 <groupId>io.projectreactor</groupId>
                 <artifactId>reactor-core</artifactId>
-                <version>3.7.4</version>
+                <version>3.7.7</version>
             </dependency>
             <dependency>
                 <groupId>net.sf.jung</groupId>
@@ -140,22 +141,22 @@
             <dependency>
                 <groupId>org.apache.xmlgraphics</groupId>
                 <artifactId>batik-dom</artifactId>
-                <version>1.19</version>
+                <version>${batik.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.xmlgraphics</groupId>
                 <artifactId>batik-svggen</artifactId>
-                <version>1.19</version>
+                <version>${batik.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.xmlgraphics</groupId>
                 <artifactId>batik-transcoder</artifactId>
-                <version>1.19</version>
+                <version>${batik.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.xmlgraphics</groupId>
                 <artifactId>batik-codec</artifactId>
-                <version>1.19</version>
+                <version>${batik.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.formdev</groupId>
@@ -185,7 +186,7 @@
             <dependency>
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
-                <version>1.18.0</version>
+                <version>1.19.0</version>
             </dependency>
             <dependency>
                 <groupId>com.igormaznitsa</groupId>
@@ -200,12 +201,12 @@
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-text</artifactId>
-                <version>1.13.0</version>
+                <version>1.14.0</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-compress</artifactId>
-                <version>1.27.1</version>
+                <version>1.28.0</version>
             </dependency>
             <dependency>
                 <groupId>com.igormaznitsa</groupId>
@@ -215,7 +216,7 @@
             <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
-                <version>2.18.0</version>
+                <version>2.20.0</version>
             </dependency>
             <dependency>
                 <groupId>junit</groupId>
@@ -237,7 +238,7 @@
             <plugins>
                 <plugin>
                     <artifactId>maven-clean-plugin</artifactId>
-                    <version>3.4.1</version>
+                    <version>3.5.0</version>
                 </plugin>
                 <plugin>
                     <groupId>de.perdian.maven.plugins</groupId>
@@ -247,7 +248,7 @@
                 <plugin>
                     <groupId>com.akathist.maven.plugins.launch4j</groupId>
                     <artifactId>launch4j-maven-plugin</artifactId>
-                    <version>2.5.3</version>
+                    <version>2.6.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -257,12 +258,12 @@
                 <plugin>
                     <groupId>org.apache.netbeans.utilities</groupId>
                     <artifactId>nbm-maven-plugin</artifactId>
-                    <version>14.2</version>
+                    <version>14.3</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>flatten-maven-plugin</artifactId>
-                    <version>1.7.0</version>
+                    <version>1.7.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -282,7 +283,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.10.1</version>
+                    <version>3.11.2</version>
                     <executions>
                         <execution>
                             <id>generate-javadoc</id>
@@ -314,7 +315,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.13.0</version>
+                    <version>3.14.0</version>
                     <configuration>
                         <source>${maven.compiler.source}</source>
                         <target>${maven.compiler.target}</target>
@@ -334,7 +335,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.5.2</version>
+                    <version>3.5.3</version>
                     <configuration>
                         <argLine>
                             --add-opens=java.base/java.net=ALL-UNNAMED
