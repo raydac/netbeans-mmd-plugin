@@ -31,6 +31,7 @@ import com.intellij.ui.components.JBPasswordField;
 import com.intellij.ui.components.JBRadioButton;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTabbedPane;
+import com.intellij.ui.components.JBTextArea;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.ui.treeStructure.Tree;
 import java.util.Set;
@@ -141,7 +142,7 @@ public class IdeaUIComponentFactory implements UIComponentFactory {
   @Override
   @Nonnull
   public JTextArea makeTextArea() {
-    return new JTextArea();
+    return new JBTextArea();
   }
 
   @Override
