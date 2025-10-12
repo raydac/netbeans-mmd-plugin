@@ -82,6 +82,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -165,7 +166,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   private Point lastMousePressed = null;
 
   /**
-   * COnstructor.
+   * Constructor.
    *
    * @param controller object providing information for panel which operations allowed and take part in some functions, must not be null
    * @throws NullPointerException if controller is null
@@ -185,78 +186,109 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
     this.textEditor.setTabSize(4);
     this.textEditor.addKeyListener(new KeyAdapter() {
 
+      private KeyEvent lastPressedEvent;
+      private KeyEvent lastTypedEvent;
+      private KeyEvent lastReleasedEvent;
+
       @Override
       public void keyPressed(final KeyEvent e) {
-        if (isDisposed()) {
-          return;
-        }
-        if (birdsEyeMode) {
-          e.consume();
-        } else if (!e.isConsumed()) {
-          switch (e.getKeyCode()) {
-            case KeyEvent.VK_ENTER: {
+        try {
+          if (isDisposed()) {
+            return;
+          }
+          if (!e.isConsumed()) {
+            if (birdsEyeMode) {
               e.consume();
-            }
-            break;
-            case KeyEvent.VK_TAB: {
-              if ((e.getModifiers() & ALL_SUPPORTED_MODIFIERS) == 0) {
-                e.consume();
-                final Topic edited = elementUnderEdit.getModel();
-                final int[] topicPosition = edited.getPositionPath();
-                endEdit(true);
-                final Topic theTopic = model.findAtPosition(topicPosition);
-                if (theTopic != null) {
-                  makeNewChildAndFocus(theTopic, null,
-                      controller.isStartEditNewTopicCreatedDuringEdit(MindMapPanel.this));
+            } else {
+              if (e.getKeyCode() == KeyEvent.VK_TAB) {
+                if ((e.getModifiers() & ALL_SUPPORTED_MODIFIERS) == 0) {
+                  e.consume();
+                  final Topic edited = elementUnderEdit.getModel();
+                  final int[] topicPosition = edited.getPositionPath();
+                  endEdit(true);
+                  final Topic theTopic = model.findAtPosition(topicPosition);
+                  if (theTopic != null) {
+                    makeNewChildAndFocus(theTopic, null,
+                        controller.isStartEditNewTopicCreatedDuringEdit(MindMapPanel.this));
+                  }
                 }
+              } else {
+                this.checkEndEdit(e, e.getKeyCode(), e.getModifiers());
               }
             }
-            break;
-            default:
-              break;
           }
+        } finally {
+          this.lastPressedEvent = e;
         }
+      }
+
+      private void checkEndEdit(final InputEvent inputEvent, final int key, final int modifiers) {
+        if (!inputEvent.isConsumed()
+            && key == KeyEvent.VK_ENTER
+            && (modifiers & ALL_SUPPORTED_MODIFIERS) == 0) {
+          inputEvent.consume();
+          endEdit(true);
+        }
+      }
+
+      private void injectNextLineIntoEditor() {
+        textEditor.insert("\n", textEditor.getCaretPosition());
       }
 
       @Override
       public void keyTyped(final KeyEvent e) {
-        if (isDisposed()) {
-          return;
-        }
-        if (!e.isConsumed()) {
-          if (config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_TEXT_NEXT_LINE, e)) {
-            e.consume();
-            textEditor.insert("\n", textEditor.getCaretPosition());
-          } else if (e.getKeyChar() == KeyEvent.VK_ENTER &&
-              (e.getModifiers() & ALL_SUPPORTED_MODIFIERS) == 0) {
-            e.consume();
-            endEdit(true);
+        try {
+          if (isDisposed()) {
+            return;
           }
+          if (!e.isConsumed()) {
+            if (config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_TEXT_NEXT_LINE, e)) {
+              e.consume();
+              this.injectNextLineIntoEditor();
+            } else {
+              this.checkEndEdit(e, e.getKeyCode(), e.getModifiers());
+            }
+          }
+        } finally {
+          this.lastTypedEvent = e;
         }
       }
 
       @Override
       public void keyReleased(final KeyEvent e) {
-        if (isDisposed()) {
-          return;
-        }
-        if (!e.isConsumed()) {
-          if (config.isKeyEvent(MindMapPanelConfig.KEY_CANCEL_EDIT, e)) {
-            e.consume();
-            final Topic edited = elementUnderEdit == null ? null : elementUnderEdit.getModel();
-            endEdit(false);
-            if (edited != null && controller.canTopicBeDeleted(MindMapPanel.this, edited)) {
-              deleteTopics(false, edited);
-              if (pathToPrevTopicBeforeEdit != null) {
-                final int[] path = pathToPrevTopicBeforeEdit;
-                pathToPrevTopicBeforeEdit = null;
-                final Topic topic = model.findAtPosition(path);
-                if (topic != null) {
-                  select(topic, false);
+        try {
+          if (isDisposed()) {
+            return;
+          }
+          if (!e.isConsumed()) {
+            if (config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_TEXT_NEXT_LINE, e)
+                && !config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_TEXT_NEXT_LINE,
+                this.lastTypedEvent)) {
+              // in some layouts, key pressed can be ignored for enter with shift
+              // such behavior detected in Intellij IDEA under Linux with RUS layout
+              e.consume();
+              this.injectNextLineIntoEditor();
+            } else if (config.isKeyEvent(MindMapPanelConfig.KEY_CANCEL_EDIT, e)) {
+              e.consume();
+              final Topic edited = elementUnderEdit == null ? null : elementUnderEdit.getModel();
+              endEdit(false);
+              if (edited != null && controller.canTopicBeDeleted(MindMapPanel.this, edited)) {
+                deleteTopics(false, edited);
+                if (pathToPrevTopicBeforeEdit != null) {
+                  final int[] path = pathToPrevTopicBeforeEdit;
+                  pathToPrevTopicBeforeEdit = null;
+                  final Topic topic = model.findAtPosition(path);
+                  if (topic != null) {
+                    select(topic, false);
+                  }
                 }
               }
+            } else {
+              this.checkEndEdit(e, e.getKeyCode(), e.getModifiers());
             }
           }
+        } finally {
+          this.lastReleasedEvent = e;
         }
       }
     });

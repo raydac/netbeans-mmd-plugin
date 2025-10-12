@@ -282,6 +282,9 @@ public final class MindMapPanelConfig implements Serializable {
 
   public boolean isKeyEvent(final String id, final KeyEvent event,
                             final int modifiersMask) {
+    if (event == null) {
+      return false;
+    }
     final KeyShortcut shortCut = this.mapShortCut.get(id);
     return shortCut != null && shortCut.isEvent(event, modifiersMask);
   }
@@ -295,6 +298,9 @@ public final class MindMapPanelConfig implements Serializable {
    * @since 1.6.2
    */
   public boolean isModifiers(final String id, final InputEvent event) {
+    if (event == null) {
+      return false;
+    }
     final KeyShortcut shortCut = this.mapShortCut.get(id);
     return shortCut != null && shortCut.matchModifiers(event);
   }

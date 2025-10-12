@@ -27,7 +27,8 @@ public final class KeyShortcut implements Serializable {
 
   private static final long serialVersionUID = -4263687011484460164L;
 
-  public static final int ALL_MODIFIERS_MASK = KeyEvent.SHIFT_MASK | KeyEvent.CTRL_MASK | KeyEvent.ALT_MASK | KeyEvent.META_MASK;
+  public static final int ALL_MODIFIERS_MASK =
+      KeyEvent.SHIFT_MASK | KeyEvent.CTRL_MASK | KeyEvent.ALT_MASK | KeyEvent.META_MASK;
   private String id;
   private int modifiers;
   private int keyCode;
@@ -49,7 +50,8 @@ public final class KeyShortcut implements Serializable {
 
   /**
    * Create key shortcut only for modifiers, as fake key char will be Intgeer.MAX_VALUE.
-   * @param id identifier, must not be null
+   *
+   * @param id        identifier, must not be null
    * @param modifiers modifiers mask
    * @since 1.6.2
    */
@@ -154,6 +156,7 @@ public final class KeyShortcut implements Serializable {
 
   /**
    * Match only modifiers mask for input event. No any check for key code.
+   *
    * @param event input event, can be null
    * @return true if event id not null and modifiers mask matches.
    * @since 1.6.2
@@ -185,6 +188,7 @@ public final class KeyShortcut implements Serializable {
 
   /**
    * Check that the shortcut plays only for modifiers.
+   *
    * @return true if only modifiers processed, false otherwise.
    * @since 1.6.2
    */
