@@ -23,6 +23,7 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.fileEditor.FileEditor;
+import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import javax.annotation.Nonnull;
 
 public class FindInMindMapAction extends AnAction {
@@ -35,16 +36,16 @@ public class FindInMindMapAction extends AnAction {
   }
   
   @Override
-  public void actionPerformed(@Nonnull AnActionEvent anActionEvent) {
-    final FileEditor fileEditor = (FileEditor) anActionEvent.getDataContext().getData("fileEditor");
+  public void actionPerformed(@Nonnull AnActionEvent event) {
+    final FileEditor fileEditor = event.getData(PlatformDataKeys.FILE_EDITOR);
     if (fileEditor instanceof MindMapDocumentEditor) {
       ((MindMapDocumentEditor) fileEditor).activateTextSearchPanel();
     }
   }
 
   @Override
-  public void update(@Nonnull final AnActionEvent anActionEvent) {
-    final FileEditor fileEditor = (FileEditor) anActionEvent.getDataContext().getData("fileEditor");
-    anActionEvent.getPresentation().setEnabled(fileEditor instanceof MindMapDocumentEditor);
+  public void update(@Nonnull final AnActionEvent event) {
+    final FileEditor fileEditor = event.getData(PlatformDataKeys.FILE_EDITOR);
+    event.getPresentation().setEnabled(fileEditor instanceof MindMapDocumentEditor);
   }
 }
