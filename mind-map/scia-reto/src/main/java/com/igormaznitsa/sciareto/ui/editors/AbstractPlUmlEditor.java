@@ -112,7 +112,6 @@ import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import net.sourceforge.plantuml.FileFormat;
 import net.sourceforge.plantuml.FileFormatOption;
-import net.sourceforge.plantuml.OptionFlags;
 import net.sourceforge.plantuml.SourceStringReader;
 import net.sourceforge.plantuml.core.Diagram;
 import net.sourceforge.plantuml.core.DiagramDescription;
@@ -777,7 +776,8 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
   }
 
   private void initPlantUml() {
-    OptionFlags.getInstance().setDotExecutable(this.mindMapPanelConfig.getOptionalProperty(
+    GraphvizRuntimeEnvironment.getInstance()
+        .setDotExecutable(this.mindMapPanelConfig.getOptionalProperty(
         AdditionalPreferences.PROPERTY_PLANTUML_DOT_PATH, null));
   }
 

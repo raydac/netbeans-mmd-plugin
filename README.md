@@ -17,7 +17,7 @@ Initially I developed a plugin for NetBeans IDE then the IntellijIDEA plugin was
 __1.6.9 (SNAPSHOT)__
 - ALL: improvements in processing of key type in topic title editor
 - SR:  updated embedded JDK to 25+37
-- SR:  PlantUML updated to 1.2025.8
+- SR:  PlantUML updated to 1.2025.9
 - ALL: updated dependencies
 
 __1.6.8 (09-sep-2024)__
