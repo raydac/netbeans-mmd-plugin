@@ -108,6 +108,7 @@
                                             <directory>${project.build.directory}</directory>
                                             <includes>
                                                 <include>*.jar</include>
+                                                <include>*.nbm</include>
                                                 <include>*.pom</include>
                                             </includes>
                                         </fileSet>

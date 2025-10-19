@@ -12,7 +12,7 @@
     <fileSets>
         <fileSet>
             <directory>${project.build.directory}</directory>
-            <outputDirectory>/</outputDirectory>
+            <outputDirectory>/com/igormaznitsa/${project.artifactId}/${project.version}</outputDirectory>
             <includes>
                 <include>*.jar</include>
                 <include>*.jar.asc</include>
