@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.igormaznitsa</groupId>
         <artifactId>mind-map</artifactId>
-        <version>1.6.9-SNAPSHOT</version>
+        <version>1.6.9</version>
     </parent>
 
     <artifactId>mind-map-annotation-processor-it</artifactId>
@@ -165,7 +165,7 @@
                     <dependency>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>extra-enforcer-rules</artifactId>
-                        <version>1.8.0</version>
+                        <version>1.11.0</version>
                     </dependency>
                 </dependencies>
             </plugin>

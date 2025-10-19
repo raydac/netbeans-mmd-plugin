@@ -7,8 +7,8 @@
     <includeSiteDirectory>false</includeSiteDirectory>
 
     <formats>
-        <format>jar</format>
-    </formats>    
+        <format>tar.gz</format>
+    </formats>
     <fileSets>
         <fileSet>
             <directory>${project.build.directory}</directory>

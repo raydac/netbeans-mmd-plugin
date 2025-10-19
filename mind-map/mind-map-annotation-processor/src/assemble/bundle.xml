@@ -7,7 +7,7 @@
     <includeSiteDirectory>false</includeSiteDirectory>
 
     <formats>
-        <format>jar</format>
+        <format>tar.gz</format>
     </formats>
     <fileSets>
         <fileSet>

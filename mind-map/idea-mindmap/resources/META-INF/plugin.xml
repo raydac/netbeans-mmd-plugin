@@ -12,9 +12,11 @@
     ]]></description>
 
     <change-notes><![CDATA[
-        <p>1.6.9 (SNAPSHOT)</p>
+        <p>1.6.9 (19-okt-2025)</p>
         <ul>
-            <li></li>
+            <li>Updated libraries</li>
+            <li>Improved key processing in topic title editor</li>
+            <li>Fixed calls of internal API</li>
         </ul>
         <p>1.6.8 (09-sep-2024)</p>
         <ul>
