@@ -14,10 +14,14 @@
             <directory>${project.build.directory}</directory>
             <outputDirectory>/</outputDirectory>
             <includes>
-              <include>*.jar.asc</include>
-              <include>*.jar</include>
-              <include>*.pom</include>
-              <include>*.pom.asc</include>
+                <include>*.jar</include>
+                <include>*.jar.asc</include>
+                <include>*.jar.sha1</include>
+                <include>*.jar.md5</include>
+                <include>*.pom</include>
+                <include>*.pom.asc</include>
+                <include>*.pom.sha1</include>
+                <include>*.pom.md5</include>
             </includes>
             <excludes>
               <exclude>original*.*</exclude>

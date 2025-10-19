@@ -1,31 +1,39 @@
 <assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
     <id>bundle</id>
-  
+
     <includeBaseDirectory>false</includeBaseDirectory>
     <includeSiteDirectory>false</includeSiteDirectory>
 
     <formats>
         <format>jar</format>
-    </formats>    
+    </formats>
     <fileSets>
         <fileSet>
             <directory>${project.build.directory}</directory>
             <outputDirectory>/</outputDirectory>
             <includes>
-              <include>*.nbm.asc</include>
-              <include>*.nbm</include>
-              <include>*javadoc.jar.asc</include>
-              <include>*javadoc.jar</include>
-              <include>*sources.jar.asc</include>
-              <include>*sources.jar</include>
-              <include>*.pom</include>
-              <include>*.pom.asc</include>
+                <include>*.pom</include>
+                <include>*.pom.asc</include>
+                <include>*.pom.sha1</include>
+                <include>*.pom.md5</include>
+                <include>*.nbm.asc</include>
+                <include>*.nbm.sha1</include>
+                <include>*.nbm.md5</include>
+                <include>*.nbm</include>
+                <include>*javadoc.jar.asc</include>
+                <include>*javadoc.jar.sha1</include>
+                <include>*javadoc.jar.md5</include>
+                <include>*javadoc.jar</include>
+                <include>*sources.jar.asc</include>
+                <include>*sources.jar.sha1</include>
+                <include>*sources.jar.md5</include>
+                <include>*sources.jar</include>
             </includes>
             <excludes>
-              <exclude>original*.*</exclude>
-              <exclude>*.zip</exclude>
+                <exclude>original*.*</exclude>
+                <exclude>*.zip</exclude>
             </excludes>
         </fileSet>
     </fileSets>
