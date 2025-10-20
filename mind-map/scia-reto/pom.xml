@@ -5,7 +5,7 @@
   <parent>
     <groupId>com.igormaznitsa</groupId>
     <artifactId>mind-map</artifactId>
-      <version>1.6.9</version>
+      <version>1.6.10-SNAPSHOT</version>
   </parent>
 
   <artifactId>scia-reto</artifactId>
@@ -860,16 +860,6 @@
     <finalName>${app.name}</finalName>
     <plugins>
       <plugin>
-        <groupId>com.igormaznitsa</groupId>
-        <artifactId>mvn-golang-wrapper</artifactId>
-        <version>2.3.10</version>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-clean-plugin</artifactId>
-        <version>3.2.0</version>
-      </plugin>
-      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
         <configuration>
@@ -884,10 +874,6 @@
             </manifestEntries>
           </archive>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

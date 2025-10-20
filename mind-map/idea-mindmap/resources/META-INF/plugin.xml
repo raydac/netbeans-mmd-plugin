@@ -2,7 +2,7 @@
 <idea-plugin>
     <id>nb-mind-map-idea</id>
     <name>SciaReto Mind Map</name>
-    <version>1.6.9-SNAPSHOT</version>
+    <version>1.6.10-SNAPSHOT</version>
     <vendor url="https://www.igormaznitsa.com">Igor Maznitsa</vendor>
 
     <category>Knowledge management</category>
@@ -12,6 +12,10 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <p>1.6.10 (SNAPSHOT)</p>
+        <ul>
+            <li></li>
+        </ul>
         <p>1.6.9 (19-okt-2025)</p>
         <ul>
             <li>Updated libraries</li>
