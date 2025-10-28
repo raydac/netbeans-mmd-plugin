@@ -1,3 +1,8 @@
+__1.6.10 (SNAPSHOT)__
+
+- ALL: fixed ret lost focus during fast sibling topic create by  enter
+- SR:  updated embedded JDK to 25.0.1+11
+
 __1.6.9 (19-okt-2025)__
 - ALL: improvements in processing of key type in topic title editor
 - SR:  updated embedded JDK to 25+37
