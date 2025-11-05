@@ -28,9 +28,15 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <max.jdk.version>17</max.jdk.version>
+        <plantuml.version>1.2025.10</plantuml.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>net.sourceforge.plantuml</groupId>
+            <artifactId>plantuml</artifactId>
+            <version>${plantuml.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.igormaznitsa</groupId>
             <artifactId>meta-annotations</artifactId>
@@ -107,10 +113,6 @@
         <dependency>
             <groupId>net.java.dev.jna</groupId>
             <artifactId>jna-platform</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.sourceforge.plantuml</groupId>
-            <artifactId>plantuml</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.xmlgraphics</groupId>
