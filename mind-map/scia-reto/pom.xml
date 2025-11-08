@@ -464,6 +464,7 @@
                     <plugin>
                         <groupId>com.akathist.maven.plugins.launch4j</groupId>
                         <artifactId>launch4j-maven-plugin</artifactId>
+                        <version>2.6.0</version>
                         <configuration>
                             <headerType>gui</headerType>
                             <outfile>${project.build.directory}/${app.name}.exe</outfile>
