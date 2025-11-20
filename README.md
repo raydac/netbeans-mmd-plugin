@@ -17,7 +17,7 @@ Initially I developed a plugin for NetBeans IDE then the IntellijIDEA plugin was
 __1.6.10 (SNAPSHOT)__
 
 - ALL: fixed ret lost focus during fast sibling topic create by  enter
-- SR:  updated embedded JDK to 25.0.1+11
+- SR:  updated embedded JDK to 25.0.1+13
 - SR:  PlantUML updated to 1.2025.10
 
 __1.6.9 (19-okt-2025)__
