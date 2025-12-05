@@ -98,7 +98,7 @@
             <dependency>
                 <groupId>io.projectreactor</groupId>
                 <artifactId>reactor-core</artifactId>
-                <version>3.7.12</version>
+                <version>3.8.0</version>
             </dependency>
             <dependency>
                 <groupId>net.sf.jung</groupId>
@@ -160,27 +160,27 @@
             <dependency>
                 <groupId>com.formdev</groupId>
                 <artifactId>flatlaf</artifactId>
-                <version>3.6.1</version>
+                <version>3.7</version>
             </dependency>
             <dependency>
                 <groupId>com.formdev</groupId>
                 <artifactId>flatlaf-intellij-themes</artifactId>
-                <version>3.6.1</version>
+                <version>3.7</version>
             </dependency>
             <dependency>
                 <groupId>net.java.dev.jna</groupId>
                 <artifactId>jna</artifactId>
-                <version>5.17.0</version>
+                <version>5.18.1</version>
             </dependency>
             <dependency>
                 <groupId>net.java.dev.jna</groupId>
                 <artifactId>jna-platform</artifactId>
-                <version>5.17.0</version>
+                <version>5.18.1</version>
             </dependency>
             <dependency>
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
-                <version>1.19.0</version>
+                <version>1.20.0</version>
             </dependency>
             <dependency>
                 <groupId>com.igormaznitsa</groupId>
@@ -210,7 +210,7 @@
             <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
-                <version>2.20.0</version>
+                <version>2.21.0</version>
             </dependency>
             <dependency>
                 <groupId>junit</groupId>
