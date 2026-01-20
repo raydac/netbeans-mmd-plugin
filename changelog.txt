@@ -2,7 +2,7 @@ __1.6.10 (SNAPSHOT)__
 
 - ALL: fixed ret lost focus during fast sibling topic create by  enter
 - SR:  updated embedded JDK to 25.0.1+13
-- SR:  PlantUML updated to 1.2026.0
+- SR:  PlantUML updated to 1.2026.1
 
 __1.6.9 (19-okt-2025)__
 - ALL: improvements in processing of key type in topic title editor

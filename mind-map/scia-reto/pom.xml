@@ -28,7 +28,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <max.jdk.version>17</max.jdk.version>
-        <plantuml.version>1.2026.0</plantuml.version>
+        <plantuml.version>1.2026.1</plantuml.version>
     </properties>
 
     <dependencies>
