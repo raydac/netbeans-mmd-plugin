@@ -464,7 +464,7 @@
                     <plugin>
                         <groupId>com.akathist.maven.plugins.launch4j</groupId>
                         <artifactId>launch4j-maven-plugin</artifactId>
-                        <version>2.6.0</version>
+                        <version>2.7.0</version>
                         <configuration>
                             <headerType>gui</headerType>
                             <outfile>${project.build.directory}/${app.name}.exe</outfile>
@@ -483,7 +483,7 @@
                                 <fileVersion>${project.version.raw}.0</fileVersion>
                                 <txtFileVersion>${project.version}</txtFileVersion>
                                 <fileDescription>SciaReto Mind Map editor</fileDescription>
-                                <copyright>2016-2025 Igor Maznitsa</copyright>
+                                <copyright>2016-2026 Igor Maznitsa</copyright>
                                 <productVersion>${project.version.raw}.0</productVersion>
                                 <txtProductVersion>${project.version}</txtProductVersion>
                                 <productName>${project.name}</productName>
