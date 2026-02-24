@@ -1043,4 +1043,8 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
       return ActionUpdateThread.BGT;
   }
 
+  @Override
+  public void onQuickNoteEvent(@Nonnull MindMapPanel source, boolean activate) {
+
+  }
 }

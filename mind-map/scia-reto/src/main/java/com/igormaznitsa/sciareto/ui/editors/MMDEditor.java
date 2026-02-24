@@ -137,6 +137,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
@@ -153,7 +154,8 @@ public final class MMDEditor extends AbstractTextEditor
   private static final double SCALE_STEP = 0.3d;
   private static final Set<TopicFinder> TOPIC_FINDERS = MindMapPluginRegistry.getInstance()
       .findAllTopicFinders();
-  private final JPanel mainPanel;
+  private final JPanel mmPanel;
+  private final JSplitPane mainPanel;
   private final MindMapPanelExt mindMapPanel;
   private final TabTitle title;
   private final Context context;
@@ -194,8 +196,10 @@ public final class MMDEditor extends AbstractTextEditor
     this.scrollPane.setWheelScrollingEnabled(true);
     this.scrollPane.setAutoscrolls(true);
 
-    this.mainPanel = new JPanel(new BorderLayout(0, 0));
-    this.mainPanel.add(this.scrollPane, BorderLayout.CENTER);
+    this.mmPanel = new JPanel(new BorderLayout(0, 0));
+    this.mmPanel.add(this.scrollPane, BorderLayout.CENTER);
+
+    this.mainPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, this.mmPanel, null);
 
     final AdjustmentListener listener = e -> mindMapPanel.repaint();
 
@@ -218,6 +222,43 @@ public final class MMDEditor extends AbstractTextEditor
 
     loadContent(file);
     this.currentModelState.set(this.mindMapPanel.getModel().asString());
+  }
+
+  @Override
+  public void onQuickNoteEvent(@Nonnull final MindMapPanel source, final boolean activate) {
+    if (activate) {
+      final Topic[] topics = source.getSelectedTopics();
+      final QuickNoteEditor editor = new QuickNoteEditor(source, topics);
+      this.mainPanel.setRightComponent(editor);
+      this.mainPanel.setDividerLocation(0.75d);
+      if (topics.length > 0) {
+        SwingUtilities.invokeLater(() -> {
+          source.doLayout();
+          Rectangle2D sum = null;
+          for (Topic topic : topics) {
+            final AbstractElement element = (AbstractElement) topic.getPayload();
+            if (element != null) {
+              final Rectangle2D rect = element.getBounds();
+              if (sum == null) {
+                sum = new Rectangle2D.Double(rect.getX(), rect.getY(), rect.getWidth(),
+                    rect.getHeight());
+              } else {
+                sum = sum.createUnion(rect);
+              }
+            }
+          }
+          if (sum != null) {
+            source.scrollRectToVisible(sum.getBounds());
+          }
+        });
+      }
+    } else {
+      final QuickNoteEditor editor = (QuickNoteEditor) this.mainPanel.getRightComponent();
+      this.mainPanel.setRightComponent(null);
+      if (editor != null) {
+        editor.release();
+      }
+    }
   }
 
   @Override
@@ -384,7 +425,7 @@ public final class MMDEditor extends AbstractTextEditor
   @Override
   @Nonnull
   public JComponent getMainComponent() {
-    return this.mindMapPanel;
+    return this.mmPanel;
   }
 
   @Override
@@ -544,7 +585,7 @@ public final class MMDEditor extends AbstractTextEditor
 
   @Override
   public boolean showSearchPane(final @Nonnull JPanel searchPanel) {
-    this.mainPanel.add(searchPanel, BorderLayout.NORTH);
+    this.mmPanel.add(searchPanel, BorderLayout.NORTH);
     return true;
   }
 
@@ -590,17 +631,21 @@ public final class MMDEditor extends AbstractTextEditor
   @Nullable
   @Override
   public MultiFileContainer.FileItem makeFileItem() throws IOException {
-    final byte [] content =this.mindMapPanel.getModel().write(new StringWriter()).toString().getBytes(
-        StandardCharsets.UTF_8);
+    final byte[] content =
+        this.mindMapPanel.getModel().write(new StringWriter()).toString().getBytes(
+            StandardCharsets.UTF_8);
 
-    final Topic [] selected = this.mindMapPanel.getSelectedTopics();
+    final Topic[] selected = this.mindMapPanel.getSelectedTopics();
     final String selectedPath = Arrays.stream(selected)
         .map(Topic::getPositionPath)
-        .map(path -> Arrays.stream(path).mapToObj(Integer::toString).collect(Collectors.joining("/")))
+        .map(path -> Arrays.stream(path).mapToObj(Integer::toString)
+            .collect(Collectors.joining("/")))
         .collect(Collectors.joining(":"));
 
-    return new MultiFileContainer.FileItem(this.getTabTitle().isChanged(), selectedPath, this.currentTextFile.get()
-        .getFile(), null, content, this.undoStorage.historyAsBytes(5, str -> str.getBytes(StandardCharsets.UTF_8)));
+    return new MultiFileContainer.FileItem(this.getTabTitle().isChanged(), selectedPath,
+        this.currentTextFile.get()
+            .getFile(), null, content,
+        this.undoStorage.historyAsBytes(5, str -> str.getBytes(StandardCharsets.UTF_8)));
   }
 
   @Override
@@ -620,7 +665,8 @@ public final class MMDEditor extends AbstractTextEditor
     this.undoStorage.clearUndo();
 
     this.title.setChanged(fileItem.isChanged());
-    this.undoStorage.loadFromBytes(fileItem.getHistory(), bytes -> new String(bytes, StandardCharsets.UTF_8));
+    this.undoStorage.loadFromBytes(fileItem.getHistory(),
+        bytes -> new String(bytes, StandardCharsets.UTF_8));
 
     final String path = fileItem.getPosition();
     final List<Topic> focusedTopics;
@@ -643,7 +689,8 @@ public final class MMDEditor extends AbstractTextEditor
     this.scrollPane.revalidate();
 
     if (!focusedTopics.isEmpty()) {
-      SwingUtilities.invokeLater(() -> this.mindMapPanel.fireNotificationEnsureTopicVisibility(focusedTopics.get(0)));
+      SwingUtilities.invokeLater(
+          () -> this.mindMapPanel.fireNotificationEnsureTopicVisibility(focusedTopics.get(0)));
     }
   }
 
@@ -815,6 +862,11 @@ public final class MMDEditor extends AbstractTextEditor
         break;
         case NOTE: {
           editTextForTopic(topic);
+          final QuickNoteEditor quickNoteEditor =
+              (QuickNoteEditor) this.mainPanel.getRightComponent();
+          if (quickNoteEditor != null) {
+            quickNoteEditor.updateActiveTopic(topic);
+          }
         }
         break;
         case TOPIC: {
@@ -842,7 +894,12 @@ public final class MMDEditor extends AbstractTextEditor
   @Override
   public void onChangedSelection(@Nonnull final MindMapPanel source,
                                  @Nonnull @MustNotContainNull final Topic[] currentSelectedTopics) {
-    // do nothing
+    if (this.isQuickNoteActive(source)) {
+      final QuickNoteEditor noteEditor = (QuickNoteEditor) this.mainPanel.getRightComponent();
+      if (noteEditor != null) {
+        noteEditor.setTopic(currentSelectedTopics);
+      }
+    }
   }
 
   @Override
@@ -1506,7 +1563,7 @@ public final class MMDEditor extends AbstractTextEditor
                                              @Nonnull final Point point,
                                              @Nullable final AbstractElement elementUnderMouse,
                                              @Nullable final ElementPart elementPartUnderMouse) {
-    return Utils.makePopUp(this, SciaRetoStarter.getApplicationFrame().isFullScreenActive(),
+    return Utils.makePopUp(source, this, SciaRetoStarter.getApplicationFrame().isFullScreenActive(),
         elementUnderMouse == null ? null : elementUnderMouse.getModel());
   }
 
@@ -1775,4 +1832,13 @@ public final class MMDEditor extends AbstractTextEditor
     return result;
   }
 
+  @Override
+  public boolean isQuickNoteActive(@Nonnull MindMapPanel source) {
+    return this.mainPanel.getRightComponent() != null;
+  }
+
+  @Override
+  public boolean isQuickNoteAllowed(@Nonnull MindMapPanel source) {
+    return true;
+  }
 }

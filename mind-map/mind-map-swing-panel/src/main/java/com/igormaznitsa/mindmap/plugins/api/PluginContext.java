@@ -18,6 +18,7 @@ package com.igormaznitsa.mindmap.plugins.api;
 
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
+import com.igormaznitsa.mindmap.plugins.tools.QuickNotePlugin;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
@@ -48,4 +49,15 @@ public interface PluginContext {
   void openFile(final File file, boolean preferSystemBrowser);
 
   void processPluginActivation(ExternallyExecutedPlugin plugin, Topic activeTopic);
+
+  default boolean isPluginAllowedForPopUp(PopUpMenuItemPlugin plugin, Topic activeTopic) {
+    final MindMapPanel panel = this.getPanel();
+    if (panel == null) {
+      return false;
+    }
+    if (plugin instanceof QuickNotePlugin) {
+      return panel.getController().isQuickNoteAllowed(panel);
+    }
+    return true;
+  }
 }

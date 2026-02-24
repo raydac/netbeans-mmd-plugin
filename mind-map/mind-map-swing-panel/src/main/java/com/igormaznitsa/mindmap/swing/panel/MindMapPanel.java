@@ -2125,6 +2125,11 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
     this.mindMapListeners.remove(requireNonNull(l));
   }
 
+  public List<MindMapListener> getMindMapListeners() {
+    assertNotDisposed();
+    return new ArrayList<>(this.mindMapListeners);
+  }
+
   /**
    * Set model for the panel, allows to notify listeners optionally.
    *

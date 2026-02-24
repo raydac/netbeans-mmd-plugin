@@ -25,6 +25,7 @@ import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.api.PopUpMenuItemPlugin;
 import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
+import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
@@ -72,6 +73,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import javax.imageio.ImageIO;
@@ -875,13 +877,19 @@ public final class Utils {
   }
 
   public static JPopupMenu makePopUp(
+      final MindMapPanel source,
       final PluginContext context,
       final boolean fullScreenModeActive,
       final Topic topicUnderMouse
   ) {
     final JPopupMenu result = UI_COMPO_FACTORY.makePopupMenu();
     final List<PopUpMenuItemPlugin> pluginMenuItems =
-        MindMapPluginRegistry.getInstance().findFor(PopUpMenuItemPlugin.class);
+        MindMapPluginRegistry.getInstance()
+            .findFor(PopUpMenuItemPlugin.class)
+            .stream()
+            .filter(x -> context.isPluginAllowedForPopUp(x, topicUnderMouse))
+            .collect(Collectors.toList());
+
     final List<JMenuItem> tmpList = new ArrayList<>();
 
     final boolean isModelNotEmpty = context.getModel().getRoot() != null;

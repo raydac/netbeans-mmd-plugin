@@ -178,4 +178,26 @@ public interface MindMapPanelController {
   default boolean isStartEditNewTopicCreatedDuringEdit(MindMapPanel source) {
     return true;
   }
+
+  /**
+   * Check that a panel allows quick note feature.
+   *
+   * @param source panel, must not be null
+   * @return true if quick note feature allowed, false otherwise
+   * @since 1.6.10
+   */
+  default boolean isQuickNoteAllowed(MindMapPanel source) {
+    return false;
+  }
+
+  /**
+   * Check that quick note for a panel is activated.
+   *
+   * @param source panel, must not be null
+   * @return true if quick note activated, false otherwise
+   * @since 1.6.10
+   */
+  default boolean isQuickNoteActive(MindMapPanel source) {
+    return false;
+  }
 }

@@ -55,6 +55,7 @@ import com.igormaznitsa.mindmap.plugins.processors.RemoveTopicPlugin;
 import com.igormaznitsa.mindmap.plugins.processors.TextAlignMenuPlugin;
 import com.igormaznitsa.mindmap.plugins.tools.ChangeColorPlugin;
 import com.igormaznitsa.mindmap.plugins.tools.CollapseAllPlugin;
+import com.igormaznitsa.mindmap.plugins.tools.QuickNotePlugin;
 import com.igormaznitsa.mindmap.plugins.tools.ShowJumpsPlugin;
 import com.igormaznitsa.mindmap.plugins.tools.UnfoldAllPlugin;
 import java.util.ArrayList;
@@ -75,46 +76,47 @@ public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {
           new HashMap<>();
 
   private MindMapPluginRegistry() {
-    registerPlugin(new FreeMindExporter());
-    registerPlugin(new MDExporter());
-    registerPlugin(new ASCIIDocExporter());
-    registerPlugin(new MindmupExporter());
-    registerPlugin(new PNGImageExporter());
-    registerPlugin(new ORGMODEExporter());
-    registerPlugin(new TextExporter());
-    registerPlugin(new SVGImageExporter());
-    registerPlugin(new PUMLExporter());
+    this.registerPlugin(new FreeMindExporter());
+    this.registerPlugin(new MDExporter());
+    this.registerPlugin(new ASCIIDocExporter());
+    this.registerPlugin(new MindmupExporter());
+    this.registerPlugin(new PNGImageExporter());
+    this.registerPlugin(new ORGMODEExporter());
+    this.registerPlugin(new TextExporter());
+    this.registerPlugin(new SVGImageExporter());
+    this.registerPlugin(new PUMLExporter());
 
-    registerPlugin(new ExtraFilePlugin());
-    registerPlugin(new ExtraNotePlugin());
-    registerPlugin(new ExtraJumpPlugin());
-    registerPlugin(new ExtraURIPlugin());
+    this.registerPlugin(new ExtraFilePlugin());
+    this.registerPlugin(new ExtraNotePlugin());
+    this.registerPlugin(new ExtraJumpPlugin());
+    this.registerPlugin(new ExtraURIPlugin());
 
-    registerPlugin(new EditTextPlugin());
-    registerPlugin(new AddChildPlugin());
-    registerPlugin(new CloneTopicPlugin());
-    registerPlugin(new RemoveTopicPlugin());
+    this.registerPlugin(new EditTextPlugin());
+    this.registerPlugin(new AddChildPlugin());
+    this.registerPlugin(new CloneTopicPlugin());
+    this.registerPlugin(new RemoveTopicPlugin());
 
-    registerPlugin(new OptionsPlugin());
+    this.registerPlugin(new OptionsPlugin());
 
-    registerPlugin(new ShowJumpsPlugin());
-    registerPlugin(new CollapseAllPlugin());
-    registerPlugin(new UnfoldAllPlugin());
-    registerPlugin(new ChangeColorPlugin());
-    registerPlugin(new TextAlignMenuPlugin());
+    this.registerPlugin(new ShowJumpsPlugin());
+    this.registerPlugin(new QuickNotePlugin());
+    this.registerPlugin(new CollapseAllPlugin());
+    this.registerPlugin(new UnfoldAllPlugin());
+    this.registerPlugin(new ChangeColorPlugin());
+    this.registerPlugin(new TextAlignMenuPlugin());
 
-    registerPlugin(new Text2MindMapImporter());
-    registerPlugin(new Mindmup2MindMapImporter());
-    registerPlugin(new Freemind2MindMapImporter());
-    registerPlugin(new XMind2MindMapImporter());
-    registerPlugin(new CoggleMM2MindMapImporter());
-    registerPlugin(new Novamind2MindMapImporter());
+    this.registerPlugin(new Text2MindMapImporter());
+    this.registerPlugin(new Mindmup2MindMapImporter());
+    this.registerPlugin(new Freemind2MindMapImporter());
+    this.registerPlugin(new XMind2MindMapImporter());
+    this.registerPlugin(new CoggleMM2MindMapImporter());
+    this.registerPlugin(new Novamind2MindMapImporter());
 
-    registerPlugin(new EmoticonPopUpMenuPlugin());
-    registerPlugin(new EmoticonVisualAttributePlugin());
+    this.registerPlugin(new EmoticonPopUpMenuPlugin());
+    this.registerPlugin(new EmoticonVisualAttributePlugin());
 
-    registerPlugin(new ImagePopUpMenuPlugin());
-    registerPlugin(new ImageVisualAttributePlugin());
+    this.registerPlugin(new ImagePopUpMenuPlugin());
+    this.registerPlugin(new ImageVisualAttributePlugin());
   }
 
   public Set<TopicFinder> findAllTopicFinders() {

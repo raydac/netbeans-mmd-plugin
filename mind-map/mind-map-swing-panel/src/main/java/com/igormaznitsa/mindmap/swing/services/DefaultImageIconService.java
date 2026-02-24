@@ -66,6 +66,7 @@ public class DefaultImageIconService implements ImageIconService {
     MAP.put(IconID.POPUP_OPTIONS, loadIcon("settings16.png"));
     MAP.put(IconID.POPUP_SHOWJUMPS, loadIcon("showjumps16.png"));
     MAP.put(IconID.POPUP_UNFOLDALL, loadIcon("toggle_expand16.png"));
+    MAP.put(IconID.POPUP_QUICKNOTE, loadIcon("document_notes16.png"));
     MAP.put(IconID.POPUP_COLLAPSEALL, loadIcon("toggle16.png"));
     MAP.put(IconID.POPUP_CHANGECOLOR, loadIcon("color_swatches16.png"));
   }

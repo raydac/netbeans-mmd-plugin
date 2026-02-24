@@ -45,4 +45,6 @@ public interface MindMapListener {
   boolean allowedRemovingOfTopics(MindMapPanel source, Topic[] topics);
 
   void onNonConsumedKeyEvent(MindMapPanel source, KeyEvent event, KeyEventType type);
+
+  void onQuickNoteEvent(MindMapPanel source, boolean activate);
 }

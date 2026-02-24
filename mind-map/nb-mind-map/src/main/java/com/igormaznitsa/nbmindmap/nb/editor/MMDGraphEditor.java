@@ -1769,8 +1769,7 @@ public final class MMDGraphEditor extends CloneableEditor
                                              @Nonnull final Point point,
                                              @Nullable final AbstractElement element,
                                              @Nullable final ElementPart partUnderMouse) {
-    final PluginContext context = this.makePluginContext(source);
-    return Utils.makePopUp(context, false, element == null ? null : element.getModel());
+    return Utils.makePopUp(source, this, false, element == null ? null : element.getModel());
   }
 
   private void processColorDialogForTopics(final MindMapPanel source, final Topic[] topics) {
@@ -1877,5 +1876,10 @@ public final class MMDGraphEditor extends CloneableEditor
   @Override
   public boolean isBirdsEyeAllowed(@Nonnull MindMapPanel source) {
     return true;
+  }
+
+  @Override
+  public void onQuickNoteEvent(@Nonnull MindMapPanel source, boolean activate) {
+
   }
 }
