@@ -88,17 +88,17 @@
             <dependency>
                 <groupId>org.jsoup</groupId>
                 <artifactId>jsoup</artifactId>
-                <version>1.21.2</version>
+                <version>1.22.1</version>
             </dependency>
             <dependency>
                 <groupId>org.json</groupId>
                 <artifactId>json</artifactId>
-                <version>20250517</version>
+                <version>20251224</version>
             </dependency>
             <dependency>
                 <groupId>io.projectreactor</groupId>
                 <artifactId>reactor-core</artifactId>
-                <version>3.8.0</version>
+                <version>3.8.3</version>
             </dependency>
             <dependency>
                 <groupId>net.sf.jung</groupId>
@@ -125,7 +125,7 @@
             <dependency>
                 <groupId>com.fifesoft</groupId>
                 <artifactId>rsyntaxtextarea</artifactId>
-                <version>3.6.0</version>
+                <version>3.6.1</version>
             </dependency>
             <dependency>
                 <groupId>com.fifesoft</groupId>
@@ -135,7 +135,7 @@
             <dependency>
                 <groupId>org.apache.kafka</groupId>
                 <artifactId>kafka-streams</artifactId>
-                <version>4.1.0</version>
+                <version>4.2.0</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.xmlgraphics</groupId>
@@ -221,7 +221,7 @@
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
-                <version>5.18.0</version>
+                <version>5.21.0</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>
@@ -242,7 +242,7 @@
                 <plugin>
                     <groupId>de.perdian.maven.plugins</groupId>
                     <artifactId>macosappbundler-maven-plugin</artifactId>
-                    <version>1.21.1</version>
+                    <version>1.21.2</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
