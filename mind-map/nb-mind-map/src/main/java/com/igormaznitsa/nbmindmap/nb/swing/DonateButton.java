@@ -18,16 +18,16 @@ package com.igormaznitsa.nbmindmap.nb.swing;
 
 import com.igormaznitsa.nbmindmap.utils.Icons;
 import com.igormaznitsa.nbmindmap.utils.NbUtils;
-import javax.swing.JButton;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URI;
 import java.util.ResourceBundle;
+import javax.swing.JButton;
 
 public class DonateButton extends JButton {
   private static final long serialVersionUID = -6096783678529379785L;
 
-  private static final URI LINK = URI.create("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=AHWJHJFBAWGL2");
+  private static final URI LINK = URI.create("https://www.arthursacresanimalsanctuary.org/donate");
   private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle");
 
   private static final ActionListener LISTENER = new ActionListener() {
