@@ -17,8 +17,9 @@ Initially I developed a plugin for NetBeans IDE then the IntellijIDEA plugin was
 __1.6.10 (SNAPSHOT)__
 
 - ALL: fixed ret lost focus during fast sibling topic create by  enter
-- SR:  updated embedded JDK to 25.0.1+13
-- SR:  PlantUML updated to 1.2026.1
+- SR:  added 'Quick note' panel [#128](https://github.com/raydac/netbeans-mmd-plugin/issues/128)
+- SR:  updated embedded JDK to 25.0.2+12
+- SR:  PlantUML updated to 1.2026.2
 
 __1.6.9 (19-okt-2025)__
 - ALL: improvements in processing of key type in topic title editor
