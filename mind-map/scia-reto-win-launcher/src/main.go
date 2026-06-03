@@ -10,7 +10,7 @@ import (
 	"unsafe"
 )
 
-//go:generate goversioninfo -gofile=versioninfo.go -o=resource_windows.syso -64
+//go:generate goversioninfo -gofile=versioninfo.go -o=resource_windows.syso
 
 const (
 	ERROR_ALREADY_EXISTS = 183

@@ -24,11 +24,11 @@
 
     <properties>
         <app.name>sciareto-${project.version}</app.name>
-        <jre.version>26+37</jre.version>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-        <max.jdk.version>17</max.jdk.version>
-        <plantuml.version>1.2026.2</plantuml.version>
+        <jre.version>26.0.1+10</jre.version>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <max.jdk.version>21</max.jdk.version>
+        <plantuml.version>1.2026.5</plantuml.version>
     </properties>
 
     <dependencies>
