@@ -125,7 +125,7 @@
             <dependency>
                 <groupId>com.fifesoft</groupId>
                 <artifactId>rsyntaxtextarea</artifactId>
-                <version>3.6.2</version>
+                <version>3.6.3</version>
             </dependency>
             <dependency>
                 <groupId>com.fifesoft</groupId>
