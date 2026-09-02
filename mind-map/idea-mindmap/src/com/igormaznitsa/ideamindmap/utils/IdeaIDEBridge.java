@@ -16,9 +16,6 @@
 
 package com.igormaznitsa.ideamindmap.utils;
 
-import static com.intellij.openapi.ui.playback.PlaybackRunner.StatusCallback.Type.message;
-
-
 import com.igormaznitsa.commons.version.Version;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
@@ -86,22 +83,22 @@ public class IdeaIDEBridge implements IDEBridge {
     switch (type) {
       case INFO: {
         ideType = com.intellij.notification.NotificationType.INFORMATION;
-        LOGGER.info("{INFO}IDENotification : (" + title + ") " + message);
+        LOGGER.info("{INFO}IDENotification : (" + title + ") " + text);
       }
       break;
       case WARNING: {
         ideType = com.intellij.notification.NotificationType.WARNING;
-        LOGGER.warn("{WARN}IDENotification : (" + title + ") " + message);
+        LOGGER.warn("{WARN}IDENotification : (" + title + ") " + text);
       }
       break;
       case ERROR: {
         ideType = com.intellij.notification.NotificationType.ERROR;
-        LOGGER.warn("{ERROR}IDENotification : (" + title + ") " + message);
+        LOGGER.warn("{ERROR}IDENotification : (" + title + ") " + text);
       }
       break;
       default: {
         ideType = com.intellij.notification.NotificationType.WARNING;
-        LOGGER.warn("{*****}IDENotification : (" + title + ") " + message);
+        LOGGER.warn("{*****}IDENotification : (" + title + ") " + text);
       }
       break;
     }
