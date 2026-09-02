@@ -24,11 +24,11 @@
 
     <properties>
         <app.name>sciareto-${project.version}</app.name>
-        <jre.version>26.0.1+10</jre.version>
+        <jre.version>26.0.2+13</jre.version>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <max.jdk.version>21</max.jdk.version>
-        <plantuml.version>1.2026.6</plantuml.version>
+        <plantuml.version>1.2026.7</plantuml.version>
     </properties>
 
     <dependencies>
@@ -48,6 +48,10 @@
         <dependency>
             <groupId>io.projectreactor</groupId>
             <artifactId>reactor-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jspecify</groupId>
+            <artifactId>jspecify</artifactId>
         </dependency>
         <dependency>
             <groupId>net.sf.jung</groupId>
