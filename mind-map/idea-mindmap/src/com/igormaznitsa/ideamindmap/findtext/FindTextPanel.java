@@ -17,7 +17,13 @@
 package com.igormaznitsa.ideamindmap.findtext;
 
 import static com.igormaznitsa.mindmap.ide.commons.Misc.string2pattern;
-
+import static com.intellij.icons.AllIcons.Actions.Close;
+import static com.intellij.icons.AllIcons.Actions.NextOccurence;
+import static com.intellij.icons.AllIcons.Actions.PreviousOccurence;
+import static java.awt.Cursor.HAND_CURSOR;
+import static java.awt.GridBagConstraints.BOTH;
+import static java.awt.GridBagConstraints.HORIZONTAL;
+import static javax.swing.SwingConstants.CENTER;
 
 import com.igormaznitsa.ideamindmap.editor.MindMapDocumentEditor;
 import com.igormaznitsa.ideamindmap.utils.AllIcons;
@@ -29,12 +35,17 @@ import com.intellij.util.ui.JBUI;
 
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FocusTraversalPolicy;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.swing.BorderFactory;
@@ -148,17 +159,17 @@ public final class FindTextPanel extends JBPanel implements FindTextScopeProvide
   }
 
   private void initComponents() {
-    java.awt.GridBagConstraints gridBagConstraints;
+    GridBagConstraints gridBagConstraints;
     labelTitle = new JBLabel();
     textFieldSearchText = new JTextField();
     buttonPrev = UI_COMPO_FACTORY.makeButton();
-    buttonPrev.setIcon(com.intellij.icons.AllIcons.Actions.PreviousOccurence);
+    buttonPrev.setIcon(PreviousOccurence);
 
     buttonNext = UI_COMPO_FACTORY.makeButton();
-    buttonNext.setIcon(com.intellij.icons.AllIcons.Actions.NextOccurence);
+    buttonNext.setIcon(NextOccurence);
 
     labelClose = UI_COMPO_FACTORY.makeLabel();
-    filler1 = new Box.Filler(new java.awt.Dimension(0, 0), new Dimension(0, 0), new Dimension(32767, 0));
+    filler1 = new Box.Filler(new Dimension(0, 0), new Dimension(0, 0), new Dimension(32767, 0));
 
     final ActionListener stateListener = e -> {
       stateCaseSensitive = toggleButtonCaseSensitive.isSelected();
@@ -181,21 +192,21 @@ public final class FindTextPanel extends JBPanel implements FindTextScopeProvide
     labelTitle.setText("<html><b>Find text:</b></html>");
     labelTitle.setFocusable(false);
     gridBagConstraints = new GridBagConstraints();
-    gridBagConstraints.fill = GridBagConstraints.BOTH;
+    gridBagConstraints.fill = BOTH;
     gridBagConstraints.weightx = 10.0;
     gridBagConstraints.insets = JBUI.insets(0, 16, 0, 8);
     add(labelTitle, gridBagConstraints);
 
     textFieldSearchText.setFocusTraversalPolicyProvider(true);
-    textFieldSearchText.addKeyListener(new java.awt.event.KeyAdapter() {
-      public void keyPressed(java.awt.event.KeyEvent evt) {
+    textFieldSearchText.addKeyListener(new KeyAdapter() {
+      public void keyPressed(final KeyEvent evt) {
         textFieldSearchTextKeyPressed(evt);
       }
     });
     gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 1;
     gridBagConstraints.gridy = 0;
-    gridBagConstraints.fill = GridBagConstraints.BOTH;
+    gridBagConstraints.fill = BOTH;
     gridBagConstraints.weightx = 1.0;
     gridBagConstraints.insets = JBUI.insetsRight(16);
     add(textFieldSearchText, gridBagConstraints);
@@ -204,87 +215,87 @@ public final class FindTextPanel extends JBPanel implements FindTextScopeProvide
     buttonPrev.setFocusable(false);
     buttonPrev.addActionListener(this::buttonPrevActionPerformed);
     gridBagConstraints = new GridBagConstraints();
-    gridBagConstraints.fill = GridBagConstraints.BOTH;
+    gridBagConstraints.fill = BOTH;
     gridBagConstraints.weightx = 10.0;
     add(buttonPrev, gridBagConstraints);
 
     buttonNext.setToolTipText("Find next (ENTER)"); // NOI18N
     buttonNext.setFocusable(false);
     buttonNext.addActionListener(this::buttonNextActionPerformed);
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.fill = BOTH;
     gridBagConstraints.weightx = 10.0;
     gridBagConstraints.insets = JBUI.insetsRight(16);
     add(buttonNext, gridBagConstraints);
 
-    labelClose.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-    labelClose.setIcon(com.intellij.icons.AllIcons.Actions.Close);
+    labelClose.setHorizontalAlignment(CENTER);
+    labelClose.setIcon(Close);
     labelClose.setToolTipText("Close search form (ESC)"); // NOI18N
-    labelClose.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+    labelClose.setCursor(new Cursor(HAND_CURSOR));
     labelClose.setFocusable(false);
-    labelClose.addMouseListener(new java.awt.event.MouseAdapter() {
-      public void mouseClicked(java.awt.event.MouseEvent evt) {
+    labelClose.addMouseListener(new MouseAdapter() {
+      public void mouseClicked(final MouseEvent evt) {
         labelCloseMouseClicked(evt);
       }
     });
-    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 7;
     gridBagConstraints.gridy = 0;
-    gridBagConstraints.fill = GridBagConstraints.BOTH;
+    gridBagConstraints.fill = BOTH;
     gridBagConstraints.insets = JBUI.insetsRight(8);
     add(labelClose, gridBagConstraints);
-    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 6;
     gridBagConstraints.gridy = 0;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.fill = HORIZONTAL;
     gridBagConstraints.weightx = 100000.0;
     add(filler1, gridBagConstraints);
 
-    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 4;
     gridBagConstraints.gridy = 0;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+    gridBagConstraints.fill = BOTH;
     gridBagConstraints.insets = JBUI.insetsRight(8);
     add(toggleButtonCaseSensitive, gridBagConstraints);
 
-    panelButtonsForMap.setLayout(new java.awt.GridBagLayout());
+    panelButtonsForMap.setLayout(new GridBagLayout());
 
-    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 0;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+    gridBagConstraints.fill = BOTH;
     gridBagConstraints.weightx = 1.0;
     panelButtonsForMap.add(toggleButtonTopicText, gridBagConstraints);
 
-    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 1;
     gridBagConstraints.gridy = 0;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+    gridBagConstraints.fill = BOTH;
     gridBagConstraints.weightx = 1.0;
     panelButtonsForMap.add(toggleButtonNote, gridBagConstraints);
 
-    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 2;
     gridBagConstraints.gridy = 0;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+    gridBagConstraints.fill = BOTH;
     gridBagConstraints.weightx = 1.0;
     panelButtonsForMap.add(toggleButtonFile, gridBagConstraints);
 
-    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 3;
     gridBagConstraints.gridy = 0;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+    gridBagConstraints.fill = BOTH;
     gridBagConstraints.weightx = 1.0;
     panelButtonsForMap.add(toggleButtonURI, gridBagConstraints);
 
-    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridx = 5;
     gridBagConstraints.gridy = 0;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+    gridBagConstraints.fill = BOTH;
     add(panelButtonsForMap, gridBagConstraints);
   }
 
-  private void textFieldSearchTextKeyPressed(java.awt.event.KeyEvent evt) {
+  private void textFieldSearchTextKeyPressed(final KeyEvent evt) {
     switch (evt.getKeyCode()) {
       case KeyEvent.VK_ESCAPE: {
         this.deactivate();
@@ -317,20 +328,16 @@ public final class FindTextPanel extends JBPanel implements FindTextScopeProvide
     }
   }
 
-  private void labelCloseMouseClicked(java.awt.event.MouseEvent evt) {
+  private void labelCloseMouseClicked(final MouseEvent evt) {
     this.setVisible(false);
   }
 
-  private void buttonPrevActionPerformed(java.awt.event.ActionEvent evt) {
+  private void buttonPrevActionPerformed(final ActionEvent evt) {
     findPrev();
   }
 
-  private void buttonNextActionPerformed(java.awt.event.ActionEvent evt) {
+  private void buttonNextActionPerformed(final ActionEvent evt) {
     findNext();
-  }
-
-  private void toggleButtonCaseSensitiveActionPerformed(java.awt.event.ActionEvent evt) {
-    stateCaseSensitive = this.toggleButtonCaseSensitive.isSelected();
   }
 
   public boolean activate() {

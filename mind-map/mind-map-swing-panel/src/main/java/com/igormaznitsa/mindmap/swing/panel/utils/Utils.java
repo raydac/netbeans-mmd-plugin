@@ -86,6 +86,7 @@ import javax.swing.JDialog;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.JRootPane;
 import javax.swing.JTree;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
@@ -964,6 +965,8 @@ public final class Utils {
     return result;
   }
 
+  private static final String ESC_CATCHER_WIRED_PROPERTY = "mmd.escCatcherWired";
+
   private static void replaceActionListenerForButton(final JButton button,
                                                      final ActionListener listener) {
     final ActionListener[] currentListeners = button.getActionListeners();
@@ -1016,74 +1019,79 @@ public final class Utils {
       @Override
       public void hierarchyChanged(final HierarchyEvent e) {
         final Window window = SwingUtilities.getWindowAncestor(component);
-        if (window instanceof JDialog &&
-            (e.getChangeFlags() & HierarchyEvent.PARENT_CHANGED) != 0) {
-          final JDialog dialog = (JDialog) window;
+        if (!(window instanceof JDialog)
+            || (e.getChangeFlags() & HierarchyEvent.PARENT_CHANGED) == 0) {
+          return;
+        }
 
-          final List<JButton> dialogButtons = findAllOptionPaneButtons(dialog.getRootPane());
-          dialogButtons.stream()
-              .filter(x -> "cancel".equalsIgnoreCase(x.getText()))
-              .forEach(x -> replaceActionListenerForButton(x, be -> processor.accept(dialog)));
+        final JDialog dialog = (JDialog) window;
+        final JRootPane rootPane = dialog.getRootPane();
+        if (Boolean.TRUE.equals(rootPane.getClientProperty(ESC_CATCHER_WIRED_PROPERTY))) {
+          return;
+        }
+        rootPane.putClientProperty(ESC_CATCHER_WIRED_PROPERTY, Boolean.TRUE);
 
-          dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+        final List<JButton> dialogButtons = findAllOptionPaneButtons(rootPane);
+        dialogButtons.stream()
+            .filter(x -> "cancel".equalsIgnoreCase(x.getText()))
+            .forEach(x -> replaceActionListenerForButton(x, be -> processor.accept(dialog)));
 
-          final WindowListener windowListener = new WindowListener() {
-            @Override
-            public void windowClosing(final WindowEvent e) {
-              processor.accept(dialog);
-            }
+        dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 
-            @Override
-            public void windowOpened(final WindowEvent e) {
-              foundWindowListeners.forEach(x -> x.windowOpened(e));
-            }
-
-            @Override
-            public void windowClosed(final WindowEvent e) {
-              foundWindowListeners.forEach(x -> x.windowClosed(e));
-            }
-
-            @Override
-            public void windowIconified(final WindowEvent e) {
-              foundWindowListeners.forEach(x -> x.windowIconified(e));
-            }
-
-            @Override
-            public void windowDeiconified(final WindowEvent e) {
-              foundWindowListeners.forEach(x -> x.windowDeiconified(e));
-            }
-
-            @Override
-            public void windowActivated(final WindowEvent e) {
-              foundWindowListeners.forEach(x -> x.windowActivated(e));
-            }
-
-            @Override
-            public void windowDeactivated(final WindowEvent e) {
-              foundWindowListeners.forEach(x -> x.windowDeactivated(e));
-            }
-          };
-
-          if (this.foundWindowListeners.isEmpty()) {
-            final WindowListener[] windowListeners = dialog.getWindowListeners();
-            for (final WindowListener w : windowListeners) {
-              dialog.removeWindowListener(w);
-              this.foundWindowListeners.add(w);
-            }
-            dialog.addWindowListener(windowListener);
+        final WindowListener windowListener = new WindowListener() {
+          @Override
+          public void windowClosing(final WindowEvent e) {
+            processor.accept(dialog);
           }
 
-          final InputMap inputMap =
-              dialog.getRootPane().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-          inputMap.put(escapeKeyStroke, "PRESSING_ESCAPE");
-          final ActionMap actionMap = dialog.getRootPane().getActionMap();
-          actionMap.put("PRESSING_ESCAPE", new AbstractAction() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-              processor.accept(dialog);
-            }
-          });
+          @Override
+          public void windowOpened(final WindowEvent e) {
+            foundWindowListeners.forEach(x -> x.windowOpened(e));
+          }
+
+          @Override
+          public void windowClosed(final WindowEvent e) {
+            foundWindowListeners.forEach(x -> x.windowClosed(e));
+          }
+
+          @Override
+          public void windowIconified(final WindowEvent e) {
+            foundWindowListeners.forEach(x -> x.windowIconified(e));
+          }
+
+          @Override
+          public void windowDeiconified(final WindowEvent e) {
+            foundWindowListeners.forEach(x -> x.windowDeiconified(e));
+          }
+
+          @Override
+          public void windowActivated(final WindowEvent e) {
+            foundWindowListeners.forEach(x -> x.windowActivated(e));
+          }
+
+          @Override
+          public void windowDeactivated(final WindowEvent e) {
+            foundWindowListeners.forEach(x -> x.windowDeactivated(e));
+          }
+        };
+
+        final WindowListener[] windowListeners = dialog.getWindowListeners();
+        for (final WindowListener w : windowListeners) {
+          dialog.removeWindowListener(w);
+          this.foundWindowListeners.add(w);
         }
+        dialog.addWindowListener(windowListener);
+
+        final InputMap inputMap =
+            rootPane.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        inputMap.put(escapeKeyStroke, "PRESSING_ESCAPE");
+        final ActionMap actionMap = rootPane.getActionMap();
+        actionMap.put("PRESSING_ESCAPE", new AbstractAction() {
+          @Override
+          public void actionPerformed(final ActionEvent e) {
+            processor.accept(dialog);
+          }
+        });
       }
     });
     return component;

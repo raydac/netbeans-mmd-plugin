@@ -16,6 +16,8 @@
 
 package com.igormaznitsa.ideamindmap.filetype;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import com.igormaznitsa.ideamindmap.lang.MMLanguage;
 import com.igormaznitsa.ideamindmap.utils.AllIcons;
 import com.intellij.openapi.fileTypes.LanguageFileType;
@@ -37,7 +39,7 @@ public class MindMapFileType extends LanguageFileType {
 
   @Override
   public String getCharset(@Nonnull VirtualFile file, @Nonnull byte[] content) {
-    return "UTF-8";
+    return UTF_8.name();
   }
 
   @Nonnull

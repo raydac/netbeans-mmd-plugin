@@ -193,7 +193,7 @@ public final class SourceTextEditor extends AbstractTextEditor {
     this.editor.addKeyListener(new KeyAdapter() {
       @Override
       public void keyPressed(@Nonnull final KeyEvent e) {
-        if (!e.isConsumed() && e.getModifiers() == 0 && e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+        if (!e.isConsumed() && e.getModifiersEx() == 0 && e.getKeyCode() == KeyEvent.VK_ESCAPE) {
           e.consume();
           context.hideFindTextPane();
         }
@@ -214,6 +214,7 @@ public final class SourceTextEditor extends AbstractTextEditor {
     this.mainPanel = new JPanel(new BorderLayout());
 
     final RTextScrollPane scrollPane = new RTextScrollPane(this.editor, true);
+    UiUtils.hideContainerBorder(scrollPane);
     this.mainPanel.add(scrollPane, BorderLayout.CENTER);
 
     final JPanel status = new JPanel(new FlowLayout(FlowLayout.RIGHT));

@@ -16,10 +16,11 @@
 
 package com.igormaznitsa.ideamindmap.facet;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import com.intellij.util.Base64;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -246,7 +247,7 @@ public class InMemoryPreferenceNode extends Preferences {
     for (final Map.Entry<String, String> entry : this.storage.entrySet()) {
       builder.append(StringEscapeUtils.escapeCsv(entry.getKey())).append(',').append(StringEscapeUtils.escapeCsv(entry.getValue())).append('\n');
     }
-    os.write(builder.toString().getBytes(StandardCharsets.UTF_8));
+    os.write(builder.toString().getBytes(UTF_8));
   }
 
   @Override

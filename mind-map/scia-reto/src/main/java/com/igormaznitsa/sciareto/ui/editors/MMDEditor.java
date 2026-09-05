@@ -185,7 +185,7 @@ public final class MMDEditor extends AbstractTextEditor
     this.mindMapPanel = new MindMapPanelExt(this);
     this.mindMapPanel.addMindMapListener(this);
 
-    this.scrollPane = new JScrollPane(this.mindMapPanel);
+    this.scrollPane = new EditorScrollPanel(this.mindMapPanel);
     this.scrollPane.getViewport().setScrollMode(SIMPLE_SCROLL_MODE);
 
     this.scrollPane.getHorizontalScrollBar().setBlockIncrement(128);

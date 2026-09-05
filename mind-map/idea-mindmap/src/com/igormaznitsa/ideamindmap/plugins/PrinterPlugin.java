@@ -17,6 +17,7 @@
 package com.igormaznitsa.ideamindmap.plugins;
 
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
+import static java.util.ResourceBundle.getBundle;
 
 
 import com.igormaznitsa.ideamindmap.print.IdeaMMDPrintPanelAdaptor;
@@ -36,7 +37,7 @@ import javax.annotation.Nullable;
 import javax.swing.JMenuItem;
 
 public class PrinterPlugin extends AbstractPopupMenuItem {
-  private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("i18n/Bundle");
+  private static final ResourceBundle BUNDLE = getBundle("i18n/Bundle");
 
   @Nullable
   @Override

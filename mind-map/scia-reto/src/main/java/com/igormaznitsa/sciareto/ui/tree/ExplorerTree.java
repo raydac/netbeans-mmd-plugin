@@ -109,11 +109,12 @@ public final class ExplorerTree extends JScrollPane {
     this.projectTree.setModel(new NodeProjectGroup(predicateShowHiddenFiles, context, ".")); //NOI18N
     this.projectTree.setRootVisible(false);
     this.setViewportView(this.projectTree);
+    UiUtils.hideContainerBorder(this);
 
     this.projectTree.addKeyListener(new KeyAdapter() {
       @Override
       public void keyPressed(@Nonnull final KeyEvent e) {
-        if (!e.isConsumed() && e.getModifiers() == 0 && e.getKeyCode() == KeyEvent.VK_ENTER) {
+        if (!e.isConsumed() && e.getModifiersEx() == 0 && e.getKeyCode() == KeyEvent.VK_ENTER) {
           e.consume();
           final TreePath selectedPath = projectTree.getSelectionPath();
           if (selectedPath != null) {

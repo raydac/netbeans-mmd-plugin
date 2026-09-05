@@ -493,7 +493,8 @@ public final class ModelUtils implements Constants {
       pathItems.add(authority);
     }
 
-    final String[] splitPath = uri.getPath().split("\\/");
+    final String rawPath = uri.getPath();
+    final String[] splitPath = rawPath == null ? new String[0] : rawPath.split("\\/");
     boolean separator = false;
     if (splitPath.length == 0) {
       separator = true;
@@ -510,6 +511,10 @@ public final class ModelUtils implements Constants {
 
     if (separator) {
       pathItems.add(File.separator);
+    }
+
+    if (pathItems.isEmpty()) {
+      return new File(File.separator);
     }
 
     final String[] fullArray = pathItems.toArray(new String[0]);

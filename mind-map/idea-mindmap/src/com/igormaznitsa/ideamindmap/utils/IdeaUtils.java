@@ -16,19 +16,23 @@
 
 package com.igormaznitsa.ideamindmap.utils;
 
+import static com.igormaznitsa.mindmap.ide.commons.editors.AbstractNoteEditor.IconId.BROWSE;
+import static com.igormaznitsa.mindmap.ide.commons.editors.AbstractNoteEditor.IconId.CLEARALL;
+import static com.igormaznitsa.mindmap.model.logger.LoggerFactory.getLogger;
+import static java.util.Objects.requireNonNullElse;
+import static java.util.ResourceBundle.getBundle;
+
 import com.igormaznitsa.ideamindmap.editor.MindMapDocumentEditor;
+import com.igormaznitsa.ideamindmap.facet.MindMapFacet;
 import com.igormaznitsa.ideamindmap.swing.FileEditPanel;
 import com.igormaznitsa.ideamindmap.swing.UriEditPanel;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.ide.commons.editors.AbstractNoteEditor;
-import static com.igormaznitsa.mindmap.ide.commons.editors.AbstractNoteEditor.IconId.BROWSE;
-import static com.igormaznitsa.mindmap.ide.commons.editors.AbstractNoteEditor.IconId.CLEARALL;
 import com.igormaznitsa.mindmap.ide.commons.editors.AbstractNoteEditorData;
 import com.igormaznitsa.mindmap.ide.commons.preferences.ColorSelectButton;
 import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
-import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.HasPreferredFocusComponent;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
@@ -75,7 +79,6 @@ import java.lang.reflect.Modifier;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
@@ -94,8 +97,8 @@ public final class IdeaUtils {
 
   public static final MMapURI EMPTY_URI;
   public static final String PROJECT_KNOWLEDGE_FOLDER_NAME = ".projectKnowledge";
-  private static final Logger LOGGER = LoggerFactory.getLogger(IdeaUtils.class);
-  private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("i18n/Bundle");
+  private static final Logger LOGGER = getLogger(IdeaUtils.class);
+  private static final ResourceBundle BUNDLE = getBundle("i18n/Bundle");
   private static final boolean ALLOWS_TRANSACTION_GUARD = true;
 
   static {
@@ -137,12 +140,34 @@ public final class IdeaUtils {
               ex.getMessage());
     } catch (NoSuchMethodException ex) {
       LOGGER.error("NoSuchMethodException in findMavenProjectRootForFile", ex);
-      throw new Error("NoSuchMethodException in findMavenProjectRootForFile", ex);
     } catch (Exception ex) {
       LOGGER.error("Error in findMavenProjectRootForFile", ex);
-      throw new Error("Error in findMavenProjectRootForFile", ex);
     }
     return result;
+  }
+
+  @Nullable
+  public static VirtualFile findMindMapRootFolder(
+      @Nullable final Project project,
+      @Nullable final VirtualFile file) {
+    if (project == null || file == null) {
+      return null;
+    }
+
+    final Module module = findModuleForFile(project, file);
+    final MindMapFacet facet = MindMapFacet.getInstance(module);
+    final boolean useProjectBaseFolder = facet == null || facet.getConfiguration().isUseProjectBaseFolderAsRoot();
+
+    if (module == null || useProjectBaseFolder) {
+      final VirtualFile baseDir = project.getBaseDir();
+      if (module == null) {
+        return baseDir;
+      }
+      final VirtualFile mavenProjectRoot = findMavenProjectRootForFile(project, file);
+      return mavenProjectRoot == null ? baseDir : mavenProjectRoot;
+    }
+
+    return findPotentialRootFolderForModule(module);
   }
 
   @Nullable
@@ -339,13 +364,40 @@ public final class IdeaUtils {
   }
 
   public static boolean browseURI(final URI uri, final boolean useInternalBrowser) {
+    return browseURI(null, uri, useInternalBrowser);
+  }
+
+  public static boolean browseURI(
+      @Nullable final Project project,
+      @Nonnull final URI uri,
+      final boolean useInternalBrowser) {
     try {
+      if (useInternalBrowser && project != null && !project.isDisposed() && openInIdeBrowser(project, uri)) {
+        return true;
+      }
       BrowserUtil.browse(uri);
+      return true;
     } catch (Exception ex) {
-      ex.printStackTrace();
+      LOGGER.error("Can't browse URI: " + uri, ex);
       return false;
     }
-    return true;
+  }
+
+  private static boolean openInIdeBrowser(@Nonnull final Project project, @Nonnull final URI uri) {
+    final Class<?> htmlEditorProvider = findClass("com.intellij.openapi.fileEditor.impl.HTMLEditorProvider");
+    if (htmlEditorProvider == null) {
+      return false;
+    }
+
+    try {
+      htmlEditorProvider
+          .getMethod("openEditor", Project.class, String.class, String.class)
+          .invoke(null, project, uri.toString(), uri.toString());
+      return true;
+    } catch (Exception ex) {
+      LOGGER.error("Can't open URI in IDE browser, falling back to system browser: " + uri, ex);
+      return false;
+    }
   }
 
   public static void openInSystemViewer(@Nonnull final DialogProvider dialogProvider,
@@ -420,7 +472,7 @@ public final class IdeaUtils {
         
         @Override
         public void onBrowseUri(final URI uri, final boolean preferInternalBrowser) throws Exception {
-            IdeaUtils.browseURI(uri, preferInternalBrowser);
+            IdeaUtils.browseURI(project, uri, preferInternalBrowser);
         }
 
         @Override
@@ -452,7 +504,7 @@ public final class IdeaUtils {
         
         @Override
         protected Font findEditorFont(final Font defaultFont) {
-            return Objects.requireNonNullElse(EditorUtil.getEditorFont(), super.findEditorFont(DEFAULT_FONT));
+            return requireNonNullElse(EditorUtil.getEditorFont(), super.findEditorFont(DEFAULT_FONT));
         }
     };
     

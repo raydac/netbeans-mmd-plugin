@@ -77,8 +77,10 @@ import java.util.prefs.Preferences;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -160,6 +162,11 @@ public final class UiUtils {
   public static void assertSwingThread() {
     Assertions.assertTrue("Mus be called only from Swing Dispatcher!",
         SwingUtilities.isEventDispatchThread());
+  }
+
+  public static void hideContainerBorder(@Nonnull final JComponent component) {
+    Objects.requireNonNull(component, "component must not be null");
+    component.setBorder(BorderFactory.createEmptyBorder());
   }
 
   @Nullable

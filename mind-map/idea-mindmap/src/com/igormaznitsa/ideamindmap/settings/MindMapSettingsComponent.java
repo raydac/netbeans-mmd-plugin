@@ -17,48 +17,22 @@
 package com.igormaznitsa.ideamindmap.settings;
 
 import com.igormaznitsa.ideamindmap.editor.MindMapDialogProvider;
-import com.igormaznitsa.mindmap.model.logger.Logger;
-import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
-import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.options.Configurable;
-import com.intellij.openapi.options.ConfigurableProvider;
 import com.intellij.openapi.options.ConfigurationException;
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.JComponent;
 import org.jetbrains.annotations.Nls;
 
-public class MindMapSettingsComponent extends ConfigurableProvider implements Configurable, ApplicationComponent {
+public class MindMapSettingsComponent implements Configurable {
 
-  public static final String ID = "idea.mind.map.settings";
-  public static final String COMPONENT_NAME = "NBMindMapSettingsComponent";
   public static final String DISPLAY_NAME = "SciaReto Mind Map";
-  private static final Logger LOGGER = LoggerFactory.getLogger(MindMapSettingsComponent.class);
-  private static MindMapSettingsComponent instance;
   private final MindMapDialogProvider dialogProvider = new MindMapDialogProvider(null);
   private PreferencesPanel uiPanel;
 
-  public MindMapSettingsComponent getInstance() {
-    if (instance == null) {
-      instance = new MindMapSettingsComponent();
-    }
-    return instance;
-  }
-
   public DialogProvider getDialogProvider() {
-    return dialogProvider;
-  }
-
-  @Override
-  public void initComponent() {
-    getInstance();
-  }
-
-  @Override
-  public void disposeComponent() {
-    this.uiPanel = null;
+    return this.dialogProvider;
   }
 
   @Nls
@@ -71,18 +45,6 @@ public class MindMapSettingsComponent extends ConfigurableProvider implements Co
   @Override
   public String getHelpTopic() {
     return null;
-  }
-
-  @Nullable
-  @Override
-  public Configurable createConfigurable() {
-    return this.getInstance();
-  }
-
-  @Nonnull
-  @Override
-  public String getComponentName() {
-    return COMPONENT_NAME;
   }
 
   @Nullable
@@ -103,7 +65,7 @@ public class MindMapSettingsComponent extends ConfigurableProvider implements Co
   @Override
   public void apply() throws ConfigurationException {
     if (this.uiPanel != null) {
-        MindMapApplicationSettings.getInstance().loadState(MindMapApplicationSettings.from(this.uiPanel.save(true)));
+      MindMapApplicationSettings.getInstance().loadState(MindMapApplicationSettings.from(this.uiPanel.save(true)));
     }
   }
 
@@ -118,5 +80,4 @@ public class MindMapSettingsComponent extends ConfigurableProvider implements Co
   public void disposeUIResources() {
     this.uiPanel = null;
   }
-
 }

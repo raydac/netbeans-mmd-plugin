@@ -38,8 +38,6 @@ public class MMapURI implements Serializable {
 
   public static final long serialVersionUID = 27896411234L;
 
-  private static final Properties EMPTY = new Properties();
-
   private final URI uri;
   private final Properties parameters;
   private final boolean fileUriFlag;
@@ -78,7 +76,7 @@ public class MMapURI implements Serializable {
         preparedURI = uri;
       }
     } else {
-      this.parameters = EMPTY;
+      this.parameters = new Properties();
       preparedURI = uri;
     }
     this.uri = preparedURI;
@@ -182,7 +180,7 @@ public class MMapURI implements Serializable {
           return false;
         }
       }
-      return this.uri.equals(thatURI.uri);
+      return this.fileUriFlag == thatURI.fileUriFlag && this.uri.equals(thatURI.uri);
     } else {
       return false;
     }

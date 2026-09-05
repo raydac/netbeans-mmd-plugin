@@ -15,43 +15,43 @@
  */
 package com.igormaznitsa.ideamindmap.settings;
 
+import static com.igormaznitsa.mindmap.model.logger.LoggerFactory.getLogger;
+import static java.util.Base64.getDecoder;
+import static java.util.Base64.getEncoder;
+
 import com.igormaznitsa.ideamindmap.plugins.PrinterPlugin;
 import com.igormaznitsa.mindmap.model.logger.Logger;
-import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
 import com.igormaznitsa.mindmap.plugins.external.ExternalPlugins;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.util.xmlb.Converter;
-import com.intellij.util.xmlb.annotations.Transient;
-import java.io.File;
-import java.util.Base64;
-import javax.annotation.Nonnull;
 import com.intellij.util.xmlb.annotations.Attribute;
+import java.io.File;
+import javax.annotation.Nonnull;
 
 @State(name = "NBMindMapPlugin", storages = {
     @Storage("IdeaMindMapPlugin.xml")})
-public class MindMapApplicationSettings implements ApplicationComponent, PersistentStateComponent<MindMapApplicationSettings> {
+public class MindMapApplicationSettings implements PersistentStateComponent<MindMapApplicationSettings> {
 
     private static final String PROPERTY = "idea.mindmap.plugin.folder";
-    private static final Logger LOGGER = LoggerFactory.getLogger(MindMapApplicationSettings.class);
+    private static final Logger LOGGER = getLogger(MindMapApplicationSettings.class);
 
     @Attribute(value = "mmd_config_serialized", converter = MindMapPanelConfigSerializer.class)
     private MindMapPanelConfig editorConfig;
 
-    @Transient
-    private volatile boolean inited;
-    
+    private static volatile boolean pluginsInited;
+
     public static MindMapApplicationSettings getInstance() {
-        return ApplicationManager.getApplication().getComponent(MindMapApplicationSettings.class);
+        return ApplicationManager.getApplication().getService(MindMapApplicationSettings.class);
     }
 
     public MindMapApplicationSettings() {
         this.editorConfig = new MindMapPanelConfig();
+        initializePlugins();
     }
 
     public static MindMapApplicationSettings from(final MindMapPanelConfig config) {
@@ -59,13 +59,13 @@ public class MindMapApplicationSettings implements ApplicationComponent, Persist
         result.editorConfig = config;
         return result;
     }
-    
+
     public static class MindMapPanelConfigSerializer extends Converter<MindMapPanelConfig> {
 
         @Override
         public MindMapPanelConfig fromString(final String value) {
             try {
-                return new MindMapPanelConfig(MindMapPanelConfig.deserialize(Base64.getDecoder().decode(value)), false);
+                return new MindMapPanelConfig(MindMapPanelConfig.deserialize(getDecoder().decode(value)), false);
             } catch (Exception ex) {
                 LOGGER.warn("Detected incompatibility in config format, use default");
                 return new MindMapPanelConfig();
@@ -75,7 +75,7 @@ public class MindMapApplicationSettings implements ApplicationComponent, Persist
         @Override
         public String toString(final MindMapPanelConfig value) {
             try {
-                return Base64.getEncoder().encodeToString(value.serialize());
+                return getEncoder().encodeToString(value.serialize());
             } catch (Exception ex) {
                 LOGGER.error("Can't serialize configuration for error", ex);
                 throw new RuntimeException("Error during configuration serialization", ex);
@@ -98,28 +98,25 @@ public class MindMapApplicationSettings implements ApplicationComponent, Persist
         this.editorConfig.makeFullCopyOf(state.editorConfig, false, true);
     }
 
-    @Override
-    public void initComponent() {
-        initializeComponent();
-    }
+    private static void initializePlugins() {
+        if (pluginsInited) {
+            return;
+        }
 
-    //@Override
-    public void initializeComponent() {
-        if (!this.inited) {
-            this.inited = true;
-            MindMapPluginRegistry.getInstance().registerPlugin(new PrinterPlugin());
-            final String pluginFolder = System.getProperty(PROPERTY);
-            if (pluginFolder != null) {
-                final File folder = new File(pluginFolder);
-                if (folder.isDirectory()) {
-                    LOGGER.info("Loading plugins from folder : " + folder);
-                    new ExternalPlugins(folder).init();
-                } else {
-                    LOGGER.error("Can't find plugin folder : " + folder);
-                }
-            } else {
-                LOGGER.info("Property " + PROPERTY + " is not defined");
-            }
+        pluginsInited = true;
+        MindMapPluginRegistry.getInstance().registerPlugin(new PrinterPlugin());
+        final String pluginFolder = System.getProperty(PROPERTY);
+        if (pluginFolder == null) {
+            LOGGER.info("Property " + PROPERTY + " is not defined");
+            return;
+        }
+
+        final File folder = new File(pluginFolder);
+        if (folder.isDirectory()) {
+            LOGGER.info("Loading plugins from folder : " + folder);
+            new ExternalPlugins(folder).init();
+        } else {
+            LOGGER.error("Can't find plugin folder : " + folder);
         }
     }
 }

@@ -16,16 +16,16 @@
 
 package com.igormaznitsa.ideamindmap.utils;
 
+import static com.igormaznitsa.mindmap.model.logger.LoggerFactory.getLogger;
+
 import com.igormaznitsa.ideamindmap.editor.MindMapDocumentEditor;
 import com.igormaznitsa.mindmap.model.logger.Logger;
-import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.intellij.ide.projectView.ProjectView;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.LogicalPosition;
 import com.intellij.openapi.editor.ScrollType;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
-import com.intellij.openapi.fileEditor.NavigatableFileEditor;
 import com.intellij.openapi.fileEditor.TextEditor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
@@ -39,7 +39,7 @@ public enum SelectIn {
   IDE,
   SYSTEM;
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(SelectIn.class);
+  private static final Logger LOGGER = getLogger(SelectIn.class);
 
   private static void projectFocusTo(final Project project, final VirtualFile file) {
     final ProjectView view = ProjectView.getInstance(project);
@@ -73,9 +73,8 @@ public enum SelectIn {
 
             if (line > 0) {
               for (final FileEditor e : editors) {
-                if (e instanceof NavigatableFileEditor) {
-                  final TextEditor navigatedEditor = (TextEditor) e;
-                  final Editor editor = navigatedEditor.getEditor();
+                if (e instanceof TextEditor) {
+                  final Editor editor = ((TextEditor) e).getEditor();
                   if (editor != null && editor.getDocument().getLineCount() > line) {
                     editor.getCaretModel().moveToLogicalPosition(new LogicalPosition(line - 1, 0));
                     editor.getScrollingModel().scrollToCaret(ScrollType.CENTER);

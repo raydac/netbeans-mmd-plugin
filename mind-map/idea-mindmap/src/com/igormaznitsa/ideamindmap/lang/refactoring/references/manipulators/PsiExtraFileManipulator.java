@@ -16,22 +16,66 @@
 
 package com.igormaznitsa.ideamindmap.lang.refactoring.references.manipulators;
 
+import static com.igormaznitsa.mindmap.model.logger.LoggerFactory.getLogger;
+
 import com.igormaznitsa.ideamindmap.lang.psi.PsiExtraFile;
+import com.igormaznitsa.mindmap.model.MMapURI;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.AbstractElementManipulator;
+import com.intellij.psi.PsiFile;
 import com.intellij.util.IncorrectOperationException;
+import java.net.URISyntaxException;
 import javax.annotation.Nonnull;
 
 public class PsiExtraFileManipulator extends AbstractElementManipulator<PsiExtraFile> {
+  private static final Logger LOGGER = getLogger(PsiExtraFileManipulator.class);
+  private static final int PRE_TAG_LENGTH = 5;
 
   @Override
-  public PsiExtraFile handleContentChange(@Nonnull PsiExtraFile element, @Nonnull TextRange range, String newContent) throws IncorrectOperationException {
+  public PsiExtraFile handleContentChange(
+      @Nonnull final PsiExtraFile element,
+      @Nonnull final TextRange range,
+      final String newContent) throws IncorrectOperationException {
+    final String oldText = element.getText();
+    if (range.getStartOffset() < 0 || range.getEndOffset() > oldText.length()) {
+      return element;
+    }
+
+    final PsiFile containingFile = element.getContainingFile();
+    if (containingFile == null || containingFile.getVirtualFile() == null) {
+      return element;
+    }
+
+    final Document document = FileDocumentManager.getInstance().getDocument(containingFile.getVirtualFile());
+    if (document == null) {
+      return element;
+    }
+
+    final int start = element.getTextRange().getStartOffset() + range.getStartOffset();
+    final int end = element.getTextRange().getStartOffset() + range.getEndOffset();
+    document.replaceString(start, end, newContent);
+
+    try {
+      element.setMMapURI(new MMapURI(newContent.trim()));
+    } catch (URISyntaxException ex) {
+      LOGGER.error("Can't apply renamed file URI: " + newContent, ex);
+      throw new IncorrectOperationException("Can't apply renamed file URI", (Throwable) ex);
+    }
+
     return element;
   }
 
   @Nonnull
   @Override
-  public TextRange getRangeInElement(@Nonnull PsiExtraFile element) {
-    return new TextRange(5, element.getText().lastIndexOf('<'));
+  public TextRange getRangeInElement(@Nonnull final PsiExtraFile element) {
+    final String text = element.getText();
+    final int end = text.lastIndexOf('<');
+    if (end <= PRE_TAG_LENGTH || PRE_TAG_LENGTH >= text.length()) {
+      return new TextRange(0, text.length());
+    }
+    return new TextRange(PRE_TAG_LENGTH, end);
   }
 }

@@ -28,8 +28,8 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiFileSystemItem;
+import com.intellij.psi.PsiManager;
 import com.intellij.psi.PsiReferenceBase;
-import com.intellij.psi.impl.PsiManagerEx;
 import com.intellij.util.IncorrectOperationException;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -60,7 +60,7 @@ public class PsiExtraFileReference extends PsiReferenceBase<PsiExtraFile> {
     if (theFile == null) {
       return null;
     } else {
-      return PsiManagerEx.getInstance(this.getElement().getProject()).findFile(theFile);
+      return PsiManager.getInstance(this.getElement().getProject()).findFile(theFile);
     }
   }
 
@@ -72,6 +72,9 @@ public class PsiExtraFileReference extends PsiReferenceBase<PsiExtraFile> {
       final PsiFile containingFile = extraFile.getContainingFile();
 
       final Document document = FileDocumentManager.getInstance().getDocument(containingFile.getVirtualFile());
+      if (document == null) {
+        throw new IncorrectOperationException("Can't find document for mind map file");
+      }
 
       CommandProcessor.getInstance().executeCommand(containingFile.getProject(), () -> ApplicationManager.getApplication().runWriteAction(() -> {
         document.setText(packedNewMindMap);
@@ -89,6 +92,9 @@ public class PsiExtraFileReference extends PsiReferenceBase<PsiExtraFile> {
 
   @Override
   public PsiElement bindToElement(@Nonnull final PsiElement element) throws IncorrectOperationException {
+    if (element instanceof PsiFileSystemItem) {
+      this.retargetToFile((PsiFileSystemItem) element);
+    }
     return this.extraFile;
   }
 

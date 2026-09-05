@@ -28,6 +28,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.annotation.Nonnull;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.SwingUtilities;
 
 public final class BigLoaderIconAnimationConroller {
   
@@ -42,7 +43,11 @@ public final class BigLoaderIconAnimationConroller {
     }
 
     public void redraw() {
-      this.label.repaint();
+      if (SwingUtilities.isEventDispatchThread()) {
+        this.label.repaint();
+      } else {
+        SwingUtilities.invokeLater(this.label::repaint);
+      }
     }
   }
 

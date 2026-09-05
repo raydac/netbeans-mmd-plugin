@@ -16,6 +16,8 @@
 
 package com.igormaznitsa.ideamindmap.swing;
 
+import static java.awt.Cursor.HAND_CURSOR;
+
 import com.intellij.ui.components.JBLabel;
 import java.awt.Cursor;
 import java.awt.Point;
@@ -69,7 +71,7 @@ public class JHtmlLabel extends JBLabel {
           if (showLinkAddressInToolTip) {
             setToolTipText(link);
           }
-          setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+          setCursor(Cursor.getPredefinedCursor(HAND_CURSOR));
         }
       }
 

@@ -22,7 +22,7 @@ import com.intellij.ide.fileTemplates.FileTemplateGroupDescriptor;
 import com.intellij.ide.fileTemplates.FileTemplateGroupDescriptorFactory;
 
 public class MindMapTemplateGroupDescriptionFactory implements FileTemplateGroupDescriptorFactory {
-  public static final String MINDMAP_EMPTY_MAP = "SR_Mind_Map.mmd";
+  public static final String MINDMAP_EMPTY_MAP = "SciaReto Mind Map.mmd";
 
   @Override
   public FileTemplateGroupDescriptor getFileTemplatesDescriptor() {

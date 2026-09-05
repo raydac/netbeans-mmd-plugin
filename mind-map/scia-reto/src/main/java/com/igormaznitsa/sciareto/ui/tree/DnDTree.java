@@ -17,6 +17,8 @@
  */
 package com.igormaznitsa.sciareto.ui.tree;
 
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.sciareto.ui.SrI18n;
 import java.awt.Point;
 import java.awt.datatransfer.DataFlavor;
@@ -55,6 +57,7 @@ import org.apache.commons.io.FilenameUtils;
 public final class DnDTree extends JTree implements DragSourceListener, DropTargetListener, DragGestureListener {
 
   private static final long serialVersionUID = -4915750239120689053L;
+  private static final Logger LOGGER = LoggerFactory.getLogger(DnDTree.class);
 
   private boolean dragAcceptableType = false;
 
@@ -72,7 +75,7 @@ public final class DnDTree extends JTree implements DragSourceListener, DropTarg
     final DragSource dragSource = DragSource.getDefaultDragSource();
     dragSource.createDefaultDragGestureRecognizer(this, DnDConstants.ACTION_MOVE, this);
 
-    final DropTarget dropTarget = new DropTarget(this, this);
+    new DropTarget(this, this);
 
     this.setTransferHandler(new TransferHandler() {
 
@@ -81,15 +84,21 @@ public final class DnDTree extends JTree implements DragSourceListener, DropTarg
       @Override
       public boolean canImport(@Nonnull final TransferHandler.TransferSupport support) {
         return false;
-//        return support.isDataFlavorSupported(DataFlavor.javaFileListFlavor);
       }
 
       @Override
+      @Nullable
       protected Transferable createTransferable(@Nonnull final JComponent c) {
         final JTree tree = (JTree) c;
         final TreePath selected = tree.getSelectionPath();
-        final NodeFileOrFolder item = (NodeFileOrFolder) selected.getLastPathComponent();
-        return new FileTransferable(Collections.singletonList(item.makeFileForNode()));
+        if (selected == null) {
+          return null;
+        }
+        final Object last = selected.getLastPathComponent();
+        if (!(last instanceof NodeFileOrFolder)) {
+          return null;
+        }
+        return new FileTransferable(Collections.singletonList(((NodeFileOrFolder) last).makeFileForNode()));
       }
 
       @Override
@@ -188,8 +197,7 @@ public final class DnDTree extends JTree implements DragSourceListener, DropTarg
         if (dropTargetNode instanceof NodeFileOrFolder) {
           final NodeFileOrFolder node = (NodeFileOrFolder) dropTargetNode;
           if (!node.isLeaf()) {
-            //TODO processing of file drag in tree
-            System.out.println("Not implemented yet!"); //NOI18N
+            LOGGER.warn("Tree drop onto folder is not implemented yet");
           } else {
             dtde.rejectDrop();
           }

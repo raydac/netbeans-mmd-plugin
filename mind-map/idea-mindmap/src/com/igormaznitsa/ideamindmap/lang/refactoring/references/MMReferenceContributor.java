@@ -16,10 +16,11 @@
 
 package com.igormaznitsa.ideamindmap.lang.refactoring.references;
 
+import static com.igormaznitsa.mindmap.model.logger.LoggerFactory.getLogger;
+
 import com.igormaznitsa.ideamindmap.lang.psi.PsiExtraFile;
 import com.igormaznitsa.ideamindmap.lang.refactoring.references.providers.PsiExtraFileReferenceProvider;
 import com.igormaznitsa.mindmap.model.logger.Logger;
-import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.intellij.patterns.PlatformPatterns;
 import com.intellij.psi.PsiReferenceContributor;
 import com.intellij.psi.PsiReferenceRegistrar;
@@ -27,7 +28,7 @@ import javax.annotation.Nonnull;
 
 public class MMReferenceContributor extends PsiReferenceContributor {
 
-  static final Logger logger = LoggerFactory.getLogger(MMReferenceContributor.class);
+  static final Logger logger = getLogger(MMReferenceContributor.class);
 
   @Override
   public void registerReferenceProviders(@Nonnull final PsiReferenceRegistrar registrar) {

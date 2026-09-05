@@ -1672,7 +1672,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
                     });
                 })
                 .doOnTerminate(() -> {
-                    ProjectLoadingIconAnimationController.getInstance().unregisterLoadingProject(project);
+                    SwingUtilities.invokeLater(() ->
+                            ProjectLoadingIconAnimationController.getInstance().unregisterLoadingProject(project));
                     for (final Runnable r : invokeLater) {
                         SwingUtilities.invokeLater(r);
                     }

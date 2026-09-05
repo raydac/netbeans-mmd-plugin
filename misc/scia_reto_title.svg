@@ -1190,10 +1190,10 @@
        inkscape:menu-tooltip="Shadowy outer bevel"
        style="color-interpolation-filters:sRGB"
        id="filter17384"
-       x="-0.017187049"
-       y="-0.058748627"
-       width="1.0343741"
-       height="1.1174973">
+       x="-0.02087134"
+       y="-0.058567789"
+       width="1.0417427"
+       height="1.1171356">
       <feMorphology
          result="result1"
          in="SourceAlpha"
@@ -2260,7 +2260,7 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.64"
-     inkscape:cx="435.9375"
+     inkscape:cx="749.21875"
      inkscape:cy="366.40625"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -3249,7 +3249,7 @@
          id="tspan935"
          x="1163.017"
          y="835.26056"
-         style="font-style:normal;font-variant:normal;font-weight:300;font-stretch:normal;font-family:'Cloister Black';-inkscape-font-specification:'Cloister Black,  Light';text-align:end;text-anchor:end;fill:#000000;stroke:#ffffff;stroke-width:2.82;stroke-miterlimit:4;stroke-dasharray:none">1.6.10</tspan><tspan
+         style="font-style:normal;font-variant:normal;font-weight:300;font-stretch:normal;font-family:'Cloister Black';-inkscape-font-specification:'Cloister Black,  Light';text-align:end;text-anchor:end;fill:#000000;stroke:#ffffff;stroke-width:2.82;stroke-miterlimit:4;stroke-dasharray:none">1.7.0</tspan><tspan
          sodipodi:role="line"
          x="1163.017"
          y="1283.4581"

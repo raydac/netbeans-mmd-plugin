@@ -16,28 +16,28 @@
 
 package com.igormaznitsa.ideamindmap.lang.psi;
 
+import static com.igormaznitsa.mindmap.model.logger.LoggerFactory.getLogger;
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.logger.Logger;
-import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.intellij.lang.ASTNode;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.impl.source.resolve.reference.ReferenceProvidersRegistry;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class PsiExtraFile extends AbstractExtraData {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(PsiExtraFile.class);
+  private static final Logger LOGGER = getLogger(PsiExtraFile.class);
 
-  private static final Charset UTF8 = StandardCharsets.UTF_8;
+  private static final Charset UTF8 = UTF_8;
 
   private volatile MMapURI uri;
 
@@ -71,15 +71,17 @@ public class PsiExtraFile extends AbstractExtraData {
 
   @Nullable
   public VirtualFile findTargetFile() {
-    VirtualFile result = null;
-    if (this.uri != null) {
-      final Project project = getProject();
-      final VirtualFile baseDir = project.getBaseDir();
-      if (baseDir != null) {
-        result = VfsUtil.findFileByIoFile(this.uri.asFile(IdeaUtils.vfile2iofile(baseDir)), true);
-      }
+    if (this.uri == null) {
+      return null;
     }
-    return result;
+
+    final VirtualFile containingFile = this.getContainingFile() == null ? null : this.getContainingFile().getVirtualFile();
+    final VirtualFile rootFolder = IdeaUtils.findMindMapRootFolder(this.getProject(), containingFile);
+    if (rootFolder == null) {
+      return null;
+    }
+
+    return VfsUtil.findFileByIoFile(this.uri.asFile(IdeaUtils.vfile2iofile(rootFolder)), true);
   }
 
   @Override

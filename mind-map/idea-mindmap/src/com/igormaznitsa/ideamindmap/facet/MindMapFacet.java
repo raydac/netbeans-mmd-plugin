@@ -16,9 +16,10 @@
 
 package com.igormaznitsa.ideamindmap.facet;
 
+import static com.igormaznitsa.mindmap.model.logger.LoggerFactory.getLogger;
+
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
-import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.intellij.facet.Facet;
 import com.intellij.facet.FacetManager;
 import com.intellij.facet.FacetType;
@@ -30,7 +31,7 @@ import javax.annotation.Nullable;
 
 public class MindMapFacet extends Facet<MindMapFacetConfiguration> {
   public static final FacetTypeId<MindMapFacet> ID = new FacetTypeId<>("NBMindMap");
-  private static final Logger LOGGER = LoggerFactory.getLogger(MindMapFacet.class);
+  private static final Logger LOGGER = getLogger(MindMapFacet.class);
 
   public MindMapFacet(@Nonnull final FacetType facetType, @Nonnull final Module module,
                       @Nonnull final String name, @Nonnull final MindMapFacetConfiguration configuration, final Facet underlyingFacet) {

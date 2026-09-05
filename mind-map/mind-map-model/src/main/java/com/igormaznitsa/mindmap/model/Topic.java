@@ -157,6 +157,9 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
               topic = new Topic(map, topic, newTopicText);
               depth = detectedLevel;
             }
+          } else if (detectedLevel > depth + 1 && topic != null) {
+            depth = detectedLevel;
+            topic = new Topic(map, topic, newTopicText);
           }
 
         }
@@ -178,7 +181,9 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
         }
         break;
         case CODE_SNIPPET_BODY: {
-          codeSnippetBody.append(lexer.getTokenText());
+          if (codeSnippetBody != null) {
+            codeSnippetBody.append(lexer.getTokenText());
+          }
         }
         break;
         case CODE_SNIPPET_END: {
@@ -205,13 +210,16 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
                   extraType.preprocessString(text.substring(5, text.length() - 6));
               if (groupPre != null) {
                 topic.setExtra(extraType.parseLoaded(groupPre, topic.attributes));
-              } else {
-                if (!ignoreErrors) {
-                  throw new IllegalStateException("Detected invalid extra data " + extraType);
-                }
+              } else if (!ignoreErrors) {
+                throw new IllegalStateException("Detected invalid extra data " + extraType);
               }
-            } catch (Exception ex) {
-              throw new Error("Unexpected exception #23241", ex);
+            } catch (final Exception ex) {
+              if (!ignoreErrors) {
+                if (ex instanceof IllegalStateException) {
+                  throw (IllegalStateException) ex;
+                }
+                throw new Error("Unexpected exception #23241", ex);
+              }
             } finally {
               extraType = null;
             }
@@ -407,6 +415,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
     final Topic theParent = this.parent;
     if (theParent != null) {
       theParent.children.remove(this);
+      this.parent = null;
     }
   }
 
@@ -444,7 +453,10 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
 
   public void setExtra(final Extra<?>... extras) {
     for (final Extra<?> e : ensureNoNullElement(extras)) {
-      this.extras.put(e.getType(), e);
+      final Extra<?> previous = this.extras.put(e.getType(), e);
+      if (previous != null && previous != e) {
+        previous.detachedToTopic(this);
+      }
       e.attachedToTopic(this);
     }
   }
@@ -652,6 +664,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
       final Topic t = iterator.next();
       if (t == topic) {
         iterator.remove();
+        topic.parent = null;
         return true;
       } else if (t.removeTopic(topic)) {
         return true;
@@ -661,12 +674,15 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
   }
 
   public void removeAllChildren() {
+    for (final Topic child : this.children) {
+      child.parent = null;
+    }
     this.children.clear();
   }
 
   public boolean moveToNewParent(final Topic newParent) {
-    if (newParent == null || this == newParent || this.getParent() == newParent ||
-        this.children.contains(newParent)) {
+    if (newParent == null || this == newParent || this.getParent() == newParent
+        || newParent.hasAncestor(this) || this.containTopic(newParent)) {
       return false;
     }
 
@@ -716,7 +732,10 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
       final int indexThis = current.children.indexOf(this);
       if (indexThis >= 0) {
         for (int i = indexThis - 1; i >= 0; i--) {
-          if (checker.test(current.children.get(i))) {
+          if (checker == null) {
+            result = current.children.get(i);
+            break;
+          } else if (checker.test(current.children.get(i))) {
             result = current.children.get(i);
             break;
           }
@@ -729,11 +748,17 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
 
   public void removeExtras(final Extra<?>... extras) {
     if (extras == null || extras.length == 0) {
+      for (final Extra<?> e : this.extras.values()) {
+        e.detachedToTopic(this);
+      }
       this.extras.clear();
     } else {
       for (final Extra<?> e : extras) {
         if (e != null) {
-          this.extras.remove(e.getType());
+          final Extra<?> removed = this.extras.remove(e.getType());
+          if (removed != null) {
+            removed.detachedToTopic(this);
+          }
         }
       }
     }
@@ -865,7 +890,11 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
     boolean result = false;
 
     for (final Extra.ExtraType t : types) {
-      result |= this.extras.remove(t) != null;
+      final Extra<?> removed = this.extras.remove(t);
+      if (removed != null) {
+        removed.detachedToTopic(this);
+        result = true;
+      }
     }
     if (includeSubtree) {
       for (final Topic c : this.children) {

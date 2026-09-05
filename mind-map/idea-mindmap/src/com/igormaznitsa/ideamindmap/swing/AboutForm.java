@@ -16,7 +16,11 @@
 
 package com.igormaznitsa.ideamindmap.swing;
 
+import static com.igormaznitsa.mindmap.model.logger.LoggerFactory.getLogger;
+import static java.util.ResourceBundle.getBundle;
+
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
+import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.extensions.PluginId;
@@ -33,7 +37,8 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 public class AboutForm {
-  private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("i18n/Bundle");
+  private static final Logger LOGGER = getLogger(AboutForm.class);
+  private static final ResourceBundle BUNDLE = getBundle("i18n/Bundle");
   private JPanel mainPanel;
   private JHtmlLabel htmlLabelText;
 
@@ -44,7 +49,7 @@ public class AboutForm {
       try {
         IdeaUtils.browseURI(URI.create(link), false);
       } catch (Exception ex) {
-        ex.printStackTrace();
+        LOGGER.error("Can't open about-dialog link: " + link, ex);
       }
     });
     this.mainPanel.setPreferredSize(new Dimension(600, 400));

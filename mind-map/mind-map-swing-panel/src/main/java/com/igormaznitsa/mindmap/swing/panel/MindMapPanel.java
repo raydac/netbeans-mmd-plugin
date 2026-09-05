@@ -85,7 +85,6 @@ import java.awt.event.FocusEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
@@ -136,6 +135,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
       SHIFT_MASK | ALT_MASK | META_MASK | CTRL_MASK;
   private static final double SCALE_STEP = 0.1d;
   private static final double SCALE_MINIMUM = 0.3d;
+  private static final String POPUP_MENU_STATE_LISTENER_PROPERTY = "mmd.popupMenuStateListener";
   private static final double SCALE_MAXIMUM = 8.0d;
   private static final Color COLOR_MOUSE_DRAG_SELECTION = new Color(0x80000000, true);
   private static final int DRAG_POSITION_UNKNOWN = -1;
@@ -155,6 +155,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   private final AtomicBoolean removeEditedTopicForRollback = new AtomicBoolean();
   private final UUID uuid = UUID.randomUUID();
   private final transient ResourceBundle bundle = MmdI18n.getInstance().findBundle();
+  private final TitleEditorKeyAdapter titleEditorKeyAdapter;
   private boolean birdsEyeMode;
   private Dimension mindMapImageSize = new Dimension();
   private volatile MindMap model;
@@ -186,9 +187,8 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
     this.textEditor.setBorder(BorderFactory.createEtchedBorder());
     this.textEditor.setTabSize(4);
 
-    final TitleEditorKeyAdapter titleEditorKeyAdapter = new TitleEditorKeyAdapter(this);
-
-    this.textEditor.addKeyListener(titleEditorKeyAdapter);
+    this.titleEditorKeyAdapter = new TitleEditorKeyAdapter(this);
+    this.textEditor.addKeyListener(this.titleEditorKeyAdapter);
 
     this.textEditor.getDocument().addDocumentListener(new DocumentListener() {
 
@@ -336,29 +336,26 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
               processMoveFocusByKey(e);
             } else if (config.isKeyEvent(MindMapPanelConfig.KEY_ZOOM_IN, e)) {
               e.consume();
-              setScale(Math.max(SCALE_MINIMUM, Math.min(getScale() + SCALE_STEP, SCALE_MAXIMUM)),
-                  false);
-              doLayout();
-              revalidate();
-              repaint();
+              applyScaleAndRefresh(
+                  Math.max(SCALE_MINIMUM, Math.min(getScale() + SCALE_STEP, SCALE_MAXIMUM)));
             } else if (config.isKeyEvent(MindMapPanelConfig.KEY_ZOOM_OUT, e)) {
               e.consume();
-              setScale(Math.max(SCALE_MINIMUM, Math.min(getScale() - SCALE_STEP, SCALE_MAXIMUM)),
-                  false);
-              doLayout();
-              revalidate();
-              repaint();
+              applyScaleAndRefresh(
+                  Math.max(SCALE_MINIMUM, Math.min(getScale() - SCALE_STEP, SCALE_MAXIMUM)));
             } else if (config.isKeyEvent(MindMapPanelConfig.KEY_ZOOM_RESET, e)) {
               e.consume();
-              setScale(1.0, false);
-              doLayout();
-              revalidate();
-              repaint();
+              applyScaleAndRefresh(1.0d);
             } else if (config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_FOLD, e)
                 || config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_UNFOLD, e)
                 || config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_FOLD_ALL, e)
                 || config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_UNFOLD_ALL, e)) {
               e.consume();
+              final boolean fold =
+                  config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_FOLD, e)
+                      || config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_FOLD_ALL, e);
+              final boolean onlyDirectChildren =
+                  config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_FOLD, e)
+                      || config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_UNFOLD, e);
               final List<AbstractElement> elements = new ArrayList<>();
               for (final Topic t : getSelectedTopics()) {
                 final AbstractElement element = (AbstractElement) t.getPayload();
@@ -368,12 +365,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
               }
               if (!elements.isEmpty()) {
                 endEdit(false);
-                doFoldOrUnfoldTopic(elements,
-                    config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_FOLD, e) ||
-                        config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_FOLD_ALL, e),
-                    config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_FOLD, e) ||
-                        config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_UNFOLD, e)
-                );
+                doFoldOrUnfoldTopic(elements, fold, onlyDirectChildren);
               }
             }
 
@@ -593,12 +585,8 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
             if (draggedElement == null && mouseDragSelection == null) {
               final AbstractElement elementUnderMouse = findTopicUnderPoint(e.getPoint());
               if (elementUnderMouse == null) {
-                MindMap theMap = model;
-                if (theMap != null) {
-                  final AbstractElement element = findTopicUnderPoint(e.getPoint());
-                  if (controller.isSelectionAllowed(MindMapPanel.this) && element == null) {
-                    mouseDragSelection = new MouseSelectedArea(e.getPoint());
-                  }
+                if (model != null && controller.isSelectionAllowed(MindMapPanel.this)) {
+                  mouseDragSelection = new MouseSelectedArea(e.getPoint());
                 }
               } else if (controller.isElementDragAllowed(MindMapPanel.this)) {
                 if (elementUnderMouse.isMoveable() &&
@@ -2027,13 +2015,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
           (int) element.getBounds().getY(), textBlockSize.width, textBlockSize.height);
       textEditor.setMinimumSize(textBlockSize);
 
-      for (final KeyListener listener : textEditor.getKeyListeners()) {
-        if (listener instanceof TitleEditorKeyAdapter) {
-          final TitleEditorKeyAdapter titleEditorKeyAdapter = (TitleEditorKeyAdapter) listener;
-          titleEditorKeyAdapter.onBeforeEdit();
-          break;
-        }
-      }
+      this.titleEditorKeyAdapter.onBeforeEdit();
 
       textEditorPanel.setVisible(true);
       textEditor.requestFocus();
@@ -2087,32 +2069,37 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
           this.controller.makePopUpForMindMapPanel(this, point, elementUnderMouse,
               partUnderMouse);
       if (menu != null) {
-
-        final MindMapPanel theInstance = this;
-
-        menu.addPopupMenuListener(new PopupMenuListener() {
-          @Override
-          public void popupMenuWillBecomeVisible(final PopupMenuEvent e) {
-            theInstance.mouseDragSelection = null;
-            theInstance.popupMenuActive.set(true);
-          }
-
-          @Override
-          public void popupMenuWillBecomeInvisible(final PopupMenuEvent e) {
-            theInstance.mouseDragSelection = null;
-            theInstance.popupMenuActive.set(false);
-          }
-
-          @Override
-          public void popupMenuCanceled(final PopupMenuEvent e) {
-            theInstance.mouseDragSelection = null;
-            theInstance.popupMenuActive.set(false);
-          }
-        });
-
+        this.attachPopupMenuStateListener(menu);
         menu.show(this, point.x, point.y);
       }
     }
+  }
+
+  private void attachPopupMenuStateListener(final JPopupMenu menu) {
+    if (Boolean.TRUE.equals(menu.getClientProperty(POPUP_MENU_STATE_LISTENER_PROPERTY))) {
+      return;
+    }
+
+    menu.putClientProperty(POPUP_MENU_STATE_LISTENER_PROPERTY, Boolean.TRUE);
+    menu.addPopupMenuListener(new PopupMenuListener() {
+      @Override
+      public void popupMenuWillBecomeVisible(final PopupMenuEvent e) {
+        MindMapPanel.this.mouseDragSelection = null;
+        MindMapPanel.this.popupMenuActive.set(true);
+      }
+
+      @Override
+      public void popupMenuWillBecomeInvisible(final PopupMenuEvent e) {
+        MindMapPanel.this.mouseDragSelection = null;
+        MindMapPanel.this.popupMenuActive.set(false);
+      }
+
+      @Override
+      public void popupMenuCanceled(final PopupMenuEvent e) {
+        MindMapPanel.this.mouseDragSelection = null;
+        MindMapPanel.this.popupMenuActive.set(false);
+      }
+    });
   }
 
   public void addMindMapListener(final MindMapListener l) {
@@ -2209,6 +2196,13 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
     } else {
       this.config.setScaleWithoutListenerNotification(zoom);
     }
+  }
+
+  private void applyScaleAndRefresh(final double zoom) {
+    this.setScale(zoom, false);
+    this.doLayout();
+    this.revalidate();
+    this.repaint();
   }
 
   private void drawDestinationElement(final Graphics2D g, final MindMapPanelConfig cfg) {
@@ -2426,7 +2420,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
 
       if (error != null) {
         drawErrorText(gfx, this.getSize(), error);
-      } else {
+      } else if (this.model != null && this.model.getRoot() != null) {
         if (this.model.getRoot().getPayload() == null) {
           updateElementsAndSizeForGraphics(gfx, true, false);
         }
@@ -2745,7 +2739,6 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
     private final MindMapPanel panel;
     private KeyEvent lastPressedEvent;
     private KeyEvent lastTypedEvent;
-    private KeyEvent lastReleasedEvent;
 
     private TitleEditorKeyAdapter(final MindMapPanel panel) {
       this.panel = panel;
@@ -2802,13 +2795,10 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
         if (this.panel.isDisposed()) {
           return;
         }
-        if (!e.isConsumed()) {
-          if (this.panel.config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_TEXT_NEXT_LINE, e)) {
-            e.consume();
-            this.injectNextLineIntoEditor();
-          } else {
-            this.checkEndEdit(e, e.getKeyCode(), e.getModifiers());
-          }
+        if (!e.isConsumed()
+            && this.panel.config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_TEXT_NEXT_LINE, e)) {
+          e.consume();
+          this.injectNextLineIntoEditor();
         }
       } finally {
         this.lastTypedEvent = e;
@@ -2817,50 +2807,43 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
 
     @Override
     public void keyReleased(final KeyEvent e) {
-      try {
-        if (this.panel.isDisposed()) {
-          return;
-        }
-        if (!e.isConsumed()) {
-          if (this.panel.config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_TEXT_NEXT_LINE, e)
-              && !this.panel.config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_TEXT_NEXT_LINE,
-              this.lastTypedEvent)) {
-            // in some layouts, key pressed can be ignored for enter with shift
-            // such behavior detected in Intellij IDEA under Linux with RUS layout
-            e.consume();
-            this.injectNextLineIntoEditor();
-          } else if (this.panel.config.isKeyEvent(MindMapPanelConfig.KEY_CANCEL_EDIT, e)) {
-            e.consume();
-            final Topic edited =
-                this.panel.elementUnderEdit == null ? null : this.panel.elementUnderEdit.getModel();
-            this.panel.endEdit(false);
-            if (edited != null && this.panel.controller.canTopicBeDeleted(this.panel, edited)) {
-              this.panel.deleteTopics(false, edited);
-              if (this.panel.pathToPrevTopicBeforeEdit != null) {
-                final int[] path = this.panel.pathToPrevTopicBeforeEdit;
-                this.panel.pathToPrevTopicBeforeEdit = null;
-                final Topic topic = this.panel.model.findAtPosition(path);
-                if (topic != null) {
-                  this.panel.select(topic, false);
-                }
+      if (this.panel.isDisposed()) {
+        return;
+      }
+      if (!e.isConsumed()) {
+        if (this.panel.config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_TEXT_NEXT_LINE, e)
+            && !this.panel.config.isKeyEvent(MindMapPanelConfig.KEY_TOPIC_TEXT_NEXT_LINE,
+            this.lastTypedEvent)) {
+          // in some layouts, key pressed can be ignored for enter with shift
+          // such behavior detected in Intellij IDEA under Linux with RUS layout
+          e.consume();
+          this.injectNextLineIntoEditor();
+        } else if (this.panel.config.isKeyEvent(MindMapPanelConfig.KEY_CANCEL_EDIT, e)) {
+          e.consume();
+          final Topic edited =
+              this.panel.elementUnderEdit == null ? null : this.panel.elementUnderEdit.getModel();
+          this.panel.endEdit(false);
+          if (edited != null && this.panel.controller.canTopicBeDeleted(this.panel, edited)) {
+            this.panel.deleteTopics(false, edited);
+            if (this.panel.pathToPrevTopicBeforeEdit != null) {
+              final int[] path = this.panel.pathToPrevTopicBeforeEdit;
+              this.panel.pathToPrevTopicBeforeEdit = null;
+              final Topic topic = this.panel.model.findAtPosition(path);
+              if (topic != null) {
+                this.panel.select(topic, false);
               }
             }
-          } else {
-            if (this.lastPressedEvent != null &&
-                this.lastPressedEvent.getKeyCode() == e.getKeyCode()) {
-              this.checkEndEdit(e, e.getKeyCode(), e.getModifiers());
-            }
           }
+        } else if (this.lastPressedEvent != null
+            && this.lastPressedEvent.getKeyCode() == e.getKeyCode()) {
+          this.checkEndEdit(e, e.getKeyCode(), e.getModifiers());
         }
-      } finally {
-        this.lastReleasedEvent = e;
       }
     }
 
     public void onBeforeEdit() {
       this.lastPressedEvent = null;
       this.lastTypedEvent = null;
-      this.lastReleasedEvent = null;
     }
   }
 

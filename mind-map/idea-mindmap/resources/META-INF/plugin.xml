@@ -2,7 +2,7 @@
 <idea-plugin>
     <id>nb-mind-map-idea</id>
     <name>SciaReto Mind Map</name>
-    <version>1.6.10-SNAPSHOT</version>
+    <version>1.7.0-SNAPSHOT</version>
     <vendor url="https://www.igormaznitsa.com">Igor Maznitsa</vendor>
 
     <category>Knowledge management</category>
@@ -12,9 +12,15 @@
     ]]></description>
 
     <change-notes><![CDATA[
-        <p>1.6.10 (SNAPSHOT)</p>
+        <p>1.7.0 (SNAPSHOT)</p>
         <ul>
-            <li></li>
+            <li>Removed use of internal IDEA API</li>
+            <li>Restored MMD in File | New on latest IntelliJ IDEA while keeping compatibility with previous versions</li>
+            <li>File links open in the IDE instead of doing nothing when a document already exists</li>
+            <li>File links in the text view resolve against the same module or Maven root as the visual editor</li>
+            <li>Facet option to open URIs in the IDE browser now works</li>
+            <li>Mind map no longer reloads twice on every document change</li>
+            <li>Opening an MMD file no longer shows a blank editor</li>
         </ul>
         <p>1.6.9 (19-okt-2025)</p>
         <ul>
@@ -29,7 +35,7 @@
         <p>1.6.7.1 (30-may-2024)</p>
         <ul>
             <li>Minimal supported Intellij IDEA platform lifted up to 2022.2.5 (Build: 222.4554.10)</li>
-            <li-Fixed scope for MMD files</li>
+            <li>Fixed scope for MMD files</li>
             <li>Plugin renamed to 'SciaReto Mind Map' by requirement of JetBrains</li>
             <li>Improved and renamed empty new file template, now its title 'SciaReto Mind Map'</li>
         </ul>
@@ -274,7 +280,12 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <fileEditorProvider implementation="com.igormaznitsa.ideamindmap.editor.MindMapDocumentEditorProvider"/>
-        <fileTypeFactory implementation="com.igormaznitsa.ideamindmap.filetype.MindMapFileTypeFactory"/>
+        <fileType name="SciaReto Mind Map"
+                  implementationClass="com.igormaznitsa.ideamindmap.filetype.MindMapFileType"
+                  fieldName="INSTANCE"
+                  language="NBMindMap"
+                  extensions="mmd"/>
+        <internalFileTemplate name="SciaReto Mind Map"/>
         <fileTemplateGroup
                 implementation="com.igormaznitsa.ideamindmap.filetemplate.MindMapTemplateGroupDescriptionFactory"/>
         <facetType implementation="com.igormaznitsa.ideamindmap.facet.MindMapFacetType"/>
@@ -293,19 +304,23 @@
                                  implementationClass="com.igormaznitsa.ideamindmap.lang.refactoring.references.manipulators.PsiExtraFileManipulator"/>
 
         <customScopesProvider implementation="com.igormaznitsa.ideamindmap.view.MmdFileScopesProvider"/>
+        <applicationService
+                serviceImplementation="com.igormaznitsa.ideamindmap.settings.MindMapApplicationSettings"
+                preload="true"/>
     </extensions>
-
-    <application-components>
-        <component>
-            <implementation-class>com.igormaznitsa.ideamindmap.settings.MindMapApplicationSettings</implementation-class>
-        </component>
-    </application-components>
 
     <actions>
         <action description="Find a topic for its text value at Mind Map document"
                 class="com.igormaznitsa.ideamindmap.swing.FindInMindMapAction" id="FindTextAtMindMap"
                 text="Find at Mind Map" use-shortcut-of="Find">
             <add-to-group group-id="FindMenuGroup" relative-to-action="Find" anchor="after"/>
+        </action>
+        <action id="SciaRetoMindMap.NewFile"
+                class="com.igormaznitsa.ideamindmap.filetemplate.CreateMindMapFileAction"
+                text="SciaReto Mind Map"
+                description="Create a new SciaReto Mind Map file"
+                icon="/icons/mmdfile.png">
+            <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFile"/>
         </action>
     </actions>
 

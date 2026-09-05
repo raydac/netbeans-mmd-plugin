@@ -80,6 +80,10 @@ public class MindMap implements StandardMmdAttributes, Serializable, Constants, 
     this.root = rootTopic == null ? null : rootTopic.makeCopy(this, null);
   }
 
+  private Object readResolve() {
+    return new MindMap(this);
+  }
+
   /**
    * Make mind map based on reader content, internal errors will be ignored during reading.
    *
@@ -560,7 +564,10 @@ public class MindMap implements StandardMmdAttributes, Serializable, Constants, 
    * @return cloned topic, must not be null.
    */
   public Topic cloneTopicInMap(final Topic topic, final boolean cloneWholeSubtree) {
-    if (requireNonNull(topic) == this.root) {
+    if (requireNonNull(topic).getMap() != this) {
+      throw new IllegalStateException("Topic is not belong to the map");
+    }
+    if (topic == this.root) {
       return this.root;
     }
 

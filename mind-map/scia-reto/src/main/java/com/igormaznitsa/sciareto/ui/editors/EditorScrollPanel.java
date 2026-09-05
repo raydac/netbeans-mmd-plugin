@@ -17,18 +17,23 @@
  */
 package com.igormaznitsa.sciareto.ui.editors;
 
+import static com.formdev.flatlaf.FlatClientProperties.SCROLL_PANE_SMOOTH_SCROLLING;
+import static com.igormaznitsa.sciareto.ui.UiUtils.hideContainerBorder;
+
 import javax.annotation.Nullable;
-import javax.swing.*;
+import javax.swing.JComponent;
+import javax.swing.JScrollPane;
 
 public class EditorScrollPanel extends JScrollPane {
 
   public EditorScrollPanel() {
     this(null);
-    this.putClientProperty("JScrollPane.smoothScrolling", true);
   }
 
   public EditorScrollPanel(@Nullable final JComponent view) {
     super(view);
     this.setAutoscrolls(true);
+    this.putClientProperty(SCROLL_PANE_SMOOTH_SCROLLING, true);
+    hideContainerBorder(this);
   }
 }

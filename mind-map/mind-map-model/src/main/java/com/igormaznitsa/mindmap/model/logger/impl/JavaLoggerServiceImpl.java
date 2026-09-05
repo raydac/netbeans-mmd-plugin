@@ -22,7 +22,6 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerService;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 
 /**
  * Basic implementations working over java.util.logging.Logger
@@ -32,10 +31,6 @@ public class JavaLoggerServiceImpl implements LoggerService {
   private final Map<Class<?>, Logger> cacheForClasses = new HashMap<>();
   private final Map<String, Logger> cacheForNames = new HashMap<>();
 
-  public JavaLoggerServiceImpl(){
-    java.util.logging.Logger.getLogger("").setLevel(Level.WARNING);
-  }
-  
   @Override
   public Logger getLogger(final Class<?> klazz) {
     synchronized (this.cacheForClasses) {

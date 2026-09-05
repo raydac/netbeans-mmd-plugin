@@ -55,6 +55,6 @@ public class MindMapModelEvent {
    * @return array of topics as path to the changed one, must not be null
    */
   public Topic[] getPath() {
-    return this.path;
+    return this.path.length == 0 ? this.path : this.path.clone();
   }
 }

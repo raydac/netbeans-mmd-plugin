@@ -16,6 +16,8 @@
 
 package com.igormaznitsa.ideamindmap.findtext;
 
+import static java.awt.Cursor.HAND_CURSOR;
+
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.ui.components.JBLabel;
 import java.awt.Cursor;
@@ -34,7 +36,7 @@ public class FindTextToggleButton extends JBLabel {
 
   public FindTextToggleButton(final Icon icon, final String tooltipText, final ActionListener actionListener) {
     super();
-    this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+    this.setCursor(Cursor.getPredefinedCursor(HAND_CURSOR));
     this.setToolTipText(tooltipText);
     this.selectedIcon = icon;
     this.normalIcon = IconLoader.getTransparentIcon(icon);

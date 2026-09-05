@@ -34,7 +34,6 @@ import com.igormaznitsa.ideamindmap.lang.psi.PsiTopicTitle;
 import com.igormaznitsa.ideamindmap.lang.psi.PsiUnknown;
 import com.igormaznitsa.ideamindmap.lang.tokens.MMElementType;
 import com.igormaznitsa.ideamindmap.lang.tokens.MMTokens;
-import com.igormaznitsa.meta.common.utils.Assertions;
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.ParserDefinition;
 import com.intellij.lang.PsiParser;
@@ -139,6 +138,9 @@ public class MMParserDefinition implements ParserDefinition {
 
       if (type == MMTokens.EXTRA_BODY) {
         final PsiExtraBlock parent = (PsiExtraBlock) node.getTreeParent().getPsi();
+        if (parent.getType() == null) {
+          return new PsiUnknown(node);
+        }
         switch (parent.getType()) {
           case NOTE:
             return new PsiExtraText(node);
@@ -149,7 +151,7 @@ public class MMParserDefinition implements ParserDefinition {
           case TOPIC:
             return new PsiExtraJump(node);
           default:
-            throw Assertions.fail("Unexpected extra type " + parent.getType());
+            return new PsiUnknown(node);
         }
       }
     }

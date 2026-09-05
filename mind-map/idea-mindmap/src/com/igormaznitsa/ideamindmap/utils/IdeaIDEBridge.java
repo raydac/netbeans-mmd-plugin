@@ -16,9 +16,10 @@
 
 package com.igormaznitsa.ideamindmap.utils;
 
+import static com.igormaznitsa.mindmap.model.logger.LoggerFactory.getLogger;
+
 import com.igormaznitsa.commons.version.Version;
 import com.igormaznitsa.mindmap.model.logger.Logger;
-import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.ide.IDEBridge;
 import com.igormaznitsa.mindmap.swing.ide.NotificationType;
 import com.intellij.notification.Notification;
@@ -36,7 +37,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class IdeaIDEBridge implements IDEBridge {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(IdeaIDEBridge.class);
+  private static final Logger LOGGER = getLogger(IdeaIDEBridge.class);
   private static final NotificationGroup MMD_GROUP = new NotificationGroup("IDEA MindMap", NotificationDisplayType.BALLOON, true);
   private final Version ideVersion;
 

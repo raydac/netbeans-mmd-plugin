@@ -72,10 +72,7 @@ public abstract class AbstractFocusedTopicPlugin extends AbstractPopupMenuItem {
         (context.getSelectedTopics().length == 0 && activeTopic != null);
   }
 
-  protected void doActionForTopic(PluginContext context, Topic actionTopic) {
-    if (this instanceof ExternallyExecutedPlugin) {
-      context.processPluginActivation((ExternallyExecutedPlugin) this, actionTopic);
-    }
+  protected void doActionForTopic(final PluginContext context, final Topic actionTopic) {
   }
 
 }

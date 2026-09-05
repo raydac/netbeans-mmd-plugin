@@ -29,6 +29,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.annotation.Nonnull;
 import javax.swing.ImageIcon;
 import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 import javax.swing.tree.TreePath;
 
 public final class ProjectLoadingIconAnimationController {
@@ -46,9 +47,16 @@ public final class ProjectLoadingIconAnimationController {
     }
 
     public void redraw() {
-      final Rectangle rect = this.tree.getPathBounds(this.path);
-      if (rect != null) {
-        this.tree.repaint(rect);
+      final Runnable repaintPath = () -> {
+        final Rectangle rect = this.tree.getPathBounds(this.path);
+        if (rect != null) {
+          this.tree.repaint(rect);
+        }
+      };
+      if (SwingUtilities.isEventDispatchThread()) {
+        repaintPath.run();
+      } else {
+        SwingUtilities.invokeLater(repaintPath);
       }
     }
   }

@@ -234,7 +234,7 @@ public class GoToFilePanel extends javax.swing.JPanel implements Comparator<Node
   private void textFieldMaskKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textFieldMaskKeyPressed
     int selectedIndex = this.listFoundFiles.getSelectedIndex();
     boolean processed = false;
-    if (!evt.isConsumed() && evt.getModifiers() == 0) {
+    if (!evt.isConsumed() && evt.getModifiersEx() == 0) {
       switch (evt.getKeyCode()) {
         case KeyEvent.VK_UP: {
           processed = true;

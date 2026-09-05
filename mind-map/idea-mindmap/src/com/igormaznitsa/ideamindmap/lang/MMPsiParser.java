@@ -17,7 +17,6 @@
 package com.igormaznitsa.ideamindmap.lang;
 
 import com.igormaznitsa.ideamindmap.lang.tokens.MMTokens;
-import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.model.ModelUtils;
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.LightPsiParser;
@@ -65,7 +64,7 @@ public class MMPsiParser implements PsiParser, LightPsiParser {
             || token == MMTokens.ATTRIBUTES) {
           marker.done(token);
         } else {
-          throw Assertions.fail("Unexpected header token : " + token);
+          marker.done(MMTokens.UNKNOWN);
         }
       }
       builder.advanceLexer();
@@ -159,7 +158,8 @@ public class MMPsiParser implements PsiParser, LightPsiParser {
     // read type
     final PsiBuilder.Marker type = builder.mark();
     if (builder.getTokenType() != MMTokens.EXTRA_TYPE) {
-      throw Assertions.fail("Unexpected token " + builder.getTokenType());
+      type.drop();
+      return false;
     }
     builder.advanceLexer();
     type.done(MMTokens.EXTRA_TYPE);

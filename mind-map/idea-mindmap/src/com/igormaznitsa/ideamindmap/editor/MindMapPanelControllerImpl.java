@@ -18,7 +18,9 @@ package com.igormaznitsa.ideamindmap.editor;
 
 import static com.igormaznitsa.mindmap.ide.commons.Misc.FILELINK_ATTR_LINE;
 import static com.igormaznitsa.mindmap.ide.commons.Misc.FILELINK_ATTR_OPEN_IN_SYSTEM;
+import static com.igormaznitsa.mindmap.model.logger.LoggerFactory.getLogger;
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.doesContainOnlyStandardAttributes;
+import static java.util.ResourceBundle.getBundle;
 
 import com.igormaznitsa.ideamindmap.facet.MindMapFacet;
 import com.igormaznitsa.ideamindmap.settings.MindMapApplicationSettings;
@@ -28,6 +30,7 @@ import com.igormaznitsa.ideamindmap.swing.FileEditPanel;
 import com.igormaznitsa.ideamindmap.swing.MindMapTreePanel;
 import com.igormaznitsa.ideamindmap.utils.AllIcons;
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
+import com.igormaznitsa.ideamindmap.utils.SelectIn;
 import com.igormaznitsa.mindmap.ide.commons.FilePathWithLine;
 import com.igormaznitsa.mindmap.ide.commons.Misc;
 import com.igormaznitsa.mindmap.ide.commons.editors.AbstractNoteEditorData;
@@ -41,7 +44,6 @@ import com.igormaznitsa.mindmap.model.ExtraTopic;
 import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
-import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.api.ExternallyExecutedPlugin;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.misc.OptionsPlugin;
@@ -61,8 +63,6 @@ import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
 import com.igormaznitsa.mindmap.swing.panel.ui.PasswordPanel;
 import com.igormaznitsa.mindmap.swing.panel.utils.CryptoUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
-import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -81,8 +81,8 @@ import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import java.awt.Insets;
 
 public class MindMapPanelControllerImpl implements MindMapPanelController, MindMapConfigListener, PluginContext {
-  private static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("i18n/Bundle");
-  private static final Logger LOGGER = LoggerFactory.getLogger(MindMapPanelControllerImpl.class);
+  private static final ResourceBundle BUNDLE = getBundle("i18n/Bundle");
+  private static final Logger LOGGER = getLogger(MindMapPanelControllerImpl.class);
 
   private final MindMapDocumentEditor editor;
   private final MindMapDialogProvider dialogProvider;
@@ -194,7 +194,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
     } else if (plugin instanceof OptionsPlugin) {
       startOptionsEdit();
     } else {
-      throw new Error("Unexpected plugin execution request: " + plugin.getClass().getName());
+      LOGGER.warn("Unexpected plugin execution request: " + plugin.getClass().getName());
     }
   }
 
@@ -219,14 +219,22 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
   @Override
   public void openFile(@Nonnull final File file, final boolean preferSystemBrowser) {
     final VirtualFile virtualFile = VfsUtil.findFileByIoFile(file, true);
+    if (virtualFile == null) {
+      LOGGER.error("Can't find virtual file for " + file);
+      this.dialogProvider.msgError(null, "Can't find file to open");
+      return;
+    }
+
     if (preferSystemBrowser) {
       IdeaUtils.openInSystemViewer(this.dialogProvider, virtualFile);
-    } else {
-      final Document document = FileDocumentManager.getInstance().getDocument(virtualFile);
-      if (document == null) {
-        IdeaUtils.openInSystemViewer(this.dialogProvider, virtualFile);
-      }
+      return;
     }
+
+    SelectIn.IDE.open(this.editor, virtualFile, -1);
+  }
+
+  public void dispose() {
+    MindMapApplicationSettings.getInstance().getConfig().removeConfigurationListener(this);
   }
 
   @Override
@@ -235,7 +243,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
   }
 
   private void startOptionsEdit() {
-    final Runnable action = () -> ShowSettingsUtil.getInstance().showSettingsDialog(editor.getProject(), MindMapSettingsComponent.DISPLAY_NAME);
+    final Runnable action = () -> ShowSettingsUtil.getInstance().showSettingsDialog(this.editor.getProject(), MindMapSettingsComponent.DISPLAY_NAME);
 
     if (!IdeaUtils.submitTransactionLater(action)) {
       SwingUtilities.invokeLater(action);
@@ -456,8 +464,7 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
   }
 
   public void editTextForTopic(final Topic topic) {
-    try {
-      final ExtraNote note = (ExtraNote) topic.getExtras().get(Extra.ExtraType.NOTE);
+    final ExtraNote note = (ExtraNote) topic.getExtras().get(Extra.ExtraType.NOTE);
       final AbstractNoteEditorData result;
       if (note == null) {
         // create new
@@ -542,9 +549,6 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
           this.editor.onMindMapModelChanged(this.editor.getMindMapPanel(), true);
         }
       }
-    } finally {
-      Runtime.getRuntime().gc();
-    }
   }
 
   public void showAbout() {

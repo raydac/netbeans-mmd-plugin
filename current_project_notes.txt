@@ -1,0 +1,63 @@
+## 1. Implementation Progress
+- mind-map-model: API-stable correctness fixes — MindMap `readResolve` restores listeners after deserialize; Topic.parse honors `ignoreErrors` and skips snippet body when start missing; setExtra/removeExtras/removeAllExtras call `detachedToTopic`; moveToNewParent rejects descendant cycles; parent cleared on delete/remove; findPrev null checker matches findNext; MMapURI no longer shares mutable empty Properties; equals includes fileUriFlag; ModelUtils.toFile guards empty path; JavaLoggerServiceImpl no longer mutates JUL root level; MindMapModelEvent.getPath returns a clone; cloneTopicInMap checks map ownership.
+- IJ sources use type imports plus `import static` for frequent factories (`getLogger`, `getBundle`, `getEncoder`/`getDecoder`, `UTF_8`, Swing/AWT constants) so method bodies do not use FQCN.
+- IJ 1.6.10 hardening: single document parse path, file links open in the IDE, PSI/editor share module-aware root resolution, facet "inside browser" honored via HTMLEditorProvider with system-browser fallback, settings migrated from `application-components` to `applicationService`, config listener unregistered on editor dispose.
+- IJ 1.6.10: MMD disappeared from File | New on latest IntelliJ because New File now reads declarative `com.intellij.fileType`, not deprecated `FileTypeFactory`.
+- Replaced `fileTypeFactory` with `<fileType>` inside `<extensions>` (supported since 2019.2; project already requires 222.4554.10).
+- Added `CreateMindMapFileAction` to `NewGroup` so File | New keeps an explicit SciaReto Mind Map item on both old and new IDEs.
+- Removed `MindMapFileTypeFactory`.
+- Corrected file-template group name to `SciaReto Mind Map.mmd` (matches `fileTemplates/SciaReto Mind Map.mmd.ft`).
+- Latest IDE `getInternalTemplate()` no longer fabricates a dummy template; if the name is missing it calls `getJ2eeTemplate()` and throws `Template not found`. Empty-map template is now also under `fileTemplates/internal/` and `fileTemplates/j2ee/`, registered as `<internalFileTemplate name="SciaReto Mind Map"/>`. Create action resolves across categories and writes default MMD text if none is found.
+- mind-map-swing-panel: cleaned Swing action/event handling without API changes — title-editor key adapter held as field, dead typed Enter end-edit and unused `lastReleasedEvent` removed, duplicate drag hit-test removed, zoom keyboard path shared via `applyScaleAndRefresh`, popup state listener attached once per menu, `catchEscInParentDialog` wired once per dialog root pane, dead default `doActionForTopic` external branch removed.
+- scia-reto UI Swing audit (module-only): PlantUML render no longer clears `lastSuccessfullyRenderedText` in finally before EDT success; loader animation unregister moved to EDT completion; `hideTextPanel` no longer re-adds KeyListener; DnDTree null-safe transferable; loading GIF redraw marshaled to EDT; project unload animation unregister on EDT.
+- scia-reto: FlatLaf accent/focus borders removed from large workspace scroll containers (mind map, text/PlantUML editors, explorer tree) via `UiUtils.hideContainerBorder`; topic selection indicator remains the focus cue.
+
+## 2. Architecture & Technical Discoveries
+- Do not put `<fileType>` as a root `<idea-plugin>` child. 222 PluginManager treats that as `Unknown element: fileType` (`XmlReader.readRootElementChild`). It must live under `<extensions defaultExtensionNs="com.intellij">`.
+- `fileType` attributes that exist on 222: `name`, `implementationClass`, `fieldName`, `language`, `extensions`. `name` must match `FileType.getName()`, `language` must match `MMLanguage` id `NBMindMap`.
+- `MindMapFileType` constructor is private; `fieldName="INSTANCE"` is required.
+- Latest IntelliJ New File popup lists file types from the declarative EP. `FileTypeFactory` is deprecated and ignored or unloaded there, so MMD vanished from New while the editor could still open existing files.
+- `CreateFileFromTemplateAction` on 222: constructor `(text, description, icon)`, `buildDialog(Project, PsiDirectory, Builder)`, `getActionName(...)`. `createFile` resolves the template via `getInternalTemplate`, which also falls back to Files-category templates.
+- Panel shortcuts are KeyListener + `MindMapPanelConfig` maps, not panel ActionMap/InputMap. Host IDEs must not assume Swing Action registration on the panel.
+- Title editor Enter end-edit must use keyPressed/keyReleased (`getKeyCode()`); KEY_TYPED has `VK_UNDEFINED` so typed-path end-edit was dead.
+- Shift+Enter next-line intentionally handled in both typed and released for RUS layout under Linux/IDEA.
+- scia-reto: tree model notifications already use `Utils.safeSwingCall`; subtree load mutates `children` off EDT but listeners are notified on EDT via `notifyProjectStateChanged` / `invokeLater` fireNotifySubtreeChanged.
+- scia-reto: `MindMapPanelConfig.getScaleModifiers()` still uses old `KeyEvent.CTRL_MASK` style — keep `getModifiers()` when matching wheel/scale shortcuts against that config.
+
+## 3. Technical Debt & Refactoring
+- Files-category template plus `NewGroup` action can show two "SciaReto Mind Map" entries on older File | New menus. Prefer keeping both over missing the item on the new New File popup.
+- No unit tests under `idea-mindmap`.
+- `IdeaUtils` still uses reflection for Maven, TransactionGuard, and HTMLEditorProvider to stay on 222.
+- Plugin menu wiring (`AbstractExporter`/`AbstractImporter`/`ChangeColorPlugin`/`OptionsPlugin`) still duplicates ExternallyExecutedPlugin listener boilerplate; consolidate later via protected helper on `AbstractPopupMenuItem` without changing public plugin APIs.
+- `Utils.isKeyStrokeEvent` is public and unused; keep for API stability (deprecate later if desired).
+- scia-reto `DnDTree` drop onto folders still unimplemented (rejects / logs); TransferHandler.canImport always false.
+- scia-reto scale gestures still tied to deprecated `getModifiers()` + `CTRL_MASK` until panel config migrates to `getModifiersEx()`.
+
+## 4. Current Work In Progress
+- Version bumped to 1.7.0-SNAPSHOT in all pom.xml modules and idea-mindmap plugin.xml.
+- mind-map-model source audit completed (public API preserved; unit tests green).
+- Verify File | New create on latest IntelliJ after reinstall (previous report: type visible, "Template not found").
+- Verify opening an existing MMD file after the blank-editor fix (default model set before first paint; skip-reload no longer calls getModel() with a null panel model).
+- Verify FlatLaf editor/explorer containers no longer show permanent purple focus borders after restart.
+
+## 5. Known Issues & Limitations
+- Sandbox/build target remains `IC-222.4554.10`; latest-IDE New File UI cannot be verified in that sandbox.
+- `MindMapPanel.getModel()` throws if no model has been set; IJ editor now installs a default empty map immediately after construction.
+- `processPopUpForShortcut` with empty selection only selects root and does not open the menu; `VK_CONTEXT_MENU` always opens — intentional difference, leave unless UX change is requested.
+
+## 6. Open Questions & Pending Decisions
+- Whether to hide the Files-category auto-template (move to `fileTemplates/internal/`) if older IDEs show a duplicate New item.
+
+## 7. Useful References
+- Register file type: https://plugins.jetbrains.com/docs/intellij/registering-file-type.html
+- File templates / New menu: https://plugins.jetbrains.com/docs/intellij/using-file-templates.html
+- Build plugin: `mvn22 -pl idea-mindmap -am package` from `mind-map/` (Gradle is invoked as `gradle8`).
+- Swing panel compile: `mvn22 -pl mind-map-swing-panel -am compile` from `mind-map/`.
+- scia-reto compile: `mvn22 -pl scia-reto -am compile` from `mind-map/`.
+
+## 8. User Advice and Recommendations
+- Keep File | New compatibility with latest IntelliJ and with previous versions back to 2022.2.5 (222.4554.10).
+- Do not break public APIs of mind-map-swing-panel when cleaning internal Swing action handling.
+- Do not break public APIs of mind-map-model (signatures, Serializable UIDs, logger SPI) when fixing internals.
+- Restrict scia-reto Swing audits/fixes to the `scia-reto` submodule unless the user widens scope.
+- For user-facing fixes and changes, update both root `README.md` (Changelog section) and `changelog.txt`.

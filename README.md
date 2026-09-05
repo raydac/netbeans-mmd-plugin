@@ -1,7 +1,7 @@
 ![Banner](https://raw.githubusercontent.com/raydac/netbeans-mmd-plugin/master/misc/banner.png)  
 
 [![License Apache 2.0](https://img.shields.io/badge/license-Apache%20License%202.0-green.svg)](http://www.apache.org/licenses/LICENSE-2.0)
-[![Java 11+](https://img.shields.io/badge/java-11%2b-green.svg)](https://bell-sw.com/pages/downloads/)
+[![Java 21+](https://img.shields.io/badge/java-21%2b-green.svg)](https://bell-sw.com/pages/downloads/)
 [![NetBeans](https://img.shields.io/badge/netbeans-9.0%2b-green.svg)](http://plugins.netbeans.org/plugin/60188/nb-mindmap-editor)
 [![Intellij IDEA](https://img.shields.io/badge/idea-2022.2%2b-green.svg)](https://plugins.jetbrains.com/plugin/8045)   
 [![Arthur's acres sanctuary donation](assets/arthur_sanctuary_banner.png)](https://www.arthursacresanimalsanctuary.org/donate)
@@ -14,13 +14,15 @@ Initially I developed a plugin for NetBeans IDE then the IntellijIDEA plugin was
 
 # Changelog
 
-__1.6.10 (SNAPSHOT)__
+__1.7.0 (SNAPSHOT)__
 
 - ALL: fixed ret lost focus during fast sibling topic create by  enter
+- IJ:  removed use of internal IDEA API
 - SR:  added 'Quick note' panel [#128](https://github.com/raydac/netbeans-mmd-plugin/issues/128)
 - SR:  minimum Java version for SciaReto lifted up to Java 21
-- SR:  updated embedded JDK to 26+37
-- SR:  PlantUML updated to 1.2026.6
+- SR:  updated embedded JDK to 26.0.2+13
+- SR:  PlantUML updated to 1.2026.7
+- SR:  disabled FlatLaf focus borders around large editor and explorer containers
 
 __1.6.9 (19-okt-2025)__
 - ALL: improvements in processing of key type in topic title editor

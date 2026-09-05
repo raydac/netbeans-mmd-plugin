@@ -178,9 +178,18 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
     this.editor.addKeyListener(new KeyAdapter() {
       @Override
       public void keyPressed(@Nonnull final KeyEvent e) {
-        if (!e.isConsumed() && e.getModifiers() == 0 && e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+        if (!e.isConsumed() && e.getModifiersEx() == 0 && e.getKeyCode() == KeyEvent.VK_ESCAPE) {
           e.consume();
           context.hideFindTextPane();
+        }
+      }
+
+      @Override
+      public void keyTyped(@Nonnull final KeyEvent e) {
+        try {
+          AbstractPlUmlEditor.this.eventProcessor.onNext(Boolean.TRUE);
+        } catch (final Exception ex) {
+          AbstractPlUmlEditor.this.logger.info("Exception on next event: " + ex.getMessage());
         }
       }
     });
@@ -209,6 +218,7 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
     this.mainPanel = new SplitPaneExt(JSplitPane.VERTICAL_SPLIT);
 
     final RTextScrollPane scrollPane = new RTextScrollPane(this.editor, true);
+    UiUtils.hideContainerBorder(scrollPane);
 
     this.renderedPanel = new JPanel(new BorderLayout());
     this.renderedScrollPane = new EditorScrollPanel();
@@ -705,18 +715,7 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
 
 
   public void hideTextPanel() {
-    SwingUtilities.invokeLater(() -> mainPanel.setDividerLocation(0));
-
-    this.editor.addKeyListener(new KeyAdapter() {
-      @Override
-      public void keyTyped(final @Nonnull KeyEvent e) {
-        try {
-          eventProcessor.onNext(true);
-        } catch (Exception ex) {
-          logger.info("Exception on next event: " + ex.getMessage());
-        }
-      }
-    });
+    SwingUtilities.invokeLater(() -> this.mainPanel.setDividerLocation(0));
   }
 
   private void setMenuItemsEnable(final boolean enable) {
@@ -729,8 +728,9 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
 
   @Override
   protected void doDispose() {
-    eventProcessor.onComplete();
-    eventChain.dispose();
+    this.eventProcessor.onComplete();
+    this.eventChain.dispose();
+    BigLoaderIconAnimationConroller.getInstance().unregisterLabel(this.progressLabel);
   }
 
   protected int countNewPages(@Nonnull final String text) {
@@ -1189,26 +1189,34 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
             .addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY, dividerListener);
 
         MainFrame.REACTOR_SCHEDULER.schedule(() -> {
-          BigLoaderIconAnimationConroller.getInstance().registerLabel(progressLabel);
+          BigLoaderIconAnimationConroller.getInstance().registerLabel(this.progressLabel);
+          boolean animationHandedOffToEdt = false;
           try {
             try {
               SwingUtilities.invokeAndWait(() -> {
-                setMenuItemsEnable(false);
-                renderedPanel.remove(renderedScrollPane);
-                for (final Component c : renderedPanel.getComponents()) {
+                if (this.isDisposed()) {
+                  return;
+                }
+                this.setMenuItemsEnable(false);
+                this.renderedPanel.remove(this.renderedScrollPane);
+                for (final Component c : this.renderedPanel.getComponents()) {
                   if ("ERROR_LABEL".equals(c.getName())) {
-                    renderedPanel.remove(c);
+                    this.renderedPanel.remove(c);
                     break;
                   }
                 }
-                renderedPanel.add(progressLabel, BorderLayout.CENTER);
-                mainPanel.setDividerLocation(dividerLocation.get());
+                this.renderedPanel.add(this.progressLabel, BorderLayout.CENTER);
+                this.mainPanel.setDividerLocation(dividerLocation.get());
               });
-            } catch (InterruptedException ex) {
+            } catch (final InterruptedException ex) {
               Thread.currentThread().interrupt();
               return;
-            } catch (InvocationTargetException ex) {
+            } catch (final InvocationTargetException ex) {
               throw new RuntimeException(ex);
+            }
+
+            if (this.isDisposed()) {
+              return;
             }
 
             final AtomicReference<Exception> detectedError = new AtomicReference<>();
@@ -1220,54 +1228,67 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
             } else {
               final ByteArrayOutputStream buffer = new ByteArrayOutputStream(131072);
               try {
-                final DiagramDescription description = reader.outputImage(buffer, imageIndex - 1,
+                reader.outputImage(buffer, imageIndex - 1,
                     new FileFormatOption(FileFormat.PNG, false));
                 generatedImage.set(ImageIO.read(new ByteArrayInputStream(buffer.toByteArray())));
-              } catch (Exception ex) {
+              } catch (final Exception ex) {
                 detectedError.set(ex);
               }
             }
 
             SwingUtilities.invokeLater(() -> {
-              mainPanel.removePropertyChangeListener(dividerListener);
+              try {
+                this.mainPanel.removePropertyChangeListener(dividerListener);
 
-              final Exception error = detectedError.get();
-              if (error == null) {
-                lastSuccessfullyRenderedText = currentText;
-                imageComponent.setImage(generatedImage.get(), false);
-                renderedScrollPane.revalidate();
-                renderedPanel.remove(progressLabel);
-                renderedPanel.add(renderedScrollPane, BorderLayout.CENTER);
-                setMenuItemsEnable(true);
-              } else {
-                final JLabel errorLabel = new JLabel(
-                    "<html><h1>ERROR: " + escapeHtml3(error.getMessage()) + "</h1></html>",
-                    JLabel.CENTER);
-                errorLabel.setName("ERROR_LABEL");
-                renderedPanel.remove(progressLabel);
-                renderedPanel.add(errorLabel, BorderLayout.CENTER);
+                if (this.isDisposed()) {
+                  return;
+                }
+
+                final Exception error = detectedError.get();
+                if (error == null) {
+                  this.lastSuccessfullyRenderedText = currentText;
+                  this.imageComponent.setImage(generatedImage.get(), false);
+                  this.renderedScrollPane.revalidate();
+                  this.renderedPanel.remove(this.progressLabel);
+                  this.renderedPanel.add(this.renderedScrollPane, BorderLayout.CENTER);
+                  this.setMenuItemsEnable(true);
+                } else {
+                  final JLabel errorLabel = new JLabel(
+                      "<html><h1>ERROR: " + escapeHtml3(error.getMessage()) + "</h1></html>",
+                      JLabel.CENTER);
+                  errorLabel.setName("ERROR_LABEL");
+                  this.renderedPanel.remove(this.progressLabel);
+                  this.renderedPanel.add(errorLabel, BorderLayout.CENTER);
+                }
+
+                this.mainPanel.setDividerLocation(dividerLocation.get());
+              } finally {
+                BigLoaderIconAnimationConroller.getInstance().unregisterLabel(this.progressLabel);
               }
-
-              mainPanel.setDividerLocation(dividerLocation.get());
             });
+            animationHandedOffToEdt = true;
 
           } finally {
-            this.lastSuccessfullyRenderedText = null;
-            BigLoaderIconAnimationConroller.getInstance().unregisterLabel(progressLabel);
+            if (!animationHandedOffToEdt) {
+              BigLoaderIconAnimationConroller.getInstance().unregisterLabel(this.progressLabel);
+            }
           }
         });
       }
     } catch (final Exception ex) {
-      logger.error("Error of script rendering:" + ex);
+      this.logger.error("Error of script rendering:" + ex);
       SwingUtilities.invokeLater(() -> {
+        if (this.isDisposed()) {
+          return;
+        }
         final JLabel errorLabel =
             new JLabel("<html><h1>ERROR: " + escapeHtml3(ex.getMessage()) + "</h1></html>",
                 JLabel.CENTER);
         errorLabel.setName("ERROR_LABEL");
-        renderedPanel.remove(progressLabel);
-        renderedPanel.add(errorLabel, BorderLayout.CENTER);
-        renderedPanel.revalidate();
-        renderedPanel.repaint();
+        this.renderedPanel.remove(this.progressLabel);
+        this.renderedPanel.add(errorLabel, BorderLayout.CENTER);
+        this.renderedPanel.revalidate();
+        this.renderedPanel.repaint();
       });
     }
   }
