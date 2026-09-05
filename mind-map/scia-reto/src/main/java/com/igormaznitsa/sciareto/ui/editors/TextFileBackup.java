@@ -18,6 +18,8 @@
 
 package com.igormaznitsa.sciareto.ui.editors;
 
+import static java.util.Objects.requireNonNull;
+
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import java.io.BufferedInputStream;
@@ -31,6 +33,7 @@ import java.nio.file.Files;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.zip.CRC32;
 import java.util.zip.Deflater;
@@ -48,7 +51,12 @@ public class TextFileBackup {
   private static final BackupContent END_WORK =
       new BackupContent(new File("/some/non-existing/fake/file"), null);
   private static final AtomicReference<TextFileBackup> instance = new AtomicReference<>();
+  private static final long SHUTDOWN_JOIN_TIMEOUT_MS = 30_000L;
+  private static final long SHUTDOWN_INTERRUPT_JOIN_TIMEOUT_MS = 5_000L;
+
   private final BlockingQueue<BackupContent> contentQueue = new ArrayBlockingQueue<>(32);
+  private final AtomicReference<Thread> workerThread = new AtomicReference<>();
+  private final AtomicBoolean shuttingDown = new AtomicBoolean(false);
 
   private TextFileBackup() {
 
@@ -97,15 +105,11 @@ public class TextFileBackup {
     return instance.get();
   }
 
-  public static void finishIfStarted() {
+  public static void finishAndAwait() {
     final TextFileBackup backup = instance.get();
     if (backup != null) {
-      backup.finish();
+      backup.shutdownAndAwait();
     }
-  }
-
-  public void finish() {
-    this.add(END_WORK);
   }
 
   @Nonnull
@@ -140,6 +144,7 @@ public class TextFileBackup {
   private void start() {
     final Thread thread = new Thread(this::run, "edit-text-content-backuper");
     thread.setDaemon(true);
+    this.workerThread.set(thread);
     thread.start();
   }
 
@@ -184,25 +189,66 @@ public class TextFileBackup {
             break;
           }
           if (item.content == null) {
-            removeBackup(item.originalFile);
+            this.removeBackup(item.originalFile);
           } else {
-            backup(item.originalFile, prepareContent(item.content));
+            this.backup(item.originalFile, this.prepareContent(item.content));
           }
         }
       } catch (InterruptedException ex) {
         Thread.currentThread().interrupt();
       }
     }
-
   }
 
-  public void waitQueueEmpty() throws InterruptedException {
-    while (!this.contentQueue.isEmpty()) {
-      Thread.sleep(100L);
+  private void shutdownAndAwait() {
+    if (!this.shuttingDown.compareAndSet(false, true)) {
+      this.awaitWorkerExit();
+      return;
+    }
+
+    this.enqueueEndWork();
+    this.awaitWorkerExit();
+  }
+
+  private void enqueueEndWork() {
+    try {
+      this.contentQueue.put(END_WORK);
+    } catch (InterruptedException ex) {
+      LOGGER.error("Interrupted while enqueueing backup shutdown signal");
+      Thread.currentThread().interrupt();
+    }
+  }
+
+  private void awaitWorkerExit() {
+    final Thread thread = this.workerThread.get();
+    if (thread == null || thread == Thread.currentThread()) {
+      return;
+    }
+
+    try {
+      thread.join(SHUTDOWN_JOIN_TIMEOUT_MS);
+      if (thread.isAlive()) {
+        LOGGER.warn("Backup worker did not finish in time, interrupting");
+        thread.interrupt();
+        thread.join(SHUTDOWN_INTERRUPT_JOIN_TIMEOUT_MS);
+      }
+      if (thread.isAlive()) {
+        LOGGER.error("Backup worker is still alive after interrupt");
+      }
+    } catch (InterruptedException ex) {
+      LOGGER.error("Interrupted while waiting for backup worker", ex);
+      Thread.currentThread().interrupt();
     }
   }
 
   public void add(@Nonnull final BackupContent content) {
+    requireNonNull(content, "content must not be null");
+
+    if (this.shuttingDown.get()) {
+      LOGGER.warn("Ignore backup content after shutdown started: " + content.originalFile);
+      return;
+    }
+
     try {
       final boolean placed = this.contentQueue.offer(content, 1, TimeUnit.SECONDS);
       if (!placed) {

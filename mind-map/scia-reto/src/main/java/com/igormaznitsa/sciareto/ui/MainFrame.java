@@ -777,7 +777,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       try {
         this.dispose();
       } finally {
-        TextFileBackup.finishIfStarted();
+        TextFileBackup.finishAndAwait();
       }
     }
   }
