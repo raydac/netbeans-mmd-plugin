@@ -28,8 +28,8 @@ import java.util.Map;
  * @since 1.4.7
  */
 public class PathStore {
-  private final Map<String, File> internalMap = new HashMap<>();
   private static final File USER_HOME = new File(System.getProperty("user.home"));
+  private final Map<String, File> internalMap = new HashMap<>();
 
   public synchronized File find(final PluginContext context, final String id) {
     File result = internalMap.get(id);

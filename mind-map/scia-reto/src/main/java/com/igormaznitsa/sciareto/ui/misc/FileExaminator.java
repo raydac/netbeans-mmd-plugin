@@ -15,15 +15,16 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+
 package com.igormaznitsa.sciareto.ui.misc;
 
+import com.igormaznitsa.meta.common.utils.Assertions;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.StandardOpenOption;
 import javax.annotation.Nonnull;
-import com.igormaznitsa.meta.common.utils.Assertions;
 
 public class FileExaminator {
 
@@ -33,7 +34,8 @@ public class FileExaminator {
     this.file = file;
   }
 
-  public boolean doesContainData(@Nonnull final byte[] dataBuffer, @Nonnull final byte[] dataArr1, @Nonnull final byte[] dataArr2) throws IOException {
+  public boolean doesContainData(@Nonnull final byte[] dataBuffer, @Nonnull final byte[] dataArr1,
+                                 @Nonnull final byte[] dataArr2) throws IOException {
     Assertions.assertTrue("Length must be the same", dataArr1.length == dataArr2.length);
 
     boolean result = false;
@@ -44,7 +46,8 @@ public class FileExaminator {
       final ByteBuffer buffer = ByteBuffer.wrap(dataBuffer);
       final int[] counters = new int[len];
 
-      try (final FileChannel channel = FileChannel.open(this.file.toPath(), StandardOpenOption.READ)) {
+      try (final FileChannel channel = FileChannel.open(this.file.toPath(),
+          StandardOpenOption.READ)) {
         buffer.clear();
 
         while (buffer.hasRemaining() && !Thread.currentThread().isInterrupted()) {

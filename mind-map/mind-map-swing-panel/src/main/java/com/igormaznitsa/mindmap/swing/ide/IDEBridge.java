@@ -43,10 +43,11 @@ public interface IDEBridge {
 
   /**
    * Get locale for IDE.
+   *
    * @return should return currently selected locale for IDE, must not be null.
    * @since 1.6.0
    */
-  default Locale getIDELocale(){
+  default Locale getIDELocale() {
     return Locale.getDefault();
   }
 
@@ -78,7 +79,7 @@ public interface IDEBridge {
   /**
    * Load icon resource through inside tools provided by IDE if it is possible, the class loader of the provided class will be used to find resource.
    *
-   * @param path  path to the icon, must not be null
+   * @param path            path to the icon, must not be null
    * @param baseClassToLoad class which class loader will be used for loading of resource, must not be null
    * @return the icon, it must not be null, if it is not found then IDE will process the situation by its inside mechanisms and some runtime exception will be thrown
    * @since 1.2.0

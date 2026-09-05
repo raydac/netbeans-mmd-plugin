@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.nbmindmap.nb.refactoring.elements;
 
 import com.igormaznitsa.mindmap.model.MMapURI;
@@ -21,13 +22,15 @@ import java.io.File;
 
 public class WhereUsedElement extends AbstractElement {
 
-  public WhereUsedElement(final MindMapLink mindMap, final File projectFolder, final MMapURI fileObject) {
+  public WhereUsedElement(final MindMapLink mindMap, final File projectFolder,
+                          final MMapURI fileObject) {
     super(mindMap, projectFolder, fileObject);
   }
 
   @Override
   public String getText() {
-    return String.format(BUNDLE.getString("WhereUsedElement.getText"),this.processedFile.asString(false, false));
+    return String.format(BUNDLE.getString("WhereUsedElement.getText"),
+        this.processedFile.asString(false, false));
   }
 
 }

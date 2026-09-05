@@ -80,11 +80,6 @@ public class ORGMODEExporter extends AbstractExporter {
         }
       };
 
-  @Override
-  public ExtrasToStringConverter getDefaultExtrasStringConverter() {
-    return DEFAULT_EXTRA_ORGMODE_STRING_CONVERTER;
-  }
-
   private static String generateString(final char chr, final int length) {
     final StringBuilder buffer = new StringBuilder(length);
     for (int i = 0; i < length; i++) {
@@ -194,6 +189,11 @@ public class ORGMODEExporter extends AbstractExporter {
         .append(ensureNumberFormatting(2, Calendar.SECOND));
 
     return result.toString();
+  }
+
+  @Override
+  public ExtrasToStringConverter getDefaultExtrasStringConverter() {
+    return DEFAULT_EXTRA_ORGMODE_STRING_CONVERTER;
   }
 
   private void writeTopic(

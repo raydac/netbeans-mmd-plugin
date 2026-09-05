@@ -294,23 +294,26 @@ public final class NbUtils {
                                                 @Nonnull final String title,
                                                 @Nonnull final AbstractNoteEditorData data) {
     final AbstractNoteEditor textEditor = new AbstractNoteEditor(() -> parentComponent,
-      UIComponentFactoryProvider.findInstance(), provider, data) {
-          
+        UIComponentFactoryProvider.findInstance(), provider, data) {
+
       @Override
       public CustomTextEditor makeCustomTextEditor() {
-          final CustomTextEditor editor = super.makeCustomTextEditor();
+        final CustomTextEditor editor = super.makeCustomTextEditor();
 
-          if (editor.getComponent() instanceof JTextComponent) {
-              final String mimeType = DocumentUtilities.getMimeType((JTextComponent)editor.getComponent());
-              final FontColorSettings fontColorSettings = MimeLookup.getLookup(MimePath.get(mimeType)).lookup(FontColorSettings.class);
-              if (fontColorSettings != null) {
-                  final Coloring defaultColoring = Coloring.fromAttributeSet(fontColorSettings.getFontColors(FontColorNames.DEFAULT_COLORING));
-                  if (defaultColoring != null) {
-                      editor.getComponent().setFont(defaultColoring.getFont());
-                  }
-              }
+        if (editor.getComponent() instanceof JTextComponent) {
+          final String mimeType =
+              DocumentUtilities.getMimeType((JTextComponent) editor.getComponent());
+          final FontColorSettings fontColorSettings =
+              MimeLookup.getLookup(MimePath.get(mimeType)).lookup(FontColorSettings.class);
+          if (fontColorSettings != null) {
+            final Coloring defaultColoring = Coloring.fromAttributeSet(
+                fontColorSettings.getFontColors(FontColorNames.DEFAULT_COLORING));
+            if (defaultColoring != null) {
+              editor.getComponent().setFont(defaultColoring.getFont());
+            }
           }
-          return editor;
+        }
+        return editor;
       }
 
       @Nullable
@@ -460,7 +463,8 @@ public final class NbUtils {
       }
     };
     final Thread thr = new Thread(startEdit, " MMDStartFileEdit");//NOI18N
-    thr.setUncaughtExceptionHandler((t, e) -> LOGGER.error("Detected uncaught exception in openInSystemViewer() for file " + file, e));
+    thr.setUncaughtExceptionHandler((t, e) -> LOGGER.error(
+        "Detected uncaught exception in openInSystemViewer() for file " + file, e));
 
     thr.setDaemon(true);
     thr.start();

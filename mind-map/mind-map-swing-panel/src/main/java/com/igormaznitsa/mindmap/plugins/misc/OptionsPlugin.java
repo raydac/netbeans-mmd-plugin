@@ -27,12 +27,14 @@ import javax.swing.Icon;
 import javax.swing.JMenuItem;
 
 public class OptionsPlugin extends AbstractPopupMenuItem implements ExternallyExecutedPlugin {
-  private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_OPTIONS);
+  private static final Icon ICO =
+      ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_OPTIONS);
 
   @Override
   public JMenuItem makeMenuItem(final PluginContext context, final Topic topic) {
     final JMenuItem result =
-        UI_COMPO_FACTORY.makeMenuItem(this.getResourceBundle().getString("MMDGraphEditor.makePopUp.miOptions"), ICO);
+        UI_COMPO_FACTORY.makeMenuItem(
+            this.getResourceBundle().getString("MMDGraphEditor.makePopUp.miOptions"), ICO);
     result.addActionListener(e -> context.processPluginActivation(OptionsPlugin.this, topic));
     return result;
   }

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.nbmindmap.nb.explorer;
 
 import com.igormaznitsa.mindmap.model.logger.Logger;
@@ -24,10 +25,9 @@ import org.openide.nodes.Node;
 
 class FolderChildren extends FilterNode.Children {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(FolderChildren.class);
   private final Project project;
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(FolderChildren.class);
-  
   FolderChildren(final Project project, final Node originalNode) {
     super(originalNode);
     this.project = project;
@@ -48,7 +48,7 @@ class FolderChildren extends FilterNode.Children {
     if (fo.isFolder()) {
       return new PackageNode(this.project, originalNode);
     }
-    
+
     return new ObjectNode(originalNode);
   }
 

@@ -28,7 +28,8 @@ import javax.swing.Icon;
 
 public class RemoveTopicPlugin extends AbstractFocusedTopicPlugin {
 
-  private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_REMOVE_TOPIC);
+  private static final Icon ICO =
+      ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_REMOVE_TOPIC);
 
   @Override
   public int getOrder() {

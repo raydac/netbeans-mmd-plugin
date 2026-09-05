@@ -23,7 +23,8 @@ import java.util.List;
 public enum TextAlign {
   LEFT, RIGHT, CENTER;
 
-  public static final List<TextAlign> VALUES = Collections.unmodifiableList(Arrays.asList(TextAlign.values()));
+  public static final List<TextAlign> VALUES =
+      Collections.unmodifiableList(Arrays.asList(TextAlign.values()));
 
   public static TextAlign findForName(final String text) {
     if (text == null) {

@@ -15,12 +15,14 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+
 package com.igormaznitsa.sciareto.ui.platform;
 
+import com.igormaznitsa.meta.annotation.MayContainNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import com.igormaznitsa.meta.annotation.MayContainNull;
 
 public interface PlatformMenuAction {
-  boolean doPlatformMenuAction(@Nonnull PlatformMenuEvent event, @Nullable @MayContainNull Object ... args);
+  boolean doPlatformMenuAction(@Nonnull PlatformMenuEvent event,
+                               @Nullable @MayContainNull Object... args);
 }

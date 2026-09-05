@@ -64,6 +64,10 @@ public class PlantUmlTokenMaker extends AbstractTokenMaker {
     RESERVED_WORDS = Collections.unmodifiableList(loaded);
   }
 
+  private static boolean isAllowedCharReservedWord(final char c) {
+    return RSyntaxUtilities.isLetterOrDigit(c) || c == '<' || c == '>' || c == '/';
+  }
+
   @Override
   @Nonnull
   public TokenMap getWordsToHighlight() {
@@ -349,10 +353,6 @@ public class PlantUmlTokenMaker extends AbstractTokenMaker {
       break;
     }
     return this.firstToken;
-  }
-
-  private static boolean isAllowedCharReservedWord(final char c) {
-    return RSyntaxUtilities.isLetterOrDigit(c) || c == '<' || c == '>' || c == '/';
   }
 
 }

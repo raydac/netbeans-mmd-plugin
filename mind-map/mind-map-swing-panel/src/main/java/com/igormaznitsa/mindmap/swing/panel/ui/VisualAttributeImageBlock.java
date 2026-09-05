@@ -72,14 +72,18 @@ public class VisualAttributeImageBlock {
 //      final Map<String, String> codeSnippets = this.model.getCodeSnippets();
       for (final VisualAttributePlugin p : pluginsFromRegistry) {
         final String attributeKey = p.getAttributeKey();
-        if (!AttributePlugin.NULL_ATTRIBUTE.equals(attributeKey) && attributes.containsKey(attributeKey)) {
+        if (!AttributePlugin.NULL_ATTRIBUTE.equals(attributeKey) &&
+            attributes.containsKey(attributeKey)) {
           detectedPlugins.add(p);
-        } else if (p instanceof CodeSnippetProcessor && this.model.doesContainCodeSnippetForAnyLanguage(((CodeSnippetProcessor) p).getProcessingLanguageNames())) {
+        } else if (p instanceof CodeSnippetProcessor &&
+            this.model.doesContainCodeSnippetForAnyLanguage(
+                ((CodeSnippetProcessor) p).getProcessingLanguageNames())) {
           detectedPlugins.add(p);
         }
       }
       int index = 0;
-      this.items = this.items == null || this.items.length != detectedPlugins.size() ? new VisualItem[detectedPlugins.size()] : this.items;
+      this.items = this.items == null || this.items.length != detectedPlugins.size() ?
+          new VisualItem[detectedPlugins.size()] : this.items;
       for (final VisualAttributePlugin plugin : detectedPlugins) {
         VisualItem item = this.items[index];
         if (item == null || item.getPlugin() == plugin) {
@@ -207,7 +211,8 @@ public class VisualAttributeImageBlock {
     }
 
     boolean containsPoint(final int relativeX, final int relativeY) {
-      return relativeX >= this.relx && relativeY >= this.rely && relativeX < this.relx + this.width && relativeY < this.rely + this.height;
+      return relativeX >= this.relx && relativeY >= this.rely &&
+          relativeX < this.relx + this.width && relativeY < this.rely + this.height;
     }
 
     void draw(final MMGraphics gfx, final MindMapPanelConfig cfg, final int basex,

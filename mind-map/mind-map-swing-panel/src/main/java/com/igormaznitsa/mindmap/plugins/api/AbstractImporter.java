@@ -65,8 +65,9 @@ public abstract class AbstractImporter extends AbstractPopupMenuItem implements 
           context.getPanel().removeAllSelection();
           final MindMap map = doImport(context);
           if (map != null) {
-            map.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID, IDEBridgeFactory.findInstance()
-                .getIDEGeneratorId());
+            map.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID,
+                IDEBridgeFactory.findInstance()
+                    .getIDEGeneratorId());
             SwingUtilities.invokeLater(() -> context.getPanel().setModel(map, true));
             SwingUtilities.invokeLater(() -> {
               final Topic root = map.getRoot();

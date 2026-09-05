@@ -45,28 +45,6 @@ public class RenameFileActionPlugin extends AbstractPlugin<RenameRefactoring> {
     return result;
   }
 
-  @Override
-  public Problem checkParameters() {
-    return this.fastCheckParameters();
-  }
-
-  @Override
-  public Problem fastCheckParameters() {
-    if (this.refactoring.getRefactoringSource().lookup(AbstractMMDRefactoringUI.class) != null) {
-      final String name = this.refactoring.getNewName();
-      if (name == null) {
-        return new Problem(true, BUNDLE.getString("RenameFileActionPlugin.errorNameIsNull"));
-      }
-      if (name.trim().isEmpty()) {
-        return new Problem(true, BUNDLE.getString("RenameFileActionPlugin.errorNameIsEmpty"));
-      }
-      if (name.indexOf('.') >= 0) {
-        return new Problem(true, BUNDLE.getString("RenameFileActionPlugin.errorNameContainsDots"));
-      }
-    }
-    return null;
-  }
-
   protected static String replaceNameInPath(int pathItemIndexFromEnd, final String path,
                                             final String newName) {
     int foldersInNewName = numberOfFolders(newName);
@@ -98,6 +76,28 @@ public class RenameFileActionPlugin extends AbstractPlugin<RenameRefactoring> {
       }
     }
     return result;
+  }
+
+  @Override
+  public Problem checkParameters() {
+    return this.fastCheckParameters();
+  }
+
+  @Override
+  public Problem fastCheckParameters() {
+    if (this.refactoring.getRefactoringSource().lookup(AbstractMMDRefactoringUI.class) != null) {
+      final String name = this.refactoring.getNewName();
+      if (name == null) {
+        return new Problem(true, BUNDLE.getString("RenameFileActionPlugin.errorNameIsNull"));
+      }
+      if (name.trim().isEmpty()) {
+        return new Problem(true, BUNDLE.getString("RenameFileActionPlugin.errorNameIsEmpty"));
+      }
+      if (name.indexOf('.') >= 0) {
+        return new Problem(true, BUNDLE.getString("RenameFileActionPlugin.errorNameContainsDots"));
+      }
+    }
+    return null;
   }
 
   @Override

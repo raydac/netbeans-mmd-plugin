@@ -15,8 +15,13 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+
 package com.igormaznitsa.sciareto.ui.misc;
 
+import com.igormaznitsa.mindmap.swing.panel.utils.Focuser;
+import com.igormaznitsa.sciareto.ui.UiUtils;
+import com.igormaznitsa.sciareto.ui.tree.ExplorerTree;
+import com.igormaznitsa.sciareto.ui.tree.NodeFileOrFolder;
 import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.io.File;
@@ -33,10 +38,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
-import com.igormaznitsa.mindmap.swing.panel.utils.Focuser;
-import com.igormaznitsa.sciareto.ui.UiUtils;
-import com.igormaznitsa.sciareto.ui.tree.ExplorerTree;
-import com.igormaznitsa.sciareto.ui.tree.NodeFileOrFolder;
 
 public class GoToFilePanel extends javax.swing.JPanel implements Comparator<NodeFileOrFolder> {
 
@@ -48,11 +49,11 @@ public class GoToFilePanel extends javax.swing.JPanel implements Comparator<Node
   private final transient List<ListDataListener> listeners = new ArrayList<>();
 
   private final Object dialogOkObject;
-  
-  @Override
-  public int compare(@Nonnull final NodeFileOrFolder o1, @Nonnull final NodeFileOrFolder o2) {
-    return o1.toString().compareTo(o2.toString());
-  }
+  // Variables declaration - do not modify//GEN-BEGIN:variables
+  private javax.swing.JScrollPane jScrollPane1;
+  private javax.swing.JLabel labelFilenameMask;
+  private javax.swing.JList<NodeFileOrFolder> listFoundFiles;
+  private javax.swing.JTextField textFieldMask;
 
   @SuppressWarnings("ResultOfObjectAllocationIgnored")
   public GoToFilePanel(@Nonnull final ExplorerTree tree, @Nullable final Object dialogOkObject) {
@@ -112,6 +113,11 @@ public class GoToFilePanel extends javax.swing.JPanel implements Comparator<Node
     });
   }
 
+  @Override
+  public int compare(@Nonnull final NodeFileOrFolder o1, @Nonnull final NodeFileOrFolder o2) {
+    return o1.toString().compareTo(o2.toString());
+  }
+
   @Nullable
   public NodeFileOrFolder getSelected() {
     return this.listFoundFiles.getSelectedValue();
@@ -119,9 +125,12 @@ public class GoToFilePanel extends javax.swing.JPanel implements Comparator<Node
 
   private void processEnteredPattern() {
     this.foundNodeList.clear();
-    this.foundNodeList.addAll(this.tree.findForNamePattern(makePattern(this.textFieldMask.getText())));
+    this.foundNodeList.addAll(
+        this.tree.findForNamePattern(makePattern(this.textFieldMask.getText())));
     for (final ListDataListener l : this.listeners) {
-      l.contentsChanged(new ListDataEvent(this.listFoundFiles.getModel(), ListDataEvent.CONTENTS_CHANGED, 0, this.foundNodeList.size()));
+      l.contentsChanged(
+          new ListDataEvent(this.listFoundFiles.getModel(), ListDataEvent.CONTENTS_CHANGED, 0,
+              this.foundNodeList.size()));
     }
 
     Collections.sort(this.foundNodeList, this);
@@ -166,61 +175,63 @@ public class GoToFilePanel extends javax.swing.JPanel implements Comparator<Node
    * Editor.
    */
   @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
-        java.awt.GridBagConstraints gridBagConstraints;
+  // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+  private void initComponents() {
+    java.awt.GridBagConstraints gridBagConstraints;
 
-        labelFilenameMask = new javax.swing.JLabel();
-        textFieldMask = new javax.swing.JTextField();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        listFoundFiles = new javax.swing.JList<>();
+    labelFilenameMask = new javax.swing.JLabel();
+    textFieldMask = new javax.swing.JTextField();
+    jScrollPane1 = new javax.swing.JScrollPane();
+    listFoundFiles = new javax.swing.JList<>();
 
-        setLayout(new java.awt.GridBagLayout());
+    setLayout(new java.awt.GridBagLayout());
 
-        labelFilenameMask.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("panelGoToFilePanel.labelFileName")); // NOI18N
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        add(labelFilenameMask, gridBagConstraints);
+    labelFilenameMask.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle()
+        .getString("panelGoToFilePanel.labelFileName")); // NOI18N
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 0;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+    gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+    add(labelFilenameMask, gridBagConstraints);
 
-        textFieldMask.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                textFieldMaskKeyPressed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1000.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        add(textFieldMask, gridBagConstraints);
+    textFieldMask.addKeyListener(new java.awt.event.KeyAdapter() {
+      public void keyPressed(java.awt.event.KeyEvent evt) {
+        textFieldMaskKeyPressed(evt);
+      }
+    });
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 1;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.weightx = 1000.0;
+    gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+    add(textFieldMask, gridBagConstraints);
 
-        listFoundFiles.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        listFoundFiles.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseMoved(java.awt.event.MouseEvent evt) {
-                listFoundFilesMouseMoved(evt);
-            }
-        });
-        listFoundFiles.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                listFoundFilesMouseClicked(evt);
-            }
-        });
-        jScrollPane1.setViewportView(listFoundFiles);
+    listFoundFiles.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+    listFoundFiles.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+      public void mouseMoved(java.awt.event.MouseEvent evt) {
+        listFoundFilesMouseMoved(evt);
+      }
+    });
+    listFoundFiles.addMouseListener(new java.awt.event.MouseAdapter() {
+      public void mouseClicked(java.awt.event.MouseEvent evt) {
+        listFoundFilesMouseClicked(evt);
+      }
+    });
+    jScrollPane1.setViewportView(listFoundFiles);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1000.0;
-        gridBagConstraints.weighty = 1000.0;
-        add(jScrollPane1, gridBagConstraints);
-    }// </editor-fold>//GEN-END:initComponents
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 2;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+    gridBagConstraints.weightx = 1000.0;
+    gridBagConstraints.weighty = 1000.0;
+    add(jScrollPane1, gridBagConstraints);
+  }// </editor-fold>//GEN-END:initComponents
 
-  private void listFoundFilesMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listFoundFilesMouseMoved
+  private void listFoundFilesMouseMoved(
+      java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listFoundFilesMouseMoved
     final ListModel model = this.listFoundFiles.getModel();
     final int index = this.listFoundFiles.locationToIndex(evt.getPoint());
     if (index < 0) {
@@ -231,7 +242,8 @@ public class GoToFilePanel extends javax.swing.JPanel implements Comparator<Node
     }
   }//GEN-LAST:event_listFoundFilesMouseMoved
 
-  private void textFieldMaskKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textFieldMaskKeyPressed
+  private void textFieldMaskKeyPressed(
+      java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textFieldMaskKeyPressed
     int selectedIndex = this.listFoundFiles.getSelectedIndex();
     boolean processed = false;
     if (!evt.isConsumed() && evt.getModifiersEx() == 0) {
@@ -267,17 +279,12 @@ public class GoToFilePanel extends javax.swing.JPanel implements Comparator<Node
     }
   }//GEN-LAST:event_textFieldMaskKeyPressed
 
-  private void listFoundFilesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listFoundFilesMouseClicked
-    if (evt.getClickCount()>1 && !evt.isPopupTrigger() && this.listFoundFiles.getSelectedIndex()>=0) {
+  private void listFoundFilesMouseClicked(
+      java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listFoundFilesMouseClicked
+    if (evt.getClickCount() > 1 && !evt.isPopupTrigger() &&
+        this.listFoundFiles.getSelectedIndex() >= 0) {
       UiUtils.closeCurrentDialogWithResult(this, this.dialogOkObject);
     }
   }//GEN-LAST:event_listFoundFilesMouseClicked
-
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JLabel labelFilenameMask;
-    private javax.swing.JList<NodeFileOrFolder> listFoundFiles;
-    private javax.swing.JTextField textFieldMask;
-    // End of variables declaration//GEN-END:variables
+  // End of variables declaration//GEN-END:variables
 }

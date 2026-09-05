@@ -264,8 +264,9 @@ public class SciaRetoStarter {
       try {
         SwingUtilities.invokeLater(() -> {
           try {
-            final Image splashImage = Assertions.assertNotNull(UiUtils.loadIcon("splash.png")); //NOI18N
-            final SplashScreen splashScreen =new SplashScreen(primaryScreen, splashImage);
+            final Image splashImage =
+                Assertions.assertNotNull(UiUtils.loadIcon("splash.png")); //NOI18N
+            final SplashScreen splashScreen = new SplashScreen(primaryScreen, splashImage);
             splashScreen.addWindowListener(new WindowAdapter() {
               @Override
               public void windowActivated(WindowEvent e) {
@@ -288,10 +289,10 @@ public class SciaRetoStarter {
       }
 
       try {
-        if (!latch.await(10, TimeUnit.SECONDS)){
+        if (!latch.await(10, TimeUnit.SECONDS)) {
           LOGGER.warn("Splash latch as not decremented!");
         }
-      }catch (InterruptedException ex){
+      } catch (InterruptedException ex) {
         Thread.currentThread().interrupt();
         return;
       }
@@ -689,8 +690,8 @@ public class SciaRetoStarter {
                                         @Nullable final PluginContext pluginContext,
                                         @Nonnull final String id, @Nonnull final String title,
                                         @Nullable final File defaultFolder,
-                                        final boolean filesOnly, @Nonnull @MustNotContainNull
-                                        final FileFilter[] fileFilter,
+                                        final boolean filesOnly,
+                                        @Nonnull @MustNotContainNull final FileFilter[] fileFilter,
                                         @Nonnull final String approveButtonText) {
             return to;
           }
@@ -700,8 +701,8 @@ public class SciaRetoStarter {
                                         @Nullable final PluginContext pluginContext,
                                         @Nonnull final String id, @Nonnull final String title,
                                         @Nullable final File defaultFolder,
-                                        final boolean filesOnly, @Nonnull @MustNotContainNull
-                                        final FileFilter[] fileFilter,
+                                        final boolean filesOnly,
+                                        @Nonnull @MustNotContainNull final FileFilter[] fileFilter,
                                         @Nonnull final String approveButtonText) {
             return from;
           }
@@ -842,14 +843,16 @@ public class SciaRetoStarter {
         });
 
         MindMap map = new MindMap(false);
-        map.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID, IDEBridgeFactory.findInstance()
-            .getIDEGeneratorId());
+        map.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID,
+            IDEBridgeFactory.findInstance()
+                .getIDEGeneratorId());
         panel.setModel(map);
 
         map = fromFormat.doImport(panel.getController().makePluginContext(panel));
         if (map != null) {
-          map.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID, IDEBridgeFactory.findInstance()
-              .getIDEGeneratorId());
+          map.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID,
+              IDEBridgeFactory.findInstance()
+                  .getIDEGeneratorId());
           panel.setModel(map);
         } else {
           dialog.msgError(MAIN_FRAME, "Can't import map");
@@ -857,8 +860,8 @@ public class SciaRetoStarter {
 
         final Set<AbstractParameter<?>> exportParameters = toFormat.makeDefaultParameters();
         if (!exportParameters.isEmpty()) {
-          for(final String k : options.stringPropertyNames()) {
-            final String value = options.getProperty(k,"");
+          for (final String k : options.stringPropertyNames()) {
+            final String value = options.getProperty(k, "");
             exportParameters.stream()
                 .filter(x -> x.getId().equals(k))
                 .forEach(x -> x.fromString(value));
@@ -979,7 +982,8 @@ public class SciaRetoStarter {
   private static final class LocalMMDExporter extends AbstractExporter {
 
     @Override
-    public void doExport(@Nonnull PluginContext context, @Nullable Set<AbstractParameter<?>> options,
+    public void doExport(@Nonnull PluginContext context,
+                         @Nullable Set<AbstractParameter<?>> options,
                          @Nullable OutputStream out,
                          @Nonnull ExtrasToStringConverter stringConverter) throws IOException {
       final MindMap map = context.getModel();

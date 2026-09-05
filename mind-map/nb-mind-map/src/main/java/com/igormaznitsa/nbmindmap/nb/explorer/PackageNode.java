@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.nbmindmap.nb.explorer;
 
 import com.igormaznitsa.nbmindmap.utils.BadgeIcons;
@@ -23,8 +24,9 @@ import org.openide.util.lookup.ProxyLookup;
 
 final class PackageNode extends AbstractMMFilter {
 
-  public PackageNode (final Project project, final Node originalNode) {
-    super(originalNode, new FolderChildren(project, originalNode), new ProxyLookup(originalNode.getLookup()));
+  public PackageNode(final Project project, final Node originalNode) {
+    super(originalNode, new FolderChildren(project, originalNode),
+        new ProxyLookup(originalNode.getLookup()));
   }
 
   @Override
@@ -33,7 +35,7 @@ final class PackageNode extends AbstractMMFilter {
   }
 
   @Override
-  public Image getOpenedIcon (final int type) {
+  public Image getOpenedIcon(final int type) {
     return BadgeIcons.getTreeFolderIcon(true);
   }
 

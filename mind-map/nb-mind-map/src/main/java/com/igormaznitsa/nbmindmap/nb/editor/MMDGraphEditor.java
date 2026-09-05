@@ -181,35 +181,16 @@ public final class MMDGraphEditor extends CloneableEditor
     implements AdjustmentListener, PluginContext, PrintProvider, MultiViewElement, MindMapListener,
     DropTargetListener, MindMapPanelController, FlavorListener, ClipboardListener {
 
+  public static final String ID = "mmd-graph-editor"; //NOI18N
   private static final long serialVersionUID = -8776707243607267446L;
-
   private static final Set<TopicFinder> TOPIC_FINDERS = MindMapPluginRegistry.getInstance()
       .findAllTopicFinders();
-
   private static final ResourceBundle BUNDLE =
       java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle");
-
   private static final Logger LOGGER = LoggerFactory.getLogger(MMDGraphEditor.class);
   private static final UIComponentFactory UI_COMPO_FACTORY =
       UIComponentFactoryProvider.findInstance();
-
-  public static final String ID = "mmd-graph-editor"; //NOI18N
-
-  private volatile boolean rootToCentre = true;
-
-  private MultiViewElementCallback callback;
-  private final MMDEditorSupport editorSupport;
-
-  private final JScrollPane mainScrollPane;
-  private final MindMapPanel mindMapPanel;
-  private final FindTextPanel findTextPanel;
-
-  private boolean dragAcceptableType = false;
-
-  private final JToolBar toolBar = UI_COMPO_FACTORY.makeToolBar();
-
   private static final WeakSet<MMDGraphEditor> ALL_EDITORS = new WeakSet<MMDGraphEditor>();
-
   private static final FindAction findAction = new FindAction() {
     @Override
     public void actionPerformed(ActionEvent ae) {
@@ -227,7 +208,12 @@ public final class MMDGraphEditor extends CloneableEditor
       return true;
     }
   };
+  private final MMDEditorSupport editorSupport;
 
+  private final JScrollPane mainScrollPane;
+  private final MindMapPanel mindMapPanel;
+  private final FindTextPanel findTextPanel;
+  private final JToolBar toolBar = UI_COMPO_FACTORY.makeToolBar();
   private final Action actionCopy = new AbstractAction() {
     private static final long serialVersionUID = 935382113400815225L;
 
@@ -242,7 +228,6 @@ public final class MMDGraphEditor extends CloneableEditor
       return mindMapPanel.hasSelectedTopics();
     }
   };
-
   private final Action actionCut = new AbstractAction() {
     private static final long serialVersionUID = 935382113400815225L;
 
@@ -257,7 +242,6 @@ public final class MMDGraphEditor extends CloneableEditor
       return mindMapPanel.hasSelectedTopics();
     }
   };
-
   private final Action actionPaste = new AbstractAction() {
     private static final long serialVersionUID = -5644390861803492172L;
 
@@ -266,6 +250,9 @@ public final class MMDGraphEditor extends CloneableEditor
       mindMapPanel.pasteTopicsFromClipboard();
     }
   };
+  private volatile boolean rootToCentre = true;
+  private MultiViewElementCallback callback;
+  private boolean dragAcceptableType = false;
 
   public MMDGraphEditor() {
     this(Lookup.getDefault().lookup(MMDEditorSupport.class));
@@ -320,6 +307,36 @@ public final class MMDGraphEditor extends CloneableEditor
     this.mainScrollPane.getHorizontalScrollBar().addAdjustmentListener(this);
     this.mainScrollPane.getVerticalScrollBar().addAdjustmentListener(this);
 
+  }
+
+  protected static boolean checkDragType(final DropTargetDragEvent dtde) {
+    boolean result = DnDUtils.isFileOrLinkOrText(dtde);
+    if (!result) {
+      for (final DataFlavor flavor : dtde.getCurrentDataFlavors()) {
+        final Class dataClass = flavor.getRepresentationClass();
+        if (Node.class.isAssignableFrom(dataClass) ||
+            DataObject.class.isAssignableFrom(dataClass)) {
+          result = true;
+          break;
+        }
+      }
+    }
+    return result;
+  }
+
+  public static void notifyReloadConfig() {
+    synchronized (ALL_EDITORS) {
+      final Iterator<MMDGraphEditor> iterator = ALL_EDITORS.iterator();
+      while (iterator.hasNext()) {
+        final MMDGraphEditor next = iterator.next();
+        if (next.isPanelDisposed()) {
+          LOGGER.warn("Detected disposed mind map panel among active editors set : " + next);
+          iterator.remove();
+        } else {
+          next.updateConfigFromPreferences();
+        }
+      }
+    }
   }
 
   @Nonnull
@@ -929,7 +946,9 @@ public final class MMDGraphEditor extends CloneableEditor
         case LINK: {
           final MMapURI uri = ((ExtraLink) extra).getValue();
           if (!NbUtils.browseURI(uri.asURI(),
-              this.getPanelConfig().getOptionalProperty(AdditionalPreferences.PROPERTY_USE_INTERNAL_BROWSER, false))) {
+              this.getPanelConfig()
+                  .getOptionalProperty(AdditionalPreferences.PROPERTY_USE_INTERNAL_BROWSER,
+                      false))) {
             NbUtils.msgError(null,
                 String.format(BUNDLE.getString("MMDGraphEditor.onClickOnExtra.msgCantBrowse"),
                     uri.toString()));
@@ -1130,7 +1149,9 @@ public final class MMDGraphEditor extends CloneableEditor
       final Topic topic = element.getModel();
       final MMapURI theURI;
 
-      if (this.getPanelConfig().getOptionalProperty(AdditionalPreferences.PROPERTY_MAKE_RELATIVE_PATHS_TO_PROJECT_ROOT, true)) {
+      if (this.getPanelConfig()
+          .getOptionalProperty(AdditionalPreferences.PROPERTY_MAKE_RELATIVE_PATHS_TO_PROJECT_ROOT,
+              true)) {
         final File projectFolder = getProjectFolder();
         if (theFile.equals(projectFolder)) {
           theURI = new MMapURI(projectFolder, new File("."), null);
@@ -1324,21 +1345,6 @@ public final class MMDGraphEditor extends CloneableEditor
     return result;
   }
 
-  protected static boolean checkDragType(final DropTargetDragEvent dtde) {
-    boolean result = DnDUtils.isFileOrLinkOrText(dtde);
-    if (!result) {
-      for (final DataFlavor flavor : dtde.getCurrentDataFlavors()) {
-        final Class dataClass = flavor.getRepresentationClass();
-        if (Node.class.isAssignableFrom(dataClass) ||
-            DataObject.class.isAssignableFrom(dataClass)) {
-          result = true;
-          break;
-        }
-      }
-    }
-    return result;
-  }
-
   @Override
   public CloseOperationState canCloseElement() {
     return CloseOperationState.STATE_OK;
@@ -1410,7 +1416,8 @@ public final class MMDGraphEditor extends CloneableEditor
           try {
             final MMapURI fileUri;
             fileUri = MMapURI.makeFromFilePath(
-                this.getPanelConfig().getOptionalProperty(AdditionalPreferences.PROPERTY_MAKE_RELATIVE_PATHS_TO_PROJECT_ROOT, true) ?
+                this.getPanelConfig().getOptionalProperty(
+                    AdditionalPreferences.PROPERTY_MAKE_RELATIVE_PATHS_TO_PROJECT_ROOT, true) ?
                     projectFolder : null, dataContainer.getFilePathWithLine().getPath(),
                 props);
 
@@ -1464,7 +1471,8 @@ public final class MMDGraphEditor extends CloneableEditor
 
     if (link == null) {
       final MindMapTreePanel treePanel =
-          new MindMapTreePanel(UIComponentFactoryProvider.findInstance(), this.mindMapPanel.getModel(), null, true, null);
+          new MindMapTreePanel(UIComponentFactoryProvider.findInstance(),
+              this.mindMapPanel.getModel(), null, true, null);
       if (NbUtils.plainMessageOkCancel(null,
           BUNDLE.getString("MMDGraphEditor.editTopicLinkForTopic.dlgSelectTopicTitle"),
           treePanel.getPanel())) {
@@ -1478,9 +1486,11 @@ public final class MMDGraphEditor extends CloneableEditor
       }
     } else {
       final MindMapTreePanel panel =
-          new MindMapTreePanel(UIComponentFactoryProvider.findInstance(), this.mindMapPanel.getModel(), link, true, null);
+          new MindMapTreePanel(UIComponentFactoryProvider.findInstance(),
+              this.mindMapPanel.getModel(), link, true, null);
       if (NbUtils.plainMessageOkCancel(null,
-          BUNDLE.getString("MMDGraphEditor.editTopicLinkForTopic.dlgEditSelectedTitle"), panel.getPanel())) {
+          BUNDLE.getString("MMDGraphEditor.editTopicLinkForTopic.dlgEditSelectedTitle"),
+          panel.getPanel())) {
         final Topic selected = panel.getSelectedTopic();
         if (selected != null) {
           result = ExtraTopic.makeLinkTo(this.mindMapPanel.getModel(), selected);
@@ -1718,17 +1728,20 @@ public final class MMDGraphEditor extends CloneableEditor
 
   @Override
   public boolean isTrimTopicTextBeforeSet(MindMapPanel source) {
-    return this.getPanelConfig().getOptionalProperty(AdditionalPreferences.PROPERTY_TRIM_TOPIC_TEXT, false);
+    return this.getPanelConfig()
+        .getOptionalProperty(AdditionalPreferences.PROPERTY_TRIM_TOPIC_TEXT, false);
   }
 
   @Override
   public boolean isCopyColorInfoFromParentToNewChildAllowed(MindMapPanel source) {
-    return this.getPanelConfig().getOptionalProperty(AdditionalPreferences.PROPERTY_COPY_PARENT_COLORS_TO_NEW_CHILD, true);
+    return this.getPanelConfig()
+        .getOptionalProperty(AdditionalPreferences.PROPERTY_COPY_PARENT_COLORS_TO_NEW_CHILD, true);
   }
 
   @Override
   public boolean isUnfoldCollapsedTopicDropTarget(final MindMapPanel source) {
-    return this.getPanelConfig().getOptionalProperty(AdditionalPreferences.PROPERTY_UNFOLD_COLLAPSED_DROP_TARGET, true);
+    return this.getPanelConfig()
+        .getOptionalProperty(AdditionalPreferences.PROPERTY_UNFOLD_COLLAPSED_DROP_TARGET, true);
   }
 
   @Override
@@ -1825,21 +1838,6 @@ public final class MMDGraphEditor extends CloneableEditor
       mindMapPanel.revalidate();
       mindMapPanel.repaint();
     });
-  }
-
-  public static void notifyReloadConfig() {
-    synchronized (ALL_EDITORS) {
-      final Iterator<MMDGraphEditor> iterator = ALL_EDITORS.iterator();
-      while (iterator.hasNext()) {
-        final MMDGraphEditor next = iterator.next();
-        if (next.isPanelDisposed()) {
-          LOGGER.warn("Detected disposed mind map panel among active editors set : " + next);
-          iterator.remove();
-        } else {
-          next.updateConfigFromPreferences();
-        }
-      }
-    }
   }
 
   @Override

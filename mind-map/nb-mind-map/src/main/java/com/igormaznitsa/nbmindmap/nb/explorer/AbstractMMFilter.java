@@ -13,24 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.nbmindmap.nb.explorer;
 
+import com.igormaznitsa.meta.annotation.MayContainNull;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.annotation.Nonnull;
 import javax.swing.Action;
-
 import org.openide.actions.FileSystemAction;
 import org.openide.actions.PropertiesAction;
 import org.openide.nodes.FilterNode;
 import org.openide.nodes.Node;
 import org.openide.util.Lookup;
-
-import com.igormaznitsa.meta.annotation.MayContainNull;
 
 public abstract class AbstractMMFilter extends FilterNode {
 
@@ -44,11 +41,14 @@ public abstract class AbstractMMFilter extends FilterNode {
     super(original);
   }
 
-  public AbstractMMFilter(@Nonnull final Node original, @Nonnull final org.openide.nodes.Children children) {
+  public AbstractMMFilter(@Nonnull final Node original,
+                          @Nonnull final org.openide.nodes.Children children) {
     super(original, children);
   }
 
-  public AbstractMMFilter(@Nonnull final Node original, @Nonnull final org.openide.nodes.Children children, @Nonnull final Lookup lookup) {
+  public AbstractMMFilter(@Nonnull final Node original,
+                          @Nonnull final org.openide.nodes.Children children,
+                          @Nonnull final Lookup lookup) {
     super(original, children, lookup);
   }
 
@@ -63,16 +63,16 @@ public abstract class AbstractMMFilter extends FilterNode {
         List<Action> actionList = new ArrayList<Action>(superActions.length);
 
         for (int i = 0; i < superActions.length; i++) {
-          if ((i <= superActions.length - 2) && superActions[i] == null && (superActions[i + 1] instanceof PropertiesAction)) {
+          if ((i <= superActions.length - 2) && superActions[i] == null &&
+              (superActions[i + 1] instanceof PropertiesAction)) {
             i++;
             continue;
-          }
-          else if (superActions[i] instanceof PropertiesAction) {
+          } else if (superActions[i] instanceof PropertiesAction) {
             continue;
-          }
-          else if (superActions[i] instanceof FileSystemAction) {
+          } else if (superActions[i] instanceof FileSystemAction) {
             actionList.add(null); // insert separator and new action
-            actionList.addAll((List<Action>) org.openide.util.Utilities.actionsForPath("Projects/package/Actions"));
+            actionList.addAll((List<Action>) org.openide.util.Utilities.actionsForPath(
+                "Projects/package/Actions"));
           }
 
           actionList.add(superActions[i]);
@@ -82,8 +82,7 @@ public abstract class AbstractMMFilter extends FilterNode {
         actionList.toArray(actions);
       }
       return actions;
-    }
-    else {
+    } else {
       return super.getActions(context);
     }
   }

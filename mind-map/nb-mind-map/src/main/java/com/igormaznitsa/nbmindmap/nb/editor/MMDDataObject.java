@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.nbmindmap.nb.editor;
 
 import com.igormaznitsa.nbmindmap.nb.explorer.MMFileDataNode;
@@ -32,34 +33,19 @@ import org.openide.nodes.CookieSet;
 import org.openide.nodes.Node;
 import org.openide.util.Lookup;
 
-@MIMEResolver.ExtensionRegistration(displayName = "#MMDDataObject.extensionDisplayName", mimeType = MMDDataObject.MIME, extension = {MMDDataObject.MMD_EXT})
+@MIMEResolver.ExtensionRegistration(displayName = "#MMDDataObject.extensionDisplayName", mimeType = MMDDataObject.MIME, extension = {
+    MMDDataObject.MMD_EXT})
 @DataObject.Registration(iconBase = "com/igormaznitsa/nbmindmap/icons/logo/logo16.png", displayName = "#MMDDataObject.displayName", mimeType = MMDDataObject.MIME)
 public class MMDDataObject extends MultiDataObject implements CookieSet.Factory {
 
-  private static final long serialVersionUID = -833567211826863321L;
-
   public static final String MIME = "text/x-nbmmd+plain"; //NOI18N
   public static final String MMD_EXT = "mmd"; //NOI18N
-
+  private static final long serialVersionUID = -833567211826863321L;
+  private final SaveCookie saveCookie = new MMDSaveCookie(this);
   private MMDEditorSupport editorSupport;
 
-  private static class MMDSaveCookie implements SaveCookie, Serializable {
-    private static final long serialVersionUID = -6003127964248038260L;
-    private final MMDDataObject dobj;
-    public MMDSaveCookie(final MMDDataObject obj) {
-      this.dobj = obj;
-    }
-    
-    @Override
-    public void save() throws IOException {
-      this.dobj.getEditorSupport().saveDocument();
-      this.dobj.setModified(false);
-    }
-  }
-  
-  private final SaveCookie saveCookie = new MMDSaveCookie(this);
-  
-  public MMDDataObject(final FileObject pf, final MultiFileLoader loader) throws DataObjectExistsException, IOException {
+  public MMDDataObject(final FileObject pf, final MultiFileLoader loader)
+      throws DataObjectExistsException, IOException {
     super(pf, loader);
     getCookieSet().add(MMDEditorSupport.class, this);
   }
@@ -71,19 +57,19 @@ public class MMDDataObject extends MultiDataObject implements CookieSet.Factory 
     return this.editorSupport;
   }
 
-  public Project findProject(){
+  public Project findProject() {
     Project result = null;
     final FileObject primary = this.getPrimaryFile();
-    if (primary!=null){
+    if (primary != null) {
       result = FileOwnerQuery.getOwner(primary);
     }
     return result;
   }
-  
-  public void firePrimaryFileChanged(){
+
+  public void firePrimaryFileChanged() {
     super.firePropertyChange(PROP_PRIMARY_FILE, getPrimaryFile(), getPrimaryFile());
   }
-  
+
   @Override
   public <T extends Node.Cookie> T createCookie(Class<T> klass) {
     if (klass.isAssignableFrom(MMDEditorSupport.class)) {
@@ -96,7 +82,7 @@ public class MMDDataObject extends MultiDataObject implements CookieSet.Factory 
   protected Node createNodeDelegate() {
     final Lookup env = Environment.find(this);
     Node result = env == null ? null : env.lookup(Node.class);
-    if (result == null){
+    if (result == null) {
       result = new MMFileDataNode(this, getLookup());
     }
     return result;
@@ -105,20 +91,34 @@ public class MMDDataObject extends MultiDataObject implements CookieSet.Factory 
   @Override
   public void setModified(final boolean modif) {
     super.setModified(modif);
-    if (modif){
-      if (this.getCookie(SaveCookie.class) == null){
-          getCookieSet().add(this.saveCookie);
+    if (modif) {
+      if (this.getCookie(SaveCookie.class) == null) {
+        getCookieSet().add(this.saveCookie);
       }
-    }else{
-      if (this.saveCookie.equals(getCookie(SaveCookie.class))){
+    } else {
+      if (this.saveCookie.equals(getCookie(SaveCookie.class))) {
         getCookieSet().remove(this.saveCookie);
       }
     }
   }
 
-  
   @Override
   public Lookup getLookup() {
     return this.getCookieSet().getLookup();
+  }
+
+  private static class MMDSaveCookie implements SaveCookie, Serializable {
+    private static final long serialVersionUID = -6003127964248038260L;
+    private final MMDDataObject dobj;
+
+    public MMDSaveCookie(final MMDDataObject obj) {
+      this.dobj = obj;
+    }
+
+    @Override
+    public void save() throws IOException {
+      this.dobj.getEditorSupport().saveDocument();
+      this.dobj.setModified(false);
+    }
   }
 }

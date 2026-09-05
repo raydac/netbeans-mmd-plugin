@@ -15,6 +15,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+
 package com.igormaznitsa.sciareto.ui.platform;
 
 import com.igormaznitsa.meta.annotation.Warning;
@@ -25,10 +26,10 @@ import javax.swing.UIManager;
 @Warning("It is accessible through Class.forName(), don't rename it!")
 public class PlatformWindows extends PlatformDefault {
 
-  public PlatformWindows(){
+  public PlatformWindows() {
     super();
   }
-  
+
   @Override
   @Nonnull
   public String getDefaultLFClassName() {

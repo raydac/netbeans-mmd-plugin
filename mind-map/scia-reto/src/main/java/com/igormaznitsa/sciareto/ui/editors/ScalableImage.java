@@ -19,7 +19,6 @@
 package com.igormaznitsa.sciareto.ui.editors;
 
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
-import com.igormaznitsa.sciareto.preferences.PreferencesManager;
 import com.igormaznitsa.sciareto.ui.ScaleStatusIndicator;
 import java.awt.Color;
 import java.awt.Container;
@@ -43,21 +42,16 @@ import javax.swing.SwingUtilities;
 
 final class ScalableImage extends JComponent implements ScaleStatusIndicator.Scalable {
 
-  private static final long serialVersionUID = 6804581090800919466L;
-  private static final float SCALE_STEP = 0.05f;
-  private BufferedImage image;
-  private float scale = 1.0f;
-
   public static final int IMG_UNIT_INCREMENT = 16;
   public static final int IMG_BLOCK_INCREMENT = IMG_UNIT_INCREMENT * 8;
-
-  private Point dragOrigin;
-
+  private static final long serialVersionUID = 6804581090800919466L;
+  private static final float SCALE_STEP = 0.05f;
   private static final float MIN_SCALE = 0.2f;
   private static final float MAX_SCALE = 10.0f;
-
   private final java.util.List<ActionListener> scalableListeners = new CopyOnWriteArrayList<>();
-
+  private BufferedImage image;
+  private float scale = 1.0f;
+  private Point dragOrigin;
   private MindMapPanelConfig config;
 
   public ScalableImage(@Nonnull final MindMapPanelConfig config) {
@@ -68,12 +62,15 @@ final class ScalableImage extends JComponent implements ScaleStatusIndicator.Sca
     final MouseAdapter adapter = new MouseAdapter() {
       @Override
       public void mouseWheelMoved(@Nonnull final MouseWheelEvent e) {
-        if (!e.isConsumed() && ((e.getModifiers() & config.getScaleModifiers()) == config.getScaleModifiers())) {
+        if (!e.isConsumed() &&
+            ((e.getModifiers() & config.getScaleModifiers()) == config.getScaleModifiers())) {
           e.consume();
           final float oldScale = scale;
-          scale = Math.max(MIN_SCALE, Math.min(scale + (SCALE_STEP * -e.getWheelRotation()), MAX_SCALE));
+          scale = Math.max(MIN_SCALE,
+              Math.min(scale + (SCALE_STEP * -e.getWheelRotation()), MAX_SCALE));
 
-          final JViewport viewport = (JViewport) SwingUtilities.getAncestorOfClass(JViewport.class, theInstance);
+          final JViewport viewport =
+              (JViewport) SwingUtilities.getAncestorOfClass(JViewport.class, theInstance);
 
           final Dimension size = getPreferredSize();
 
@@ -156,7 +153,8 @@ final class ScalableImage extends JComponent implements ScaleStatusIndicator.Sca
       public void mouseDragged(@Nonnull final MouseEvent e) {
         if (!e.isConsumed() && dragOrigin != null) {
           e.consume();
-          final JViewport viewPort = (JViewport) SwingUtilities.getAncestorOfClass(JViewport.class, theInstance);
+          final JViewport viewPort =
+              (JViewport) SwingUtilities.getAncestorOfClass(JViewport.class, theInstance);
           if (viewPort != null) {
             int deltaX = dragOrigin.x - e.getX();
             int deltaY = dragOrigin.y - e.getY();
@@ -242,13 +240,22 @@ final class ScalableImage extends JComponent implements ScaleStatusIndicator.Sca
     if (image == null) {
       return new Dimension(16, 16);
     } else {
-      return new Dimension(Math.round(this.image.getWidth() * this.scale), Math.round(this.image.getHeight() * this.scale));
+      return new Dimension(Math.round(this.image.getWidth() * this.scale),
+          Math.round(this.image.getHeight() * this.scale));
     }
   }
 
   @Override
   public float getScale() {
     return this.scale;
+  }
+
+  @Override
+  public void setScale(final float scale) {
+    this.scale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, scale));
+    revalidate();
+    repaint();
+    fireScaleListeners();
   }
 
   @Override
@@ -262,10 +269,12 @@ final class ScalableImage extends JComponent implements ScaleStatusIndicator.Sca
       gfx.fillRect(0, 0, bounds.width, bounds.height);
       gfx.setColor(Color.RED);
       final String text = "Can't load image, check the log!";
-      gfx.drawString(text, (bounds.width - gfx.getFontMetrics().stringWidth(text)) / 2, (bounds.height - gfx.getFontMetrics().getMaxAscent()) / 2);
+      gfx.drawString(text, (bounds.width - gfx.getFontMetrics().stringWidth(text)) / 2,
+          (bounds.height - gfx.getFontMetrics().getMaxAscent()) / 2);
     } else {
       final Dimension size = getPreferredSize();
-      gfx.drawImage(this.image, Math.max(0, (bounds.width - size.width) / 2), Math.max(0, (bounds.height - size.height) / 2), size.width, size.height, null);
+      gfx.drawImage(this.image, Math.max(0, (bounds.width - size.width) / 2),
+          Math.max(0, (bounds.height - size.height) / 2), size.width, size.height, null);
     }
   }
 
@@ -281,14 +290,6 @@ final class ScalableImage extends JComponent implements ScaleStatusIndicator.Sca
     }
     revalidate();
     repaint();
-  }
-
-  @Override
-  public void setScale(final float scale) {
-    this.scale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, scale));
-    revalidate();
-    repaint();
-    fireScaleListeners();
   }
 
   @Override

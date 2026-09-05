@@ -122,6 +122,7 @@ public final class Utils {
       "^(?:([^:\\s]+):)(?://(?:[^?/@\\s]*@)?([^/?\\s]*)/?)?([^?\\s]+)?(?:\\?([^#\\s]*))?(?:#\\S*)?$");
   private static final int MAX_IMAGE_SIDE_SIZE_IN_PIXELS = 350;
   private static final Pattern STRIP_PATTERN = Pattern.compile("^(\\s*)(.*[^\\s])(\\s*)$");
+  private static final String ESC_CATCHER_WIRED_PROPERTY = "mmd.escCatcherWired";
 
   private Utils() {
   }
@@ -906,11 +907,13 @@ public final class Utils {
             topicUnderMouse, pluginMenuItems));
 
     final JMenu exportMenu =
-        UI_COMPO_FACTORY.makeMenu(MmdI18n.getInstance().findBundle().getString("MMDExporters.SubmenuName"));
+        UI_COMPO_FACTORY.makeMenu(
+            MmdI18n.getInstance().findBundle().getString("MMDExporters.SubmenuName"));
     exportMenu.setIcon(ICON_SERVICE.getIconForId(IconID.POPUP_EXPORT));
 
     final JMenu importMenu =
-        UI_COMPO_FACTORY.makeMenu(MmdI18n.getInstance().findBundle().getString("MMDImporters.SubmenuName"));
+        UI_COMPO_FACTORY.makeMenu(
+            MmdI18n.getInstance().findBundle().getString("MMDImporters.SubmenuName"));
     importMenu.setIcon(ICON_SERVICE.getIconForId(IconID.POPUP_IMPORT));
 
     putAllItemsAsSection(result, importMenu,
@@ -965,8 +968,6 @@ public final class Utils {
     return result;
   }
 
-  private static final String ESC_CATCHER_WIRED_PROPERTY = "mmd.escCatcherWired";
-
   private static void replaceActionListenerForButton(final JButton button,
                                                      final ActionListener listener) {
     final ActionListener[] currentListeners = button.getActionListeners();
@@ -991,7 +992,8 @@ public final class Utils {
         } else {
           if (doClose.test(dialog)) {
             close = dialogProvider
-                .msgConfirmOkCancel(dialog, MmdI18n.getInstance().findBundle().getString("Utils.confirmActionTitle"),
+                .msgConfirmOkCancel(dialog,
+                    MmdI18n.getInstance().findBundle().getString("Utils.confirmActionTitle"),
                     MmdI18n.getInstance().findBundle().getString("Utils.closeForContentChange"));
           } else {
             close = true;

@@ -82,7 +82,8 @@ public abstract class AbstractEditor implements TabProvider, Disposable {
     return null;
   }
 
-  public void restoreFromFileItem(@Nonnull final MultiFileContainer.FileItem fileItem) throws IOException {
+  public void restoreFromFileItem(@Nonnull final MultiFileContainer.FileItem fileItem)
+      throws IOException {
 
   }
 
@@ -166,7 +167,8 @@ public abstract class AbstractEditor implements TabProvider, Disposable {
   }
 
   protected boolean isAutoBackupAllowed() {
-    return this.mindMapPanelConfig.getOptionalProperty(AdditionalPreferences.PROPERTY_BACKUP_LAST_EDIT_BEFORE_SAVE, true);
+    return this.mindMapPanelConfig.getOptionalProperty(
+        AdditionalPreferences.PROPERTY_BACKUP_LAST_EDIT_BEFORE_SAVE, true);
   }
 
   public void deleteBackup() {
@@ -180,11 +182,11 @@ public abstract class AbstractEditor implements TabProvider, Disposable {
 
   protected void backup(@Nullable final String text) {
     if (this.isEditable() && !this.isDisposed() && text != null) {
-        final File associatedFile = this.getTabTitle().getAssociatedFile();
-        if (isAutoBackupAllowed() && associatedFile != null) {
-          TextFileBackup.getInstance().add(new TextFileBackup.BackupContent(associatedFile, text));
-        }
+      final File associatedFile = this.getTabTitle().getAssociatedFile();
+      if (isAutoBackupAllowed() && associatedFile != null) {
+        TextFileBackup.getInstance().add(new TextFileBackup.BackupContent(associatedFile, text));
       }
+    }
   }
 
   protected void backup() {

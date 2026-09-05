@@ -280,6 +280,10 @@ public final class MindMapPanelConfig implements Serializable {
     }
   }
 
+  private static Font cloneFont(final Font font) {
+    return new Font(font.getName(), font.getStyle(), font.getSize());
+  }
+
   public boolean isKeyEvent(final String id, final KeyEvent event,
                             final int modifiersMask) {
     if (event == null) {
@@ -594,9 +598,6 @@ public final class MindMapPanelConfig implements Serializable {
     return Float.compare(result, minimal) >= 0 ? result : minimal;
   }
 
-  private static Font cloneFont(final Font font) {
-    return new Font(font.getName(), font.getStyle(), font.getSize());
-  }
   public void makeFullCopyOf(final MindMapPanelConfig src, final boolean copyListeners,
                              final boolean makeNotification) {
     if (src != null) {
@@ -611,8 +612,9 @@ public final class MindMapPanelConfig implements Serializable {
           try {
             Object value = f.get(src);
             if (value instanceof Font) {
-              final Font font = (Font)value;
-              value = cloneFont(font); // prevent possible bugs in deserialization of font object in IDE like IDEA
+              final Font font = (Font) value;
+              value = cloneFont(
+                  font); // prevent possible bugs in deserialization of font object in IDE like IDEA
             }
             f.set(this, value);
           } catch (Exception ex) {

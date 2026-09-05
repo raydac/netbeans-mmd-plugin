@@ -15,35 +15,57 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+
 package com.igormaznitsa.sciareto.notifications;
 
 import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.ui.UiUtils;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Image;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.concurrent.atomic.AtomicInteger;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSeparator;
+import javax.swing.SwingConstants;
 
 final class MessagePanel extends JPanel implements ActionListener {
 
   private static final long serialVersionUID = 4382438833881000822L;
 
-  private static final Icon NIMBUS_CLOSE_ICON = new ImageIcon(UiUtils.loadIcon("nimbusCloseFrame.png")); //NOI18N
+  private static final Icon NIMBUS_CLOSE_ICON =
+      new ImageIcon(UiUtils.loadIcon("nimbusCloseFrame.png")); //NOI18N
 
   private static final AtomicInteger ACTIVE_MESSAGES = new AtomicInteger();
-  
-  MessagePanel(@Nullable final Image icon, @Nullable final String title, @Nonnull final Color background, @Nonnull final JComponent component) {
+
+  MessagePanel(@Nullable final Image icon, @Nullable final String title,
+               @Nonnull final Color background, @Nonnull final JComponent component) {
     super(new GridBagLayout());
     this.setBackground(background);
-    this.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.BLACK), BorderFactory.createEmptyBorder(8, 8, 8, 8)));
+    this.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.BLACK),
+        BorderFactory.createEmptyBorder(8, 8, 8, 8)));
 
     final GridBagConstraints constraints = new GridBagConstraints();
 
-    final JLabel labelTitle = new JLabel(title == null ? "" : title, icon == null ? null : new ImageIcon(icon),SwingConstants.CENTER); //NOI18N
+    final JLabel labelTitle =
+        new JLabel(title == null ? "" : title, icon == null ? null : new ImageIcon(icon),
+            SwingConstants.CENTER); //NOI18N
     labelTitle.setForeground(Color.black);
     constraints.gridx = 0;
     constraints.gridy = 0;
@@ -52,9 +74,9 @@ final class MessagePanel extends JPanel implements ActionListener {
     constraints.weightx = 1000;
     constraints.fill = GridBagConstraints.BOTH;
     constraints.anchor = GridBagConstraints.NORTHWEST;
-    
+
     labelTitle.setFont(labelTitle.getFont().deriveFont(Font.BOLD));
-    
+
     this.add(labelTitle, constraints);
 
     constraints.gridx = 1;
@@ -69,7 +91,7 @@ final class MessagePanel extends JPanel implements ActionListener {
     closeButton.setOpaque(false);
 
     constraints.weightx = 1;
-    
+
     this.add(closeButton, constraints);
 
     constraints.gridx = 0;
@@ -81,7 +103,7 @@ final class MessagePanel extends JPanel implements ActionListener {
     final JSeparator separator = new JSeparator(JSeparator.HORIZONTAL);
     separator.setForeground(Color.DARK_GRAY);
     this.add(separator, constraints);
-    
+
     constraints.gridx = 0;
     constraints.gridy = 2;
     constraints.weightx = 1000;
@@ -90,9 +112,9 @@ final class MessagePanel extends JPanel implements ActionListener {
     this.add(component, constraints);
 
     this.setAlignmentY(Component.RIGHT_ALIGNMENT);
-    
+
     doLayout();
-  
+
     ACTIVE_MESSAGES.incrementAndGet();
   }
 
@@ -107,7 +129,7 @@ final class MessagePanel extends JPanel implements ActionListener {
     final Container parent = this.getParent();
     if (parent != null) {
       parent.remove(this);
-      if (ACTIVE_MESSAGES.decrementAndGet()<=0){
+      if (ACTIVE_MESSAGES.decrementAndGet() <= 0) {
         SciaRetoStarter.getApplicationFrame().getGlassPane().setVisible(false);
       }
       parent.revalidate();

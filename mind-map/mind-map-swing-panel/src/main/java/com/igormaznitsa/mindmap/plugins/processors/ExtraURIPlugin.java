@@ -28,7 +28,8 @@ import javax.swing.Icon;
 
 public class ExtraURIPlugin extends AbstractFocusedTopicPlugin implements ExternallyExecutedPlugin {
 
-  private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_EXTRAS_URI);
+  private static final Icon ICO =
+      ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_EXTRAS_URI);
 
 
   @Override

@@ -39,8 +39,8 @@ import org.openide.util.Lookup;
 )
 public final class MMDCfgOptionsPanelController extends OptionsPanelController {
 
-  private PreferencesPanel panel;
   private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+  private PreferencesPanel panel;
   private boolean changed;
 
   @Override

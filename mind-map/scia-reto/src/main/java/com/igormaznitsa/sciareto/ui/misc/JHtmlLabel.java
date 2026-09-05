@@ -15,6 +15,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+
 package com.igormaznitsa.sciareto.ui.misc;
 
 import static com.igormaznitsa.meta.common.utils.Assertions.assertNotNull;
@@ -45,60 +46,21 @@ import javax.swing.text.html.HTMLDocument;
  * tags then such tags will be added automatically.</b>
  *
  * @author Igor Maznitsa (http://www.igormaznitsa.com)
- *
  * @version 1.00
  */
 public class JHtmlLabel extends JLabel {
 
   private static final long serialVersionUID = -166975925687523220L;
-
-  /**
-   * Listener to get notification about activation of a link.
-   */
-  public interface LinkListener {
-    /**
-     * Called if detected activation of a link placed on the label.
-     * @param source the label, must not be null
-     * @param link the link to be processed, must not be null
-     */
-    void onLinkActivated(@Nonnull JHtmlLabel source, @Nonnull String link);
-  }
-
-  /**
-   * Internal auxiliary class to keep cached parameters of found link elements.
-   */
-  private static final class HtmlLinkAddress {
-
-    private final String address;
-    private final int start;
-    private final int end;
-
-    HtmlLinkAddress(@Nonnull final String address, final int startOffset, final int endOffset) {
-      this.address = address;
-      this.start = startOffset;
-      this.end = endOffset;
-    }
-
-    @Nonnull
-    String getHREF() {
-      return this.address;
-    }
-
-    boolean checkPosition(final int position) {
-      return position >= this.start && position < this.end;
-    }
-  }
-
+  private final transient List<LinkListener> linkListeners = new CopyOnWriteArrayList<>();
   /**
    * Inside cache of detected link elements.
    */
   private transient List<HtmlLinkAddress> linkCache = null;
-
-  private final transient List<LinkListener> linkListeners = new CopyOnWriteArrayList<>();
   private boolean showLinkAddressInToolTip = false;
   private int minClickCountToActivateLink = 1;
 
-  public JHtmlLabel(@Nullable final String text, @Nullable final Icon icon, final int horizontalAlignment) {
+  public JHtmlLabel(@Nullable final String text, @Nullable final Icon icon,
+                    final int horizontalAlignment) {
     super(text, icon, horizontalAlignment);
 
     final JHtmlLabel theInstance = this;
@@ -112,8 +74,7 @@ public class JHtmlLabel extends JLabel {
             setToolTipText(null);
           }
           setCursor(Cursor.getDefaultCursor());
-        }
-        else {
+        } else {
           if (showLinkAddressInToolTip) {
             setToolTipText(link);
           }
@@ -137,7 +98,6 @@ public class JHtmlLabel extends JLabel {
     this.addMouseListener(mouseAdapter);
     this.addMouseMotionListener(mouseAdapter);
   }
-
   public JHtmlLabel(@Nullable final String text, final int horizontalAlignment) {
     this(text, null, horizontalAlignment);
   }
@@ -158,14 +118,14 @@ public class JHtmlLabel extends JLabel {
     this("", null, LEADING); //NOI18N
   }
 
-  public int getMinClickCountToActivateLink(){
+  public int getMinClickCountToActivateLink() {
     return this.minClickCountToActivateLink;
   }
 
-  public void setMinClickCountToActivateLink(final int clickNumber){
+  public void setMinClickCountToActivateLink(final int clickNumber) {
     this.minClickCountToActivateLink = Math.max(1, clickNumber);
   }
-  
+
   public boolean isShowLinkAddressInTooltip() {
     return this.showLinkAddressInToolTip;
   }
@@ -225,7 +185,8 @@ public class JHtmlLabel extends JLabel {
       cacheLinkElements();
     }
 
-    final AccessibleJLabel accessibleJLabel = (AccessibleJLabel) this.getAccessibleContext().getAccessibleComponent();
+    final AccessibleJLabel accessibleJLabel =
+        (AccessibleJLabel) this.getAccessibleContext().getAccessibleComponent();
     final int textIndex = accessibleJLabel.getIndexAtPoint(point);
     for (final HtmlLinkAddress l : this.linkCache) {
       if (l.checkPosition(textIndex)) {
@@ -233,5 +194,43 @@ public class JHtmlLabel extends JLabel {
       }
     }
     return null;
+  }
+
+  /**
+   * Listener to get notification about activation of a link.
+   */
+  public interface LinkListener {
+    /**
+     * Called if detected activation of a link placed on the label.
+     *
+     * @param source the label, must not be null
+     * @param link   the link to be processed, must not be null
+     */
+    void onLinkActivated(@Nonnull JHtmlLabel source, @Nonnull String link);
+  }
+
+  /**
+   * Internal auxiliary class to keep cached parameters of found link elements.
+   */
+  private static final class HtmlLinkAddress {
+
+    private final String address;
+    private final int start;
+    private final int end;
+
+    HtmlLinkAddress(@Nonnull final String address, final int startOffset, final int endOffset) {
+      this.address = address;
+      this.start = startOffset;
+      this.end = endOffset;
+    }
+
+    @Nonnull
+    String getHREF() {
+      return this.address;
+    }
+
+    boolean checkPosition(final int position) {
+      return position >= this.start && position < this.end;
+    }
   }
 }

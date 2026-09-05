@@ -15,6 +15,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+
 package com.igormaznitsa.sciareto.preferences;
 
 import com.igormaznitsa.meta.common.utils.IOUtils;
@@ -46,7 +47,8 @@ public class PreferencesManager {
     if (packedUuid == null) {
       try {
         final UUID newUUID = UUID.randomUUID();
-        packedUuid = Base64.encodeBase64String(IOUtils.packData(newUUID.toString().getBytes("UTF-8"))); //NOI18N
+        packedUuid = Base64.encodeBase64String(
+            IOUtils.packData(newUUID.toString().getBytes("UTF-8"))); //NOI18N
         this.prefs.put(PROPERTY_UUID, packedUuid);
         this.prefs.flush();
         LOGGER.info("Generated new installation UUID : " + newUUID.toString()); //NOI18N
@@ -62,7 +64,8 @@ public class PreferencesManager {
         LOGGER.error("Can't generate UUID", ex); //NOI18N
       }
     }
-    this.installationUUID = UUID.fromString(new String(IOUtils.unpackData(Base64.decodeBase64(packedUuid)), StandardCharsets.UTF_8));
+    this.installationUUID = UUID.fromString(
+        new String(IOUtils.unpackData(Base64.decodeBase64(packedUuid)), StandardCharsets.UTF_8));
     LOGGER.info("Installation UUID : " + this.installationUUID.toString()); //NOI18N
   }
 
@@ -72,7 +75,8 @@ public class PreferencesManager {
   }
 
   @Nullable
-  public Font getFont(@Nonnull final Preferences pref, @Nonnull final String key, @Nullable final Font dflt) {
+  public Font getFont(@Nonnull final Preferences pref, @Nonnull final String key,
+                      @Nullable final Font dflt) {
     synchronized (this.localCache) {
       Font result = (Font) this.localCache.get(key);
       if (result == null) {
@@ -85,7 +89,8 @@ public class PreferencesManager {
     }
   }
 
-  public void setFont(@Nonnull final Preferences pref, @Nonnull final String key, @Nullable final Font font) {
+  public void setFont(@Nonnull final Preferences pref, @Nonnull final String key,
+                      @Nullable final Font font) {
     synchronized (this.localCache) {
       if (font == null) {
         this.localCache.remove(key);
@@ -98,7 +103,8 @@ public class PreferencesManager {
     }
   }
 
-  public boolean getFlag(@Nonnull final Preferences pref, @Nonnull final String key, final boolean dflt) {
+  public boolean getFlag(@Nonnull final Preferences pref, @Nonnull final String key,
+                         final boolean dflt) {
     synchronized (this.localCache) {
       Boolean result = (Boolean) this.localCache.get(key);
       if (result == null) {
@@ -109,7 +115,8 @@ public class PreferencesManager {
     }
   }
 
-  public void setFlag(@Nonnull final Preferences pref, @Nonnull final String key, final boolean flag) {
+  public void setFlag(@Nonnull final Preferences pref, @Nonnull final String key,
+                      final boolean flag) {
     synchronized (this.localCache) {
       this.localCache.put(key, flag);
       pref.put(key, Boolean.toString(flag));

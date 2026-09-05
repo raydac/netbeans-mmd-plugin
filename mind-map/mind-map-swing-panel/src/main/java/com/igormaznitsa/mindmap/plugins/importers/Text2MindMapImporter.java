@@ -34,14 +34,16 @@ import org.apache.commons.io.FileUtils;
 
 public class Text2MindMapImporter extends AbstractImporter {
 
-  private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_IMPORT_TXT2MM);
+  private static final Icon ICO =
+      ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_IMPORT_TXT2MM);
 
   private static final int TAB_POSITIONS = 16;
 
   @Override
   public MindMap doImport(final PluginContext context) throws Exception {
     final File file = this.selectFileForExtension(context,
-        this.getResourceBundle().getString("MMDImporters.Text2MindMap.openDialogTitle"), null, "txt",
+        this.getResourceBundle().getString("MMDImporters.Text2MindMap.openDialogTitle"), null,
+        "txt",
         "text files (.TXT)", this.getResourceBundle().getString("MMDImporters.ApproveImport"));
     MindMap result = null;
     if (file != null) {
@@ -53,8 +55,9 @@ public class Text2MindMapImporter extends AbstractImporter {
 
   MindMap makeFromLines(final List<String> lines) {
     final MindMap result = new MindMap(false);
-    result.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID, IDEBridgeFactory.findInstance()
-        .getIDEGeneratorId());
+    result.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID,
+        IDEBridgeFactory.findInstance()
+            .getIDEGeneratorId());
     final Iterator<String> iterator = lines.iterator();
     final List<TopicData> topicStack = new ArrayList<>();
     while (true) {

@@ -33,6 +33,10 @@ public final class UndoRedoStorage<T> {
 
   private boolean hasUndoStateRemovedForFullBuffer = false;
 
+  public UndoRedoStorage(final int max) {
+    this.maxSize = max;
+  }
+
   @Nonnull
   @MustNotContainNull
   public List<byte[]> historyAsBytes(final int limit,
@@ -54,10 +58,6 @@ public final class UndoRedoStorage<T> {
       }
       this.undoItems.add(converter.apply(item));
     }
-  }
-
-  public UndoRedoStorage(final int max) {
-    this.maxSize = max;
   }
 
   public boolean hasUndo() {

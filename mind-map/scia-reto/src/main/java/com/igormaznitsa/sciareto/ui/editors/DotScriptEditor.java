@@ -15,6 +15,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+
 package com.igormaznitsa.sciareto.ui.editors;
 
 import com.igormaznitsa.sciareto.Context;
@@ -28,7 +29,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
 
 public class DotScriptEditor extends AbstractDotEditor {
-  
+
   public static final Set<String> SUPPORTED_EXTENSIONS = Set.of("gv", "dot");
   public static final String MIME = "text/vnd.graphviz";
   public static final String NEW_TEMPLATE = "digraph graphname {\na -> b -> c;\nb -> d;\n}";
@@ -40,7 +41,8 @@ public class DotScriptEditor extends AbstractDotEditor {
       if (f.isDirectory()) {
         return true;
       }
-      return SUPPORTED_EXTENSIONS.contains(FilenameUtils.getExtension(f.getName()).toLowerCase(Locale.ENGLISH));
+      return SUPPORTED_EXTENSIONS.contains(
+          FilenameUtils.getExtension(f.getName()).toLowerCase(Locale.ENGLISH));
     }
 
     @Override
@@ -50,7 +52,8 @@ public class DotScriptEditor extends AbstractDotEditor {
     }
   };
 
-  public DotScriptEditor(@Nonnull final Context context, @Nonnull final File file) throws IOException {
+  public DotScriptEditor(@Nonnull final Context context, @Nonnull final File file)
+      throws IOException {
     super(context, file);
   }
 
@@ -80,11 +83,11 @@ public class DotScriptEditor extends AbstractDotEditor {
   public String getDefaultExtension() {
     return "gv";
   }
-  
+
   @Override
   @Nonnull
   public FileFilter getFileFilter() {
     return sourceFileFilter;
   }
-  
+
 }

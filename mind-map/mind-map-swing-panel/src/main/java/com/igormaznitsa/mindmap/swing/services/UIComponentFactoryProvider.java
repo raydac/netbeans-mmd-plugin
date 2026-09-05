@@ -24,11 +24,14 @@ public final class UIComponentFactoryProvider {
   private static final UIComponentFactory UI_COMPONENT_FACTORY;
 
   static {
-    final ServiceLoader<UIComponentFactory> service = ServiceLoader.load(UIComponentFactory.class, UIComponentFactoryProvider.class.getClassLoader());
+    final ServiceLoader<UIComponentFactory> service = ServiceLoader.load(UIComponentFactory.class,
+        UIComponentFactoryProvider.class.getClassLoader());
     service.reload();
     final Iterator<UIComponentFactory> iterator = service.iterator();
-    UI_COMPONENT_FACTORY = iterator.hasNext() ? iterator.next() : new DefaultSwingUIComponentService();
-    LoggerFactory.getLogger(UIComponentFactoryProvider.class).info("UI Component factory : " + UI_COMPONENT_FACTORY.getClass().getName());
+    UI_COMPONENT_FACTORY =
+        iterator.hasNext() ? iterator.next() : new DefaultSwingUIComponentService();
+    LoggerFactory.getLogger(UIComponentFactoryProvider.class)
+        .info("UI Component factory : " + UI_COMPONENT_FACTORY.getClass().getName());
   }
 
   public static UIComponentFactory findInstance() {

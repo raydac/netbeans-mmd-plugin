@@ -233,8 +233,9 @@ public final class SourceTextEditor extends AbstractTextEditor {
 
     final JLabel labelCursor = new JLabel("");
 
-    this.editor.addCaretListener((CaretEvent e) -> labelCursor.setText(String.format("%d:%d", this.editor.getCaretLineNumber() + 1,
-        this.editor.getCaretOffsetFromLineStart() + 1)));
+    this.editor.addCaretListener((CaretEvent e) -> labelCursor.setText(
+        String.format("%d:%d", this.editor.getCaretLineNumber() + 1,
+            this.editor.getCaretOffsetFromLineStart() + 1)));
 
     this.labelWordWrap = new JLabel();
     this.currentWrap = Wrap.NO_WRAP;
@@ -329,19 +330,6 @@ public final class SourceTextEditor extends AbstractTextEditor {
     gotoLine(line);
   }
 
-    @Override
-    public boolean isSelectCommandAllowed(@Nonnull final SelectCommand command) {
-        return true;
-    }
-
-    @Override
-    public void doSelectCommand(@Nonnull final SelectCommand command) {
-        switch(command) {
-            case SELECT_ALL: this.editor.selectAll();break;
-            case SELECT_NONE: this.editor.select(0, 0);break;
-        }
-    }
-  
   @Nonnull
   public static FileFilter makeFileFilter() {
     return new FileFilter() {
@@ -358,9 +346,27 @@ public final class SourceTextEditor extends AbstractTextEditor {
       @Override
       @Nonnull
       public String getDescription() {
-        return SrI18n.getInstance().findBundle().getString("editorAbstractPlUml.fileFilter.source.description");
+        return SrI18n.getInstance().findBundle()
+            .getString("editorAbstractPlUml.fileFilter.source.description");
       }
     };
+  }
+
+  @Override
+  public boolean isSelectCommandAllowed(@Nonnull final SelectCommand command) {
+    return true;
+  }
+
+  @Override
+  public void doSelectCommand(@Nonnull final SelectCommand command) {
+    switch (command) {
+      case SELECT_ALL:
+        this.editor.selectAll();
+        break;
+      case SELECT_NONE:
+        this.editor.select(0, 0);
+        break;
+    }
   }
 
   private void updateWrapState() {
@@ -703,6 +709,40 @@ public final class SourceTextEditor extends AbstractTextEditor {
     return Utils.isDataFlavorAvailable(clipboard, DataFlavor.stringFlavor);
   }
 
+  @Nullable
+  @Override
+  public MultiFileContainer.FileItem makeFileItem() throws IOException {
+    final byte[] content = this.editor.getText().getBytes(StandardCharsets.UTF_8);
+    final String caretPosition = Integer.toString(this.editor.getCaretPosition());
+
+    return new MultiFileContainer.FileItem(this.getTabTitle().isChanged(), caretPosition,
+        this.currentTextFile.get()
+            .getFile(), null, content, this.editor.serializeEditHistory(5));
+  }
+
+  @Override
+  public void restoreFromFileItem(@Nonnull MultiFileContainer.FileItem fileItem)
+      throws IOException {
+    this.getTabTitle().setAssociatedFile(fileItem.getFile());
+    if (fileItem.getMainData() != null) {
+      final String content = new String(fileItem.getMainData(), StandardCharsets.UTF_8);
+      this.editor.setText(content);
+    }
+
+    this.editor.deserializeEditHistory(fileItem.getHistory());
+    this.title.setChanged(fileItem.isChanged());
+
+    final String position = fileItem.getPosition();
+    if (!position.trim().isEmpty()) {
+      try {
+        final int caretPosition = Integer.parseInt(position.trim());
+        this.editor.setCaretPosition(caretPosition);
+      } catch (Exception ex) {
+        // ignore
+      }
+    }
+  }
+
   private enum Wrap {
     NO_WRAP(" No wrap "),
     LINE_WRAP("Line wrap");
@@ -757,39 +797,6 @@ public final class SourceTextEditor extends AbstractTextEditor {
     @Override
     public int compareTo(@Nonnull final FormatType that) {
       return this.type.compareTo(that.type);
-    }
-  }
-
-  @Nullable
-  @Override
-  public MultiFileContainer.FileItem makeFileItem() throws IOException {
-    final byte [] content = this.editor.getText().getBytes(StandardCharsets.UTF_8);
-    final String caretPosition = Integer.toString(this.editor.getCaretPosition());
-
-    return new MultiFileContainer.FileItem(this.getTabTitle().isChanged(), caretPosition, this.currentTextFile.get()
-        .getFile(), null, content, this.editor.serializeEditHistory(5));
-  }
-
-  @Override
-  public void restoreFromFileItem(@Nonnull MultiFileContainer.FileItem fileItem)
-      throws IOException {
-    this.getTabTitle().setAssociatedFile(fileItem.getFile());
-    if (fileItem.getMainData() != null) {
-      final String content = new String(fileItem.getMainData(), StandardCharsets.UTF_8);
-      this.editor.setText(content);
-    }
-
-    this.editor.deserializeEditHistory(fileItem.getHistory());
-    this.title.setChanged(fileItem.isChanged());
-
-    final String position = fileItem.getPosition();
-    if (!position.trim().isEmpty()) {
-      try {
-        final int caretPosition = Integer.parseInt(position.trim());
-        this.editor.setCaretPosition(caretPosition);
-      } catch (Exception ex) {
-        // ignore
-      }
     }
   }
 }

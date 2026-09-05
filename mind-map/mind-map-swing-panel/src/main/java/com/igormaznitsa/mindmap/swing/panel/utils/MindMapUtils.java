@@ -318,7 +318,8 @@ public final class MindMapUtils {
                   file.getAbsolutePath()))) {
         return null;
       }
-    } else if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(dottedExtension.toLowerCase(Locale.ENGLISH))) {
+    } else if (!file.getName().toLowerCase(Locale.ENGLISH)
+        .endsWith(dottedExtension.toLowerCase(Locale.ENGLISH))) {
       if (panel.getController().getDialogProvider(panel)
           .msgConfirmYesNo(IDEBridgeFactory.findInstance().findApplicationComponent(),
               MmdI18n.getInstance().findBundle()
@@ -416,7 +417,9 @@ public final class MindMapUtils {
             }
           }
 
-          final Topic newTopic = mostCloseParentTopic == null ? topic.makeChild(textStr.trim(), null) : mostCloseParentTopic.makeChild(textStr.trim(), null);
+          final Topic newTopic =
+              mostCloseParentTopic == null ? topic.makeChild(textStr.trim(), null) :
+                  mostCloseParentTopic.makeChild(textStr.trim(), null);
           topics[index] = newTopic;
           justAddedSibling.add(index);
         }

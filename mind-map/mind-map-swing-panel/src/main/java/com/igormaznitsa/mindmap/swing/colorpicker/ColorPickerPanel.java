@@ -223,19 +223,23 @@ final class ColorPickerPanel {
         final RadioColorButton button;
         switch (i) {
           case 0:
-            button = new RadioColorButton(this, this.cellWidth, this.cellHeight, Color.BLACK, false);
+            button =
+                new RadioColorButton(this, this.cellWidth, this.cellHeight, Color.BLACK, false);
             break;
           case 1:
-            button = new RadioColorButton(this, this.cellWidth, this.cellHeight, Color.DARK_GRAY, false);
+            button =
+                new RadioColorButton(this, this.cellWidth, this.cellHeight, Color.DARK_GRAY, false);
             break;
           case 2:
             button = new RadioColorButton(this, this.cellWidth, this.cellHeight, Color.GRAY, false);
             break;
           case 3:
-            button = new RadioColorButton(this, this.cellWidth, this.cellHeight, Color.LIGHT_GRAY, false);
+            button = new RadioColorButton(this, this.cellWidth, this.cellHeight, Color.LIGHT_GRAY,
+                false);
             break;
           case 4:
-            button = new RadioColorButton(this, this.cellWidth, this.cellHeight, Color.WHITE, false);
+            button =
+                new RadioColorButton(this, this.cellWidth, this.cellHeight, Color.WHITE, false);
             break;
           case 5:
             button = new RadioColorButton(this, this.cellWidth, this.cellHeight, Color.BLUE, false);
@@ -244,22 +248,26 @@ final class ColorPickerPanel {
             button = new RadioColorButton(this, this.cellWidth, this.cellHeight, Color.RED, false);
             break;
           case 7:
-            button = new RadioColorButton(this, this.cellWidth, this.cellHeight, Color.MAGENTA, false);
+            button =
+                new RadioColorButton(this, this.cellWidth, this.cellHeight, Color.MAGENTA, false);
             break;
           case 8:
             button = new RadioColorButton(this, this.cellWidth, this.cellHeight, Color.PINK, false);
             break;
           case 9:
-            button = new RadioColorButton(this, this.cellWidth, this.cellHeight, Color.GREEN, false);
+            button =
+                new RadioColorButton(this, this.cellWidth, this.cellHeight, Color.GREEN, false);
             break;
           case 10:
             button = new RadioColorButton(this, this.cellWidth, this.cellHeight, Color.CYAN, false);
             break;
           case 11:
-            button = new RadioColorButton(this, this.cellWidth, this.cellHeight, Color.YELLOW, false);
+            button =
+                new RadioColorButton(this, this.cellWidth, this.cellHeight, Color.YELLOW, false);
             break;
           case 12:
-            button = new RadioColorButton(this, this.cellWidth, this.cellHeight, Color.ORANGE, false);
+            button =
+                new RadioColorButton(this, this.cellWidth, this.cellHeight, Color.ORANGE, false);
             break;
           default: {
             button = new RadioColorButton(this, this.cellWidth, this.cellHeight,
@@ -275,9 +283,12 @@ final class ColorPickerPanel {
       for (int i = 0; i < totalCells; i++) {
         final RadioColorButton button;
         if (i < predefinedColors.size()) {
-          button = new RadioColorButton(this, this.cellWidth, this.cellHeight, predefinedColors.get(i), false);
+          button =
+              new RadioColorButton(this, this.cellWidth, this.cellHeight, predefinedColors.get(i),
+                  false);
         } else {
-          button = new RadioColorButton(this, this.cellWidth, this.cellHeight, Color.LIGHT_GRAY, false);
+          button =
+              new RadioColorButton(this, this.cellWidth, this.cellHeight, Color.LIGHT_GRAY, false);
         }
         this.panel.add(button);
       }
@@ -313,7 +324,9 @@ final class ColorPickerPanel {
       this.setPreferredSize(size);
       this.setMinimumSize(size);
 
-      this.setBorder(selected ? BorderFactory.createLineBorder(getContrastColor(this.getBackground()), Math.min(this.getWidth() / 3, 4)) : BorderFactory.createEtchedBorder());
+      this.setBorder(selected ?
+          BorderFactory.createLineBorder(getContrastColor(this.getBackground()),
+              Math.min(this.getWidth() / 3, 4)) : BorderFactory.createEtchedBorder());
 
       this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
@@ -350,7 +363,8 @@ final class ColorPickerPanel {
     }
 
     public static Color getContrastColor(final Color color) {
-      final double y = (299 * color.getRed() + 587 * color.getGreen() + 114 * color.getBlue()) / 1000.0d;
+      final double y =
+          (299 * color.getRed() + 587 * color.getGreen() + 114 * color.getBlue()) / 1000.0d;
       return y >= 128.0d ? Color.BLACK : Color.WHITE;
     }
 
@@ -372,7 +386,9 @@ final class ColorPickerPanel {
         }
 
         this.selected = selected;
-        this.setBorder(selected ? BorderFactory.createLineBorder(getContrastColor(this.getBackground()), Math.min(this.getWidth() / 3, 4)) : BorderFactory.createEtchedBorder());
+        this.setBorder(selected ?
+            BorderFactory.createLineBorder(getContrastColor(this.getBackground()),
+                Math.min(this.getWidth() / 3, 4)) : BorderFactory.createEtchedBorder());
         this.revalidate();
         this.repaint();
 

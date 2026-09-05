@@ -27,6 +27,7 @@ public interface CustomTextEditorFactory {
 
   /**
    * Create new custom text editor.
+   *
    * @return custom text editor.
    */
   CustomTextEditor makeCustomTextEditor();

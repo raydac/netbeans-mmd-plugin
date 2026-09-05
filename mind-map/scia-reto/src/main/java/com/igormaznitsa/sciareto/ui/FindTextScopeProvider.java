@@ -15,12 +15,15 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+
 package com.igormaznitsa.sciareto.ui;
 
 import javax.annotation.Nonnull;
 
 public interface FindTextScopeProvider {
-  
+
+  boolean toSearchIn(@Nonnull SearchTextScope scope);
+
   public enum SearchTextScope {
     IN_TOPIC_TEXT,
     IN_TOPIC_NOTES,
@@ -28,6 +31,4 @@ public interface FindTextScopeProvider {
     IN_TOPIC_URI,
     CASE_INSENSETIVE;
   }
-  
-  boolean toSearchIn(@Nonnull SearchTextScope scope);
 }

@@ -184,7 +184,8 @@ public class Freemind2MindMapImporter extends AbstractImporter {
   @Override
   public MindMap doImport(final PluginContext context) throws Exception {
     final File file = this.selectFileForExtension(context,
-        this.getResourceBundle().getString("MMDImporters.Freemind2MindMap.openDialogTitle"), null, "mm",
+        this.getResourceBundle().getString("MMDImporters.Freemind2MindMap.openDialogTitle"), null,
+        "mm",
         "Freemind files (.MM)", this.getResourceBundle().getString("MMDImporters.ApproveImport"));
 
     if (file == null) {
@@ -213,8 +214,9 @@ public class Freemind2MindMapImporter extends AbstractImporter {
     final Map<String, Topic> idTopicMap = new HashMap<>();
     final Map<String, String> linksMap = new HashMap<>();
     final MindMap resultedMap = new MindMap(true);
-    resultedMap.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID, IDEBridgeFactory.findInstance()
-        .getIDEGeneratorId());
+    resultedMap.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID,
+        IDEBridgeFactory.findInstance()
+            .getIDEGeneratorId());
     resultedMap.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_SHOW_JUMPS, "true");
 
     final List<Element> list = Utils.findDirectChildrenForName(rootElement, "node");

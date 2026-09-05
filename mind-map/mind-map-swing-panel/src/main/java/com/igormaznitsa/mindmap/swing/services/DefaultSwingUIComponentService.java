@@ -54,7 +54,8 @@ public class DefaultSwingUIComponentService implements UIComponentFactory {
   }
 
   @Override
-  public JComponent makePanelWithOptions(final DialogProvider dialogProvider, final Set<AbstractParameter<?>> parameters) {
+  public JComponent makePanelWithOptions(final DialogProvider dialogProvider,
+                                         final Set<AbstractParameter<?>> parameters) {
     return DefaultParametersPanelFactory.getInstance().make(dialogProvider, parameters);
   }
 

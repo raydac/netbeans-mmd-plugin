@@ -73,7 +73,7 @@ public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {
   private static final MindMapPluginRegistry INSTANCE = new MindMapPluginRegistry();
   private final List<MindMapPlugin> pluginList = new ArrayList<>();
   private final Map<Class<? extends MindMapPlugin>, List<? extends MindMapPlugin>> FIND_CACHE =
-          new HashMap<>();
+      new HashMap<>();
 
   private MindMapPluginRegistry() {
     this.registerPlugin(new FreeMindExporter());
@@ -119,6 +119,10 @@ public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {
     this.registerPlugin(new ImageVisualAttributePlugin());
   }
 
+  public static MindMapPluginRegistry getInstance() {
+    return INSTANCE;
+  }
+
   public Set<TopicFinder> findAllTopicFinders() {
     final Set<TopicFinder> result = new HashSet<>();
     for (final MindMapPlugin p : this.pluginList) {
@@ -128,10 +132,6 @@ public final class MindMapPluginRegistry implements Iterable<MindMapPlugin> {
     }
 
     return result;
-  }
-
-  public static MindMapPluginRegistry getInstance() {
-    return INSTANCE;
   }
 
   public void registerPlugin(final MindMapPlugin plugin) {

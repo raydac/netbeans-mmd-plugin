@@ -15,6 +15,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+
 package com.igormaznitsa.sciareto.ui.misc;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
@@ -32,6 +33,17 @@ import javax.swing.table.DefaultTableModel;
 
 public class SysFileExtensionEditorPanel extends javax.swing.JPanel {
 
+  // Variables declaration - do not modify//GEN-BEGIN:variables
+  private javax.swing.JButton buttonAddLine;
+  private javax.swing.JButton buttonDeleteLine;
+  private javax.swing.JButton buttonEditLine;
+  private javax.swing.JButton buttonReset;
+  private javax.swing.Box.Filler filler1;
+  private javax.swing.Box.Filler filler2;
+  private javax.swing.JPanel jPanel1;
+  private javax.swing.JScrollPane jScrollPane1;
+  private javax.swing.JTable tableExtensions;
+
   public SysFileExtensionEditorPanel(@Nonnull final String initValue) {
     initComponents();
     this.tableExtensions.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -40,34 +52,7 @@ public class SysFileExtensionEditorPanel extends javax.swing.JPanel {
     updateButtons();
   }
 
-  private void updateButtons() {
-    this.buttonDeleteLine.setEnabled(this.tableExtensions.getSelectedRow() >= 0);
-    this.buttonEditLine.setEnabled(this.tableExtensions.getSelectedRow() >= 0);
-  }
-  
-  private void makeModelAndSetToTable(@Nonnull final String text){
-    final String[] parsed = parseExtensionsAndSortForFirstChar(text);
-
-    final String[][] data = new String[parsed.length][1];
-    for (int i = 0; i < parsed.length; i++) {
-      data[i] = new String[]{parsed[i]};
-    }
-
-    this.tableExtensions.setModel(new DefaultTableModel(data, new Object[]{SrI18n.getInstance().findBundle().getString("panelSysFileExtensionEditor.tableTitle")}));
-    this.tableExtensions.revalidate();
-  }
-  
-  @Nullable
-  public String getValuerNullIfDefault() {
-    final String [] lines = new String[this.tableExtensions.getModel().getRowCount()];
-    for(int i=0; i<this.tableExtensions.getModel().getRowCount(); i++){
-      lines [i] = this.tableExtensions.getModel().getValueAt(i, 0).toString();
-    }
-    final String result = prepareStringFromLines(lines);
-    return result.equals(prepareStringFromLines(parseExtensionsAndSortForFirstChar(SystemFileExtensionManager.getInstance().getDefaultExtensionsAsCommaSeparatedString()))) ? null : result;
-  }
-
-  private static String prepareStringFromLines(@Nonnull @MustNotContainNull final String [] lines) {
+  private static String prepareStringFromLines(@Nonnull @MustNotContainNull final String[] lines) {
     final StringBuilder builder = new StringBuilder();
     for (final String s : lines) {
       for (final String ext : s.split("\\,")) {
@@ -83,144 +68,194 @@ public class SysFileExtensionEditorPanel extends javax.swing.JPanel {
     }
     return builder.toString();
   }
-  
+
   @Nonnull
   @MustNotContainNull
-  private static String [] parseExtensionsAndSortForFirstChar(@Nonnull final String text) {
-   final String [] parsed = text.split("\\,");
-   Arrays.sort(parsed);
-   final List<String> result = new ArrayList<>();
-  
-   final StringBuilder buffer = new StringBuilder();
-   Character curChar = null;
-   for(final String s : parsed) {
-     final String trimmed = s.trim();
-     if (trimmed.isEmpty()) continue;
-     if (curChar == null || curChar != trimmed.charAt(0)) {
-       if (buffer.length()>0) result.add(buffer.toString());
-       curChar = trimmed.charAt(0);
-       buffer.setLength(0);
-       buffer.append(s);
-     } else {
-       if (buffer.length()>0) buffer.append(',');
-       buffer.append(s);
-     }
-   }
-   if (buffer.length()>0) {
-     result.add(buffer.toString());
-   }
-   return result.toArray(new String[result.size()]);
+  private static String[] parseExtensionsAndSortForFirstChar(@Nonnull final String text) {
+    final String[] parsed = text.split("\\,");
+    Arrays.sort(parsed);
+    final List<String> result = new ArrayList<>();
+
+    final StringBuilder buffer = new StringBuilder();
+    Character curChar = null;
+    for (final String s : parsed) {
+      final String trimmed = s.trim();
+      if (trimmed.isEmpty()) {
+        continue;
+      }
+      if (curChar == null || curChar != trimmed.charAt(0)) {
+        if (buffer.length() > 0) {
+          result.add(buffer.toString());
+        }
+        curChar = trimmed.charAt(0);
+        buffer.setLength(0);
+        buffer.append(s);
+      } else {
+        if (buffer.length() > 0) {
+          buffer.append(',');
+        }
+        buffer.append(s);
+      }
+    }
+    if (buffer.length() > 0) {
+      result.add(buffer.toString());
+    }
+    return result.toArray(new String[result.size()]);
   }
-  
+
+  private void updateButtons() {
+    this.buttonDeleteLine.setEnabled(this.tableExtensions.getSelectedRow() >= 0);
+    this.buttonEditLine.setEnabled(this.tableExtensions.getSelectedRow() >= 0);
+  }
+
+  private void makeModelAndSetToTable(@Nonnull final String text) {
+    final String[] parsed = parseExtensionsAndSortForFirstChar(text);
+
+    final String[][] data = new String[parsed.length][1];
+    for (int i = 0; i < parsed.length; i++) {
+      data[i] = new String[] {parsed[i]};
+    }
+
+    this.tableExtensions.setModel(new DefaultTableModel(data, new Object[] {
+        SrI18n.getInstance().findBundle().getString("panelSysFileExtensionEditor.tableTitle")}));
+    this.tableExtensions.revalidate();
+  }
+
+  @Nullable
+  public String getValuerNullIfDefault() {
+    final String[] lines = new String[this.tableExtensions.getModel().getRowCount()];
+    for (int i = 0; i < this.tableExtensions.getModel().getRowCount(); i++) {
+      lines[i] = this.tableExtensions.getModel().getValueAt(i, 0).toString();
+    }
+    final String result = prepareStringFromLines(lines);
+    return result.equals(prepareStringFromLines(parseExtensionsAndSortForFirstChar(
+        SystemFileExtensionManager.getInstance().getDefaultExtensionsAsCommaSeparatedString()))) ?
+        null : result;
+  }
+
   /**
    * This method is called from within the constructor to initialize the form.
    * WARNING: Do NOT modify this code. The content of this method is always
    * regenerated by the Form Editor.
    */
   @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
-        java.awt.GridBagConstraints gridBagConstraints;
+  // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+  private void initComponents() {
+    java.awt.GridBagConstraints gridBagConstraints;
 
-        jPanel1 = new javax.swing.JPanel();
-        buttonAddLine = new javax.swing.JButton();
-        buttonEditLine = new javax.swing.JButton();
-        buttonDeleteLine = new javax.swing.JButton();
-        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
-        buttonReset = new javax.swing.JButton();
-        filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 16), new java.awt.Dimension(0, 16), new java.awt.Dimension(32767, 16));
-        jScrollPane1 = new javax.swing.JScrollPane();
-        tableExtensions = new javax.swing.JTable();
+    jPanel1 = new javax.swing.JPanel();
+    buttonAddLine = new javax.swing.JButton();
+    buttonEditLine = new javax.swing.JButton();
+    buttonDeleteLine = new javax.swing.JButton();
+    filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0),
+        new java.awt.Dimension(0, 32767));
+    buttonReset = new javax.swing.JButton();
+    filler2 =
+        new javax.swing.Box.Filler(new java.awt.Dimension(0, 16), new java.awt.Dimension(0, 16),
+            new java.awt.Dimension(32767, 16));
+    jScrollPane1 = new javax.swing.JScrollPane();
+    tableExtensions = new javax.swing.JTable();
 
-        setLayout(new java.awt.BorderLayout());
+    setLayout(new java.awt.BorderLayout());
 
-        jPanel1.setLayout(new java.awt.GridBagLayout());
+    jPanel1.setLayout(new java.awt.GridBagLayout());
 
-        buttonAddLine.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("panelSysFileExtensionEditor.buttonAdd")); // NOI18N
-        buttonAddLine.setToolTipText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("panelSysFileExtensionEditor.buttonAdd.tooltip")); // NOI18N
-        buttonAddLine.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonAddLineActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        jPanel1.add(buttonAddLine, gridBagConstraints);
+    buttonAddLine.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle()
+        .getString("panelSysFileExtensionEditor.buttonAdd")); // NOI18N
+    buttonAddLine.setToolTipText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle()
+        .getString("panelSysFileExtensionEditor.buttonAdd.tooltip")); // NOI18N
+    buttonAddLine.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        buttonAddLineActionPerformed(evt);
+      }
+    });
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 0;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+    jPanel1.add(buttonAddLine, gridBagConstraints);
 
-        buttonEditLine.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("panelSysFileExtensionEditor.buttonEdit")); // NOI18N
-        buttonEditLine.setToolTipText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("panelSysFileExtensionEditor.buttonEdit.tooltip")); // NOI18N
-        buttonEditLine.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonEditLineActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        jPanel1.add(buttonEditLine, gridBagConstraints);
+    buttonEditLine.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle()
+        .getString("panelSysFileExtensionEditor.buttonEdit")); // NOI18N
+    buttonEditLine.setToolTipText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle()
+        .getString("panelSysFileExtensionEditor.buttonEdit.tooltip")); // NOI18N
+    buttonEditLine.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        buttonEditLineActionPerformed(evt);
+      }
+    });
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 1;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+    jPanel1.add(buttonEditLine, gridBagConstraints);
 
-        buttonDeleteLine.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("panelSysFileExtensionEditor.buttonDelete")); // NOI18N
-        buttonDeleteLine.setToolTipText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("panelSysFileExtensionEditor.buttonDelete.tooltip")); // NOI18N
-        buttonDeleteLine.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonDeleteLineActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        jPanel1.add(buttonDeleteLine, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 5;
-        gridBagConstraints.weighty = 1000.0;
-        jPanel1.add(filler1, gridBagConstraints);
+    buttonDeleteLine.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle()
+        .getString("panelSysFileExtensionEditor.buttonDelete")); // NOI18N
+    buttonDeleteLine.setToolTipText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle()
+        .getString("panelSysFileExtensionEditor.buttonDelete.tooltip")); // NOI18N
+    buttonDeleteLine.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        buttonDeleteLineActionPerformed(evt);
+      }
+    });
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 2;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+    jPanel1.add(buttonDeleteLine, gridBagConstraints);
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 5;
+    gridBagConstraints.weighty = 1000.0;
+    jPanel1.add(filler1, gridBagConstraints);
 
-        buttonReset.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("panelSysFileExtensionEditor.buttonReset")); // NOI18N
-        buttonReset.setToolTipText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("panelSysFileExtensionEditor.buttonReset.tooltip")); // NOI18N
-        buttonReset.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonResetActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        jPanel1.add(buttonReset, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
-        jPanel1.add(filler2, gridBagConstraints);
+    buttonReset.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle()
+        .getString("panelSysFileExtensionEditor.buttonReset")); // NOI18N
+    buttonReset.setToolTipText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle()
+        .getString("panelSysFileExtensionEditor.buttonReset.tooltip")); // NOI18N
+    buttonReset.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        buttonResetActionPerformed(evt);
+      }
+    });
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 4;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+    jPanel1.add(buttonReset, gridBagConstraints);
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 3;
+    jPanel1.add(filler2, gridBagConstraints);
 
-        add(jPanel1, java.awt.BorderLayout.LINE_END);
+    add(jPanel1, java.awt.BorderLayout.LINE_END);
 
-        tableExtensions.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
-        jScrollPane1.setViewportView(tableExtensions);
+    tableExtensions.setModel(new javax.swing.table.DefaultTableModel(
+        new Object[][] {
+            {null, null, null, null},
+            {null, null, null, null},
+            {null, null, null, null},
+            {null, null, null, null}
+        },
+        new String[] {
+            "Title 1", "Title 2", "Title 3", "Title 4"
+        }
+    ));
+    jScrollPane1.setViewportView(tableExtensions);
 
-        add(jScrollPane1, java.awt.BorderLayout.CENTER);
-    }// </editor-fold>//GEN-END:initComponents
+    add(jScrollPane1, java.awt.BorderLayout.CENTER);
+  }// </editor-fold>//GEN-END:initComponents
 
-  private void buttonResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonResetActionPerformed
-    makeModelAndSetToTable(SystemFileExtensionManager.getInstance().getDefaultExtensionsAsCommaSeparatedString());
+  private void buttonResetActionPerformed(
+      java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonResetActionPerformed
+    makeModelAndSetToTable(
+        SystemFileExtensionManager.getInstance().getDefaultExtensionsAsCommaSeparatedString());
   }//GEN-LAST:event_buttonResetActionPerformed
 
-  private void buttonAddLineActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAddLineActionPerformed
-    ((DefaultTableModel)this.tableExtensions.getModel()).insertRow(0, new String[]{""});
+  private void buttonAddLineActionPerformed(
+      java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAddLineActionPerformed
+    ((DefaultTableModel) this.tableExtensions.getModel()).insertRow(0, new String[] {""});
     this.tableExtensions.requestFocus();
     SwingUtilities.invokeLater(() -> {
       this.tableExtensions.setRowSelectionInterval(0, 0);
@@ -228,25 +263,16 @@ public class SysFileExtensionEditorPanel extends javax.swing.JPanel {
     });
   }//GEN-LAST:event_buttonAddLineActionPerformed
 
-  private void buttonEditLineActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonEditLineActionPerformed
+  private void buttonEditLineActionPerformed(
+      java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonEditLineActionPerformed
     this.tableExtensions.editCellAt(this.tableExtensions.getSelectedRow(), 0);
   }//GEN-LAST:event_buttonEditLineActionPerformed
 
-  private void buttonDeleteLineActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDeleteLineActionPerformed
-    ((DefaultTableModel)this.tableExtensions.getModel()).removeRow(this.tableExtensions.getSelectedRow());
+  private void buttonDeleteLineActionPerformed(
+      java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDeleteLineActionPerformed
+    ((DefaultTableModel) this.tableExtensions.getModel()).removeRow(
+        this.tableExtensions.getSelectedRow());
   }//GEN-LAST:event_buttonDeleteLineActionPerformed
-
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton buttonAddLine;
-    private javax.swing.JButton buttonDeleteLine;
-    private javax.swing.JButton buttonEditLine;
-    private javax.swing.JButton buttonReset;
-    private javax.swing.Box.Filler filler1;
-    private javax.swing.Box.Filler filler2;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable tableExtensions;
-    // End of variables declaration//GEN-END:variables
+  // End of variables declaration//GEN-END:variables
 
 }

@@ -15,22 +15,23 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+
 package com.igormaznitsa.sciareto;
 
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
+import com.igormaznitsa.sciareto.ui.tree.NodeFileOrFolder;
+import com.igormaznitsa.sciareto.ui.tree.NodeProject;
+import com.igormaznitsa.sciareto.ui.tree.NodeProjectGroup;
 import java.io.File;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.sciareto.ui.tree.NodeProject;
-import com.igormaznitsa.sciareto.ui.tabs.TabTitle;
-import com.igormaznitsa.sciareto.ui.tree.NodeFileOrFolder;
-import com.igormaznitsa.sciareto.ui.tree.NodeProjectGroup;
 
 public interface Context {
 
   static String KNOWLEDGE_FOLDER = ".projectKnowledge";
-  
+
   @Nullable
   NodeProject findProjectForFile(@Nonnull File file);
 
@@ -47,27 +48,29 @@ public interface Context {
   boolean focusInTree(@Nonnull TabTitle title);
 
   boolean focusInTree(@Nonnull File file);
-  
+
   boolean safeCloseEditorsForFile(@Nonnull File file);
 
   void showFindTextPane(@Nullable String text);
-  
+
   void hideFindTextPane();
-  
-  boolean showGraphMindMapFileLinksDialog(@Nullable File projectFolder, @Nullable File file, final boolean openIfSelected);
-  
+
+  boolean showGraphMindMapFileLinksDialog(@Nullable File projectFolder, @Nullable File file,
+                                          final boolean openIfSelected);
+
   @Nullable
   TabTitle getFocusedTab();
-  
+
   @Nullable
   File createMindMapFile(@Nonnull File folder);
 
   void notifyReloadConfig();
 
   boolean deleteTreeNode(@Nonnull NodeFileOrFolder node);
-  
-  void notifyFileRenamed(@Nullable @MustNotContainNull List<File> affectedFiles, @Nonnull File oldFile, @Nonnull File newFile);
- 
+
+  void notifyFileRenamed(@Nullable @MustNotContainNull List<File> affectedFiles,
+                         @Nonnull File oldFile, @Nonnull File newFile);
+
   void notifyUpdateRedoUndo();
 
   boolean hasUnsavedDocument();

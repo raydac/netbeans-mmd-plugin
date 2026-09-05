@@ -15,6 +15,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+
 package com.igormaznitsa.sciareto.ui.editors;
 
 import java.io.File;
@@ -42,7 +43,8 @@ public final class TextFile {
     this.contentRef.set(content);
   }
 
-  public TextFile(@Nonnull final File file, final boolean setContentIntoRef, @Nonnull final byte [] content) {
+  public TextFile(@Nonnull final File file, final boolean setContentIntoRef,
+                  @Nonnull final byte[] content) {
     this.file = file;
     this.length = content.length;
     this.hash = DigestUtils.digest(DigestUtils.getSha256Digest(), content);
@@ -50,22 +52,22 @@ public final class TextFile {
       this.contentRef.set(content);
     }
   }
-  
+
   @Nonnull
   public File getFile() {
     return this.file;
   }
-  
+
   @Nullable
   public byte[] getContent() {
     return this.contentRef.get();
   }
-  
+
   @Nonnull
   public String readContentAsUtf8() {
     return new String(this.readContent(), StandardCharsets.UTF_8);
   }
-  
+
   @Nonnull
   public byte[] readContent() {
     final byte[] result = this.contentRef.getAndSet(null);

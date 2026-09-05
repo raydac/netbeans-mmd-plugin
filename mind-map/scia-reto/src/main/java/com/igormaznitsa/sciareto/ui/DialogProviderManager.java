@@ -44,29 +44,36 @@ public final class DialogProviderManager {
     @Override
     public void msgError(@Nullable final Component parentComponent, @Nonnull final String text) {
       JOptionPane
-          .showMessageDialog(GetUtils.ensureNonNull(parentComponent, SciaRetoStarter.getApplicationFrame()),
-              text, SrI18n.getInstance().findBundle().getString("dialogProvider.error.title"), JOptionPane.ERROR_MESSAGE);
+          .showMessageDialog(
+              GetUtils.ensureNonNull(parentComponent, SciaRetoStarter.getApplicationFrame()),
+              text, SrI18n.getInstance().findBundle().getString("dialogProvider.error.title"),
+              JOptionPane.ERROR_MESSAGE);
     }
 
     @Override
     public void msgInfo(@Nullable final Component parentComponent, @Nonnull final String text) {
       JOptionPane
-          .showMessageDialog(GetUtils.ensureNonNull(parentComponent, SciaRetoStarter.getApplicationFrame()),
-              text, SrI18n.getInstance().findBundle().getString("dialogProvider.info.title"), JOptionPane.INFORMATION_MESSAGE);
+          .showMessageDialog(
+              GetUtils.ensureNonNull(parentComponent, SciaRetoStarter.getApplicationFrame()),
+              text, SrI18n.getInstance().findBundle().getString("dialogProvider.info.title"),
+              JOptionPane.INFORMATION_MESSAGE);
     }
 
     @Override
     public void msgWarn(@Nullable Component parentComponent, @Nonnull final String text) {
       JOptionPane
-          .showMessageDialog(GetUtils.ensureNonNull(parentComponent, SciaRetoStarter.getApplicationFrame()),
-              text, SrI18n.getInstance().findBundle().getString("dialogProvider.warning.title"), JOptionPane.WARNING_MESSAGE);
+          .showMessageDialog(
+              GetUtils.ensureNonNull(parentComponent, SciaRetoStarter.getApplicationFrame()),
+              text, SrI18n.getInstance().findBundle().getString("dialogProvider.warning.title"),
+              JOptionPane.WARNING_MESSAGE);
     }
 
     @Override
     public boolean msgConfirmOkCancel(@Nullable Component parentComponent,
                                       @Nonnull final String title, @Nonnull final String question) {
       return JOptionPane
-          .showConfirmDialog(GetUtils.ensureNonNull(parentComponent, SciaRetoStarter.getApplicationFrame()),
+          .showConfirmDialog(
+              GetUtils.ensureNonNull(parentComponent, SciaRetoStarter.getApplicationFrame()),
               question, title, JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION;
     }
 
@@ -74,7 +81,8 @@ public final class DialogProviderManager {
     public boolean msgOkCancel(@Nullable Component parentComponent, @Nonnull final String title,
                                @Nonnull final JComponent component) {
       return JOptionPane
-          .showConfirmDialog(GetUtils.ensureNonNull(parentComponent, SciaRetoStarter.getApplicationFrame()),
+          .showConfirmDialog(
+              GetUtils.ensureNonNull(parentComponent, SciaRetoStarter.getApplicationFrame()),
               component, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null) ==
           JOptionPane.OK_OPTION;
     }
@@ -83,7 +91,8 @@ public final class DialogProviderManager {
     public boolean msgConfirmYesNo(@Nullable final Component parentComponent,
                                    @Nonnull final String title, @Nonnull final String question) {
       return JOptionPane
-          .showConfirmDialog(GetUtils.ensureNonNull(parentComponent, SciaRetoStarter.getApplicationFrame()),
+          .showConfirmDialog(
+              GetUtils.ensureNonNull(parentComponent, SciaRetoStarter.getApplicationFrame()),
               question, title, JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
     }
 
@@ -93,7 +102,8 @@ public final class DialogProviderManager {
                                          @Nonnull final String title,
                                          @Nonnull final String question) {
       final int result = JOptionPane
-          .showConfirmDialog(GetUtils.ensureNonNull(parentComponent, SciaRetoStarter.getApplicationFrame()),
+          .showConfirmDialog(
+              GetUtils.ensureNonNull(parentComponent, SciaRetoStarter.getApplicationFrame()),
               question, title, JOptionPane.YES_NO_CANCEL_OPTION);
       if (result == JOptionPane.CANCEL_OPTION) {
         return null;
@@ -132,8 +142,8 @@ public final class DialogProviderManager {
 
       File result = null;
       if (fileChooser.showDialog(GetUtils.ensureNonNull(
-          parentComponent == null ? null : SwingUtilities.windowForComponent(parentComponent),
-          SciaRetoStarter.getApplicationFrame()),
+              parentComponent == null ? null : SwingUtilities.windowForComponent(parentComponent),
+              SciaRetoStarter.getApplicationFrame()),
           approveButtonText) == JFileChooser.APPROVE_OPTION
       ) {
         result = cacheSaveFileThroughDialog.put(id, fileChooser.getSelectedFile());
@@ -174,8 +184,8 @@ public final class DialogProviderManager {
 
       File result = null;
       if (fileChooser.showDialog(GetUtils.ensureNonNull(
-          parentComponent == null ? null : SwingUtilities.windowForComponent(parentComponent),
-          SciaRetoStarter.getApplicationFrame()),
+              parentComponent == null ? null : SwingUtilities.windowForComponent(parentComponent),
+              SciaRetoStarter.getApplicationFrame()),
           approveButtonText) == JFileChooser.APPROVE_OPTION) {
         result = cacheOpenFileThroughDialog.put(id, fileChooser.getSelectedFile());
       }

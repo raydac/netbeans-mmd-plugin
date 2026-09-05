@@ -13,8 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.nbmindmap.nb.services;
 
+import com.igormaznitsa.commons.version.Version;
+import com.igormaznitsa.meta.common.utils.Assertions;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.swing.ide.IDEBridge;
+import com.igormaznitsa.mindmap.swing.ide.NotificationType;
+import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import java.awt.Image;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,19 +35,11 @@ import javax.swing.ImageIcon;
 import org.openide.LifecycleManager;
 import org.openide.awt.NotificationDisplayer;
 import org.openide.util.ImageUtilities;
-import com.igormaznitsa.commons.version.Version;
-import com.igormaznitsa.meta.common.utils.Assertions;
-import com.igormaznitsa.mindmap.model.logger.Logger;
-import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
-import com.igormaznitsa.mindmap.swing.ide.IDEBridge;
-import com.igormaznitsa.mindmap.swing.ide.NotificationType;
-import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 
 public class NbIDEBridge implements IDEBridge {
 
-  private final Version ideVersion;
-
   private static final Logger LOGGER = LoggerFactory.getLogger(NbIDEBridge.class);
+  private final Version ideVersion;
   private final Map<String, Image> IMAGE_CACHE = new HashMap<String, Image>();
 
   public NbIDEBridge() {
@@ -49,8 +49,18 @@ public class NbIDEBridge implements IDEBridge {
     } else if (versionInfo.equalsIgnoreCase("dev")) {
       this.ideVersion = new Version("netbeans-8.1-dev");
     } else {
-      this.ideVersion = new Version(versionInfo.replace(' ', '-')).changePrefix("netbeans").changePostfix("");
+      this.ideVersion =
+          new Version(versionInfo.replace(' ', '-')).changePrefix("netbeans").changePostfix("");
     }
+  }
+
+  @Nonnull
+  private static String removeStartSlash(@Nonnull final String path) {
+    String result = path;
+    if (path.startsWith("/") || path.startsWith("\\")) {
+      result = result.substring(1);
+    }
+    return result;
   }
 
   @Override
@@ -66,7 +76,8 @@ public class NbIDEBridge implements IDEBridge {
   }
 
   @Override
-  public void showIDENotification(@Nonnull final String title, @Nonnull final String message, @Nonnull final NotificationType type) {
+  public void showIDENotification(@Nonnull final String title, @Nonnull final String message,
+                                  @Nonnull final NotificationType type) {
     final NotificationDisplayer.Priority priority;
     final NotificationDisplayer.Category category;
     final ImageIcon icon;
@@ -81,7 +92,8 @@ public class NbIDEBridge implements IDEBridge {
       case WARNING: {
         priority = NotificationDisplayer.Priority.HIGH;
         category = NotificationDisplayer.Category.WARNING;
-        icon = ImageUtilities.loadImageIcon("org/netbeans/core/windows/resources/warning.png", false);
+        icon =
+            ImageUtilities.loadImageIcon("org/netbeans/core/windows/resources/warning.png", false);
         LOGGER.warn("IDENotification : (" + title + ") " + message);
       }
       break;
@@ -95,7 +107,8 @@ public class NbIDEBridge implements IDEBridge {
       default: {
         priority = NotificationDisplayer.Priority.NORMAL;
         category = NotificationDisplayer.Category.WARNING;
-        icon = ImageUtilities.loadImageIcon("org/netbeans/core/windows/resources/warning.png", false);
+        icon =
+            ImageUtilities.loadImageIcon("org/netbeans/core/windows/resources/warning.png", false);
         LOGGER.warn("*IDENotification : (" + title + ") " + message);
       }
       break;
@@ -112,20 +125,11 @@ public class NbIDEBridge implements IDEBridge {
 
   @Override
   public void notifyRestart() {
-    try{
+    try {
       LifecycleManager.getDefault().markForRestart();
-    }catch(Exception ex){
-      LOGGER.error("Can't restart IDE for error",ex);
+    } catch (Exception ex) {
+      LOGGER.error("Can't restart IDE for error", ex);
     }
-  }
-
-  @Nonnull
-  private static String removeStartSlash(@Nonnull final String path) {
-    String result = path;
-    if (path.startsWith("/") || path.startsWith("\\")) {
-      result = result.substring(1);
-    }
-    return result;
   }
 
   @Override
@@ -135,7 +139,8 @@ public class NbIDEBridge implements IDEBridge {
     synchronized (IMAGE_CACHE) {
       image = IMAGE_CACHE.get(path);
       if (image == null) {
-        final InputStream in = klazz.getClassLoader().getResourceAsStream(Assertions.assertNotNull("Icon path must not be null", removeStartSlash(path)));
+        final InputStream in = klazz.getClassLoader().getResourceAsStream(
+            Assertions.assertNotNull("Icon path must not be null", removeStartSlash(path)));
         if (in == null) {
           throw new IllegalArgumentException("Can't find icon resource : " + path);
         }
@@ -149,5 +154,5 @@ public class NbIDEBridge implements IDEBridge {
     }
     return new ImageIcon(image);
   }
-  
+
 }

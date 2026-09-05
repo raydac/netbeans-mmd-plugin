@@ -25,11 +25,13 @@ public class IDEBridgeFactory {
   private static final IDEBridge IDE_INFO_PROVIDER;
 
   static {
-    final ServiceLoader<IDEBridge> service = ServiceLoader.load(IDEBridge.class, IDEBridge.class.getClassLoader());
+    final ServiceLoader<IDEBridge> service =
+        ServiceLoader.load(IDEBridge.class, IDEBridge.class.getClassLoader());
     service.reload();
     final Iterator<IDEBridge> iterator = service.iterator();
     IDE_INFO_PROVIDER = iterator.hasNext() ? iterator.next() : new DefaultIDEBridge();
-    LoggerFactory.getLogger(UIComponentFactoryProvider.class).info("IDE Info provider factory : " + IDE_INFO_PROVIDER.getClass().getName());
+    LoggerFactory.getLogger(UIComponentFactoryProvider.class)
+        .info("IDE Info provider factory : " + IDE_INFO_PROVIDER.getClass().getName());
   }
 
   public static IDEBridge findInstance() {

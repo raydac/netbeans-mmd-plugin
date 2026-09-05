@@ -50,7 +50,8 @@ public abstract class AbstractDotEditor extends AbstractPlUmlEditor {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractDotEditor.class);
 
-  public AbstractDotEditor(@Nonnull final Context context, @Nonnull final File file) throws IOException {
+  public AbstractDotEditor(@Nonnull final Context context, @Nonnull final File file)
+      throws IOException {
     super(context, file);
   }
 
@@ -112,14 +113,19 @@ public abstract class AbstractDotEditor extends AbstractPlUmlEditor {
       final byte[] formedContent = bos.toByteArray();
 
       if (processState.differs(ProcessState.TERMINATED_OK())) {
-        throw new IllegalStateException(String.format(SrI18n.getInstance().findBundle().getString("editorDot.cantRenderImage"),processState));
+        throw new IllegalStateException(
+            String.format(SrI18n.getInstance().findBundle().getString("editorDot.cantRenderImage"),
+                processState));
       } else if (formedContent.length == 0) {
-        throw new IllegalArgumentException(SrI18n.getInstance().findBundle().getString("editorDot.cantRenderSyntaxError"));
+        throw new IllegalArgumentException(
+            SrI18n.getInstance().findBundle().getString("editorDot.cantRenderSyntaxError"));
       } else {
         return formedContent;
       }
     } else {
-      throw new IllegalStateException(String.format(SrI18n.getInstance().findBundle().getString("editorDot.cantRenderStatusNotOk"),state.getTextMessage()));
+      throw new IllegalStateException(String.format(
+          SrI18n.getInstance().findBundle().getString("editorDot.cantRenderStatusNotOk"),
+          state.getTextMessage()));
     }
   }
 
@@ -131,7 +137,8 @@ public abstract class AbstractDotEditor extends AbstractPlUmlEditor {
       @Nonnull final AtomicReference<Exception> error
   ) {
     if (text.trim().isEmpty()) {
-      error.set(new IllegalArgumentException(SrI18n.getInstance().findBundle().getString("editorDot.emptyText")));
+      error.set(new IllegalArgumentException(
+          SrI18n.getInstance().findBundle().getString("editorDot.emptyText")));
       return;
     }
 

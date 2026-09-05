@@ -15,6 +15,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+
 package com.igormaznitsa.sciareto.ui.tree;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
@@ -49,15 +50,15 @@ import reactor.core.publisher.Mono;
 
 public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
 
+  public static final Pattern FILE_NAME =
+      Pattern.compile("^[^\\+\\*\\?\\{\\}\\&\\|\\;\\:\\\\\\/]+$"); //NOI18N
+  private static final Logger LOGGER = LoggerFactory.getLogger(NodeProjectGroup.class);
   protected final String groupName;
   protected final List<TreeModelListener> listeners = new CopyOnWriteArrayList<>();
   private final Context context;
 
-  public static final Pattern FILE_NAME = Pattern.compile("^[^\\+\\*\\?\\{\\}\\&\\|\\;\\:\\\\\\/]+$"); //NOI18N
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(NodeProjectGroup.class);
-
-  public NodeProjectGroup(@Nonnull final Predicate<NodeFileOrFolder> predicateShowHiddenFiles, @Nonnull final Context context, @Nonnull final String name) {
+  public NodeProjectGroup(@Nonnull final Predicate<NodeFileOrFolder> predicateShowHiddenFiles,
+                          @Nonnull final Context context, @Nonnull final String name) {
     super(predicateShowHiddenFiles, null, true, ".", false); //NOI18N
     this.groupName = name;
     this.context = context;
@@ -84,7 +85,8 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
   public void removeProject(@Nonnull final NodeProject project) {
     int index = this.children.indexOf(project);
     if (index >= 0 && this.children.remove(project)) {
-      final TreeModelEvent event = new TreeModelEvent(this, new Object[]{this}, new int[]{index}, new Object[]{project});
+      final TreeModelEvent event =
+          new TreeModelEvent(this, new Object[] {this}, new int[] {index}, new Object[] {project});
       this.listeners.forEach((l) -> {
         l.treeNodesRemoved(event);
       });
@@ -96,7 +98,9 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
   @Override
   public Mono<NodeFileOrFolder> readSubtree(final boolean addHiddenFilesAndFolders) {
     this.children.forEach(proj -> {
-      ((NodeProject)proj).initLoading(proj.readSubtree(addHiddenFilesAndFolders).subscribeOn(MainFrame.REACTOR_SCHEDULER).subscribe());
+      ((NodeProject) proj).initLoading(
+          proj.readSubtree(addHiddenFilesAndFolders).subscribeOn(MainFrame.REACTOR_SCHEDULER)
+              .subscribe());
     });
     return Mono.just(this);
   }
@@ -110,7 +114,8 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
       final int index = this.children.size();
       this.children.add(newProject);
 
-      final TreeModelEvent event = new TreeModelEvent(this, new Object[]{this}, new int[]{index}, new Object[]{newProject});
+      final TreeModelEvent event = new TreeModelEvent(this, new Object[] {this}, new int[] {index},
+          new Object[] {newProject});
       for (final TreeModelListener l : this.listeners) {
         l.treeNodesInserted(event);
       }
@@ -158,10 +163,13 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
 
           if (!oldExtension.equals(newExtension)) {
             if (DialogProviderManager.getInstance().getDialogProvider().msgConfirmYesNo(
-                SciaRetoStarter.getApplicationFrame(), 
-                SrI18n.getInstance().findBundle().getString("nodeProjectGroup.msgChangedExtension.title"),
-                String.format(SrI18n.getInstance().findBundle().getString("nodeProjectGroup.msgChangedExtension.msg"),oldExtension))) {
-              newFileName = FilenameUtils.getBaseName(newFileName) + (oldExtension.isEmpty() ? "" : '.' + oldExtension); //NOI18N
+                SciaRetoStarter.getApplicationFrame(),
+                SrI18n.getInstance().findBundle()
+                    .getString("nodeProjectGroup.msgChangedExtension.title"),
+                String.format(SrI18n.getInstance().findBundle()
+                    .getString("nodeProjectGroup.msgChangedExtension.msg"), oldExtension))) {
+              newFileName = FilenameUtils.getBaseName(newFileName) +
+                  (oldExtension.isEmpty() ? "" : '.' + oldExtension); //NOI18N
             }
           }
 
@@ -193,11 +201,13 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
 
               if (doIt) {
                 if (!origFile.renameTo(newFile)) {
-                    throw new IOException("Can't rename " + origFile.getName() + " to " + newFile.getName());
+                  throw new IOException(
+                      "Can't rename " + origFile.getName() + " to " + newFile.getName());
                 }
                 editedNode.setName(newFile.getName());
 
-                final TreeModelEvent renamedEvent = new TreeModelEvent(this, editedNode.makeTreePath());
+                final TreeModelEvent renamedEvent =
+                    new TreeModelEvent(this, editedNode.makeTreePath());
                 for (final TreeModelListener l : listeners) {
                   l.treeNodesChanged(renamedEvent);
                 }
@@ -210,14 +220,17 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
               LOGGER.error("Can't rename file", ex); //NOI18N
               DialogProviderManager.getInstance().getDialogProvider().msgError(
                   SciaRetoStarter.getApplicationFrame(),
-                  String.format(SrI18n.getInstance().findBundle().getString("nodeProjectGroup.errorCantRename.msg"), newValue));
+                  String.format(SrI18n.getInstance().findBundle()
+                      .getString("nodeProjectGroup.errorCantRename.msg"), newValue));
             }
           }
         }
       }
     } else {
-      DialogProviderManager.getInstance().getDialogProvider().msgError(SciaRetoStarter.getApplicationFrame(),
-          String.format(SrI18n.getInstance().findBundle().getString("nodeProjectGroup.errorInappropriateFileName.msg"), newFileName));
+      DialogProviderManager.getInstance().getDialogProvider()
+          .msgError(SciaRetoStarter.getApplicationFrame(),
+              String.format(SrI18n.getInstance().findBundle()
+                  .getString("nodeProjectGroup.errorInappropriateFileName.msg"), newFileName));
     }
   }
 
@@ -239,7 +252,8 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
   void notifyProjectStateChanged(@Nonnull final NodeProject project) {
     Assertions.assertTrue("Must belong the group", project.getGroup() == this);
 
-    final TreeModelEvent event = new TreeModelEvent(this, new TreePath(new Object[]{this, project}));
+    final TreeModelEvent event =
+        new TreeModelEvent(this, new TreePath(new Object[] {this, project}));
 
     Utils.safeSwingCall(() -> {
       for (final TreeModelListener l : listeners) {
@@ -271,29 +285,34 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
       }
     }
     if (path != null) {
-      path = new TreePath(ArrayUtils.joinArrays(new Object[]{this}, path.getPath()));
+      path = new TreePath(ArrayUtils.joinArrays(new Object[] {this}, path.getPath()));
     }
     return path;
   }
 
-  public void startProjectFolderRefresh(@Nonnull final NodeProject nodeProject, @Nullable @MustNotContainNull final Runnable... invokeLater) {
+  public void startProjectFolderRefresh(@Nonnull final NodeProject nodeProject,
+                                        @Nullable @MustNotContainNull
+                                        final Runnable... invokeLater) {
     final int index = this.getIndex(nodeProject);
     if (index >= 0) {
-      SciaRetoStarter.getApplicationFrame().asyncReloadProject(nodeProject, ArrayUtils.joinArrays(invokeLater, new Runnable[]{
-          () -> nodeProject.fireNotifySubtreeChanged(NodeProjectGroup.this, listeners)}));
+      SciaRetoStarter.getApplicationFrame()
+          .asyncReloadProject(nodeProject, ArrayUtils.joinArrays(invokeLater, new Runnable[] {
+              () -> nodeProject.fireNotifySubtreeChanged(NodeProjectGroup.this, listeners)}));
     }
   }
 
-  public void cancelLoading(){
-      this.children.forEach((p) -> {
-          ((NodeProject)p).cancelLoading();
-      });
+  public void cancelLoading() {
+    this.children.forEach((p) -> {
+      ((NodeProject) p).cancelLoading();
+    });
   }
-  
+
   public boolean deleteNode(@Nonnull final NodeFileOrFolder node, final boolean notifyListeners) {
     final NodeFileOrFolder parentNode = node.getNodeParent();
     if (parentNode != null) {
-      final TreeModelEvent event = new TreeModelEvent(this, parentNode.makeTreePath(), new int[]{node.getIndexAtParent()}, new Object[]{node});
+      final TreeModelEvent event =
+          new TreeModelEvent(this, parentNode.makeTreePath(), new int[] {node.getIndexAtParent()},
+              new Object[] {node});
       if (parentNode.deleteChild(node)) {
         if (notifyListeners) {
           for (final TreeModelListener l : this.listeners) {
@@ -307,9 +326,12 @@ public class NodeProjectGroup extends NodeFileOrFolder implements TreeModel {
   }
 
   @Nonnull
-  public NodeFileOrFolder addChild(@Nonnull final NodeFileOrFolder folder, @Nonnull final File childFile) throws IOException {
+  public NodeFileOrFolder addChild(@Nonnull final NodeFileOrFolder folder,
+                                   @Nonnull final File childFile) throws IOException {
     final NodeFileOrFolder newNode = folder.addFile(childFile);
-    final TreeModelEvent event = new TreeModelEvent(this, folder.makeTreePath(), new int[]{newNode.getIndexAtParent()}, new Object[]{newNode});
+    final TreeModelEvent event =
+        new TreeModelEvent(this, folder.makeTreePath(), new int[] {newNode.getIndexAtParent()},
+            new Object[] {newNode});
     for (final TreeModelListener l : this.listeners) {
       l.treeNodesInserted(event);
     }

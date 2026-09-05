@@ -25,10 +25,14 @@ public enum MouseButton {
 
   public boolean match(final MouseEvent event) {
     switch (this) {
-      case BUTTON_1: return event.getButton() == MouseEvent.BUTTON1;
-      case BUTTON_2: return event.getButton() == MouseEvent.BUTTON2;
-      case BUTTON_3: return event.getButton() == MouseEvent.BUTTON3;
-      default: throw new Error("Unexpected error");
+      case BUTTON_1:
+        return event.getButton() == MouseEvent.BUTTON1;
+      case BUTTON_2:
+        return event.getButton() == MouseEvent.BUTTON2;
+      case BUTTON_3:
+        return event.getButton() == MouseEvent.BUTTON3;
+      default:
+        throw new Error("Unexpected error");
     }
   }
 }

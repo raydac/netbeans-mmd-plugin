@@ -1097,6 +1097,7 @@ public final class Topic implements Serializable, Constants, Iterable<Topic> {
 
   /**
    * Get number of children in the topic
+   *
    * @return number of children
    */
   public int size() {

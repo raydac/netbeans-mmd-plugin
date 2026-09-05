@@ -35,8 +35,8 @@ public class ScaleStatusIndicator extends JLabel {
   private final Scalable observableObject;
 
   private final String textTemplate;
-     
-  
+
+
   public ScaleStatusIndicator(@Nonnull final Scalable observableObject, final boolean darkScheme) {
     super();
     this.observableObject = Assertions.assertNotNull(observableObject);
@@ -60,7 +60,7 @@ public class ScaleStatusIndicator extends JLabel {
   }
 
   public void doZoomIn() {
-     this.observableObject.doZoomIn();
+    this.observableObject.doZoomIn();
   }
 
   public void doZoomOut() {
@@ -99,13 +99,13 @@ public class ScaleStatusIndicator extends JLabel {
 
     float getScale();
 
+    void setScale(float scale);
+
     void doZoomIn();
 
     void doZoomOut();
 
     void doZoomReset();
-
-    void setScale(float scale);
 
     void addScaleListener(ActionListener scaleListener);
 

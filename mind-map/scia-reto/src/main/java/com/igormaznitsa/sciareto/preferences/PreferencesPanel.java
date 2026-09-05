@@ -60,7 +60,7 @@ public final class PreferencesPanel extends AbstractPreferencesPanel
     implements AdditionalPreferences {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PreferencesPanel.class);
-  
+
   private FontSelectPanel fontSelectPanelTextEditor;
   private JComboBox<PlantUmlSecurityProfile> comboBoxPlantUmlSecurityProfile;
   private JCheckBox checkBoxShowHiddenFiles;
@@ -115,8 +115,9 @@ public final class PreferencesPanel extends AbstractPreferencesPanel
         new DefaultComboBoxModel<>(PlantUmlSecurityProfile.values()));
 
     this.checkBoxTryKeepNonSavedDocs = uiComponentFactory.makeCheckBox();
-    this.checkBoxTryKeepNonSavedDocs.setText(bundle.getString("PreferencesPanel.tryKeepNonSavedDocs"));
-    
+    this.checkBoxTryKeepNonSavedDocs.setText(
+        bundle.getString("PreferencesPanel.tryKeepNonSavedDocs"));
+
     this.checkBoxShowHiddenFiles = uiComponentFactory.makeCheckBox();
     this.checkBoxShowHiddenFiles.setText(bundle.getString("PreferencesPanel.checkShowHiddenFiles"));
 
@@ -193,7 +194,8 @@ public final class PreferencesPanel extends AbstractPreferencesPanel
   @Nonnull
   @MustNotContainNull
   @Override
-  public List<ButtonInfo> findButtonInfo(@Nonnull final UIComponentFactory uiComponentFactory, @Nonnull final DialogProvider dialogProvider) {
+  public List<ButtonInfo> findButtonInfo(@Nonnull final UIComponentFactory uiComponentFactory,
+                                         @Nonnull final DialogProvider dialogProvider) {
     final ResourceBundle bundle = SrI18n.getInstance().findBundle();
     final List<ButtonInfo> list = new ArrayList<>();
 

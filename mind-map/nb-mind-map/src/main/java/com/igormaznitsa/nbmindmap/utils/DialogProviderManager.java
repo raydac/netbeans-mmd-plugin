@@ -20,11 +20,9 @@ import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import java.awt.Component;
 import java.awt.KeyboardFocusManager;
-import java.awt.Window;
 import java.io.File;
 import javax.annotation.Nonnull;
 import javax.swing.JComponent;
-import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 import org.openide.filesystems.FileChooserBuilder;
 

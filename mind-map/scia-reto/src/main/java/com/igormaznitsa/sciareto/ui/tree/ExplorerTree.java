@@ -94,7 +94,8 @@ public final class ExplorerTree extends JScrollPane {
 
   private final ResourceBundle bundle = SrI18n.getInstance().findBundle();
 
-  public ExplorerTree(@Nonnull final Predicate<NodeFileOrFolder> predicateShowHiddenFiles, @Nonnull final Context context) throws IOException {
+  public ExplorerTree(@Nonnull final Predicate<NodeFileOrFolder> predicateShowHiddenFiles,
+                      @Nonnull final Context context) throws IOException {
     super();
     this.projectTree = new DnDTree();
     this.context = context;
@@ -106,7 +107,8 @@ public final class ExplorerTree extends JScrollPane {
     ToolTipManager.sharedInstance().registerComponent(this.projectTree);
 
     this.projectTree.setCellRenderer(new TreeCellRenderer());
-    this.projectTree.setModel(new NodeProjectGroup(predicateShowHiddenFiles, context, ".")); //NOI18N
+    this.projectTree.setModel(
+        new NodeProjectGroup(predicateShowHiddenFiles, context, ".")); //NOI18N
     this.projectTree.setRootVisible(false);
     this.setViewportView(this.projectTree);
     UiUtils.hideContainerBorder(this);

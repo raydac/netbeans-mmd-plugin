@@ -21,7 +21,6 @@ import static java.util.Objects.requireNonNull;
 import com.igormaznitsa.mindmap.swing.services.CustomTextEditor;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.Consumer;
 import javax.swing.JComponent;
 import javax.swing.JTextArea;
 import javax.swing.event.UndoableEditListener;

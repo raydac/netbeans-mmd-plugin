@@ -21,9 +21,9 @@ package com.igormaznitsa.sciareto.preferences;
 
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.sciareto.ui.editors.PlantUmlSecurityProfile;
+import java.awt.Font;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.awt.*;
 
 public final class PrefUtils {
   public static final String ENV_PLANTUML_LIMIT_SIZE = "PLANTUML_LIMIT_SIZE";
@@ -33,8 +33,11 @@ public final class PrefUtils {
 
   }
 
-  public static void setPlantUmlSecurityProfileAsSystemProperty(@Nonnull final MindMapPanelConfig config) {
-    final PlantUmlSecurityProfile currentProfile = config.getOptionalProperty(AdditionalPreferences.PROPERTY_PLANTUML_SECURITY_PROFILE, PlantUmlSecurityProfile.LEGACY);
+  public static void setPlantUmlSecurityProfileAsSystemProperty(
+      @Nonnull final MindMapPanelConfig config) {
+    final PlantUmlSecurityProfile currentProfile =
+        config.getOptionalProperty(AdditionalPreferences.PROPERTY_PLANTUML_SECURITY_PROFILE,
+            PlantUmlSecurityProfile.LEGACY);
     System.setProperty(ENV_PLANTUML_SECURITY_PROFILE, currentProfile.name());
   }
 

@@ -15,6 +15,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+
 package com.igormaznitsa.sciareto.ui.editors.mmeditors;
 
 import com.igormaznitsa.mindmap.model.Topic;
@@ -31,8 +32,13 @@ public class MindMapTreeCellRenderer extends DefaultTreeCellRenderer {
 
   @Override
   @Nonnull
-  public Component getTreeCellRendererComponent(@Nonnull final JTree tree, @Nonnull final Object value, final boolean sel, final boolean expanded, final boolean leaf, final int row, final boolean hasFocus) {
-    final DefaultTreeCellRenderer result = (DefaultTreeCellRenderer) super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
+  public Component getTreeCellRendererComponent(@Nonnull final JTree tree,
+                                                @Nonnull final Object value, final boolean sel,
+                                                final boolean expanded, final boolean leaf,
+                                                final int row, final boolean hasFocus) {
+    final DefaultTreeCellRenderer result =
+        (DefaultTreeCellRenderer) super.getTreeCellRendererComponent(tree, value, sel, expanded,
+            leaf, row, hasFocus);
     if (value instanceof Topic) {
       result.setIcon(getIconForTopic((Topic) value));
       result.setText(extractTextFromTopic((Topic) value));

@@ -64,7 +64,8 @@ public final class PlantUmlTextEditor extends AbstractPlUmlEditor {
       @Override
       @Nonnull
       public String getDescription() {
-        return SrI18n.getInstance().findBundle().getString("editorAbstractPlUml.fileFilter.puml.description");
+        return SrI18n.getInstance().findBundle()
+            .getString("editorAbstractPlUml.fileFilter.puml.description");
       }
     };
   }
@@ -73,8 +74,10 @@ public final class PlantUmlTextEditor extends AbstractPlUmlEditor {
   protected void addComponentsToLeftPart(@Nonnull final JPanel menuPanel,
                                          @Nonnull final GridBagConstraints constraints) {
     menuPanel.add(makeLinkLabel(bundle.getString("editorPlantUml.buttonPlantUmlManual.title"),
-        () -> UiUtils.openLocalResourceInDesktop(String.format("help/PlantUML_Language_Reference_Guide_%s.pdf",
-            LocalizationController.getInstance().getLanguage().getLocalePlantUmlManual().getLanguage())),
+        () -> UiUtils.openLocalResourceInDesktop(
+            String.format("help/PlantUML_Language_Reference_Guide_%s.pdf",
+                LocalizationController.getInstance().getLanguage().getLocalePlantUmlManual()
+                    .getLanguage())),
         bundle.getString("editorPlantUml.buttonPlantUmlManual.tooltip"), ICON_INFO), constraints);
     menuPanel.add(makeLinkLabel(bundle.getString("editorPlantUml.buttonAsciiMathManual.title"),
         "http://asciimath.org/", bundle.getString("editorPlantUml.buttonAsciiMathManual.tooltip"),

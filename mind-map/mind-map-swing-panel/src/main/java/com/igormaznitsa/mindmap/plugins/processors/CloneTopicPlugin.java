@@ -27,7 +27,8 @@ import javax.swing.Icon;
 
 public class CloneTopicPlugin extends AbstractFocusedTopicPlugin {
 
-  private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_CLONE_TOPIC);
+  private static final Icon ICO =
+      ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_CLONE_TOPIC);
 
   @Override
   public int getOrder() {
@@ -57,7 +58,8 @@ public class CloneTopicPlugin extends AbstractFocusedTopicPlugin {
           .msgConfirmYesNoCancel(
               IDEBridgeFactory.findInstance().findApplicationComponent(),
               this.getResourceBundle().getString("MindMapPanel.titleCloneTopicRequest"),
-              this.getResourceBundle().getString("MindMapPanel.cloneTopicSubtreeRequestMsg")) : Boolean.FALSE;
+              this.getResourceBundle().getString("MindMapPanel.cloneTopicSubtreeRequestMsg")) :
+          Boolean.FALSE;
       if (cloneSubtree == null) {
         return;
       }

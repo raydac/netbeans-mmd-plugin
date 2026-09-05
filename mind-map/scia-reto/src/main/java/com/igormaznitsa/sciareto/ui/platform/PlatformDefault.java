@@ -15,6 +15,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+
 package com.igormaznitsa.sciareto.ui.platform;
 
 import javax.annotation.Nonnull;
@@ -23,11 +24,12 @@ class PlatformDefault implements Platform {
 
   @Override
   public void init() {
-    
+
   }
 
   @Override
-  public boolean registerPlatformMenuEvent(@Nonnull final PlatformMenuEvent event, @Nonnull final PlatformMenuAction listener) {
+  public boolean registerPlatformMenuEvent(@Nonnull final PlatformMenuEvent event,
+                                           @Nonnull final PlatformMenuAction listener) {
     return false;
   }
 
@@ -39,7 +41,7 @@ class PlatformDefault implements Platform {
 
   @Override
   public void dispose() {
-    
+
   }
 
   @Override

@@ -187,7 +187,8 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
       collapsatorX = this.bounds.getWidth() + COLLAPSATORDISTANCE;
     }
 
-    this.collapsatorZone.setRect(collapsatorX, (this.bounds.getHeight() - COLLAPSATORSIZE) / 2, COLLAPSATORSIZE, COLLAPSATORSIZE);
+    this.collapsatorZone.setRect(collapsatorX, (this.bounds.getHeight() - COLLAPSATORSIZE) / 2,
+        COLLAPSATORSIZE, COLLAPSATORSIZE);
 
     if (!this.isCollapsed()) {
       final double vertInset = cfg.getOtherLevelVerticalInset() * cfg.getScale();
@@ -204,7 +205,8 @@ public abstract class AbstractCollapsableElement extends AbstractElement {
           notFirstChild = true;
         }
         final AbstractElement w = (AbstractElement) Objects.requireNonNull(t.getPayload());
-        w.alignElementAndChildren(cfg, leftSide, leftSide ? childrenX - w.getBlockSize().getWidth() : childrenX, currentY);
+        w.alignElementAndChildren(cfg, leftSide,
+            leftSide ? childrenX - w.getBlockSize().getWidth() : childrenX, currentY);
         currentY += w.getBlockSize().getHeight();
       }
     }

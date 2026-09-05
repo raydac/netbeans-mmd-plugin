@@ -439,22 +439,36 @@ public final class UiUtils {
           @Override
           protected Icon findToolbarIconForId(@Nonnull final IconId iconId) {
             switch (iconId) {
-              case BROWSE: return new ImageIcon(Objects.requireNonNull(UiUtils.loadIcon("link16.png")));
-              case COPY: return new ImageIcon(Objects.requireNonNull(UiUtils.loadIcon("page_copy16.png")));
-              case CLEARALL: return new ImageIcon(Objects.requireNonNull(UiUtils.loadIcon("cross16.png")));
-              case EXPORT: return new ImageIcon(Objects.requireNonNull(UiUtils.loadIcon("file_save16.png")));
-              case IMPORT: return new ImageIcon(Objects.requireNonNull(UiUtils.loadIcon("disk16.png")));
-              case PASSWORD_OFF: return new ImageIcon(Objects.requireNonNull(UiUtils.loadIcon("set_password16.png")));
-              case PASSWORD_ON: return new ImageIcon(Objects.requireNonNull(UiUtils.loadIcon("set_password16on.png")));
-              case REDO: return new ImageIcon(Objects.requireNonNull(UiUtils.loadIcon("redo.png")));
-              case UNDO: return new ImageIcon(Objects.requireNonNull(UiUtils.loadIcon("undo.png")));
-              case PASTE: return new ImageIcon(Objects.requireNonNull(UiUtils.loadIcon("paste_plain16.png")));
-              default: return null;
+              case BROWSE:
+                return new ImageIcon(Objects.requireNonNull(UiUtils.loadIcon("link16.png")));
+              case COPY:
+                return new ImageIcon(Objects.requireNonNull(UiUtils.loadIcon("page_copy16.png")));
+              case CLEARALL:
+                return new ImageIcon(Objects.requireNonNull(UiUtils.loadIcon("cross16.png")));
+              case EXPORT:
+                return new ImageIcon(Objects.requireNonNull(UiUtils.loadIcon("file_save16.png")));
+              case IMPORT:
+                return new ImageIcon(Objects.requireNonNull(UiUtils.loadIcon("disk16.png")));
+              case PASSWORD_OFF:
+                return new ImageIcon(
+                    Objects.requireNonNull(UiUtils.loadIcon("set_password16.png")));
+              case PASSWORD_ON:
+                return new ImageIcon(
+                    Objects.requireNonNull(UiUtils.loadIcon("set_password16on.png")));
+              case REDO:
+                return new ImageIcon(Objects.requireNonNull(UiUtils.loadIcon("redo.png")));
+              case UNDO:
+                return new ImageIcon(Objects.requireNonNull(UiUtils.loadIcon("undo.png")));
+              case PASTE:
+                return new ImageIcon(Objects.requireNonNull(UiUtils.loadIcon("paste_plain16.png")));
+              default:
+                return null;
             }
           }
 
           @Override
-          public void onBrowseUri(@Nonnull final URI uri, final boolean preferInternalBrowser) throws Exception {
+          public void onBrowseUri(@Nonnull final URI uri, final boolean preferInternalBrowser)
+              throws Exception {
             UiUtils.browseURI(uri, false);
           }
         };

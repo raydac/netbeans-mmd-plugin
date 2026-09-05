@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.nbmindmap.nb.refactoring.gui;
 
 import java.awt.Component;
@@ -41,7 +42,8 @@ import org.openide.util.Lookup;
 
 public final class MovePanel extends javax.swing.JPanel implements CustomRefactoringPanel {
 
-  public static final ResourceBundle BUNDLE = ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle");
+  public static final ResourceBundle BUNDLE =
+      ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle");
   private static final long serialVersionUID = -5276978458284047575L;
 
   private final AtomicBoolean initialized = new AtomicBoolean();
@@ -50,6 +52,12 @@ public final class MovePanel extends javax.swing.JPanel implements CustomRefacto
   private final FileObject[] files;
   private final ChangeListener parent;
   private final Map<Project, String[]> cachedFolders = new HashMap<Project, String[]>();
+  // Variables declaration - do not modify//GEN-BEGIN:variables
+  private javax.swing.JComboBox comboFolders;
+  private javax.swing.JComboBox comboProjects;
+  private javax.swing.JLabel labelFolder;
+  private javax.swing.JLabel labelMessage;
+  private javax.swing.JLabel labelProject;
 
   public MovePanel(final Lookup lookup, final FileObject[] files, final ChangeListener parent) {
     initComponents();
@@ -83,9 +91,9 @@ public final class MovePanel extends javax.swing.JPanel implements CustomRefacto
   private void initValues() {
     final String text;
     if (this.files.length > 1) {
-      text = String.format(BUNDLE.getString("MovePanel.multiFileText"), Integer.toString(this.files.length));
-    }
-    else {
+      text = String.format(BUNDLE.getString("MovePanel.multiFileText"),
+          Integer.toString(this.files.length));
+    } else {
       text = String.format(BUNDLE.getString("MovePanel.singleFileText"), this.files[0].getName());
     }
     this.labelMessage.setText(text);
@@ -94,7 +102,8 @@ public final class MovePanel extends javax.swing.JPanel implements CustomRefacto
     for (final Project p : OpenProjects.getDefault().getOpenProjects()) {
       projects.add(p);
     }
-    final ComboBoxModel<Project> projectModel = new DefaultComboBoxModel<Project>(projects.toArray(new Project[projects.size()]));
+    final ComboBoxModel<Project> projectModel =
+        new DefaultComboBoxModel<Project>(projects.toArray(new Project[projects.size()]));
 
     final ItemListener listener = new ItemListener() {
       @Override
@@ -102,8 +111,7 @@ public final class MovePanel extends javax.swing.JPanel implements CustomRefacto
         if (comboProjects.equals(e.getSource())) {
           updateFolders();
           parent.stateChanged(null);
-        }
-        else if (comboFolders.equals(e.getSource())) {
+        } else if (comboFolders.equals(e.getSource())) {
           parent.stateChanged(null);
         }
       }
@@ -127,7 +135,8 @@ public final class MovePanel extends javax.swing.JPanel implements CustomRefacto
             final Project proj = FileOwnerQuery.getOwner(fo);
             if (proj != null) {
               this.comboProjects.setSelectedItem(proj);
-              this.comboFolders.setSelectedItem(FileUtil.getRelativePath(proj.getProjectDirectory(), fo));
+              this.comboFolders.setSelectedItem(
+                  FileUtil.getRelativePath(proj.getProjectDirectory(), fo));
             }
           }
         }
@@ -141,8 +150,7 @@ public final class MovePanel extends javax.swing.JPanel implements CustomRefacto
 
     if (project == null || folder == null) {
       return null;
-    }
-    else {
+    } else {
       return project.getProjectDirectory().getFileObject(folder);
     }
   }
@@ -151,8 +159,7 @@ public final class MovePanel extends javax.swing.JPanel implements CustomRefacto
     final Project project = (Project) this.comboProjects.getSelectedItem();
     if (project == null) {
       this.comboFolders.setModel(new DefaultComboBoxModel());
-    }
-    else {
+    } else {
       String[] foldersForProject = this.cachedFolders.get(project);
 
       if (foldersForProject == null) {
@@ -174,7 +181,8 @@ public final class MovePanel extends javax.swing.JPanel implements CustomRefacto
     return result.toArray(new String[result.size()]);
   }
 
-  private void getFolders(final FileObject root, final FileObject folder, final List<String> result) {
+  private void getFolders(final FileObject root, final FileObject folder,
+                          final List<String> result) {
     for (final FileObject c : folder.getChildren()) {
       if (c.isFolder()) {
         result.add(FileUtil.getRelativePath(root, c));
@@ -198,61 +206,65 @@ public final class MovePanel extends javax.swing.JPanel implements CustomRefacto
     comboFolders = new javax.swing.JComboBox();
     labelMessage = new javax.swing.JLabel();
 
-    java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
-    org.openide.awt.Mnemonics.setLocalizedText(labelProject, bundle.getString("MovePanel.labelProject.text")); // NOI18N
+    java.util.ResourceBundle bundle =
+        java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(labelProject,
+        bundle.getString("MovePanel.labelProject.text")); // NOI18N
 
-    comboProjects.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+    comboProjects.setModel(new javax.swing.DefaultComboBoxModel(
+        new String[] {"Item 1", "Item 2", "Item 3", "Item 4"}));
 
-    org.openide.awt.Mnemonics.setLocalizedText(labelFolder, bundle.getString("MovePanel.labelFolder.text")); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(labelFolder,
+        bundle.getString("MovePanel.labelFolder.text")); // NOI18N
 
-    comboFolders.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+    comboFolders.setModel(new javax.swing.DefaultComboBoxModel(
+        new String[] {"Item 1", "Item 2", "Item 3", "Item 4"}));
 
-    labelMessage.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/logo/logo16.png"))); // NOI18N
+    labelMessage.setIcon(new javax.swing.ImageIcon(
+        getClass().getResource("/com/igormaznitsa/nbmindmap/icons/logo/logo16.png"))); // NOI18N
     org.openide.awt.Mnemonics.setLocalizedText(labelMessage, "..."); // NOI18N
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
     this.setLayout(layout);
     layout.setHorizontalGroup(
-      layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(layout.createSequentialGroup()
-        .addContainerGap()
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(labelMessage, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addGroup(layout.createSequentialGroup()
-            .addGap(3, 3, 3)
-            .addComponent(labelFolder)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(comboFolders, 0, 319, Short.MAX_VALUE))
-          .addGroup(layout.createSequentialGroup()
-            .addComponent(labelProject)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(comboProjects, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-        .addContainerGap())
+        layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(labelMessage, javax.swing.GroupLayout.DEFAULT_SIZE,
+                        javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(3, 3, 3)
+                        .addComponent(labelFolder)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(comboFolders, 0, 319, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(labelProject)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(comboProjects, 0, javax.swing.GroupLayout.DEFAULT_SIZE,
+                            Short.MAX_VALUE)))
+                .addContainerGap())
     );
     layout.setVerticalGroup(
-      layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(layout.createSequentialGroup()
-        .addContainerGap()
-        .addComponent(labelMessage)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(comboProjects, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(labelProject))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(comboFolders, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(labelFolder))
-        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(labelMessage)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(comboProjects, javax.swing.GroupLayout.PREFERRED_SIZE,
+                        javax.swing.GroupLayout.DEFAULT_SIZE,
+                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(labelProject))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(comboFolders, javax.swing.GroupLayout.PREFERRED_SIZE,
+                        javax.swing.GroupLayout.DEFAULT_SIZE,
+                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(labelFolder))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
   }// </editor-fold>//GEN-END:initComponents
-
-
-  // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JComboBox comboFolders;
-  private javax.swing.JComboBox comboProjects;
-  private javax.swing.JLabel labelFolder;
-  private javax.swing.JLabel labelMessage;
-  private javax.swing.JLabel labelProject;
   // End of variables declaration//GEN-END:variables
 
 }

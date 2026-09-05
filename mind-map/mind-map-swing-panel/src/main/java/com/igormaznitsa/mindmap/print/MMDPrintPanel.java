@@ -24,7 +24,6 @@ import com.igormaznitsa.mindmap.swing.panel.HasPreferredFocusComponent;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
-import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -55,15 +54,19 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
-import javax.swing.JToolBar;
 
 public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent {
 
   static final Color BORDER_COLOR = Color.GRAY;
-  static final Stroke BORDER_STYLE = new BasicStroke(1f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 1f, new float[] {1f, 3f}, 0f);
-  private static final Icon ICO_PRINTER = ImageIconServiceProvider.findInstance().getIconForId(IconID.ICON_PRINTER);
-  private static final Icon ICO_PAGE = ImageIconServiceProvider.findInstance().getIconForId(IconID.ICON_PAGE);
-  private static final Icon ICO_OPTIONS = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_OPTIONS);
+  static final Stroke BORDER_STYLE =
+      new BasicStroke(1f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 1f, new float[] {1f, 3f},
+          0f);
+  private static final Icon ICO_PRINTER =
+      ImageIconServiceProvider.findInstance().getIconForId(IconID.ICON_PRINTER);
+  private static final Icon ICO_PAGE =
+      ImageIconServiceProvider.findInstance().getIconForId(IconID.ICON_PAGE);
+  private static final Icon ICO_OPTIONS =
+      ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_OPTIONS);
   private static final long serialVersionUID = -2588424836865316862L;
   private static final Logger LOGGER = LoggerFactory.getLogger(MMDPrintPanel.class);
   private final Pages previewContainer;
@@ -75,12 +78,11 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
   private final DialogProvider dialogProvider;
   private final int SCROLL_UNIT = 16;
   private final int SCROLL_BLOCK = SCROLL_UNIT * 8;
+  private final ResourceBundle resourceBundle = MmdI18n.getInstance().findBundle();
   private PageFormat pageFormat;
   private double pageZoomFactor;
   private PrintPage[][] pages;
   private MMDPrintOptions options = new MMDPrintOptions();
-
-  private final ResourceBundle resourceBundle = MmdI18n.getInstance().findBundle();
 
   public MMDPrintPanel(
       final UIComponentFactory uiComponentFactory,
@@ -109,8 +111,8 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
     toolBarConstraints.weightx = 1;
     toolBarConstraints.weighty = 1;
     toolBarConstraints.gridy = 0;
-    toolBarConstraints.fill= GridBagConstraints.BOTH;
-    toolBarConstraints.insets = new Insets(3,3,3,3);
+    toolBarConstraints.fill = GridBagConstraints.BOTH;
+    toolBarConstraints.insets = new Insets(3, 3, 3, 3);
 
     final JButton buttonPrint = uiComponentFactory.makeButton();
     buttonPrint.setText(this.resourceBundle.getString("MMDPrintPanel.PrintPages"));
@@ -323,8 +325,9 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
   }
 
   private void splitToPagesForCurrentFormat() {
-    final MMDPrint printer = new MMDPrint(this.printableObject, (int) this.pageFormat.getImageableWidth(),
-        (int) this.pageFormat.getImageableHeight(), this.options);
+    final MMDPrint printer =
+        new MMDPrint(this.printableObject, (int) this.pageFormat.getImageableWidth(),
+            (int) this.pageFormat.getImageableHeight(), this.options);
     this.pages = printer.getPages();
   }
 

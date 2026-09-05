@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.nbmindmap.nb.refactoring.gui;
 
 import java.awt.Component;
@@ -24,36 +25,38 @@ import org.netbeans.api.project.Project;
 import org.netbeans.api.project.ProjectInformation;
 import org.netbeans.api.project.ProjectUtils;
 
-public class ProjectCellRenderer extends JLabel implements ListCellRenderer, UIResource{
+public class ProjectCellRenderer extends JLabel implements ListCellRenderer, UIResource {
 
   private static final long serialVersionUID = -9028250303574049796L;
 
-  public ProjectCellRenderer(){
+  public ProjectCellRenderer() {
     super();
     setOpaque(true);
   }
-  
+
   @Override
-  public Component getListCellRendererComponent(final JList list, final Object value, final int index, final boolean isSelected, final boolean cellHasFocus) {
-    if (!(value instanceof Project)){
+  public Component getListCellRendererComponent(final JList list, final Object value,
+                                                final int index, final boolean isSelected,
+                                                final boolean cellHasFocus) {
+    if (!(value instanceof Project)) {
       return this;
     }
-    
+
     setName("ComboBox.listRenderer");
-    
-    final ProjectInformation info = ProjectUtils.getInformation((Project)value);
+
+    final ProjectInformation info = ProjectUtils.getInformation((Project) value);
     setText(info.getDisplayName());
     setIcon(info.getIcon());
-    
-    if (isSelected){
+
+    if (isSelected) {
       setBackground(list.getSelectionBackground());
       setForeground(list.getSelectionForeground());
-    }else{
+    } else {
       setBackground(list.getBackground());
       setForeground(list.getForeground());
     }
-    
+
     return this;
   }
-  
+
 }

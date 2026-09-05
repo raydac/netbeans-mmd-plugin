@@ -56,14 +56,16 @@ import org.json.JSONObject;
 
 public class Mindmup2MindMapImporter extends AbstractImporter {
 
-  private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_EXPORT_MINDMUP);
+  private static final Icon ICO =
+      ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_EXPORT_MINDMUP);
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Mindmup2MindMapImporter.class);
 
   @Override
   public MindMap doImport(final PluginContext context) throws Exception {
     final File file = this.selectFileForExtension(context,
-        this.getResourceBundle().getString("MMDImporters.Mindmup2MindMap.openDialogTitle"), null, "mup",
+        this.getResourceBundle().getString("MMDImporters.Mindmup2MindMap.openDialogTitle"), null,
+        "mup",
         "Mindmup files (.MUP)", this.getResourceBundle().getString("MMDImporters.ApproveImport"));
 
     if (file == null) {
@@ -88,8 +90,9 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
       throw new IllegalArgumentException("Can't find formatVersion");
     }
     final MindMap resultedMap = new MindMap(true);
-    resultedMap.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID, IDEBridgeFactory.findInstance()
-        .getIDEGeneratorId());
+    resultedMap.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID,
+        IDEBridgeFactory.findInstance()
+            .getIDEGeneratorId());
     resultedMap.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_SHOW_JUMPS, "true");
 
     final Topic mindMapRoot = requireNonNull(resultedMap.getRoot());

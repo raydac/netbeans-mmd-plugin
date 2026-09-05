@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.nbmindmap.nb.refactoring.elements;
 
 import com.igormaznitsa.mindmap.model.MMapURI;
@@ -49,14 +50,18 @@ import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.util.Lookup;
 
-public abstract class AbstractPlugin<T extends AbstractRefactoring> extends ProgressProviderAdapter implements RefactoringPlugin {
+public abstract class AbstractPlugin<T extends AbstractRefactoring> extends ProgressProviderAdapter
+    implements RefactoringPlugin {
 
   protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractPlugin.class);
+  protected static final ResourceBundle BUNDLE =
+      ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle");
   protected final T refactoring;
-  protected static final ResourceBundle BUNDLE = ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle");
-  private final Map<FileObject, Collection<FileObject>> cache = new HashMap<FileObject, Collection<FileObject>>();
+  private final Map<FileObject, Collection<FileObject>> cache =
+      new HashMap<FileObject, Collection<FileObject>>();
 
-  private final List<RefactoringElementImplementation> elements = new ArrayList<RefactoringElementImplementation>();
+  private final List<RefactoringElementImplementation> elements =
+      new ArrayList<RefactoringElementImplementation>();
 
   private final AtomicBoolean canceled = new AtomicBoolean(false);
 
@@ -72,7 +77,8 @@ public abstract class AbstractPlugin<T extends AbstractRefactoring> extends Prog
   }
 
   protected Collection<FileObject> allMapsInProject(final Project project) {
-    final Collection<? extends Scope> scopes = this.refactoring.getRefactoringSource().lookupAll(Scope.class);
+    final Collection<? extends Scope> scopes =
+        this.refactoring.getRefactoringSource().lookupAll(Scope.class);
 
     if (!scopes.isEmpty()) {
       final Collection<FileObject> mindMaps = new HashSet<FileObject>();
@@ -81,7 +87,7 @@ public abstract class AbstractPlugin<T extends AbstractRefactoring> extends Prog
           synchronized (this.cache) {
             Collection<FileObject> found = this.cache.get(f.getFolder());
             if (found == null) {
-              found = RefactoringUtils.findAllMindMapsInFolder(f,this);
+              found = RefactoringUtils.findAllMindMapsInFolder(f, this);
               this.cache.put(f.getFolder(), found);
             }
             mindMaps.addAll(found);
@@ -89,8 +95,7 @@ public abstract class AbstractPlugin<T extends AbstractRefactoring> extends Prog
         }
       }
       return mindMaps;
-    }
-    else {
+    } else {
       if (project == null) {
         return Collections.<FileObject>emptyList();
       }
@@ -108,7 +113,8 @@ public abstract class AbstractPlugin<T extends AbstractRefactoring> extends Prog
 
   private Collection<? extends FileObject> findFileObjectInLookup(final Lookup lookup) {
     final Collection<? extends FileObject> files = lookup.lookupAll(FileObject.class);
-    final Collection<? extends NonRecursiveFolder> folders = lookup.lookupAll(NonRecursiveFolder.class);
+    final Collection<? extends NonRecursiveFolder> folders =
+        lookup.lookupAll(NonRecursiveFolder.class);
     final Set<FileObject> result = new HashSet<FileObject>();
     for (final NonRecursiveFolder f : folders) {
       result.add(f.getFolder());
@@ -144,14 +150,16 @@ public abstract class AbstractPlugin<T extends AbstractRefactoring> extends Prog
       return null;
     }
 
-    final Collection<? extends FileObject> files = findFileObjectInLookup(this.refactoring.getRefactoringSource());
+    final Collection<? extends FileObject> files =
+        findFileObjectInLookup(this.refactoring.getRefactoringSource());
 
     fireProgressListenerStart(RenameRefactoring.PREPARE, files.size());
 
     Problem result = null;
 
     try {
-      for (final FileObject fileObject : findFileObjectInLookup(this.refactoring.getRefactoringSource())) {
+      for (final FileObject fileObject : findFileObjectInLookup(
+          this.refactoring.getRefactoringSource())) {
         if (isCanceled()) {
           return null;
         }
@@ -162,8 +170,7 @@ public abstract class AbstractPlugin<T extends AbstractRefactoring> extends Prog
         result = processFileObject(project, fileObject);
         fireProgressListenerStep(1);
       }
-    }
-    finally {
+    } finally {
       synchronized (this.elements) {
         LOGGER.info("Detected " + this.elements.size() + " elements for refactoring");
         if (!isCanceled()) {
@@ -180,28 +187,30 @@ public abstract class AbstractPlugin<T extends AbstractRefactoring> extends Prog
   public Problem processFileObject(final Project project, final FileObject fileObject) {
     return _processFileObject(project, 0, fileObject);
   }
-  
-  private Problem _processFileObject(final Project project, int level, final FileObject fileObject) {
+
+  private Problem _processFileObject(final Project project, int level,
+                                     final FileObject fileObject) {
     final Project theProject;
     if (project == null) {
       theProject = FileOwnerQuery.getOwner(fileObject);
-    }
-    else {
+    } else {
       theProject = project;
     }
-    
-    if (theProject == null){
-      LOGGER.warn("Request process file object without a project as the owner : "+fileObject);
+
+    if (theProject == null) {
+      LOGGER.warn("Request process file object without a project as the owner : " + fileObject);
       return null;
     }
-    
+
     final FileObject projectDirectory = theProject.getProjectDirectory();
-    
-    if (projectDirectory == null){
-      LOGGER.warn("Request process file object in a project which doesn't have folder : " + fileObject+", project : "+project);
+
+    if (projectDirectory == null) {
+      LOGGER.warn(
+          "Request process file object in a project which doesn't have folder : " + fileObject +
+              ", project : " + project);
       return null;
     }
-    
+
     final File projectFolder = FileUtil.toFile(projectDirectory);
 
     Problem result = processFile(theProject, level, projectFolder, fileObject);
@@ -214,8 +223,7 @@ public abstract class AbstractPlugin<T extends AbstractRefactoring> extends Prog
 
         if (fo.isFolder()) {
           result = _processFileObject(theProject, level, fo);
-        }
-        else {
+        } else {
           result = processFile(theProject, level, projectFolder, fo);
         }
       }
@@ -224,15 +232,16 @@ public abstract class AbstractPlugin<T extends AbstractRefactoring> extends Prog
     return result;
   }
 
-  protected abstract Problem processFile(Project project, int level, File projectFolder, FileObject fileObject);
+  protected abstract Problem processFile(Project project, int level, File projectFolder,
+                                         FileObject fileObject);
 
-  protected boolean doesMindMapContainFileLink(final Project project, final FileObject mindMap, final MMapURI fileToCheck) throws IOException {
+  protected boolean doesMindMapContainFileLink(final Project project, final FileObject mindMap,
+                                               final MMapURI fileToCheck) throws IOException {
     final FileObject baseFolder = project.getProjectDirectory();
     try {
       final MindMap parsedMap = new MindMap(new StringReader(mindMap.asText("UTF-8"))); //NOI18N
       return parsedMap.doesContainFile(FileUtil.toFile(baseFolder), fileToCheck);
-    }
-    catch (IllegalArgumentException ex) {
+    } catch (IllegalArgumentException ex) {
       // not mind map
       return false;
     }

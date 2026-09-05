@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.nbmindmap.nb.refactoring.gui;
 
 import java.awt.Component;
@@ -36,6 +37,11 @@ public final class RenamePanel extends javax.swing.JPanel implements CustomRefac
   private final Lookup lookup;
   private final ChangeListener parent;
   private final String name;
+  // Variables declaration - do not modify//GEN-BEGIN:variables
+  private javax.swing.JLabel labelFieldTitle;
+  private javax.swing.JLabel labelScopeName;
+  private org.netbeans.modules.refactoring.spi.ui.ScopePanel panelScope;
+  private javax.swing.JTextField textFieldName;
 
   public RenamePanel(final String name, final Lookup lookup, final ChangeListener parent) {
     initComponents();
@@ -73,8 +79,7 @@ public final class RenamePanel extends javax.swing.JPanel implements CustomRefac
           if (!panelScope.initialize(lookup, new AtomicBoolean())) {
             labelScopeName.setVisible(false);
             panelScope.setVisible(false);
-          }
-          else {
+          } else {
             labelScopeName.setVisible(true);
             panelScope.setVisible(true);
           }
@@ -104,51 +109,57 @@ public final class RenamePanel extends javax.swing.JPanel implements CustomRefac
     labelFieldTitle = new javax.swing.JLabel();
     textFieldName = new javax.swing.JTextField();
     labelScopeName = new javax.swing.JLabel();
-    panelScope = new org.netbeans.modules.refactoring.spi.ui.ScopePanel(RenamePanel.class.getCanonicalName().replace('.', '-'),NbPreferences.forModule(RenamePanel.class),"renameFile.scope");
+    panelScope = new org.netbeans.modules.refactoring.spi.ui.ScopePanel(
+        RenamePanel.class.getCanonicalName().replace('.', '-'),
+        NbPreferences.forModule(RenamePanel.class), "renameFile.scope");
 
-    labelFieldTitle.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/logo/logo16.png"))); // NOI18N
-    java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
-    org.openide.awt.Mnemonics.setLocalizedText(labelFieldTitle, bundle.getString("RenamePanel.labelFieldTitle.text")); // NOI18N
+    labelFieldTitle.setIcon(new javax.swing.ImageIcon(
+        getClass().getResource("/com/igormaznitsa/nbmindmap/icons/logo/logo16.png"))); // NOI18N
+    java.util.ResourceBundle bundle =
+        java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(labelFieldTitle,
+        bundle.getString("RenamePanel.labelFieldTitle.text")); // NOI18N
 
-    org.openide.awt.Mnemonics.setLocalizedText(labelScopeName, bundle.getString("RenamePanel.labelScopeName.text")); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(labelScopeName,
+        bundle.getString("RenamePanel.labelScopeName.text")); // NOI18N
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
     this.setLayout(layout);
     layout.setHorizontalGroup(
-      layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(layout.createSequentialGroup()
-        .addContainerGap()
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(layout.createSequentialGroup()
-            .addComponent(labelFieldTitle)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(textFieldName))
-          .addGroup(layout.createSequentialGroup()
-            .addComponent(labelScopeName)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(panelScope, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-        .addContainerGap())
+        layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(labelFieldTitle)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(textFieldName))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(labelScopeName)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED,
+                            javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(panelScope, javax.swing.GroupLayout.PREFERRED_SIZE,
+                            javax.swing.GroupLayout.DEFAULT_SIZE,
+                            javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
     );
     layout.setVerticalGroup(
-      layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(layout.createSequentialGroup()
-        .addContainerGap()
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(labelFieldTitle)
-          .addComponent(textFieldName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-          .addComponent(labelScopeName)
-          .addComponent(panelScope, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addContainerGap(38, Short.MAX_VALUE))
+        layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(labelFieldTitle)
+                    .addComponent(textFieldName, javax.swing.GroupLayout.PREFERRED_SIZE,
+                        javax.swing.GroupLayout.DEFAULT_SIZE,
+                        javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(labelScopeName)
+                    .addComponent(panelScope, javax.swing.GroupLayout.PREFERRED_SIZE,
+                        javax.swing.GroupLayout.DEFAULT_SIZE,
+                        javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(38, Short.MAX_VALUE))
     );
   }// </editor-fold>//GEN-END:initComponents
-
-
-  // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JLabel labelFieldTitle;
-  private javax.swing.JLabel labelScopeName;
-  private org.netbeans.modules.refactoring.spi.ui.ScopePanel panelScope;
-  private javax.swing.JTextField textFieldName;
   // End of variables declaration//GEN-END:variables
 }

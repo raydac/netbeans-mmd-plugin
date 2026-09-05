@@ -28,7 +28,8 @@ import javax.swing.JMenuItem;
 
 public class ChangeColorPlugin extends AbstractPopupMenuItem implements ExternallyExecutedPlugin {
 
-  private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_CHANGECOLOR);
+  private static final Icon ICO =
+      ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_CHANGECOLOR);
 
   @Override
   public PopUpSection getSection() {

@@ -15,6 +15,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+
 package com.igormaznitsa.sciareto.ui;
 
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
@@ -47,23 +48,28 @@ import org.apache.commons.io.LineIterator;
 public class FindUsagesPanel extends javax.swing.JPanel {
 
   private static final long serialVersionUID = -2670972411220199031L;
-
-  private final AtomicReference<Thread> searchingThread = new AtomicReference<>();
-
   private static final Logger LOGGER = LoggerFactory.getLogger(FindUsagesPanel.class);
-
+  private final AtomicReference<Thread> searchingThread = new AtomicReference<>();
   private final transient List<NodeFileOrFolder> foundFiles = new ArrayList<>();
-  private final transient  List<ListDataListener> listListeners = new ArrayList<>();
+  private final transient List<ListDataListener> listListeners = new ArrayList<>();
 
   private final String fullNormalizedPath;
 
   private final boolean findEverywhere;
-  
-  public FindUsagesPanel(@Nonnull final Context context, @Nonnull final NodeFileOrFolder itemToFind, final boolean findEverywhere) {
+  // Variables declaration - do not modify//GEN-BEGIN:variables
+  private javax.swing.JLabel jLabel1;
+  private javax.swing.JPanel jPanel1;
+  private javax.swing.JScrollPane jScrollPane1;
+  private javax.swing.JList<NodeFileOrFolder> listOfFoundElements;
+  private javax.swing.JProgressBar progressBarSearch;
+  private javax.swing.JTextField textFieldSearchPath;
+
+  public FindUsagesPanel(@Nonnull final Context context, @Nonnull final NodeFileOrFolder itemToFind,
+                         final boolean findEverywhere) {
     initComponents();
 
     this.findEverywhere = findEverywhere;
-    
+
     final File asfile = itemToFind.makeFileForNode();
 
     if (asfile == null) {
@@ -121,21 +127,23 @@ public class FindUsagesPanel extends javax.swing.JPanel {
       @Override
       public void run() {
         final boolean first = foundFiles.isEmpty();
-        
+
         foundFiles.add(file);
         for (final ListDataListener l : listListeners) {
-          l.intervalAdded(new ListDataEvent(listOfFoundElements, ListDataEvent.INTERVAL_ADDED, foundFiles.size() - 1, foundFiles.size() - 1));
+          l.intervalAdded(new ListDataEvent(listOfFoundElements, ListDataEvent.INTERVAL_ADDED,
+              foundFiles.size() - 1, foundFiles.size() - 1));
         }
-        
-        if (first){
+
+        if (first) {
           listOfFoundElements.setSelectedIndex(0);
         }
-        
+
       }
     });
   }
 
-  private void startSearchThread(@Nonnull @MustNotContainNull final List<NodeProject> scope, @Nonnull final NodeFileOrFolder itemToFind) {
+  private void startSearchThread(@Nonnull @MustNotContainNull final List<NodeProject> scope,
+                                 @Nonnull final NodeFileOrFolder itemToFind) {
     int size = 0;
     for (final NodeProject p : scope) {
       size += p.size();
@@ -157,13 +165,16 @@ public class FindUsagesPanel extends javax.swing.JPanel {
           final File f = file.makeFileForNode();
           final NodeProject project = file.findProject();
           if (project != null) {
-            final String extension = FilenameUtils.getExtension(f.getName()).toLowerCase(Locale.ENGLISH);
+            final String extension =
+                FilenameUtils.getExtension(f.getName()).toLowerCase(Locale.ENGLISH);
             if ("mmd".equals(extension)) { //NOI18N
               Reader reader = null;
               try {
-                reader = new BufferedReader(new InputStreamReader(new FileInputStream(f), "UTF-8")); //NOI18N
+                reader = new BufferedReader(
+                    new InputStreamReader(new FileInputStream(f), "UTF-8")); //NOI18N
                 final MindMap map = new MindMap(reader);
-                if (!MapUtils.findTopicsRelatedToFile(project.getFolder(), nodeFileToSearch, map).isEmpty()) {
+                if (!MapUtils.findTopicsRelatedToFile(project.getFolder(), nodeFileToSearch, map)
+                    .isEmpty()) {
                   addFileIntoList(file);
                 }
               } catch (Exception ex) {
@@ -171,9 +182,10 @@ public class FindUsagesPanel extends javax.swing.JPanel {
               } finally {
                 IOUtils.closeQuietly(reader);
               }
-            } else if (findEverywhere){
+            } else if (findEverywhere) {
               try {
-                final LineIterator lineIterator = org.apache.commons.io.FileUtils.lineIterator(f, "UTF-8"); //NOI18N
+                final LineIterator lineIterator =
+                    org.apache.commons.io.FileUtils.lineIterator(f, "UTF-8"); //NOI18N
                 try {
                   while (lineIterator.hasNext()) {
                     if (Thread.currentThread().isInterrupted()) {
@@ -285,68 +297,60 @@ public class FindUsagesPanel extends javax.swing.JPanel {
    * Editor.
    */
   @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
-        java.awt.GridBagConstraints gridBagConstraints;
+  // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+  private void initComponents() {
+    java.awt.GridBagConstraints gridBagConstraints;
 
-        jLabel1 = new javax.swing.JLabel();
-        textFieldSearchPath = new javax.swing.JTextField();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        listOfFoundElements = new javax.swing.JList<>();
-        jPanel1 = new javax.swing.JPanel();
-        progressBarSearch = new javax.swing.JProgressBar();
+    jLabel1 = new javax.swing.JLabel();
+    textFieldSearchPath = new javax.swing.JTextField();
+    jScrollPane1 = new javax.swing.JScrollPane();
+    listOfFoundElements = new javax.swing.JList<>();
+    jPanel1 = new javax.swing.JPanel();
+    progressBarSearch = new javax.swing.JProgressBar();
 
-        setLayout(new java.awt.GridBagLayout());
+    setLayout(new java.awt.GridBagLayout());
 
-        jLabel1.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle().getString("panelFindUsages.labelSearchUsageOf")); // NOI18N
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        add(jLabel1, gridBagConstraints);
+    jLabel1.setText(com.igormaznitsa.sciareto.ui.SrI18n.getInstance().findBundle()
+        .getString("panelFindUsages.labelSearchUsageOf")); // NOI18N
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 0;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+    add(jLabel1, gridBagConstraints);
 
-        textFieldSearchPath.setEditable(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.ipadx = 236;
-        gridBagConstraints.weightx = 1000.0;
-        add(textFieldSearchPath, gridBagConstraints);
+    textFieldSearchPath.setEditable(false);
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 1;
+    gridBagConstraints.gridy = 0;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.ipadx = 236;
+    gridBagConstraints.weightx = 1000.0;
+    add(textFieldSearchPath, gridBagConstraints);
 
-        listOfFoundElements.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        jScrollPane1.setViewportView(listOfFoundElements);
+    listOfFoundElements.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+    jScrollPane1.setViewportView(listOfFoundElements);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.ipadx = 354;
-        gridBagConstraints.ipady = 229;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1000.0;
-        add(jScrollPane1, gridBagConstraints);
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 2;
+    gridBagConstraints.gridwidth = 2;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+    gridBagConstraints.ipadx = 354;
+    gridBagConstraints.ipady = 229;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+    gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.weighty = 1000.0;
+    add(jScrollPane1, gridBagConstraints);
 
-        jPanel1.setLayout(new java.awt.BorderLayout());
-        jPanel1.add(progressBarSearch, java.awt.BorderLayout.CENTER);
+    jPanel1.setLayout(new java.awt.BorderLayout());
+    jPanel1.add(progressBarSearch, java.awt.BorderLayout.CENTER);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        add(jPanel1, gridBagConstraints);
-    }// </editor-fold>//GEN-END:initComponents
-
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JList<NodeFileOrFolder> listOfFoundElements;
-    private javax.swing.JProgressBar progressBarSearch;
-    private javax.swing.JTextField textFieldSearchPath;
-    // End of variables declaration//GEN-END:variables
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 1;
+    gridBagConstraints.gridwidth = 2;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+    add(jPanel1, gridBagConstraints);
+  }// </editor-fold>//GEN-END:initComponents
+  // End of variables declaration//GEN-END:variables
 }

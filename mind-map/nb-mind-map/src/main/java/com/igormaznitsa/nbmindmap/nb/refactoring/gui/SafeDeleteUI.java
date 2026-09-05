@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.nbmindmap.nb.refactoring.gui;
 
 import javax.swing.event.ChangeListener;
@@ -28,26 +29,26 @@ import org.openide.util.lookup.Lookups;
 public class SafeDeleteUI extends AbstractMMDRefactoringUI {
 
   private final SafeDeleteRefactoring refactoring;
-  private SafeDeletePanel panel;
   private final FileObject[] files;
   private final Lookup lookup;
+  private SafeDeletePanel panel;
 
-  public SafeDeleteUI (final Lookup lookup, final FileObject[] files) {
+  public SafeDeleteUI(final Lookup lookup, final FileObject[] files) {
     this.files = files;
     this.lookup = lookup;
-    final Object [] lookupArray = new Object[files.length + 1];
+    final Object[] lookupArray = new Object[files.length + 1];
     System.arraycopy(files, 0, lookupArray, 0, files.length);
     lookupArray[lookupArray.length - 1] = this;
     this.refactoring = new SafeDeleteRefactoring(Lookups.fixed(lookupArray));
   }
 
   @Override
-  public String getName () {
+  public String getName() {
     return BUNDLE.getString("SafeDeleteUI.getName");
   }
 
   @Override
-  public String getDescription () {
+  public String getDescription() {
     final StringBuilder result = new StringBuilder();
     for (final FileObject fo : this.files) {
       if (result.length() > 0) {
@@ -59,12 +60,12 @@ public class SafeDeleteUI extends AbstractMMDRefactoringUI {
   }
 
   @Override
-  public boolean isQuery () {
+  public boolean isQuery() {
     return false;
   }
 
   @Override
-  public CustomRefactoringPanel getPanel (final ChangeListener parent) {
+  public CustomRefactoringPanel getPanel(final ChangeListener parent) {
     if (this.panel == null) {
       this.panel = new SafeDeletePanel(this.lookup, files);
     }
@@ -72,27 +73,27 @@ public class SafeDeleteUI extends AbstractMMDRefactoringUI {
   }
 
   @Override
-  public Problem setParameters () {
+  public Problem setParameters() {
     return this.refactoring.checkParameters();
   }
 
   @Override
-  public Problem checkParameters () {
+  public Problem checkParameters() {
     return this.refactoring.checkParameters();
   }
 
   @Override
-  public boolean hasParameters () {
+  public boolean hasParameters() {
     return true;
   }
 
   @Override
-  public AbstractRefactoring getRefactoring () {
+  public AbstractRefactoring getRefactoring() {
     return this.refactoring;
   }
 
   @Override
-  public HelpCtx getHelpCtx () {
+  public HelpCtx getHelpCtx() {
     return null;
   }
 

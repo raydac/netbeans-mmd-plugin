@@ -27,13 +27,15 @@ import javax.swing.JMenuItem;
 
 public class UnfoldAllPlugin extends AbstractPopupMenuItem {
 
-  private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_UNFOLDALL);
+  private static final Icon ICO =
+      ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_UNFOLDALL);
 
 
   @Override
   public JMenuItem makeMenuItem(final PluginContext context, final Topic topic) {
     final JMenuItem result =
-        UI_COMPO_FACTORY.makeMenuItem(this.getResourceBundle().getString("MMDGraphEditor.makePopUp.miExpandAll"), ICO);
+        UI_COMPO_FACTORY.makeMenuItem(
+            this.getResourceBundle().getString("MMDGraphEditor.makePopUp.miExpandAll"), ICO);
     result.setEnabled(context.getModel().getRoot() != null);
     result.addActionListener(e -> context.getPanel().collapseOrExpandAll(false));
     return result;

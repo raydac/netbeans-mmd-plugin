@@ -18,7 +18,6 @@ package com.igormaznitsa.mindmap.swing.colorpicker;
 
 import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
-import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -53,10 +52,10 @@ public final class ColorChooser {
   private final JLabel sampleDarkText;
   private final JLabel sampleLightText;
   private final JPanel panel;
-  private final Icon COLOR_WHEEL_ICON = new ImageIcon(ColorChooser.class.getResource("/com/igormaznitsa/mindmap/swing/panel/icons/color_wheel32.png"));
-  private Color tunedColor;
-
+  private final Icon COLOR_WHEEL_ICON = new ImageIcon(ColorChooser.class.getResource(
+      "/com/igormaznitsa/mindmap/swing/panel/icons/color_wheel32.png"));
   private final ResourceBundle resourceBundle = MmdI18n.getInstance().findBundle();
+  private Color tunedColor;
 
   public ColorChooser(
       final UIComponentFactory uiComponentFactory,
@@ -76,7 +75,8 @@ public final class ColorChooser {
     data.insets.set(4, 4, 4, 4);
 
     this.sampleDarkFill = uiComponentFactory.makeLabel();
-    final Font font = this.sampleDarkFill.getFont().deriveFont(Font.BOLD, this.sampleDarkFill.getFont().getSize() * 2);
+    final Font font = this.sampleDarkFill.getFont()
+        .deriveFont(Font.BOLD, this.sampleDarkFill.getFont().getSize() * 2);
     this.sampleDarkFill.setFont(font);
 
     this.sampleDarkFill.setText(SAMPLE_TEXT);
@@ -121,7 +121,8 @@ public final class ColorChooser {
     final JPanel samplePanel = uiComponentFactory.makePanel();
 
     samplePanel.setLayout(new GridLayout(2, 2));
-    samplePanel.setBorder(BorderFactory.createTitledBorder(this.resourceBundle.getString("ColorChooser.Text.Example")));
+    samplePanel.setBorder(BorderFactory.createTitledBorder(
+        this.resourceBundle.getString("ColorChooser.Text.Example")));
 
     samplePanel.add(this.sampleDarkFill);
     samplePanel.add(this.sampleLightText);
@@ -148,21 +149,24 @@ public final class ColorChooser {
     buttonTuneColor.setBorderPainted(false);
     buttonTuneColor.setContentAreaFilled(false);
     buttonTuneColor.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-    buttonTuneColor.setToolTipText(this.resourceBundle.getString("ColorChooser.ButtonColorWheel.Tooltip"));
+    buttonTuneColor.setToolTipText(
+        this.resourceBundle.getString("ColorChooser.ButtonColorWheel.Tooltip"));
     buttonTuneColor.addActionListener(event -> {
       Color choosedColor;
       try {
         choosedColor =
             (Color) JColorChooser.class.getMethod("showDialog", Component.class, String.class,
                     Color.class, boolean.class)
-                .invoke(null, panel, this.resourceBundle.getString("ColorChooser.ChooseColorDialogTitle"),
+                .invoke(null, panel,
+                    this.resourceBundle.getString("ColorChooser.ChooseColorDialogTitle"),
                     sampleDarkFill.getBackground(), false);
       } catch (Exception ex) {
         try {
           choosedColor =
               (Color) JColorChooser.class.getMethod("showDialog", Component.class, String.class,
                       Color.class)
-                  .invoke(null, panel, this.resourceBundle.getString("ColorChooser.ChooseColorDialogTitle"),
+                  .invoke(null, panel,
+                      this.resourceBundle.getString("ColorChooser.ChooseColorDialogTitle"),
                       sampleDarkFill.getBackground());
         } catch (Exception exx) {
           choosedColor = null;

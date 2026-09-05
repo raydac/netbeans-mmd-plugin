@@ -48,11 +48,13 @@ import org.openide.util.LookupListener;
 import org.openide.windows.TopComponent;
 
 @NavigatorPanel.Registration(displayName = "Mind map", mimeType = MMDDataObject.MIME)
-public final class MMDNavigator extends JScrollPane implements NavigatorPanel, LookupListener, FileChangeListener, Comparator<Object> {
+public final class MMDNavigator extends JScrollPane
+    implements NavigatorPanel, LookupListener, FileChangeListener, Comparator<Object> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MMDNavigator.class);
 
-  private static final Lookup.Template<MMDEditorSupport> MY_DATA = new Lookup.Template<MMDEditorSupport>(MMDEditorSupport.class);
+  private static final Lookup.Template<MMDEditorSupport> MY_DATA =
+      new Lookup.Template<MMDEditorSupport>(MMDEditorSupport.class);
   private static final long serialVersionUID = -4344090966601180253L;
 
   private final JTree mindMapTree;
@@ -63,33 +65,39 @@ public final class MMDNavigator extends JScrollPane implements NavigatorPanel, L
 
   public MMDNavigator() {
     super();
-    this.mindMapTree = new MindMapTreePanel(UIComponentFactoryProvider.findInstance(), null, null, true, new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        final MMDDataObject current = (MMDDataObject) currentSupport.getDataObject();
-        if (current != null) {
-          final MMDEditorSupport edSupport = current.getLookup().lookup(MMDEditorSupport.class);
-          if (edSupport != null) {
-            edSupport.edit();
-            final TreePath path = mindMapTree.getSelectionPath();
-            if (path != null) {
-              edSupport.focusToPosition(true, ((Topic) path.getLastPathComponent()).getPositionPath());
-            }
-          }
-        }
-      }
-    }).getTree();
+    this.mindMapTree =
+        new MindMapTreePanel(UIComponentFactoryProvider.findInstance(), null, null, true,
+            new ActionListener() {
+              @Override
+              public void actionPerformed(ActionEvent e) {
+                final MMDDataObject current = (MMDDataObject) currentSupport.getDataObject();
+                if (current != null) {
+                  final MMDEditorSupport edSupport =
+                      current.getLookup().lookup(MMDEditorSupport.class);
+                  if (edSupport != null) {
+                    edSupport.edit();
+                    final TreePath path = mindMapTree.getSelectionPath();
+                    if (path != null) {
+                      edSupport.focusToPosition(true,
+                          ((Topic) path.getLastPathComponent()).getPositionPath());
+                    }
+                  }
+                }
+              }
+            }).getTree();
     this.setViewportView(this.mindMapTree);
   }
 
   @Override
   public String getDisplayName() {
-    return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDNavigator.displayName");
+    return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle")
+        .getString("MMDNavigator.displayName");
   }
 
   @Override
   public String getDisplayHint() {
-    return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDNavigator.displayHint");
+    return java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle")
+        .getString("MMDNavigator.displayHint");
   }
 
   @Override

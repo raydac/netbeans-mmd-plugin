@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.nbmindmap.nb.refactoring.gui;
 
 import com.igormaznitsa.nbmindmap.nb.refactoring.RefactoringUtils;
@@ -47,26 +48,26 @@ public class RefactoringActionsProvider extends ActionsImplementationProvider {
 
   @Override
   public void doMove(final Lookup lookup) {
-    final FileObject [] fileObjects = RefactoringUtils.getMMDs(lookup);
+    final FileObject[] fileObjects = RefactoringUtils.getMMDs(lookup);
     UI.openRefactoringUI(new MoveUI(lookup, fileObjects));
   }
-  
+
   @Override
   public void doFindUsages(final Lookup lookup) {
     final FileObject fileObject = RefactoringUtils.getMMD(lookup);
     UI.openRefactoringUI(new WhereUsedRefactoringUI(lookup, fileObject));
   }
-  
+
   @Override
   public void doDelete(final Lookup lookup) {
-    final FileObject [] files = RefactoringUtils.getMMDs(lookup);
+    final FileObject[] files = RefactoringUtils.getMMDs(lookup);
     UI.openRefactoringUI(new SafeDeleteUI(lookup, files));
   }
-  
+
   @Override
   public void doRename(final Lookup lookup) {
     final FileObject file = RefactoringUtils.getMMD(lookup);
     UI.openRefactoringUI(new RenameUI(lookup, file));
   }
-  
+
 }

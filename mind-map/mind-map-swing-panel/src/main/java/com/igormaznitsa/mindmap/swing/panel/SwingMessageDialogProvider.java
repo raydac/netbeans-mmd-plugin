@@ -18,12 +18,10 @@ package com.igormaznitsa.mindmap.swing.panel;
 
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import java.awt.Component;
-import java.awt.Window;
 import java.io.File;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 
 public class SwingMessageDialogProvider implements DialogProvider {
@@ -46,8 +44,10 @@ public class SwingMessageDialogProvider implements DialogProvider {
   }
 
   @Override
-  public boolean msgConfirmOkCancel(final Component parentComponent, final String title, final String question) {
-    return JOptionPane.showConfirmDialog(parentComponent, question, title, JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION;
+  public boolean msgConfirmOkCancel(final Component parentComponent, final String title,
+                                    final String question) {
+    return JOptionPane.showConfirmDialog(parentComponent, question, title,
+        JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION;
   }
 
   @Override
@@ -104,7 +104,7 @@ public class SwingMessageDialogProvider implements DialogProvider {
     fileChooser.setMultiSelectionEnabled(false);
 
     File result = null;
-    if (fileChooser.showDialog(parentComponent,approveButtonText) == JFileChooser.APPROVE_OPTION) {
+    if (fileChooser.showDialog(parentComponent, approveButtonText) == JFileChooser.APPROVE_OPTION) {
       result = fileChooser.getSelectedFile();
     }
 

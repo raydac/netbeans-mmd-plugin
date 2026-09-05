@@ -28,7 +28,8 @@ import javax.swing.Icon;
 
 public class EditTextPlugin extends AbstractFocusedTopicPlugin {
 
-  private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_EDIT_TEXT);
+  private static final Icon ICO =
+      ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_EDIT_TEXT);
 
   @Override
   public int getOrder() {

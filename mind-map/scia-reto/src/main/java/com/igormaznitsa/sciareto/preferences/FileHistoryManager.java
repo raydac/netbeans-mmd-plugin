@@ -15,21 +15,22 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+
 package com.igormaznitsa.sciareto.preferences;
 
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
+import com.igormaznitsa.meta.common.utils.IOUtils;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.meta.common.utils.IOUtils;
-import com.igormaznitsa.mindmap.model.logger.Logger;
-import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
-import java.nio.charset.StandardCharsets;
 
 public final class FileHistoryManager {
 
@@ -41,19 +42,21 @@ public final class FileHistoryManager {
   private static final String LAST_OPENED_FILES = "last.files.opened"; //NOI18N
   private static final String ACTIVE_PROJECTS = "projects.active"; //NOI18N
   private static final String ACTIVE_FILES = "files.active"; //NOI18N
-
+  private static final int MAX_PROJECTS = 10;
+  private static final int MAX_FILES = 10;
   private final List<File> lastOpenedProjects = new ArrayList<>();
   private final List<File> lastOpenedFiles = new ArrayList<>();
 
-  private static final int MAX_PROJECTS = 10;
-  private static final int MAX_FILES = 10;
-
   private FileHistoryManager() {
-    final String projectsStr = PreferencesManager.getInstance().getPreferences().get(LAST_OPENED_PROJECTS, null);
-    final String filesStr = PreferencesManager.getInstance().getPreferences().get(LAST_OPENED_FILES, null);
+    final String projectsStr =
+        PreferencesManager.getInstance().getPreferences().get(LAST_OPENED_PROJECTS, null);
+    final String filesStr =
+        PreferencesManager.getInstance().getPreferences().get(LAST_OPENED_FILES, null);
     try {
-      final String[] folders = projectsStr == null ? new String[0] : decodeString(projectsStr).split("\\" + File.pathSeparatorChar); //NOI18N
-      final String[] files = filesStr == null ? new String[0] : decodeString(filesStr).split("\\" + File.pathSeparatorChar); //NOI18N
+      final String[] folders = projectsStr == null ? new String[0] :
+          decodeString(projectsStr).split("\\" + File.pathSeparatorChar); //NOI18N
+      final String[] files = filesStr == null ? new String[0] :
+          decodeString(filesStr).split("\\" + File.pathSeparatorChar); //NOI18N
       fillList(folders, this.lastOpenedProjects);
       fillList(files, this.lastOpenedFiles);
     } catch (Exception ex) {
@@ -62,60 +65,10 @@ public final class FileHistoryManager {
   }
 
   @Nonnull
-  @MustNotContainNull
-  public File [] getActiveProjects() throws IOException {
-    final String activeProjectsStr = PreferencesManager.getInstance().getPreferences().get(ACTIVE_PROJECTS, null);
-    final File [] result;
-    if (activeProjectsStr == null){
-      result = new File[0];
-    } else {
-      final List<File> list = new ArrayList<>();
-      fillList(decodeString(activeProjectsStr).split("\\"+File.pathSeparatorChar), list); //NOI18N
-      result = list.toArray(new File[list.size()]);
-    }
-    return result;
-  }
-  
-  @Nonnull
-  @MustNotContainNull
-  public File [] getActiveFiles() throws IOException{
-    final String activeProjectsStr = PreferencesManager.getInstance().getPreferences().get(ACTIVE_FILES, null);
-    final File [] result;
-    if (activeProjectsStr == null){
-      result = new File[0];
-    } else {
-      final List<File> list = new ArrayList<>();
-      fillList(decodeString(activeProjectsStr).split("\\"+File.pathSeparatorChar), list); //NOI18N
-      result = list.toArray(new File[list.size()]);
-    }
-    return result;
-  }
-
-  public synchronized void saveActiveProjects(@Nonnull @MustNotContainNull final File [] projectFolders) throws IOException{
-    PreferencesManager.getInstance().getPreferences().put(ACTIVE_PROJECTS, encodeString(packToString(projectFolders)));
-    PreferencesManager.getInstance().flush();
-  }
-  
-  public synchronized void saveActiveFiles(@Nonnull @MustNotContainNull final File [] files) throws IOException{
-    PreferencesManager.getInstance().getPreferences().put(ACTIVE_FILES, encodeString(packToString(files)));
-    PreferencesManager.getInstance().flush();
-  }
-  
-  @Nonnull
-  private String encodeString(@Nonnull final String str) throws IOException {
-    return Base64.encodeBase64String(IOUtils.packData(str.getBytes(StandardCharsets.UTF_8)));
-  }
-
-  @Nonnull
-  private String decodeString(@Nonnull final String str) throws IOException {
-    return new String(IOUtils.unpackData(Base64.decodeBase64(str)), StandardCharsets.UTF_8);
-  }
-
-  @Nonnull
   private static String packToString(@Nonnull @MustNotContainNull final List<File> files) {
     return packToString(files.toArray(new File[files.size()]));
-  }  
-  
+  }
+
   @Nonnull
   private static String packToString(@Nonnull @MustNotContainNull final File[] files) {
     final StringBuilder result = new StringBuilder();
@@ -128,13 +81,75 @@ public final class FileHistoryManager {
     return result.toString();
   }
 
-  private static void fillList(@Nonnull @MustNotContainNull final String[] paths, @Nonnull @MustNotContainNull final List<File> list) {
+  private static void fillList(@Nonnull @MustNotContainNull final String[] paths,
+                               @Nonnull @MustNotContainNull final List<File> list) {
     list.clear();
     for (final String s : paths) {
       if (StringUtils.isNotBlank(s)) {
         list.add(new File(s));
       }
     }
+  }
+
+  @Nonnull
+  public static FileHistoryManager getInstance() {
+    return INSTANCE;
+  }
+
+  @Nonnull
+  @MustNotContainNull
+  public File[] getActiveProjects() throws IOException {
+    final String activeProjectsStr =
+        PreferencesManager.getInstance().getPreferences().get(ACTIVE_PROJECTS, null);
+    final File[] result;
+    if (activeProjectsStr == null) {
+      result = new File[0];
+    } else {
+      final List<File> list = new ArrayList<>();
+      fillList(decodeString(activeProjectsStr).split("\\" + File.pathSeparatorChar), list); //NOI18N
+      result = list.toArray(new File[list.size()]);
+    }
+    return result;
+  }
+
+  @Nonnull
+  @MustNotContainNull
+  public File[] getActiveFiles() throws IOException {
+    final String activeProjectsStr =
+        PreferencesManager.getInstance().getPreferences().get(ACTIVE_FILES, null);
+    final File[] result;
+    if (activeProjectsStr == null) {
+      result = new File[0];
+    } else {
+      final List<File> list = new ArrayList<>();
+      fillList(decodeString(activeProjectsStr).split("\\" + File.pathSeparatorChar), list); //NOI18N
+      result = list.toArray(new File[list.size()]);
+    }
+    return result;
+  }
+
+  public synchronized void saveActiveProjects(
+      @Nonnull @MustNotContainNull final File[] projectFolders) throws IOException {
+    PreferencesManager.getInstance().getPreferences()
+        .put(ACTIVE_PROJECTS, encodeString(packToString(projectFolders)));
+    PreferencesManager.getInstance().flush();
+  }
+
+  public synchronized void saveActiveFiles(@Nonnull @MustNotContainNull final File[] files)
+      throws IOException {
+    PreferencesManager.getInstance().getPreferences()
+        .put(ACTIVE_FILES, encodeString(packToString(files)));
+    PreferencesManager.getInstance().flush();
+  }
+
+  @Nonnull
+  private String encodeString(@Nonnull final String str) throws IOException {
+    return Base64.encodeBase64String(IOUtils.packData(str.getBytes(StandardCharsets.UTF_8)));
+  }
+
+  @Nonnull
+  private String decodeString(@Nonnull final String str) throws IOException {
+    return new String(IOUtils.unpackData(Base64.decodeBase64(str)), StandardCharsets.UTF_8);
   }
 
   public void registerOpenedProject(@Nonnull final File folder) throws IOException {
@@ -146,7 +161,8 @@ public final class FileHistoryManager {
           this.lastOpenedProjects.remove(this.lastOpenedProjects.size() - 1);
         }
 
-        PreferencesManager.getInstance().getPreferences().put(LAST_OPENED_PROJECTS, encodeString(packToString(this.lastOpenedProjects)));
+        PreferencesManager.getInstance().getPreferences()
+            .put(LAST_OPENED_PROJECTS, encodeString(packToString(this.lastOpenedProjects)));
         PreferencesManager.getInstance().flush();
       }
     }
@@ -160,7 +176,8 @@ public final class FileHistoryManager {
         while (this.lastOpenedFiles.size() > MAX_FILES) {
           this.lastOpenedFiles.remove(this.lastOpenedFiles.size() - 1);
         }
-        PreferencesManager.getInstance().getPreferences().put(LAST_OPENED_FILES, encodeString(packToString(this.lastOpenedFiles)));
+        PreferencesManager.getInstance().getPreferences()
+            .put(LAST_OPENED_FILES, encodeString(packToString(this.lastOpenedFiles)));
         PreferencesManager.getInstance().flush();
       }
     }
@@ -180,11 +197,6 @@ public final class FileHistoryManager {
     synchronized (this.lastOpenedFiles) {
       return this.lastOpenedFiles.toArray(new File[0]);
     }
-  }
-
-  @Nonnull
-  public static FileHistoryManager getInstance() {
-    return INSTANCE;
   }
 
 }

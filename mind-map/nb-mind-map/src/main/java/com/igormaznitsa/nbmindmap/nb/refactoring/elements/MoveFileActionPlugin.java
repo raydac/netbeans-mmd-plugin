@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.nbmindmap.nb.refactoring.elements;
 
 import com.igormaznitsa.mindmap.model.MMapURI;
@@ -38,7 +39,8 @@ public class MoveFileActionPlugin extends AbstractPlugin<MoveRefactoring> {
     super(refactoring);
   }
 
-  protected static String replaceNameInPath(int pathItemIndexFromEnd, final String path, final String newName) {
+  protected static String replaceNameInPath(int pathItemIndexFromEnd, final String path,
+                                            final String newName) {
     final String normalizedSeparators = FilenameUtils.separatorsToUnix(path);
     int start = normalizedSeparators.length();
     while (start >= 0 && pathItemIndexFromEnd >= 0) {
@@ -52,8 +54,7 @@ public class MoveFileActionPlugin extends AbstractPlugin<MoveRefactoring> {
       final int indexEnd = normalizedSeparators.indexOf('/', start + 1);
       if (indexEnd <= 0) {
         result = path.substring(0, start + 1) + newName;
-      }
-      else {
+      } else {
         result = path.substring(0, start + 1) + newName + path.substring(indexEnd);
       }
     }
@@ -61,11 +62,12 @@ public class MoveFileActionPlugin extends AbstractPlugin<MoveRefactoring> {
   }
 
   @Override
-  protected Problem processFile(final Project project, final int level, final File projectFolder, final FileObject fileObject) {
+  protected Problem processFile(final Project project, final int level, final File projectFolder,
+                                final FileObject fileObject) {
     final MMapURI fileAsURI;
     try {
       fileAsURI = MMapURI.makeFromFilePath(projectFolder, fileObject.getPath(), null);
-    }catch (URISyntaxException ex){
+    } catch (URISyntaxException ex) {
       return new Problem(true, BUNDLE.getString("MoveFileActionPlugin.malformedURI"));
     }
 
@@ -84,29 +86,30 @@ public class MoveFileActionPlugin extends AbstractPlugin<MoveRefactoring> {
           baseURI = projectURI.relativize(baseURI);
         }
 
-        final MMapURI newFileAsURI = MMapURI.makeFromFilePath(projectFolder, fileObject.getPath(), null).replaceBaseInPath(true, baseURI, level);
+        final MMapURI newFileAsURI =
+            MMapURI.makeFromFilePath(projectFolder, fileObject.getPath(), null)
+                .replaceBaseInPath(true, baseURI, level);
 
         for (final FileObject mmap : allMapsInProject(project)) {
           try {
             if (doesMindMapContainFileLink(project, mmap, fileAsURI)) {
-              final MoveElement element = new MoveElement(new MindMapLink(mmap), projectFolder, MMapURI.makeFromFilePath(projectFolder, fileObject.getPath(), null));
+              final MoveElement element = new MoveElement(new MindMapLink(mmap), projectFolder,
+                  MMapURI.makeFromFilePath(projectFolder, fileObject.getPath(), null));
               element.setTarget(newFileAsURI);
               addElement(element);
             }
-          }
-          catch (Exception ex) {
+          } catch (Exception ex) {
             ErrorManager.getDefault().notify(ex);
             return new Problem(true, BUNDLE.getString("Refactoring.CantProcessMindMap"));
           }
         }
-      }
-      catch (URISyntaxException ex) {
+      } catch (URISyntaxException ex) {
         LOGGER.error("Can't make new file uri for " + fileObject.getPath(), ex); //NOI18N
-        return new Problem(true, BUNDLE.getString("MoveFileActionPlugin.cantMakeURIForFile")); //NOI18N
+        return new Problem(true,
+            BUNDLE.getString("MoveFileActionPlugin.cantMakeURIForFile")); //NOI18N
       }
       return null;
-    }
-    else {
+    } else {
       return new Problem(true, BUNDLE.getString("MoveFileActionPlugin.cantFindURL"));
     }
   }

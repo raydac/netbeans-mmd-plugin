@@ -15,6 +15,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+
 package com.igormaznitsa.sciareto.ui.tree;
 
 import com.igormaznitsa.mindmap.model.logger.Logger;
@@ -54,15 +55,16 @@ import javax.swing.tree.TreeSelectionModel;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
-public final class DnDTree extends JTree implements DragSourceListener, DropTargetListener, DragGestureListener {
+public final class DnDTree extends JTree
+    implements DragSourceListener, DropTargetListener, DragGestureListener {
 
   private static final long serialVersionUID = -4915750239120689053L;
   private static final Logger LOGGER = LoggerFactory.getLogger(DnDTree.class);
-
+  private final String stringNoAccess =
+      SrI18n.getInstance().findBundle().getString("treeDnd.tooltip.noaccess");
+  private final String stringReadOnly =
+      SrI18n.getInstance().findBundle().getString("treeDnd.tooltip.readonly");
   private boolean dragAcceptableType = false;
-
-  private final String stringNoAccess = SrI18n.getInstance().findBundle().getString("treeDnd.tooltip.noaccess");
-  private final String stringReadOnly = SrI18n.getInstance().findBundle().getString("treeDnd.tooltip.readonly");
 
   public DnDTree() {
     super();
@@ -71,7 +73,7 @@ public final class DnDTree extends JTree implements DragSourceListener, DropTarg
     this.setDropMode(DropMode.ON_OR_INSERT);
 
     this.setRowHeight(0);
-    
+
     final DragSource dragSource = DragSource.getDefaultDragSource();
     dragSource.createDefaultDragGestureRecognizer(this, DnDConstants.ACTION_MOVE, this);
 
@@ -98,7 +100,8 @@ public final class DnDTree extends JTree implements DragSourceListener, DropTarg
         if (!(last instanceof NodeFileOrFolder)) {
           return null;
         }
-        return new FileTransferable(Collections.singletonList(((NodeFileOrFolder) last).makeFileForNode()));
+        return new FileTransferable(
+            Collections.singletonList(((NodeFileOrFolder) last).makeFileForNode()));
       }
 
       @Override
@@ -106,6 +109,18 @@ public final class DnDTree extends JTree implements DragSourceListener, DropTarg
         return canImport(support);
       }
     });
+  }
+
+  protected static boolean checkDragType(@Nonnull final DropTargetDragEvent dtde) {
+    boolean result = false;
+    for (final DataFlavor flavor : dtde.getCurrentDataFlavors()) {
+      final Class<?> dataClass = flavor.getRepresentationClass();
+      if (FileTransferable.class.isAssignableFrom(dataClass) || flavor.isFlavorJavaFileListType()) {
+        result = true;
+        break;
+      }
+    }
+    return result;
   }
 
   @Override
@@ -120,9 +135,9 @@ public final class DnDTree extends JTree implements DragSourceListener, DropTarg
       final NodeFileOrFolder nodeFileOrFolder = (NodeFileOrFolder) lastElement;
       final File file = nodeFileOrFolder.makeFileForNode();
       return file == null ? null
-              : (nodeFileOrFolder.hasNoAccess() ? this.stringNoAccess : "")
-              + (nodeFileOrFolder.isReadOnly() ? this.stringReadOnly : "")
-              + file.getAbsolutePath();
+          : (nodeFileOrFolder.hasNoAccess() ? this.stringNoAccess : "")
+          + (nodeFileOrFolder.isReadOnly() ? this.stringReadOnly : "")
+          + file.getAbsolutePath();
     } else {
       return null;
     }
@@ -134,7 +149,7 @@ public final class DnDTree extends JTree implements DragSourceListener, DropTarg
     if (root != null) {
       final Object firstChild = model.getChildCount(root) > 0 ? model.getChild(root, 0) : null;
       if (firstChild != null) {
-        this.setSelectionPath(new TreePath(new Object[]{root, firstChild}));
+        this.setSelectionPath(new TreePath(new Object[] {root, firstChild}));
       }
     }
   }
@@ -162,7 +177,7 @@ public final class DnDTree extends JTree implements DragSourceListener, DropTarg
   @Override
   public void dragEnter(@Nonnull final DropTargetDragEvent dtde) {
     dtde.rejectDrag();
-//    
+//
 //    this.dragAcceptableType = checkDragType(dtde);
 //    if (!this.dragAcceptableType) {
 //      dtde.rejectDrag();
@@ -206,18 +221,6 @@ public final class DnDTree extends JTree implements DragSourceListener, DropTarg
 
       repaint();
     }
-  }
-
-  protected static boolean checkDragType(@Nonnull final DropTargetDragEvent dtde) {
-    boolean result = false;
-    for (final DataFlavor flavor : dtde.getCurrentDataFlavors()) {
-      final Class<?> dataClass = flavor.getRepresentationClass();
-      if (FileTransferable.class.isAssignableFrom(dataClass) || flavor.isFlavorJavaFileListType()) {
-        result = true;
-        break;
-      }
-    }
-    return result;
   }
 
   @Override
@@ -307,7 +310,8 @@ public final class DnDTree extends JTree implements DragSourceListener, DropTarg
     final String baseName = FilenameUtils.getBaseName(baseFile.getName());
     File newFile = null;
     for (int i = 1; i < Integer.MAX_VALUE; i++) {
-      newFile = new File(folder, baseName + "_copy" + i + (extension.isEmpty() ? "" : '.' + extension));
+      newFile =
+          new File(folder, baseName + "_copy" + i + (extension.isEmpty() ? "" : '.' + extension));
       if (!newFile.exists()) {
         break;
       }

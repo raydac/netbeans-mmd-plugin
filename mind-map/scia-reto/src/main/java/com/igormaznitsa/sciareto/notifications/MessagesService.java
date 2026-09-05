@@ -15,6 +15,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+
 package com.igormaznitsa.sciareto.notifications;
 
 import com.igormaznitsa.mindmap.model.logger.Logger;
@@ -31,7 +32,8 @@ public class MessagesService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MessagesService.class);
 
-  private static final String PROPERTY_OFFER_TO_DONATE_WAS_SHOWN = "message.shown.offer.donate"; //NOI18N
+  private static final String PROPERTY_OFFER_TO_DONATE_WAS_SHOWN = "message.shown.offer.donate";
+  //NOI18N
 
   public MessagesService() {
   }
@@ -48,11 +50,13 @@ public class MessagesService {
       final long totalUpstartTime = prefs.getLong(SciaRetoStarter.PROPERTY_TOTAL_UPSTART, 0L);
       if (totalUpstartTime >= (1000L * 3600L * 24L)) {
         final Timer timer = new Timer(60000, e -> {
-          final String text = SrI18n.getInstance().findBundle().getString("messageService.donation.text");
+          final String text =
+              SrI18n.getInstance().findBundle().getString("messageService.donation.text");
           final JHtmlLabel label = new JHtmlLabel(text);
           label.addLinkListener((source, link) -> new DonateButton().doClick());
           NotificationManager.getInstance().showNotification(null,
-              SrI18n.getInstance().findBundle().getString("messageService.donation.title"), NotificationManager.Type.INFO, label);
+              SrI18n.getInstance().findBundle().getString("messageService.donation.title"),
+              NotificationManager.Type.INFO, label);
           LOGGER.info("Shown offer to make donation");
           prefs.putBoolean(PROPERTY_OFFER_TO_DONATE_WAS_SHOWN, true);
           PreferencesManager.getInstance().flush();

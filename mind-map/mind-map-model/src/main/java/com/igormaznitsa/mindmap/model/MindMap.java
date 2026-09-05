@@ -46,7 +46,8 @@ import org.apache.commons.io.IOUtils;
 /**
  * Mind map container. <b>It is not thread safe!</b>
  */
-public class MindMap implements StandardMmdAttributes, Serializable, Constants, Iterable<Topic>, Cloneable {
+public class MindMap
+    implements StandardMmdAttributes, Serializable, Constants, Iterable<Topic>, Cloneable {
 
   /**
    * Mind map format version
@@ -78,10 +79,6 @@ public class MindMap implements StandardMmdAttributes, Serializable, Constants, 
     this.attributes.putAll(map.attributes);
     final Topic rootTopic = map.getRoot();
     this.root = rootTopic == null ? null : rootTopic.makeCopy(this, null);
-  }
-
-  private Object readResolve() {
-    return new MindMap(this);
   }
 
   /**
@@ -173,6 +170,10 @@ public class MindMap implements StandardMmdAttributes, Serializable, Constants, 
     }
 
     return buffer.toString();
+  }
+
+  private Object readResolve() {
+    return new MindMap(this);
   }
 
   /**

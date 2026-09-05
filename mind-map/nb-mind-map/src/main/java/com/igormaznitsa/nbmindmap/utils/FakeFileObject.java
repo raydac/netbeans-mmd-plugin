@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.nbmindmap.utils;
 
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -32,45 +34,10 @@ import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileStateInvalidException;
 import org.openide.filesystems.FileSystem;
 import org.openide.util.Lookup;
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
 
 public final class FakeFileObject extends FileObject {
 
   private static final long serialVersionUID = 4522181722467407052L;
-
-  private final File wrappedFile;
-  private final boolean folder;
-  private final Date lastModified = new Date();
-
-  private final static class FakeFileLock extends FileLock {
-
-    private boolean locked = true;
-
-    public FakeFileLock() {
-    }
-
-    @Override
-    public void finalize() {
-      try {
-        if (isValid()) {
-          releaseLock();
-        }
-      } finally {
-        super.finalize();
-      }
-    }
-
-    @Override
-    public boolean isValid() {
-      return this.locked;
-    }
-
-    @Override
-    public void releaseLock() {
-      this.locked = false;
-    }
-  }
-
   private static final Enumeration<String> EMPTY_ENUMERATION = new Enumeration<String>() {
     @Override
     public boolean hasMoreElements() {
@@ -82,6 +49,9 @@ public final class FakeFileObject extends FileObject {
       throw new NoSuchElementException();
     }
   };
+  private final File wrappedFile;
+  private final boolean folder;
+  private final Date lastModified = new Date();
 
   public FakeFileObject(final File file, final boolean folder) {
     super();
@@ -108,7 +78,8 @@ public final class FakeFileObject extends FileObject {
   }
 
   @Override
-  public void rename(@Nonnull FileLock lock, @Nonnull String name, @Nonnull String ext) throws IOException {
+  public void rename(@Nonnull FileLock lock, @Nonnull String name, @Nonnull String ext)
+      throws IOException {
   }
 
   @Override
@@ -130,7 +101,7 @@ public final class FakeFileObject extends FileObject {
 
   @Override
   @Nonnull
-  public Date lastModified () {
+  public Date lastModified() {
     return this.lastModified;
   }
 
@@ -225,13 +196,43 @@ public final class FakeFileObject extends FileObject {
 
   @Override
   @Nonnull
-  public FileObject createData(@Nonnull final String name, @Nonnull final String ext) throws IOException {
+  public FileObject createData(@Nonnull final String name, @Nonnull final String ext)
+      throws IOException {
     throw new IOException("It's a fake file object");
   }
 
   @Override
   public boolean isReadOnly() {
     return true;
+  }
+
+  private final static class FakeFileLock extends FileLock {
+
+    private boolean locked = true;
+
+    public FakeFileLock() {
+    }
+
+    @Override
+    public void finalize() {
+      try {
+        if (isValid()) {
+          releaseLock();
+        }
+      } finally {
+        super.finalize();
+      }
+    }
+
+    @Override
+    public boolean isValid() {
+      return this.locked;
+    }
+
+    @Override
+    public void releaseLock() {
+      this.locked = false;
+    }
   }
 
 }

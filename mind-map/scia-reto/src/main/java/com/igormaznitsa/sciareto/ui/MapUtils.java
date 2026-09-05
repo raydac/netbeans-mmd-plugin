@@ -15,20 +15,21 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+
 package com.igormaznitsa.sciareto.ui;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.model.Extra;
 import com.igormaznitsa.mindmap.model.ExtraFile;
 import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.Topic;
+import java.io.File;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public final class MapUtils {
 
@@ -40,22 +41,25 @@ public final class MapUtils {
   @MustNotContainNull
   public static List<MMapURI> extractAllFileLinks(@Nonnull final MindMap map) {
     final List<MMapURI> result = new ArrayList<>();
-    for(final Topic t : map){
+    for (final Topic t : map) {
       final ExtraFile file = (ExtraFile) t.getExtras().get(Extra.ExtraType.FILE);
-      if (file != null){
+      if (file != null) {
         result.add(file.getAsURI());
       }
     }
     return result;
   }
-  
+
   @Nonnull
   @MustNotContainNull
-  public static List<Topic> findTopicsRelatedToFile(@Nullable final File baseFolder, @Nonnull final File file, @Nonnull final MindMap map) {
+  public static List<Topic> findTopicsRelatedToFile(@Nullable final File baseFolder,
+                                                    @Nonnull final File file,
+                                                    @Nonnull final MindMap map) {
 
     final List<Topic> result = new ArrayList<>();
 
-    final Path theFile = file.isAbsolute() ? file.toPath() : new File(baseFolder, file.getAbsolutePath()).toPath();
+    final Path theFile =
+        file.isAbsolute() ? file.toPath() : new File(baseFolder, file.getAbsolutePath()).toPath();
 
     final boolean folder = file.isDirectory();
 

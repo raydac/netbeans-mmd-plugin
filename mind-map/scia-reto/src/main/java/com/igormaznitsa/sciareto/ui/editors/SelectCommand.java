@@ -19,6 +19,6 @@
 package com.igormaznitsa.sciareto.ui.editors;
 
 public enum SelectCommand {
-    SELECT_ALL,
-    SELECT_NONE;
+  SELECT_ALL,
+  SELECT_NONE;
 }

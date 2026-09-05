@@ -57,7 +57,8 @@ import org.w3c.dom.NodeList;
 
 public class Novamind2MindMapImporter extends AbstractImporter {
 
-  private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_IMPORT_NOVAMIND2MM);
+  private static final Icon ICO =
+      ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_IMPORT_NOVAMIND2MM);
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Novamind2MindMapImporter.class);
 
@@ -109,7 +110,8 @@ public class Novamind2MindMapImporter extends AbstractImporter {
           }
         }
 
-        if (insideLinksToTopics.size() == 1 && !topic.getExtras().containsKey(Extra.ExtraType.TOPIC)) {
+        if (insideLinksToTopics.size() == 1 &&
+            !topic.getExtras().containsKey(Extra.ExtraType.TOPIC)) {
           topic.setExtra(ExtraTopic.makeLinkTo(map, insideLinksToTopics.get(0)));
         } else {
           for (final Topic linkTo : insideLinksToTopics) {
@@ -127,7 +129,8 @@ public class Novamind2MindMapImporter extends AbstractImporter {
           }
         }
 
-        if (insideLinksToFiles.size() == 1 && !topic.getExtras().containsKey(Extra.ExtraType.FILE)) {
+        if (insideLinksToFiles.size() == 1 &&
+            !topic.getExtras().containsKey(Extra.ExtraType.FILE)) {
           topic.setExtra(new ExtraFile(insideLinksToFiles.get(0)));
         } else {
           for (final MMapURI file : insideLinksToFiles) {
@@ -196,7 +199,8 @@ public class Novamind2MindMapImporter extends AbstractImporter {
   @Override
   public MindMap doImport(final PluginContext context) throws Exception {
     final File file = this.selectFileForExtension(context,
-        this.getResourceBundle().getString("MMDImporters.Novamind2MindMap.openDialogTitle"), null, "nm5",
+        this.getResourceBundle().getString("MMDImporters.Novamind2MindMap.openDialogTitle"), null,
+        "nm5",
         "Novamind files (.NM5)", this.getResourceBundle().getString("MMDImporters.ApproveImport"));
 
     if (file == null) {
@@ -212,8 +216,9 @@ public class Novamind2MindMapImporter extends AbstractImporter {
     final ParsedContent content = new ParsedContent(zipFile, "content.xml");
 
     final MindMap result = new MindMap(true);
-    result.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID, IDEBridgeFactory.findInstance()
-        .getIDEGeneratorId());
+    result.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID,
+        IDEBridgeFactory.findInstance()
+            .getIDEGeneratorId());
     result.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_SHOW_JUMPS, "true");
 
     requireNonNull(result.getRoot()).setText("Empty map");
@@ -381,8 +386,10 @@ public class Novamind2MindMapImporter extends AbstractImporter {
 
                 for (final Element l : Utils.findDirectChildrenForName(firstMap, "link-lines")) {
                   for (final Element tn : Utils.findDirectChildrenForName(l, "topic-node")) {
-                    for (final Element lld : Utils.findDirectChildrenForName(tn, "link-line-data")) {
-                      this.linksBetweenTopics.put(lld.getAttribute("start-topic-node-ref"), lld.getAttribute("end-topic-node-ref"));
+                    for (final Element lld : Utils.findDirectChildrenForName(tn,
+                        "link-line-data")) {
+                      this.linksBetweenTopics.put(lld.getAttribute("start-topic-node-ref"),
+                          lld.getAttribute("end-topic-node-ref"));
                     }
                   }
                 }

@@ -13,22 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.nbmindmap.nb.navigator;
 
 import com.igormaznitsa.nbmindmap.nb.editor.MMDDataObject;
 import org.netbeans.spi.navigator.NavigatorLookupHint;
 
-public class MMDNavigatorLookupHint implements NavigatorLookupHint{
-  
+public class MMDNavigatorLookupHint implements NavigatorLookupHint {
+
   private static final MMDNavigatorLookupHint INSTANCE = new MMDNavigatorLookupHint();
-  
-  private MMDNavigatorLookupHint(){
+
+  private MMDNavigatorLookupHint() {
   }
 
-  public static MMDNavigatorLookupHint getInstance(){
+  public static MMDNavigatorLookupHint getInstance() {
     return INSTANCE;
   }
-  
+
   @Override
   public String getContentType() {
     return MMDDataObject.MIME;

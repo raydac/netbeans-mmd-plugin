@@ -15,14 +15,14 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+
 package com.igormaznitsa.sciareto.ui.platform;
 
 import com.igormaznitsa.meta.annotation.Warning;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
-
 import javax.annotation.Nonnull;
-import javax.swing.*;
+import javax.swing.UIManager;
 
 @Warning("It is accessible through Class.forName(), don't rename it!")
 public class PlatformMacOSX extends PlatformDefault {
@@ -37,11 +37,13 @@ public class PlatformMacOSX extends PlatformDefault {
   }
 
   @Override
-  public boolean registerPlatformMenuEvent(@Nonnull final PlatformMenuEvent event, @Nonnull final PlatformMenuAction action) {
+  public boolean registerPlatformMenuEvent(@Nonnull final PlatformMenuEvent event,
+                                           @Nonnull final PlatformMenuAction action) {
     if (this.macOsxAppListener != null) {
       return this.macOsxAppListener.registerPlatformMenuEvent(event, action);
     } else {
-      LOGGER.warn("Can't register platform menu event " + event + " because listener is not provided");//NOI18N
+      LOGGER.warn("Can't register platform menu event " + event +
+          " because listener is not provided");//NOI18N
     }
     return false;
   }

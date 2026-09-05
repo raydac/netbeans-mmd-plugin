@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.nbmindmap.nb.refactoring.elements;
 
 import com.igormaznitsa.mindmap.model.MMapURI;
@@ -37,8 +38,10 @@ import org.openide.text.PositionBounds;
 import org.openide.util.Lookup;
 
 public abstract class AbstractElement extends SimpleRefactoringElementImplementation {
-  protected static final ResourceBundle BUNDLE = ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle");
-  protected static final Logger LOGGER = LoggerFactory.getLogger("MindMapRefactoringPlugin"); //NOI18N
+  protected static final ResourceBundle BUNDLE =
+      ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle");
+  protected static final Logger LOGGER = LoggerFactory.getLogger("MindMapRefactoringPlugin");
+  //NOI18N
 
   protected final File projectFolder;
   protected final MMapURI processedFile;
@@ -56,8 +59,7 @@ public abstract class AbstractElement extends SimpleRefactoringElementImplementa
   private static void delay(final long delay) throws IOException {
     try {
       Thread.sleep(delay);
-    }
-    catch (final InterruptedException ex) {
+    } catch (final InterruptedException ex) {
       Thread.currentThread().interrupt();
       throw new IOException("Interrupted", ex); //NOI18N
     }
@@ -71,8 +73,7 @@ public abstract class AbstractElement extends SimpleRefactoringElementImplementa
       try {
         lock = fileObject.lock();
         break;
-      }
-      catch (FileAlreadyLockedException ex) {
+      } catch (FileAlreadyLockedException ex) {
         delay(500L);
       }
     }
@@ -80,12 +81,10 @@ public abstract class AbstractElement extends SimpleRefactoringElementImplementa
       final OutputStream out = fileObject.getOutputStream(lock);
       try {
         IOUtils.write(map.asString(), out, "UTF-8"); //NOI18N
-      }
-      finally {
+      } finally {
         IOUtils.closeQuietly(out);
       }
-    }
-    finally {
+    } finally {
       if (lock != null) {
         lock.releaseLock();
       }
@@ -96,10 +95,10 @@ public abstract class AbstractElement extends SimpleRefactoringElementImplementa
   public void performChange() {
     try {
       this.oldMindMapText = FileUtils.readFileToString(this.mindMapFile.asFile(), "UTF-8"); //NOI18N
-    }
-    catch (IOException ex) {
+    } catch (IOException ex) {
       LOGGER.error("Can't load mind map file", ex); //NOI18N
-      ErrorManager.getDefault().log(ErrorManager.ERROR, "Can't load mind map file during refactoring"); //NOI18N
+      ErrorManager.getDefault()
+          .log(ErrorManager.ERROR, "Can't load mind map file during refactoring"); //NOI18N
     }
   }
 
@@ -107,9 +106,9 @@ public abstract class AbstractElement extends SimpleRefactoringElementImplementa
   public void undoChange() {
     if (this.oldMindMapText != null) {
       try {
-        FileUtils.writeStringToFile(this.mindMapFile.asFile(), this.oldMindMapText, "UTF-8"); //NOI18N
-      }
-      catch (IOException ex) {
+        FileUtils.writeStringToFile(this.mindMapFile.asFile(), this.oldMindMapText,
+            "UTF-8"); //NOI18N
+      } catch (IOException ex) {
         LOGGER.error("Can't undo old mind map text", ex); //NOI18N
         throw new CannotUndoMindMapException(this.mindMapFile.asFile());
       }

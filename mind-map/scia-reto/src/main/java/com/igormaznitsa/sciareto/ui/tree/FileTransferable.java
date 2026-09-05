@@ -15,8 +15,10 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+
 package com.igormaznitsa.sciareto.ui.tree;
 
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -28,7 +30,6 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
 
 public final class FileTransferable implements Transferable {
 
@@ -37,7 +38,7 @@ public final class FileTransferable implements Transferable {
 
   public FileTransferable(@Nonnull @MustNotContainNull final Collection<File> files) {
     this.files = Collections.unmodifiableList(new ArrayList<>(files));
-    this.flavors = new DataFlavor[]{DataFlavor.javaFileListFlavor};
+    this.flavors = new DataFlavor[] {DataFlavor.javaFileListFlavor};
   }
 
   @Nonnull
@@ -48,7 +49,8 @@ public final class FileTransferable implements Transferable {
 
   @Override
   @Nullable
-  public Object getTransferData(@Nullable final DataFlavor flavor) throws UnsupportedFlavorException, IOException {
+  public Object getTransferData(@Nullable final DataFlavor flavor)
+      throws UnsupportedFlavorException, IOException {
     if (isDataFlavorSupported(flavor)) {
       return this.files;
     } else {

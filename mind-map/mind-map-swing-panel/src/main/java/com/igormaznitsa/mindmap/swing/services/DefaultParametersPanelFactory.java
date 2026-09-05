@@ -26,7 +26,6 @@ import com.igormaznitsa.mindmap.plugins.api.parameters.StringParameter;
 import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.ide.IDEBridgeFactory;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
-import com.igormaznitsa.mindmap.swing.panel.utils.Pair;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -34,13 +33,10 @@ import java.awt.Insets;
 import java.io.File;
 import java.util.Comparator;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
@@ -64,14 +60,14 @@ public class DefaultParametersPanelFactory extends JPanel {
   }
 
   public JComponent make(final DialogProvider dialogProvider,
-                     final Set<AbstractParameter<?>> parameters) {
+                         final Set<AbstractParameter<?>> parameters) {
     return this.makeParametersPanelFactory(UIComponentFactoryProvider.findInstance(),
         dialogProvider, parameters);
   }
 
   private JComponent makeParametersPanelFactory(final UIComponentFactory uiComponentFactory,
-                                            final DialogProvider dialogProvider,
-                                            final Set<AbstractParameter<?>> parameters) {
+                                                final DialogProvider dialogProvider,
+                                                final Set<AbstractParameter<?>> parameters) {
 
     final Map<Importance, JPanel> panelsByImportance =
         new EnumMap<>(Importance.class);
@@ -166,7 +162,8 @@ public class DefaultParametersPanelFactory extends JPanel {
     if (panelsByImportance.isEmpty()) {
       return uiComponentFactory.makePanel();
     } else if (panelsByImportance.size() == 1) {
-      return panelsByImportance.values().stream().findFirst().orElseThrow(() -> new IllegalStateException("Unexpectedly can't find panel"));
+      return panelsByImportance.values().stream().findFirst()
+          .orElseThrow(() -> new IllegalStateException("Unexpectedly can't find panel"));
     } else {
       final JTabbedPane tabbedPane = uiComponentFactory.makeTabbedPane();
       final ResourceBundle bundle = MmdI18n.getInstance().findBundle();
@@ -174,7 +171,7 @@ public class DefaultParametersPanelFactory extends JPanel {
           .stream()
           .sorted(Comparator.comparingInt(Enum::ordinal))
           .forEach(k -> {
-            tabbedPane.add(bundle.getString("Importance."+k.name()), panelsByImportance.get(k));
+            tabbedPane.add(bundle.getString("Importance." + k.name()), panelsByImportance.get(k));
           });
       return tabbedPane;
     }
@@ -198,11 +195,13 @@ public class DefaultParametersPanelFactory extends JPanel {
       this.panel.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
       this.buttonReset = uiComponentFactory.makeButton();
       this.buttonReset.setText("X");
-      this.buttonReset.setToolTipText(MmdI18n.getInstance().findBundle().getString("DefaultParametersPanelFactory.menuItem.buttonResetValue.tooltip"));
+      this.buttonReset.setToolTipText(MmdI18n.getInstance().findBundle()
+          .getString("DefaultParametersPanelFactory.menuItem.buttonResetValue.tooltip"));
 
       this.buttonSelect = uiComponentFactory.makeButton();
       this.buttonSelect.setText("...");
-      this.buttonSelect.setToolTipText(MmdI18n.getInstance().findBundle().getString("DefaultParametersPanelFactory.menuItem.buttonSelectFile.tooltip"));
+      this.buttonSelect.setToolTipText(MmdI18n.getInstance().findBundle()
+          .getString("DefaultParametersPanelFactory.menuItem.buttonSelectFile.tooltip"));
 
       this.textField = uiComponentFactory.makeTextField();
       this.textField.setColumns(16);
@@ -218,7 +217,7 @@ public class DefaultParametersPanelFactory extends JPanel {
         private void updateFileForDocument(final Document document) {
           try {
             parameter.setValue(new File(document.getText(0, document.getLength()).trim()));
-          }catch (Exception ex){
+          } catch (Exception ex) {
             // ignore
           }
         }

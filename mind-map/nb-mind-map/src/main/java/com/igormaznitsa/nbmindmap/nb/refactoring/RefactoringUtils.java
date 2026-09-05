@@ -13,9 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.nbmindmap.nb.refactoring;
 
+import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.nbmindmap.nb.editor.MMDDataObject;
+import com.igormaznitsa.nbmindmap.nb.refactoring.elements.AbstractPlugin;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -34,8 +37,6 @@ import org.openide.cookies.EditorCookie;
 import org.openide.filesystems.FileObject;
 import org.openide.nodes.Node;
 import org.openide.util.Lookup;
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
-import com.igormaznitsa.nbmindmap.nb.refactoring.elements.AbstractPlugin;
 
 public final class RefactoringUtils {
 
@@ -43,7 +44,8 @@ public final class RefactoringUtils {
   }
 
   @Nonnull
-  public static Collection<FileObject> findAllMindMapsInFolder(@Nullable final NonRecursiveFolder folder, @Nullable final AbstractPlugin plugin) {
+  public static Collection<FileObject> findAllMindMapsInFolder(
+      @Nullable final NonRecursiveFolder folder, @Nullable final AbstractPlugin plugin) {
     final FileObject folderFile = folder == null ? null : folder.getFolder();
 
     if (folderFile == null) {
@@ -69,7 +71,8 @@ public final class RefactoringUtils {
 
   @Nonnull
   @MustNotContainNull
-  public static List<FileObject> findAllMindMapsInProject(@Nonnull final Project project, @Nullable final AbstractPlugin plugin) {
+  public static List<FileObject> findAllMindMapsInProject(@Nonnull final Project project,
+                                                          @Nullable final AbstractPlugin plugin) {
     final List<FileObject> result = new ArrayList<FileObject>();
 
     final Sources sources = ProjectUtils.getSources(project);

@@ -683,11 +683,12 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
   @Nullable
   @Override
   public MultiFileContainer.FileItem makeFileItem() throws IOException {
-    final byte [] content = this.editor.getText().getBytes(StandardCharsets.UTF_8);
+    final byte[] content = this.editor.getText().getBytes(StandardCharsets.UTF_8);
     final String caretPosition = Integer.toString(this.editor.getCaretPosition());
 
-    return new MultiFileContainer.FileItem(this.getTabTitle().isChanged(), caretPosition, this.currentTextFile.get()
-        .getFile(), null, content, this.editor.serializeEditHistory(5));
+    return new MultiFileContainer.FileItem(this.getTabTitle().isChanged(), caretPosition,
+        this.currentTextFile.get()
+            .getFile(), null, content, this.editor.serializeEditHistory(5));
   }
 
   @Override
@@ -778,7 +779,7 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
   private void initPlantUml() {
     GraphvizRuntimeEnvironment.getInstance()
         .setDotExecutable(this.mindMapPanelConfig.getOptionalProperty(
-        AdditionalPreferences.PROPERTY_PLANTUML_DOT_PATH, null));
+            AdditionalPreferences.PROPERTY_PLANTUML_DOT_PATH, null));
   }
 
   @Nonnull

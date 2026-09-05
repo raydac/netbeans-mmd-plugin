@@ -55,11 +55,10 @@ import org.fife.ui.rtextarea.RUndoManager;
 
 public final class ScalableRsyntaxTextArea extends RSyntaxTextArea implements TabChangeListener {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ScalableRsyntaxTextArea.class);
-
   public static final Font DEFAULT_FONT =
       MindMapPanelConfig.findDefaultFont(Font.PLAIN, 14, Font.DIALOG,
           new String[] {"JetBrains Mono Medium"});
+  private static final Logger LOGGER = LoggerFactory.getLogger(ScalableRsyntaxTextArea.class);
   private static final float SCALE_STEP = 0.5f;
   private static final float SCALE_MIN = 0.03f;
   private static final float SCALE_MAX = 10.0f;
@@ -185,24 +184,6 @@ public final class ScalableRsyntaxTextArea extends RSyntaxTextArea implements Ta
     return this.undoManager;
   }
 
-  public static final class RUndoManagerExt extends RUndoManager {
-    public RUndoManagerExt(@Nonnull final RTextArea textArea) {
-      super(textArea);
-    }
-
-    @Override
-    public void undoableEditHappened(@Nonnull final UndoableEditEvent e) {
-      this.addEdit(e.getEdit());
-      this.updateActions();
-    }
-
-    @Nonnull
-    @MustNotContainNull
-    public List<UndoableEdit> getEditHistory() {
-      return this.edits;
-    }
-  }
-
   @Nonnull
   @MustNotContainNull
   public List<byte[]> serializeEditHistory(final int limit) throws IOException {
@@ -249,5 +230,23 @@ public final class ScalableRsyntaxTextArea extends RSyntaxTextArea implements Ta
   @Override
   public void onTabChanged(@Nonnull final JTabbedPane tabbedPane) {
     this.updateFontForScale();
+  }
+
+  public static final class RUndoManagerExt extends RUndoManager {
+    public RUndoManagerExt(@Nonnull final RTextArea textArea) {
+      super(textArea);
+    }
+
+    @Override
+    public void undoableEditHappened(@Nonnull final UndoableEditEvent e) {
+      this.addEdit(e.getEdit());
+      this.updateActions();
+    }
+
+    @Nonnull
+    @MustNotContainNull
+    public List<UndoableEdit> getEditHistory() {
+      return this.edits;
+    }
   }
 }

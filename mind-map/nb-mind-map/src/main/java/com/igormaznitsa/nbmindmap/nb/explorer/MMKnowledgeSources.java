@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.nbmindmap.nb.explorer;
 
 import com.igormaznitsa.mindmap.model.logger.Logger;
@@ -47,19 +48,15 @@ import org.openide.util.WeakListeners;
 public final class MMKnowledgeSources implements NodeList<SourceGroup>, ChangeListener, DataFilter,
     AdditionalPreferences {
 
-  private static final long serialVersionUID = -1360299214288653958L;
-
-  public static final ResourceBundle BUNDLE = ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle");
-
+  public static final ResourceBundle BUNDLE =
+      ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle");
   public static final String KNOWLEDGE_FOLDER_NAME = ".projectKnowledge";
-
+  private static final long serialVersionUID = -1360299214288653958L;
+  private static final Logger LOGGER = LoggerFactory.getLogger(MMKnowledgeSources.class);
   private final Project project;
   private final Sources projectSources;
   private final ChangeListener changeListener;
   private final ChangeSupport changeSupport = new ChangeSupport(this);
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(MMKnowledgeSources.class);
-
   private final MindMapPanelConfig mindMapPanelConfig;
 
   public MMKnowledgeSources(final Project project) {
@@ -69,46 +66,50 @@ public final class MMKnowledgeSources implements NodeList<SourceGroup>, ChangeLi
     this.mindMapPanelConfig = loadConfig();
   }
 
-  public static FileObject findProjectKnowledgeFolder(final Project project){
-    if (project == null) return null;
+  public static FileObject findProjectKnowledgeFolder(final Project project) {
+    if (project == null) {
+      return null;
+    }
     final FileObject projectFolder = project.getProjectDirectory();
     return projectFolder.getFileObject(KNOWLEDGE_FOLDER_NAME);
   }
-  
+
   private static MindMapPanelConfig loadConfig() {
     final MindMapPanelConfig config = new MindMapPanelConfig();
     config.loadFrom(NbUtils.getPreferences());
     return config;
   }
 
-  private static SourceGroup[] getSourceGroups(final Project project, final MindMapPanelConfig config) {
+  private static SourceGroup[] getSourceGroups(final Project project,
+                                               final MindMapPanelConfig config) {
     final String className = project.getClass().getName();
     LOGGER.info("Request sources for project type " + className);
 
     SourceGroup knowledgeSrc = null;
     try {
-      FileObject knowledgeFolder = project.getProjectDirectory().getFileObject(KNOWLEDGE_FOLDER_NAME);
-      if (knowledgeFolder == null && config.getOptionalProperty(PROPERTY_KNOWLEDGE_FOLDER_ALLOWED, false)) {
+      FileObject knowledgeFolder =
+          project.getProjectDirectory().getFileObject(KNOWLEDGE_FOLDER_NAME);
+      if (knowledgeFolder == null &&
+          config.getOptionalProperty(PROPERTY_KNOWLEDGE_FOLDER_ALLOWED, false)) {
         knowledgeFolder = project.getProjectDirectory().createFolder(KNOWLEDGE_FOLDER_NAME);
       }
       if (knowledgeFolder != null) {
         final String rootKnowledgeFolderName = BUNDLE.getString("KnowledgeSourceGroup.displayName");
-        knowledgeSrc = GenericSources.group(project, knowledgeFolder, KNOWLEDGE_FOLDER_NAME, rootKnowledgeFolderName, new ImageIcon(BadgeIcons.BADGED_FOLDER), new ImageIcon(BadgeIcons.BADGED_FOLDER_OPEN));
-      }
-      else {
+        knowledgeSrc = GenericSources.group(project, knowledgeFolder, KNOWLEDGE_FOLDER_NAME,
+            rootKnowledgeFolderName, new ImageIcon(BadgeIcons.BADGED_FOLDER),
+            new ImageIcon(BadgeIcons.BADGED_FOLDER_OPEN));
+      } else {
         LOGGER.info("Knowledge folder is not presented in " + project);
       }
-    }
-    catch (IOException ex) {
+    } catch (IOException ex) {
       LOGGER.error("Can't make source group for knowledge folder", ex);
     }
 
     final SourceGroup[] result;
     if (knowledgeSrc == null) {
       result = new SourceGroup[0];
-    }
-    else {
-      result = new SourceGroup[]{knowledgeSrc};
+    } else {
+      result = new SourceGroup[] {knowledgeSrc};
     }
 
     return result;
@@ -171,8 +172,7 @@ public final class MMKnowledgeSources implements NodeList<SourceGroup>, ChangeLi
       try {
         DataFolder dataFolder = DataFolder.findFolder(fileObject);
         return dataFolder;
-      }
-      catch (Exception ex) {
+      } catch (Exception ex) {
         LOGGER.error("Can't find data folder for file : " + fileObject, ex);
       }
     }

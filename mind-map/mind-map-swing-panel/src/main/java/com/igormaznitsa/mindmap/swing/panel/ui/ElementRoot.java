@@ -109,7 +109,8 @@ public final class ElementRoot extends AbstractElement {
       startX = source.getCenterX() + source.getWidth() / 4;
     }
 
-    g.drawCurve(startX, source.getCenterY(), destination.getCenterX(), destination.getCenterY(), cfg.getConnectorColor());
+    g.drawCurve(startX, source.getCenterY(), destination.getCenterX(), destination.getCenterY(),
+        cfg.getConnectorColor());
   }
 
   private double calcTotalChildrenHeight(final double vertInset, final boolean left) {
@@ -237,7 +238,8 @@ public final class ElementRoot extends AbstractElement {
     if (childrenOnly) {
       size.setSize(leftWidth + rightWidth, Math.max(leftHeight, rightHeight));
     } else {
-      size.setSize(leftWidth + rightWidth + this.bounds.getWidth(), Math.max(this.bounds.getHeight(), Math.max(leftHeight, rightHeight)));
+      size.setSize(leftWidth + rightWidth + this.bounds.getWidth(),
+          Math.max(this.bounds.getHeight(), Math.max(leftHeight, rightHeight)));
     }
 
     return size;
@@ -276,13 +278,15 @@ public final class ElementRoot extends AbstractElement {
           }
         }
 
-        final Topic lastOne = childForDirection.isEmpty() ? null : childForDirection.get(childForDirection.size() - 1);
+        final Topic lastOne = childForDirection.isEmpty() ? null :
+            childForDirection.get(childForDirection.size() - 1);
 
         for (final Topic t : childForDirection) {
           final AbstractElement el = requireNonNull((AbstractElement) t.getPayload());
 
           final double childStartBlockY = el.calcBlockY();
-          final double childEndBlockY = childStartBlockY + el.getBlockSize().getHeight() + vertInset;
+          final double childEndBlockY =
+              childStartBlockY + el.getBlockSize().getHeight() + vertInset;
 
           if (py < childEndBlockY) {
             result = py < el.getBounds().getCenterY() ? prev : t;

@@ -28,31 +28,32 @@ import com.igormaznitsa.sciareto.ui.SrI18n;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.editors.EditorContentType;
 import com.igormaznitsa.sciareto.ui.tree.NodeProject;
-import java.nio.file.Path;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Cursor;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Image;
+import java.awt.Insets;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.ToolTipManager;
+import javax.swing.UIManager;
 import org.apache.commons.text.StringEscapeUtils;
 
 public final class TabTitle extends JPanel {
 
   private static final long serialVersionUID = -6534083975320248288L;
-  private final JLabel titleLabel;
-  private final JButton closeButton;
-  private volatile File associatedFile;
-  private volatile boolean changed;
-  private final Context context;
-  private final TabProvider parent;
-
-  private boolean visited;
-
   private static final Icon CloseTabIconTransparent;
   private static final Icon CloseTabIcon;
+  private static final Logger LOGGER = LoggerFactory.getLogger(TabTitle.class);
 
   static {
     final Image image = UiUtils.loadIcon("cancel.png"); //NOI18N
@@ -63,7 +64,13 @@ public final class TabTitle extends JPanel {
     CloseTabIconTransparent = new ImageIcon(UiUtils.makeWithAlpha(image, 0.25f));
   }
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(TabTitle.class);
+  private final JLabel titleLabel;
+  private final JButton closeButton;
+  private final Context context;
+  private final TabProvider parent;
+  private volatile File associatedFile;
+  private volatile boolean changed;
+  private boolean visited;
 
   public TabTitle(@Nonnull final Context context, @Nonnull final TabProvider parent,
                   @Nullable final File associatedFile) {
@@ -206,8 +213,11 @@ public final class TabTitle extends JPanel {
   public void doSafeClose() {
     final boolean close = !this.changed
         || DialogProviderManager.getInstance().getDialogProvider()
-        .msgConfirmOkCancel(SciaRetoStarter.getApplicationFrame(), SrI18n.getInstance().findBundle().getString("TabTitle.msgConfirmSafeClose.title"),
-            String.format(SrI18n.getInstance().findBundle().getString("TabTitle.msgConfirmSafeClose.text"), makeName()));
+        .msgConfirmOkCancel(SciaRetoStarter.getApplicationFrame(),
+            SrI18n.getInstance().findBundle().getString("TabTitle.msgConfirmSafeClose.title"),
+            String.format(
+                SrI18n.getInstance().findBundle().getString("TabTitle.msgConfirmSafeClose.text"),
+                makeName()));
     if (close) {
       this.context.closeTab(this);
     }
@@ -223,13 +233,13 @@ public final class TabTitle extends JPanel {
     updateView();
   }
 
+  public boolean isChanged() {
+    return this.changed;
+  }
+
   public void setChanged(final boolean flag) {
     this.changed = flag;
     updateView();
-  }
-
-  public boolean isChanged() {
-    return this.changed;
   }
 
   public void dispose() {
@@ -243,7 +253,8 @@ public final class TabTitle extends JPanel {
         !DialogProviderManager.getInstance().getDialogProvider()
             .msgConfirmYesNo(SciaRetoStarter.getApplicationFrame(),
                 SrI18n.getInstance().findBundle().getString("TabTitle.msgConfirmReload.title"),
-                String.format(SrI18n.getInstance().findBundle().getString("TabTitle.msgConfirmReload.msg"),
+                String.format(
+                    SrI18n.getInstance().findBundle().getString("TabTitle.msgConfirmReload.msg"),
                     (this.associatedFile == null ? "..." : this.associatedFile.getName())))) {
       return reloaded;
     }

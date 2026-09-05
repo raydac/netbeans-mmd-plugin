@@ -25,10 +25,9 @@ import javax.swing.KeyStroke;
 
 public final class KeyShortcut implements Serializable {
 
-  private static final long serialVersionUID = -4263687011484460164L;
-
   public static final int ALL_MODIFIERS_MASK =
       KeyEvent.SHIFT_MASK | KeyEvent.CTRL_MASK | KeyEvent.ALT_MASK | KeyEvent.META_MASK;
+  private static final long serialVersionUID = -4263687011484460164L;
   private String id;
   private int modifiers;
   private int keyCode;

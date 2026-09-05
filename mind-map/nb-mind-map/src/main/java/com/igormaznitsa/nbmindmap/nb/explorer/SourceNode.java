@@ -34,12 +34,15 @@ class SourceNode extends AbstractMMFilter {
 
   private volatile Image icon;
   private volatile Image iconOpen;
-  
-  SourceNode(@Nonnull final Project project, @Nonnull final DataFolder folder, @Nonnull final DataFilter filter, final String name) {
-    this(project, folder, new FilterNode(folder.getNodeDelegate(), folder.createNodeChildren(filter)), name);
+
+  SourceNode(@Nonnull final Project project, @Nonnull final DataFolder folder,
+             @Nonnull final DataFilter filter, final String name) {
+    this(project, folder,
+        new FilterNode(folder.getNodeDelegate(), folder.createNodeChildren(filter)), name);
   }
 
-  private SourceNode(@Nonnull final Project project, @Nonnull final DataFolder folder, @Nonnull final FilterNode node, @Nonnull final String name) {
+  private SourceNode(@Nonnull final Project project, @Nonnull final DataFolder folder,
+                     @Nonnull final FilterNode node, @Nonnull final String name) {
     super(node, org.openide.nodes.Children.createLazy(new Callable<org.openide.nodes.Children>() {
       @Override
       public org.openide.nodes.Children call() throws Exception {
@@ -47,7 +50,9 @@ class SourceNode extends AbstractMMFilter {
       }
     }), new ProxyLookup(folder.getNodeDelegate().getLookup()));
 
-    disableDelegation(DELEGATE_GET_DISPLAY_NAME | DELEGATE_SET_DISPLAY_NAME | DELEGATE_GET_SHORT_DESCRIPTION | DELEGATE_GET_ACTIONS);
+    disableDelegation(
+        DELEGATE_GET_DISPLAY_NAME | DELEGATE_SET_DISPLAY_NAME | DELEGATE_GET_SHORT_DESCRIPTION |
+            DELEGATE_GET_ACTIONS);
     setDisplayName(name);
   }
 
@@ -58,18 +63,20 @@ class SourceNode extends AbstractMMFilter {
 
   @Override
   public boolean equals(@Nullable final Object obj) {
-    if (this == obj) return true;
-    if (obj instanceof SourceNode){
+    if (this == obj) {
+      return true;
+    }
+    if (obj instanceof SourceNode) {
       return super.equals(obj);
     }
     return false;
   }
 
-  public void setIcons(@Nullable final Image icon, @Nullable final Image iconOpen){
+  public void setIcons(@Nullable final Image icon, @Nullable final Image iconOpen) {
     this.icon = icon;
     this.iconOpen = iconOpen;
   }
-  
+
   @Override
   @Nonnull
   public String getShortDescription() {
@@ -79,7 +86,7 @@ class SourceNode extends AbstractMMFilter {
   @Override
   @Nonnull
   public Image getIcon(final int type) {
-    return  this.icon == null ? BadgeIcons.getTreeFolderIcon(false) : this.icon;
+    return this.icon == null ? BadgeIcons.getTreeFolderIcon(false) : this.icon;
   }
 
   @Override

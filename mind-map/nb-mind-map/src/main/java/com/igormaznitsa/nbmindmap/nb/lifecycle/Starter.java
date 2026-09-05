@@ -13,39 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.nbmindmap.nb.lifecycle;
 
-import java.io.File;
-import org.openide.modules.OnStart;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.external.ExternalPlugins;
+import java.io.File;
+import org.openide.modules.OnStart;
 
 @OnStart
 public class Starter implements Runnable {
-  
+
   private static final long serialVersionUID = 2421511056149761257L;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Starter.class);
-  
+
   private static final String PROPERTY = "nbmmd.plugin.folder";
-  
+
   @Override
   public void run() {
     final String pluginFolder = System.getProperty(PROPERTY);
-    if (pluginFolder!=null) {
+    if (pluginFolder != null) {
       final File folder = new File(pluginFolder);
       if (folder.isDirectory()) {
-        LOGGER.info("Loading plugins from folder : "+folder);
+        LOGGER.info("Loading plugins from folder : " + folder);
         new ExternalPlugins(folder).init();
       } else {
         LOGGER.error("Can't find plugin folder : " + folder);
       }
-    }else{
-      LOGGER.info("Property "+PROPERTY+" is not defined");
+    } else {
+      LOGGER.info("Property " + PROPERTY + " is not defined");
     }
-    
+
   }
-  
-  
+
+
 }

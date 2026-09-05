@@ -15,6 +15,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+
 package com.igormaznitsa.sciareto.ui.platform;
 
 import javax.annotation.Nonnull;
@@ -22,10 +23,15 @@ import javax.annotation.Nonnull;
 public interface Platform {
 
   void init();
+
   void dispose();
+
   @Nonnull
   String getDefaultLFClassName();
-  boolean registerPlatformMenuEvent(@Nonnull PlatformMenuEvent event,@Nonnull PlatformMenuAction listener);
+
+  boolean registerPlatformMenuEvent(@Nonnull PlatformMenuEvent event,
+                                    @Nonnull PlatformMenuAction listener);
+
   @Nonnull
   String getName();
 }

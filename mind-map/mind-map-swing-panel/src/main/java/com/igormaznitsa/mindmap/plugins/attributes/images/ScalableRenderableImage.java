@@ -65,11 +65,14 @@ final class ScalableRenderableImage implements Renderable {
           final BufferedImage scaled = new BufferedImage(sw, sh, BufferedImage.TYPE_INT_ARGB);
           final Graphics2D gfx = scaled.createGraphics();
 
-          gfx.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+          gfx.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION,
+              RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
           gfx.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
           gfx.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-          gfx.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-          gfx.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+          gfx.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+              RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+          gfx.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING,
+              RenderingHints.VALUE_COLOR_RENDER_QUALITY);
 
           gfx.drawImage(this.baseImage, AffineTransform.getScaleInstance(scale, scale), null);
           gfx.dispose();

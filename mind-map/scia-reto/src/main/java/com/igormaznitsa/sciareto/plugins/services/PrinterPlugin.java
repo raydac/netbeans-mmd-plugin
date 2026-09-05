@@ -51,7 +51,8 @@ public class PrinterPlugin extends AbstractPopupMenuItem implements MMDPrintPane
 
     final JMenuItem printAction =
         UI_COMPO_FACTORY.makeMenuItem(
-            SrI18n.getInstance().findBundle().getString("MMDGraphEditor.makePopUp.miPrintPreview.menuItem"),
+            SrI18n.getInstance().findBundle()
+                .getString("MMDGraphEditor.makePopUp.miPrintPreview.menuItem"),
             new ImageIcon(ICON_PRINTER));
     printAction.addActionListener(
         e -> {
@@ -66,14 +67,16 @@ public class PrinterPlugin extends AbstractPopupMenuItem implements MMDPrintPane
           JOptionPane.showMessageDialog(
               SwingUtilities.windowForComponent(context.getPanel()),
               panel,
-              SrI18n.getInstance().findBundle().getString("MMDGraphEditor.makePopUp.miPrintPreview.msgDialog.title"),
+              SrI18n.getInstance().findBundle()
+                  .getString("MMDGraphEditor.makePopUp.miPrintPreview.msgDialog.title"),
               JOptionPane.PLAIN_MESSAGE);
         });
     return printAction;
   }
-  
+
   @Override
-  public boolean isEnabled(@Nonnull final PluginContext context, @Nullable final Topic activeTopic) {
+  public boolean isEnabled(@Nonnull final PluginContext context,
+                           @Nullable final Topic activeTopic) {
     return !context.getModel().isEmpty();
   }
 
@@ -99,7 +102,8 @@ public class PrinterPlugin extends AbstractPopupMenuItem implements MMDPrintPane
   }
 
   @Override
-  public void startBackgroundTask(@Nonnull final MMDPrintPanel source, @Nonnull final String name, @Nonnull final Runnable task) {
+  public void startBackgroundTask(@Nonnull final MMDPrintPanel source, @Nonnull final String name,
+                                  @Nonnull final Runnable task) {
     LOGGER.info("Starting print task : " + name); //NOI18N
     final Thread thread = new Thread(task, name);
     thread.setDaemon(true);

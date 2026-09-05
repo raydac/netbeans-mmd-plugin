@@ -15,23 +15,24 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+
 package com.igormaznitsa.sciareto.ui.misc;
 
+import com.igormaznitsa.sciareto.ui.Icons;
 import com.igormaznitsa.sciareto.ui.SrI18n;
+import com.igormaznitsa.sciareto.ui.editors.PictureViewer;
+import com.igormaznitsa.sciareto.ui.tree.NodeFileOrFolder;
+import com.igormaznitsa.sciareto.ui.tree.NodeProject;
+import com.igormaznitsa.sciareto.ui.tree.TreeCellRenderer;
 import java.awt.Color;
 import java.awt.Component;
 import java.util.Locale;
 import javax.annotation.Nonnull;
 import javax.swing.DefaultListCellRenderer;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.UIManager;
 import org.apache.commons.io.FilenameUtils;
-import com.igormaznitsa.sciareto.ui.Icons;
-import com.igormaznitsa.sciareto.ui.editors.PictureViewer;
-import com.igormaznitsa.sciareto.ui.tree.NodeFileOrFolder;
-import com.igormaznitsa.sciareto.ui.tree.NodeProject;
-import com.igormaznitsa.sciareto.ui.tree.TreeCellRenderer;
-import javax.swing.JLabel;
 
 public final class NodeListRenderer extends DefaultListCellRenderer {
 
@@ -42,7 +43,8 @@ public final class NodeListRenderer extends DefaultListCellRenderer {
 
   public NodeListRenderer() {
     super();
-    final Color defaultBackground = UIManager.getLookAndFeelDefaults().getColor("List.background"); //NOI18N
+    final Color defaultBackground =
+        UIManager.getLookAndFeelDefaults().getColor("List.background"); //NOI18N
     if (defaultBackground == null) {
       COLOR_ROW_EVEN = null;
       COLOR_ROW_ODD = null;
@@ -63,15 +65,21 @@ public final class NodeListRenderer extends DefaultListCellRenderer {
       return node.toString();
     } else {
       final String projectName = project.toString();
-      return String.format(SrI18n.getInstance().findBundle().getString("NodeListRenderer.textForNode"), node, projectName);
+      return String.format(
+          SrI18n.getInstance().findBundle().getString("NodeListRenderer.textForNode"), node,
+          projectName);
     }
   }
 
   @Override
   @Nonnull
-  public Component getListCellRendererComponent(@Nonnull final JList<?> list, @Nonnull final Object value, final int index, final boolean isSelected, final boolean cellHasFocus) {
-    final JLabel result = (JLabel)super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-   
+  public Component getListCellRendererComponent(@Nonnull final JList<?> list,
+                                                @Nonnull final Object value, final int index,
+                                                final boolean isSelected,
+                                                final boolean cellHasFocus) {
+    final JLabel result =
+        (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
     final NodeFileOrFolder node = (NodeFileOrFolder) value;
 
     final String ext = FilenameUtils.getExtension(node.toString()).toLowerCase(Locale.ENGLISH);
@@ -94,7 +102,7 @@ public final class NodeListRenderer extends DefaultListCellRenderer {
       result.setIcon(TreeCellRenderer.DEFAULT_FILE);
     }
     result.setText(makeTextForNode(node));
-    
+
     return result;
   }
 

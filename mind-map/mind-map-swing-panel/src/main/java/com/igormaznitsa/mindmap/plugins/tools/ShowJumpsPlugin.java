@@ -28,7 +28,8 @@ import javax.swing.JMenuItem;
 
 public class ShowJumpsPlugin extends AbstractPopupMenuItem {
 
-  private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_SHOWJUMPS);
+  private static final Icon ICO =
+      ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_SHOWJUMPS);
 
   @Override
   public JMenuItem makeMenuItem(final PluginContext context, final Topic topic) {

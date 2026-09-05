@@ -13,12 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.nbmindmap.nb.swing;
 
 import javax.annotation.Nonnull;
 
 public interface FindTextScopeProvider {
-  
+
+  boolean toSearchIn(@Nonnull SearchTextScope scope);
+
   public enum SearchTextScope {
     IN_TOPIC_TEXT,
     IN_TOPIC_NOTES,
@@ -26,6 +29,4 @@ public interface FindTextScopeProvider {
     IN_TOPIC_URI,
     CASE_INSENSETIVE;
   }
-  
-  boolean toSearchIn(@Nonnull SearchTextScope scope);
 }

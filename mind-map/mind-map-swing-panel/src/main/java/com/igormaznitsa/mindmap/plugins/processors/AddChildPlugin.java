@@ -28,7 +28,8 @@ import javax.swing.Icon;
 
 public class AddChildPlugin extends AbstractFocusedTopicPlugin {
 
-  private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_ADD_CHILD);
+  private static final Icon ICO =
+      ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_ADD_CHILD);
 
   @Override
   public int getOrder() {

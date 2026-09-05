@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.nbmindmap.nb.refactoring.elements;
 
 import com.igormaznitsa.mindmap.model.MMapURI;
@@ -35,7 +36,8 @@ public class MoveElement extends AbstractElement {
 
   @Override
   public String getText() {
-    return String.format(BUNDLE.getString("MoveElement.getText"),this.processedFile.asString(false, false));
+    return String.format(BUNDLE.getString("MoveElement.getText"),
+        this.processedFile.asString(false, false));
   }
 
   @Override
@@ -47,14 +49,13 @@ public class MoveElement extends AbstractElement {
         if (parsed.replaceAllLinksToFile(this.projectFolder, this.processedFile, this.targetFile)) {
           this.mindMapFile.writeMindMap();
         }
-      }
-      else {
+      } else {
         LOGGER.warn("Detected null as new file uri for rename refactoring"); //NOI18N
       }
-    }
-    catch (Exception ex) {
+    } catch (Exception ex) {
       LOGGER.error("Error during mind map refactoring", ex); //NOI18N
-      ErrorManager.getDefault().log(ErrorManager.EXCEPTION, "Can't process mind map and remove file link"); //NOI18N
+      ErrorManager.getDefault()
+          .log(ErrorManager.EXCEPTION, "Can't process mind map and remove file link"); //NOI18N
     }
   }
 

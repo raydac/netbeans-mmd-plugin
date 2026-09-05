@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.nbmindmap.nb.print;
 
 import java.awt.Graphics;
@@ -21,14 +22,14 @@ import org.netbeans.spi.print.PrintPage;
 public class PrintPageAdapter implements PrintPage {
 
   private final com.igormaznitsa.mindmap.print.PrintPage delegate;
-  
-  public PrintPageAdapter(final com.igormaznitsa.mindmap.print.PrintPage delegate){
+
+  public PrintPageAdapter(final com.igormaznitsa.mindmap.print.PrintPage delegate) {
     this.delegate = delegate;
   }
-  
+
   @Override
-  public void print (final Graphics g) {
+  public void print(final Graphics g) {
     this.delegate.print(g);
   }
-  
+
 }

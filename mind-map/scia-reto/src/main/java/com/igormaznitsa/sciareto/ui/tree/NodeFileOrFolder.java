@@ -53,7 +53,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.SignalType;
 
-public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>, Iterable<NodeFileOrFolder> {
+public class NodeFileOrFolder
+    implements TreeNode, Comparator<NodeFileOrFolder>, Iterable<NodeFileOrFolder> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(NodeFileOrFolder.class);
 
@@ -61,11 +62,11 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
 
   protected final List<NodeFileOrFolder> children;
   protected final boolean folderFlag;
+  protected final Predicate<NodeFileOrFolder> predicateShowHiddenFiles;
   private final boolean readonly;
   protected volatile String name;
   private volatile boolean noAccess;
   private volatile boolean disposed = false;
-  protected final Predicate<NodeFileOrFolder> predicateShowHiddenFiles;
 
   public NodeFileOrFolder(
       @Nonnull final Predicate<NodeFileOrFolder> predicateShowHiddenFiles,
@@ -154,8 +155,11 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
 
   @Nonnull
   public NodeFileOrFolder addFile(@Nonnull final File file) {
-    Assertions.assertTrue("Unexpected state!", this.folderFlag && file.getParentFile().equals(this.makeFileForNode())); //NOI18N
-    final NodeFileOrFolder result = new NodeFileOrFolder(this.predicateShowHiddenFiles, this, file.isDirectory(), file.getName(), !Files.isWritable(file.toPath()));
+    Assertions.assertTrue("Unexpected state!",
+        this.folderFlag && file.getParentFile().equals(this.makeFileForNode())); //NOI18N
+    final NodeFileOrFolder result =
+        new NodeFileOrFolder(this.predicateShowHiddenFiles, this, file.isDirectory(),
+            file.getName(), !Files.isWritable(file.toPath()));
     this.children.add(0, result);
     Collections.sort(this.children, this);
     return result;
@@ -163,7 +167,8 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
 
   public void setName(@Nonnull final String name) throws IOException {
     this.name = name;
-    readSubtree(this.predicateShowHiddenFiles.test(this)).subscribeOn(MainFrame.REACTOR_SCHEDULER).subscribe();
+    readSubtree(this.predicateShowHiddenFiles.test(this)).subscribeOn(MainFrame.REACTOR_SCHEDULER)
+        .subscribe();
   }
 
   private void clearChildren() {
@@ -179,40 +184,45 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
     if (this.folderFlag) {
       final boolean parentIsProjectGroup = this.parent instanceof NodeProjectGroup;
       return Flux.using(() -> {
-        this.clearChildren();
-        final File nodeFile = makeFileForNode();
-        try {
-          return new SynchroPathIterator(nodeFile.toPath());
-        } catch (Exception ex) {
-          LOGGER.warn("Error '" + ex.getClass().getCanonicalName() + "' during access to path: " + nodeFile.getPath());
-          this.noAccess = true;
-          return new DirectoryStream<Path>() {
-            @Override
-            public Iterator<Path> iterator() {
-              return Collections.emptyIterator();
-            }
+            this.clearChildren();
+            final File nodeFile = makeFileForNode();
+            try {
+              return new SynchroPathIterator(nodeFile.toPath());
+            } catch (Exception ex) {
+              LOGGER.warn("Error '" + ex.getClass().getCanonicalName() + "' during access to path: " +
+                  nodeFile.getPath());
+              this.noAccess = true;
+              return new DirectoryStream<Path>() {
+                @Override
+                public Iterator<Path> iterator() {
+                  return Collections.emptyIterator();
+                }
 
-            @Override
-            public void close() {
+                @Override
+                public void close() {
+                }
+              };
             }
-          };
-        }
           }, Flux::fromIterable, IOUtils::closeQuietly)
           .parallel()
           .runOn(MainFrame.REACTOR_SCHEDULER)
           .doOnError(error -> {
-            LOGGER.warn("Error during path " + makeFileForNode().getName() + " opening: " + error.getMessage());
+            LOGGER.warn("Error during path " + makeFileForNode().getName() + " opening: " +
+                error.getMessage());
             this.noAccess = true;
           })
           .filter(f -> {
             if (parentIsProjectGroup) {
-              return addHiddenFilesAndFolders || !isFileHidden(f) || Context.KNOWLEDGE_FOLDER.equals(f.getFileName().toString());
+              return addHiddenFilesAndFolders || !isFileHidden(f) ||
+                  Context.KNOWLEDGE_FOLDER.equals(f.getFileName().toString());
             } else {
               return addHiddenFilesAndFolders || !isFileHidden(f);
             }
           })
           .map(f -> {
-            NodeFileOrFolder newItem = new NodeFileOrFolder(this.predicateShowHiddenFiles, this, Files.isDirectory(f), f.getFileName().toString(), !Files.isWritable(f));
+            NodeFileOrFolder newItem =
+                new NodeFileOrFolder(this.predicateShowHiddenFiles, this, Files.isDirectory(f),
+                    f.getFileName().toString(), !Files.isWritable(f));
             this.children.add(newItem);
             return newItem;
           })
@@ -237,7 +247,8 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
     }
   }
 
-  void fireNotifySubtreeChanged(@Nonnull TreeModel model, @Nonnull @MustNotContainNull final List<TreeModelListener> listeners) {
+  void fireNotifySubtreeChanged(@Nonnull TreeModel model, @Nonnull @MustNotContainNull
+  final List<TreeModelListener> listeners) {
     if (this.parent != null && this.folderFlag) {
       final Object[] childrenObject = new Object[children.size()];
       final int[] indexes = new int[children.size()];
@@ -247,7 +258,8 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
         indexes[i] = i;
         c.fireNotifySubtreeChanged(model, listeners);
       }
-      final TreeModelEvent event = new TreeModelEvent(model, this.parent.makeTreePath(), indexes, childrenObject);
+      final TreeModelEvent event =
+          new TreeModelEvent(model, this.parent.makeTreePath(), indexes, childrenObject);
       for (final TreeModelListener l : listeners) {
         l.treeStructureChanged(event);
       }
@@ -257,7 +269,9 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
   @Nonnull
   @MustNotContainNull
   @ReturnsOriginal
-  public List<NodeFileOrFolder> findRelatedNodes(@Nonnull final File file, @Nonnull @MustNotContainNull final List<NodeFileOrFolder> list) {
+  public List<NodeFileOrFolder> findRelatedNodes(@Nonnull final File file,
+                                                 @Nonnull @MustNotContainNull
+                                                 final List<NodeFileOrFolder> list) {
     final File theFile = makeFileForNode();
     if (theFile != null) {
       if (file.equals(theFile) || theFile.toPath().startsWith(file.toPath())) {
@@ -382,7 +396,9 @@ public class NodeFileOrFolder implements TreeNode, Comparator<NodeFileOrFolder>,
     return result;
   }
 
-  protected void fillAllMatchNamePattern(@Nonnull final Pattern namePattern, @Nonnull @MustNotContainNull final List<NodeFileOrFolder> resultList) {
+  protected void fillAllMatchNamePattern(@Nonnull final Pattern namePattern,
+                                         @Nonnull @MustNotContainNull
+                                         final List<NodeFileOrFolder> resultList) {
     if (namePattern.matcher(this.name).matches()) {
       resultList.add(this);
     }

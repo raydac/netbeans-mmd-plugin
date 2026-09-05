@@ -50,16 +50,8 @@ import org.apache.commons.io.IOUtils;
 
 public class ASCIIDocExporter extends AbstractExporter {
 
-  private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_EXPORT_ASCIIDOC);
-
-  private static String escapeAsciiDoc(final String text, final boolean head) {
-    String result = text;
-    if (head) {
-      result = text.replace("\n", " pass:[<br>]");
-    }
-    return result;
-  }
-
+  private static final Icon ICO =
+      ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_EXPORT_ASCIIDOC);
   private static final ExtrasToStringConverter ASCII_STRING_CONVERTER =
       new ExtrasToStringConverter() {
         @Override
@@ -84,6 +76,14 @@ public class ASCIIDocExporter extends AbstractExporter {
           }
         }
       };
+
+  private static String escapeAsciiDoc(final String text, final boolean head) {
+    String result = text;
+    if (head) {
+      result = text.replace("\n", " pass:[<br>]");
+    }
+    return result;
+  }
 
   private static String getTopicUid(final Topic topic) {
     return topic.getAttribute(ExtraTopic.TOPIC_UID_ATTR);

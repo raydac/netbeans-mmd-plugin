@@ -15,6 +15,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+
 package com.igormaznitsa.sciareto.metrics;
 
 import com.igormaznitsa.mindmap.model.logger.Logger;
@@ -43,18 +44,18 @@ public class MetricsService implements AdditionalPreferences {
   public static MetricsService getInstance() {
     return INSTANCE;
   }
-  
+
   public void onFirstStart() {
-      LOGGER.info("Starting statistics send"); //NOI18N
-      final Thread thread = new Thread(() -> {
-        try {
-          doFirstStartAction();
-        } catch (Exception ex) {
-          LOGGER.error("Can't send statistics", ex); //NOI18N
-        }
-      }, "sciareto-statistics-send-thread"); //NOI18N
-      thread.setDaemon(true);
-      thread.start();
+    LOGGER.info("Starting statistics send"); //NOI18N
+    final Thread thread = new Thread(() -> {
+      try {
+        doFirstStartAction();
+      } catch (Exception ex) {
+        LOGGER.error("Can't send statistics", ex); //NOI18N
+      }
+    }, "sciareto-statistics-send-thread"); //NOI18N
+    thread.setDaemon(true);
+    thread.start();
   }
 
   public void sendStatistics() {
@@ -73,21 +74,25 @@ public class MetricsService implements AdditionalPreferences {
       LOGGER.info("Ignored statistics because disabled");
     }
   }
-  
+
   private void doFirstStartAction() {
     try {
-      final String installationUUID = PreferencesManager.getInstance().getInstallationUUID().toString();
+      final String installationUUID =
+          PreferencesManager.getInstance().getInstallationUUID().toString();
     } finally {
-      PreferencesManager.getInstance().getPreferences().putLong(PROPERTY_METRICS_SENDING_LAST_TIME, System.currentTimeMillis());
+      PreferencesManager.getInstance().getPreferences()
+          .putLong(PROPERTY_METRICS_SENDING_LAST_TIME, System.currentTimeMillis());
       PreferencesManager.getInstance().flush();
     }
   }
 
   private void doAction() {
     try {
-      final String installationUUID = PreferencesManager.getInstance().getInstallationUUID().toString();
+      final String installationUUID =
+          PreferencesManager.getInstance().getInstallationUUID().toString();
     } finally {
-      PreferencesManager.getInstance().getPreferences().putLong(PROPERTY_METRICS_SENDING_LAST_TIME, System.currentTimeMillis());
+      PreferencesManager.getInstance().getPreferences()
+          .putLong(PROPERTY_METRICS_SENDING_LAST_TIME, System.currentTimeMillis());
       PreferencesManager.getInstance().flush();
     }
   }

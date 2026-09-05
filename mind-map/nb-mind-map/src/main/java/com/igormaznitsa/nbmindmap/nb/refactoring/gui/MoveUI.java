@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.nbmindmap.nb.refactoring.gui;
 
 import com.igormaznitsa.meta.common.utils.Assertions;
@@ -30,33 +31,36 @@ import org.openide.util.lookup.Lookups;
 public class MoveUI extends AbstractMMDRefactoringUI {
 
   private final Lookup lookup;
-  private final FileObject [] files;
+  private final FileObject[] files;
   private final MoveRefactoring refactoring;
   private MovePanel panel;
-  
-  public MoveUI(final Lookup lookup, final FileObject [] files) {
+
+  public MoveUI(final Lookup lookup, final FileObject[] files) {
     this.files = files;
     this.lookup = lookup;
     this.refactoring = new MoveRefactoring(Lookups.fixed(ArrayUtils.add(files, this)));
   }
-  
+
   @Override
   public String getName() {
-    if (this.files.length>1){
-      return String.format(BUNDLE.getString("MoveUI.getNameMultiFile"),Integer.toString(this.files.length));
-    }else{
-      return String.format(BUNDLE.getString("MoveUI.getNameSingleFile"),this.files[0].getName());
+    if (this.files.length > 1) {
+      return String.format(BUNDLE.getString("MoveUI.getNameMultiFile"),
+          Integer.toString(this.files.length));
+    } else {
+      return String.format(BUNDLE.getString("MoveUI.getNameSingleFile"), this.files[0].getName());
     }
   }
 
   @Override
   public String getDescription() {
     final StringBuilder buffer = new StringBuilder();
-    for(final FileObject fo : files){
-      if (buffer.length()>0) buffer.append(',');
+    for (final FileObject fo : files) {
+      if (buffer.length() > 0) {
+        buffer.append(',');
+      }
       buffer.append(fo.getNameExt());
     }
-    return String.format(BUNDLE.getString("MoveUI.getDescription"),buffer.toString());
+    return String.format(BUNDLE.getString("MoveUI.getDescription"), buffer.toString());
   }
 
   @Override
@@ -66,7 +70,7 @@ public class MoveUI extends AbstractMMDRefactoringUI {
 
   @Override
   public CustomRefactoringPanel getPanel(final ChangeListener parent) {
-    if (this.panel == null){
+    if (this.panel == null) {
       this.panel = new MovePanel(this.lookup, this.files, parent);
     }
     return this.panel;
@@ -77,8 +81,7 @@ public class MoveUI extends AbstractMMDRefactoringUI {
     final FileObject fo = Assertions.assertNotNull(this.panel).getTarget();
     if (fo != null) {
       this.refactoring.setTarget(Lookups.fixed(fo.toURL()));
-    }
-    else {
+    } else {
       this.refactoring.setTarget(Lookup.EMPTY);
     }
     return this.refactoring.checkParameters();
@@ -87,9 +90,9 @@ public class MoveUI extends AbstractMMDRefactoringUI {
   @Override
   public Problem checkParameters() {
     final FileObject fo = Assertions.assertNotNull(this.panel).getTarget();
-    if (fo!=null){
+    if (fo != null) {
       this.refactoring.setTarget(Lookups.fixed(fo.toURL()));
-    }else{
+    } else {
       this.refactoring.setTarget(Lookup.EMPTY);
     }
     return this.refactoring.checkParameters();
@@ -109,5 +112,5 @@ public class MoveUI extends AbstractMMDRefactoringUI {
   public HelpCtx getHelpCtx() {
     return null;
   }
-  
+
 }

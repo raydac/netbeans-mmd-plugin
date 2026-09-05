@@ -37,6 +37,9 @@ import java.util.Map;
 public class MMDTopicsTransferable implements Transferable {
 
   public static final DataFlavor MMD_DATA_FLAVOR;
+  private static final DataFlavor[] FLAVORS
+      = new DataFlavor[] {DataFlavor.stringFlavor, MMD_DATA_FLAVOR};
+  private static final String END_OF_LINE = System.getProperty("line.separator", "\n");
 
   static {
     try {
@@ -48,18 +51,15 @@ public class MMDTopicsTransferable implements Transferable {
     }
   }
 
-  private static final DataFlavor[] FLAVORS
-      = new DataFlavor[] {DataFlavor.stringFlavor, MMD_DATA_FLAVOR};
-  private static final String END_OF_LINE = System.getProperty("line.separator", "\n");
-
   private final Topic[] topics;
 
   public MMDTopicsTransferable(final Topic... topics) {
     this.topics = new Topic[topics.length];
 
     final MindMap fakeMap = new MindMap(false);
-    fakeMap.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID, IDEBridgeFactory.findInstance()
-        .getIDEGeneratorId());
+    fakeMap.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID,
+        IDEBridgeFactory.findInstance()
+            .getIDEGeneratorId());
 
     for (int i = 0; i < topics.length; i++) {
       this.topics[i] = new Topic(fakeMap, topics[i], true);

@@ -19,7 +19,6 @@ package com.igormaznitsa.mindmap.print;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
-import java.awt.Dimension;
 
 public class DefaultMMDPrintPanelAdaptor implements MMDPrintPanel.Adaptor {
 

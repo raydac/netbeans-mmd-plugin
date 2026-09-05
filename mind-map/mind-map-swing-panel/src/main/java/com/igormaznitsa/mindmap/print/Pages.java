@@ -54,8 +54,10 @@ class Pages extends JPanel {
       pagesAtHorizontal = Math.max(pagesAtHorizontal, row.length);
     }
 
-    final int width = (int) Math.round(INTERVAL_X + ((paperWidth + INTERVAL_X) * pagesAtHorizontal));
-    final int height = (int) Math.round(INTERVAL_Y + ((paperHeight + INTERVAL_Y) * pagesAtVertical));
+    final int width =
+        (int) Math.round(INTERVAL_X + ((paperWidth + INTERVAL_X) * pagesAtHorizontal));
+    final int height =
+        (int) Math.round(INTERVAL_Y + ((paperHeight + INTERVAL_Y) * pagesAtVertical));
 
     return new Dimension((int) Math.round(width * scale), (int) Math.round(height * scale));
   }

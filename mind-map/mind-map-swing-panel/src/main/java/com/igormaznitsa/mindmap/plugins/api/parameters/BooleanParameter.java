@@ -16,8 +16,9 @@
 
 package com.igormaznitsa.mindmap.plugins.api.parameters;
 
-public class BooleanParameter extends AbstractParameter<Boolean>{
-  public BooleanParameter(final String id, final String title, final String comment, final boolean defaultValue) {
+public class BooleanParameter extends AbstractParameter<Boolean> {
+  public BooleanParameter(final String id, final String title, final String comment,
+                          final boolean defaultValue) {
     super(id, title, comment, defaultValue);
   }
 

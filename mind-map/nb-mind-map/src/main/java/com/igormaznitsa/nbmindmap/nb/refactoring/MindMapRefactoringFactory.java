@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.nbmindmap.nb.refactoring;
 
 import com.igormaznitsa.mindmap.model.logger.Logger;
@@ -23,6 +24,7 @@ import com.igormaznitsa.nbmindmap.nb.refactoring.elements.MoveFileActionPlugin;
 import com.igormaznitsa.nbmindmap.nb.refactoring.elements.RenameFileActionPlugin;
 import com.igormaznitsa.nbmindmap.nb.refactoring.elements.SafeDeleteFileActionPlugin;
 import com.igormaznitsa.nbmindmap.nb.refactoring.elements.WhereUsedActionPlugin;
+import com.igormaznitsa.nbmindmap.utils.NbUtils;
 import org.netbeans.modules.refactoring.api.AbstractRefactoring;
 import org.netbeans.modules.refactoring.api.MoveRefactoring;
 import org.netbeans.modules.refactoring.api.RenameRefactoring;
@@ -31,7 +33,6 @@ import org.netbeans.modules.refactoring.api.WhereUsedQuery;
 import org.netbeans.modules.refactoring.spi.RefactoringPlugin;
 import org.netbeans.modules.refactoring.spi.RefactoringPluginFactory;
 import org.openide.util.lookup.ServiceProvider;
-import com.igormaznitsa.nbmindmap.utils.NbUtils;
 
 @ServiceProvider(service = RefactoringPluginFactory.class)
 public class MindMapRefactoringFactory implements RefactoringPluginFactory, AdditionalPreferences {
@@ -47,10 +48,14 @@ public class MindMapRefactoringFactory implements RefactoringPluginFactory, Addi
   @Override
   public RefactoringPlugin createInstance(final AbstractRefactoring refactoring) {
     final MindMapPanelConfig config = loadConfig();
-    final boolean fileManipulationWatchingAllowed = config.getOptionalProperty(PROPERTY_WATCH_FILE_REFACTORING,false);
-    final boolean ignoreWhereUsed = config.getOptionalProperty(PROPERTY_TURN_OFF_PROCESSING_WHERE_USED, false);
-    
-    LOGGER.info("Request to create refactoring plugin : " + refactoring +", watchFileRefactoring = "+fileManipulationWatchingAllowed+", ignoreWhereUsed = "+ignoreWhereUsed);
+    final boolean fileManipulationWatchingAllowed =
+        config.getOptionalProperty(PROPERTY_WATCH_FILE_REFACTORING, false);
+    final boolean ignoreWhereUsed =
+        config.getOptionalProperty(PROPERTY_TURN_OFF_PROCESSING_WHERE_USED, false);
+
+    LOGGER.info(
+        "Request to create refactoring plugin : " + refactoring + ", watchFileRefactoring = " +
+            fileManipulationWatchingAllowed + ", ignoreWhereUsed = " + ignoreWhereUsed);
 
     RefactoringPlugin result = null;
 
@@ -67,7 +72,7 @@ public class MindMapRefactoringFactory implements RefactoringPluginFactory, Addi
     if (result == null && !ignoreWhereUsed && refactoring instanceof WhereUsedQuery) {
       result = new WhereUsedActionPlugin((WhereUsedQuery) refactoring);
     }
-    
+
     return result;
   }
 

@@ -22,6 +22,7 @@ import java.util.ResourceBundle;
 
 /**
  * Provider way to get all string constants for mind map panel project.
+ *
  * @since 1.6.0
  */
 public final class MmdI18n {

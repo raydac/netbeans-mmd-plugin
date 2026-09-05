@@ -15,15 +15,13 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+
 package com.igormaznitsa.sciareto.ui.tree;
 
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.image.ImageObserver;
-import static java.awt.image.ImageObserver.ABORT;
-import static java.awt.image.ImageObserver.ALLBITS;
-import static java.awt.image.ImageObserver.FRAMEBITS;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import javax.annotation.Nonnull;
@@ -33,8 +31,42 @@ import javax.swing.SwingUtilities;
 import javax.swing.tree.TreePath;
 
 public final class ProjectLoadingIconAnimationController {
-  
-  public static final ImageIcon LOADING = new ImageIcon(UiUtils.class.getClassLoader().getResource("icons/loading.gif")); //NOI18N
+
+  public static final ImageIcon LOADING =
+      new ImageIcon(UiUtils.class.getClassLoader().getResource("icons/loading.gif")); //NOI18N
+  private static final ProjectLoadingIconAnimationController INSTANCE =
+      new ProjectLoadingIconAnimationController();
+  private final List<LoadingIconRedrawer> registeredRedrawers = new CopyOnWriteArrayList<>();
+
+  private ProjectLoadingIconAnimationController() {
+    LOADING.setImageObserver(new ImageObserver() {
+      @Override
+      public boolean imageUpdate(Image img, int flags, int x, int y, int width, int height) {
+        if ((flags & (FRAMEBITS | ALLBITS)) != 0) {
+          for (final LoadingIconRedrawer redrawer : registeredRedrawers) {
+            redrawer.redraw();
+          }
+        }
+        return (flags & (ALLBITS | ABORT)) == 0;
+      }
+    });
+
+  }
+
+  @Nonnull
+  public static ProjectLoadingIconAnimationController getInstance() {
+    return INSTANCE;
+  }
+
+  public void registerLoadingProject(@Nonnull final JTree tree,
+                                     @Nonnull final NodeProject project) {
+    this.registeredRedrawers.add(
+        new LoadingIconRedrawer(tree, new TreePath(new Object[] {project.getGroup(), project})));
+  }
+
+  public void unregisterLoadingProject(@Nonnull final NodeProject project) {
+    registeredRedrawers.removeIf(r -> r.path.getLastPathComponent() == project);
+  }
 
   private static final class LoadingIconRedrawer {
 
@@ -61,37 +93,5 @@ public final class ProjectLoadingIconAnimationController {
     }
   }
 
-  private final List<LoadingIconRedrawer> registeredRedrawers = new CopyOnWriteArrayList<>();
- 
-  private static final ProjectLoadingIconAnimationController INSTANCE = new ProjectLoadingIconAnimationController();
- 
-  private ProjectLoadingIconAnimationController(){
-    LOADING.setImageObserver(new ImageObserver() {
-      @Override
-      public boolean imageUpdate(Image img, int flags, int x, int y, int width, int height) {
-        if ((flags & (FRAMEBITS | ALLBITS)) != 0) {
-          for (final LoadingIconRedrawer redrawer : registeredRedrawers) {
-            redrawer.redraw();
-          }
-        }
-        return (flags & (ALLBITS | ABORT)) == 0;
-      }
-    });
 
-  }
-  
-  @Nonnull
-  public static ProjectLoadingIconAnimationController getInstance() {
-    return INSTANCE;
-  }
-  
-  public void registerLoadingProject(@Nonnull final JTree tree, @Nonnull final NodeProject project) {
-    this.registeredRedrawers.add(new LoadingIconRedrawer(tree, new TreePath(new Object[]{project.getGroup(), project})));
-  }
-
-  public void unregisterLoadingProject(@Nonnull final NodeProject project) {
-    registeredRedrawers.removeIf(r -> r.path.getLastPathComponent() == project);
-  }
-
- 
 }

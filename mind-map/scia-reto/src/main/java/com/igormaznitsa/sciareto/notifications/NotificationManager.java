@@ -15,24 +15,23 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+
 package com.igormaznitsa.sciareto.notifications;
 
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.sciareto.SciaRetoStarter;
-
+import java.awt.Color;
+import java.awt.Image;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import org.apache.commons.text.StringEscapeUtils;
 
 public class NotificationManager {
 
   private static final NotificationManager INSTANCE = new NotificationManager();
-
-  public enum Type {
-    INFO, WARN, ERROR
-  }
 
   private NotificationManager() {
   }
@@ -49,13 +48,16 @@ public class NotificationManager {
     });
   }
 
-  public void showNotification(@Nullable final Image icon, @Nullable final String title, @Nonnull final Type type, @Nonnull final String message) {
-    final JLabel label = new JLabel(String.format("<html>%s</html>", StringEscapeUtils.escapeHtml3(message))); //NOI18N
+  public void showNotification(@Nullable final Image icon, @Nullable final String title,
+                               @Nonnull final Type type, @Nonnull final String message) {
+    final JLabel label = new JLabel(
+        String.format("<html>%s</html>", StringEscapeUtils.escapeHtml3(message))); //NOI18N
     label.setForeground(Color.black);
     this.showNotification(icon, title, type, label);
   }
 
-  public void showNotification(@Nullable final Image icon, @Nullable final String title, @Nonnull final Type type, @Nonnull final JComponent component) {
+  public void showNotification(@Nullable final Image icon, @Nullable final String title,
+                               @Nonnull final Type type, @Nonnull final JComponent component) {
     Utils.safeSwingCall(() -> {
       final JPanel stack = SciaRetoStarter.getApplicationFrame().getStackPanel();
 
@@ -76,5 +78,9 @@ public class NotificationManager {
       stack.revalidate();
       SciaRetoStarter.getApplicationFrame().getGlassPane().setVisible(true);
     });
+  }
+
+  public enum Type {
+    INFO, WARN, ERROR
   }
 }

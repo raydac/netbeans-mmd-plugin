@@ -94,7 +94,8 @@ public final class CryptoUtils {
       return true;
     } catch (BadPaddingException ex) {
       return false;
-    } catch (NoSuchPaddingException | InvalidKeyException | NoSuchAlgorithmException | IllegalBlockSizeException ex) {
+    } catch (NoSuchPaddingException | InvalidKeyException | NoSuchAlgorithmException |
+             IllegalBlockSizeException ex) {
       throw new RuntimeException(ex);
     }
   }

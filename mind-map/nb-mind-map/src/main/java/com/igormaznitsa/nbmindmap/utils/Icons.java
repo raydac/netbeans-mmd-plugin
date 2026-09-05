@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.nbmindmap.utils;
 
 import java.io.IOException;
@@ -42,21 +43,20 @@ public enum Icons {
   COINS("coins_in_hand16.png"); //NOI18N
 
   private final ImageIcon icon;
-  
-  public ImageIcon getIcon(){
-    return this.icon;
-  }
-  
+
   private Icons(final String name) {
-    final InputStream in = Icons.class.getClassLoader().getResourceAsStream("com/igormaznitsa/nbmindmap/icons/" + name); //NOI18N
+    final InputStream in = Icons.class.getClassLoader()
+        .getResourceAsStream("com/igormaznitsa/nbmindmap/icons/" + name); //NOI18N
     try {
       this.icon = new ImageIcon(ImageIO.read(in));
-    }
-    catch (IOException ex) {
+    } catch (IOException ex) {
       throw new Error("Can't load icon " + name, ex); //NOI18N
-    }
-    finally {
+    } finally {
       IOUtils.closeQuietly(in);
     }
+  }
+
+  public ImageIcon getIcon() {
+    return this.icon;
   }
 }

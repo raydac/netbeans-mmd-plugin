@@ -23,16 +23,6 @@ import java.io.FileFilter;
 
 public class FileParameter extends AbstractParameter<File> {
 
-  public interface FileChooserParamsProvider {
-    String getTitle();
-
-    FileFilter [] getFileFilters();
-
-    String getApproveText();
-
-    boolean isFilesOnly();
-  }
-
   private final FileChooserParamsProvider fileChooserParamsProvider;
 
   public FileParameter(final String id,
@@ -48,7 +38,7 @@ public class FileParameter extends AbstractParameter<File> {
                        final File defaultValue,
                        final FileChooserParamsProvider fileChooserParamsProvider,
                        final int order) {
-    this(id, title, comment, defaultValue, fileChooserParamsProvider, order,  Importance.MAIN);
+    this(id, title, comment, defaultValue, fileChooserParamsProvider, order, Importance.MAIN);
   }
 
   public FileParameter(final String id, final String title, final String comment,
@@ -60,12 +50,22 @@ public class FileParameter extends AbstractParameter<File> {
     this.fileChooserParamsProvider = requireNonNull(fileChooserParamsProvider);
   }
 
-  public FileChooserParamsProvider getFileChooserParamsProvider(){
+  public FileChooserParamsProvider getFileChooserParamsProvider() {
     return this.fileChooserParamsProvider;
   }
 
   @Override
   public void fromString(final String value) {
     this.setValue(new File(value));
+  }
+
+  public interface FileChooserParamsProvider {
+    String getTitle();
+
+    FileFilter[] getFileFilters();
+
+    String getApproveText();
+
+    boolean isFilesOnly();
   }
 }

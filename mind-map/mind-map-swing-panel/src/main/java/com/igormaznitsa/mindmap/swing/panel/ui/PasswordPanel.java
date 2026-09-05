@@ -42,7 +42,7 @@ public final class PasswordPanel extends JPanel {
   private final JLabel textLabelHint;
   private final JPasswordField textFieldPassword;
   private final Focuser focuser;
-  
+
   public PasswordPanel() {
     this("", "", true);
   }
@@ -81,7 +81,8 @@ public final class PasswordPanel extends JPanel {
     JLabel label = componentFactory.makeLabel();
     label.setHorizontalAlignment(SwingConstants.RIGHT);
     label.setText(MmdI18n.getInstance().findBundle().getString("PasswordPanel.labelPassword.text"));
-    label.setToolTipText(MmdI18n.getInstance().findBundle().getString("PasswordPanel.labelPassword.tooltip"));
+    label.setToolTipText(
+        MmdI18n.getInstance().findBundle().getString("PasswordPanel.labelPassword.tooltip"));
     this.add(label, gbc);
 
     gbc.gridx = 1;
@@ -95,7 +96,8 @@ public final class PasswordPanel extends JPanel {
     label = componentFactory.makeLabel();
     label.setHorizontalAlignment(SwingConstants.RIGHT);
     label.setText(MmdI18n.getInstance().findBundle().getString("PasswordPanel.labelHint.text"));
-    label.setToolTipText(MmdI18n.getInstance().findBundle().getString("PasswordPanel.labelHint.tooltip"));
+    label.setToolTipText(
+        MmdI18n.getInstance().findBundle().getString("PasswordPanel.labelHint.tooltip"));
     this.add(label, gbc);
 
     gbc.gridx = 1;
@@ -107,9 +109,11 @@ public final class PasswordPanel extends JPanel {
     gbc.anchor = GridBagConstraints.EAST;
     gbc.fill = GridBagConstraints.NONE;
     final JCheckBox showPasswordCheckbox = componentFactory.makeCheckBox();
-    showPasswordCheckbox.setText(MmdI18n.getInstance().findBundle().getString("PasswordPanel.checkboxShowPassword.text"));
+    showPasswordCheckbox.setText(
+        MmdI18n.getInstance().findBundle().getString("PasswordPanel.checkboxShowPassword.text"));
     showPasswordCheckbox
-        .setToolTipText(MmdI18n.getInstance().findBundle().getString("PasswordPanel.checkboxShowPassword.tooltip"));
+        .setToolTipText(MmdI18n.getInstance().findBundle()
+            .getString("PasswordPanel.checkboxShowPassword.tooltip"));
     this.add(showPasswordCheckbox, gbc);
 
     showPasswordCheckbox.addActionListener(e -> {

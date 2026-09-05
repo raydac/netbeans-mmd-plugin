@@ -51,10 +51,8 @@ public class MMDEditorSupport extends DataEditorSupport
     Serializable {
 
   private static final long serialVersionUID = 3419821892803816299L;
-
-  private final List<WeakReference<MMDGraphEditor>> listeners = new CopyOnWriteArrayList<>();
-
   private static final Logger LOGGER = LoggerFactory.getLogger(MMDEditorSupport.class);
+  private final List<WeakReference<MMDGraphEditor>> listeners = new CopyOnWriteArrayList<>();
 
   public MMDEditorSupport(final MMDDataObject obj) {
     super(obj, new MMDDataEnv(obj));
@@ -181,6 +179,11 @@ public class MMDEditorSupport extends DataEditorSupport
     }
   }
 
+  @Override
+  public void updateTitles() {
+    super.updateTitles();
+  }
+
   private static final class MMDDataEnv extends DataEditorSupport.Env {
 
     private static final long serialVersionUID = 6101101548072950629L;
@@ -201,10 +204,5 @@ public class MMDEditorSupport extends DataEditorSupport
     protected FileLock takeLock() throws IOException {
       return this.dataObj.getPrimaryEntry().takeLock();
     }
-  }
-
-  @Override
-  public void updateTitles() {
-    super.updateTitles();
   }
 }

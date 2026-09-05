@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.nbmindmap.nb.refactoring.gui;
 
+import com.igormaznitsa.meta.common.utils.Assertions;
 import javax.swing.event.ChangeListener;
-
 import org.netbeans.modules.refactoring.api.AbstractRefactoring;
 import org.netbeans.modules.refactoring.api.Problem;
 import org.netbeans.modules.refactoring.api.RenameRefactoring;
@@ -26,31 +27,29 @@ import org.openide.util.HelpCtx;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
 
-import com.igormaznitsa.meta.common.utils.Assertions;
-
 public class RenameUI extends AbstractMMDRefactoringUI {
 
   private final RenameRefactoring refactoring;
-  private RenamePanel panel;
   private final String name;
-  private final FileObject  file;
+  private final FileObject file;
   private final Lookup lookup;
-  
-  public RenameUI(final Lookup lookup, final FileObject file){
+  private RenamePanel panel;
+
+  public RenameUI(final Lookup lookup, final FileObject file) {
     this.file = file;
     this.lookup = lookup;
     this.name = file.getName();
     this.refactoring = new RenameRefactoring(Lookups.fixed(file, this));
   }
-  
+
   @Override
   public String getName() {
-    return String.format(BUNDLE.getString("RenameUI.getName"),this.name);
+    return String.format(BUNDLE.getString("RenameUI.getName"), this.name);
   }
 
   @Override
   public String getDescription() {
-    return String.format(BUNDLE.getString("RenameUI.getDescription"),this.name);
+    return String.format(BUNDLE.getString("RenameUI.getDescription"), this.name);
   }
 
   @Override
@@ -60,7 +59,7 @@ public class RenameUI extends AbstractMMDRefactoringUI {
 
   @Override
   public CustomRefactoringPanel getPanel(final ChangeListener parent) {
-    if (this.panel == null){
+    if (this.panel == null) {
       this.panel = new RenamePanel(this.file.getName(), this.lookup, parent);
     }
     return this.panel;
@@ -87,10 +86,10 @@ public class RenameUI extends AbstractMMDRefactoringUI {
   public AbstractRefactoring getRefactoring() {
     return this.refactoring;
   }
-  
+
   @Override
   public HelpCtx getHelpCtx() {
     return null;
   }
-  
+
 }

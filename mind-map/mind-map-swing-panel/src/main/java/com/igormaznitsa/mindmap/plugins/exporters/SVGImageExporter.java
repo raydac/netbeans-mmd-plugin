@@ -228,7 +228,8 @@ public class SVGImageExporter extends AbstractExporter {
     }};
   }
 
-  private String makeContent(final PluginContext context, final Set<AbstractParameter<?>> options) throws IOException {
+  private String makeContent(final PluginContext context, final Set<AbstractParameter<?>> options)
+      throws IOException {
     final boolean flagExpandAllNodes = options.stream()
         .filter(x -> KEY_PARAMETER_UNFOLD_ALL.equals(x.getId()))
         .findFirst()

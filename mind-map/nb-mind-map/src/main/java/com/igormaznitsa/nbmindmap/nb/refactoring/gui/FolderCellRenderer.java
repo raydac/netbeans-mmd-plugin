@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.nbmindmap.nb.refactoring.gui;
 
 import java.awt.Component;
@@ -23,32 +24,35 @@ import javax.swing.ListCellRenderer;
 import javax.swing.plaf.UIResource;
 import org.openide.util.ImageUtilities;
 
-public class FolderCellRenderer extends JLabel implements ListCellRenderer, UIResource{
+public class FolderCellRenderer extends JLabel implements ListCellRenderer, UIResource {
 
-  private static final Icon FOLDER_ICON = ImageUtilities.loadImageIcon("org/openide/loaders/defaultFolder.gif", false);
+  private static final Icon FOLDER_ICON =
+      ImageUtilities.loadImageIcon("org/openide/loaders/defaultFolder.gif", false);
   private static final long serialVersionUID = 2326069387034253192L;
-  
-  public FolderCellRenderer(){
+
+  public FolderCellRenderer() {
     super();
     setOpaque(true);
   }
-  
+
   @Override
-  public Component getListCellRendererComponent(final JList list, final Object value, final int index, final boolean isSelected, final boolean cellHasFocus) {
+  public Component getListCellRendererComponent(final JList list, final Object value,
+                                                final int index, final boolean isSelected,
+                                                final boolean cellHasFocus) {
     setName("ComboBox.listRenderer");
 
-    setText((String)value);
+    setText((String) value);
     setIcon(FOLDER_ICON);
-    
-    if (isSelected){
+
+    if (isSelected) {
       setBackground(list.getSelectionBackground());
       setForeground(list.getSelectionForeground());
-    }else{
+    } else {
       setBackground(list.getBackground());
       setForeground(list.getForeground());
     }
-    
+
     return this;
   }
-  
+
 }

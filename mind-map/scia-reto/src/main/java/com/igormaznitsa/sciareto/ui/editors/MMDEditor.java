@@ -167,17 +167,6 @@ public final class MMDEditor extends AbstractTextEditor
   private boolean dragAcceptableType;
   private boolean firstLayouting = true;
 
-  private static final class MindMapPanelExt extends MindMapPanel {
-    public MindMapPanelExt(@Nonnull final MindMapPanelController controller) {
-      super(controller);
-    }
-
-    @Override
-    protected void fireNotificationEnsureTopicVisibility(@Nonnull final Topic topic) {
-      super.fireNotificationEnsureTopicVisibility(topic);
-    }
-  }
-
   public MMDEditor(@Nonnull final Context context, @Nonnull File file) throws IOException {
     super();
     this.context = context;
@@ -222,6 +211,37 @@ public final class MMDEditor extends AbstractTextEditor
 
     loadContent(file);
     this.currentModelState.set(this.mindMapPanel.getModel().asString());
+  }
+
+  @Nonnull
+  public static FileFilter makeFileFilter() {
+    return new FileFilter() {
+      @Override
+      public boolean accept(@Nonnull final File f) {
+        return f.isDirectory() || f.getName().endsWith(".mmd"); //NOI18N
+      }
+
+      @Override
+      @Nonnull
+      public String getDescription() {
+        return SrI18n.getInstance().findBundle()
+            .getString("editorAbstractPlUml.fileFilter.mmd.description");
+      }
+    };
+  }
+
+  public static boolean checkDragType(@Nonnull final DropTargetDragEvent dtde) {
+    boolean result = DnDUtils.isFileOrLinkOrText(dtde);
+    if (!result) {
+      for (final DataFlavor flavor : dtde.getCurrentDataFlavors()) {
+        final Class<?> dataClass = flavor.getRepresentationClass();
+        if (FileTransferable.class.isAssignableFrom(dataClass)) {
+          result = true;
+          break;
+        }
+      }
+    }
+    return result;
   }
 
   @Override
@@ -279,38 +299,6 @@ public final class MMDEditor extends AbstractTextEditor
       }
       break;
     }
-  }
-
-
-  @Nonnull
-  public static FileFilter makeFileFilter() {
-    return new FileFilter() {
-      @Override
-      public boolean accept(@Nonnull final File f) {
-        return f.isDirectory() || f.getName().endsWith(".mmd"); //NOI18N
-      }
-
-      @Override
-      @Nonnull
-      public String getDescription() {
-        return SrI18n.getInstance().findBundle()
-            .getString("editorAbstractPlUml.fileFilter.mmd.description");
-      }
-    };
-  }
-
-  public static boolean checkDragType(@Nonnull final DropTargetDragEvent dtde) {
-    boolean result = DnDUtils.isFileOrLinkOrText(dtde);
-    if (!result) {
-      for (final DataFlavor flavor : dtde.getCurrentDataFlavors()) {
-        final Class<?> dataClass = flavor.getRepresentationClass();
-        if (FileTransferable.class.isAssignableFrom(dataClass)) {
-          result = true;
-          break;
-        }
-      }
-    }
-    return result;
   }
 
   @Override
@@ -1840,5 +1828,16 @@ public final class MMDEditor extends AbstractTextEditor
   @Override
   public boolean isQuickNoteAllowed(@Nonnull MindMapPanel source) {
     return true;
+  }
+
+  private static final class MindMapPanelExt extends MindMapPanel {
+    public MindMapPanelExt(@Nonnull final MindMapPanelController controller) {
+      super(controller);
+    }
+
+    @Override
+    protected void fireNotificationEnsureTopicVisibility(@Nonnull final Topic topic) {
+      super.fireNotificationEnsureTopicVisibility(topic);
+    }
   }
 }

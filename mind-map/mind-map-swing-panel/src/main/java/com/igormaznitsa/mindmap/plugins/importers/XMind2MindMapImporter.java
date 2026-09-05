@@ -429,7 +429,8 @@ public class XMind2MindMapImporter extends AbstractImporter {
   @Override
   public MindMap doImport(final PluginContext context) throws Exception {
     final File file = this.selectFileForExtension(context,
-        this.getResourceBundle().getString("MMDImporters.XMind2MindMap.openDialogTitle"), null, "xmind",
+        this.getResourceBundle().getString("MMDImporters.XMind2MindMap.openDialogTitle"), null,
+        "xmind",
         "XMind files (.XMIND)", this.getResourceBundle().getString("MMDImporters.ApproveImport"));
 
     if (file == null) {
@@ -480,8 +481,9 @@ public class XMind2MindMapImporter extends AbstractImporter {
 
     if (sheets.isEmpty()) {
       result = new MindMap(true);
-      result.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID, IDEBridgeFactory.findInstance()
-          .getIDEGeneratorId());
+      result.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID,
+          IDEBridgeFactory.findInstance()
+              .getIDEGeneratorId());
       requireNonNull(result.getRoot()).setText("Empty");
     } else {
       result = convertJsonSheet(zipFile, sheets.get(0));
@@ -508,8 +510,9 @@ public class XMind2MindMapImporter extends AbstractImporter {
   private MindMap convertJsonSheet(final ZipFile file,
                                    final JSONObject sheet) {
     final MindMap resultedMap = new MindMap(true);
-    resultedMap.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID, IDEBridgeFactory.findInstance()
-        .getIDEGeneratorId());
+    resultedMap.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID,
+        IDEBridgeFactory.findInstance()
+            .getIDEGeneratorId());
     resultedMap.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_SHOW_JUMPS, "true");
 
     final Topic rootTopic = requireNonNull(resultedMap.getRoot());
@@ -572,8 +575,9 @@ public class XMind2MindMapImporter extends AbstractImporter {
 
     if (xmlSheets.isEmpty()) {
       result = new MindMap(true);
-      result.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID, IDEBridgeFactory.findInstance()
-          .getIDEGeneratorId());
+      result.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID,
+          IDEBridgeFactory.findInstance()
+              .getIDEGeneratorId());
       requireNonNull(result.getRoot()).setText("Empty");
     } else {
       result = convertXmlSheet(style, zipFile, xmlSheets.get(0));
@@ -585,8 +589,9 @@ public class XMind2MindMapImporter extends AbstractImporter {
   private MindMap convertXmlSheet(final XMindStyles styles, final ZipFile file,
                                   final Element sheet) {
     final MindMap resultedMap = new MindMap(true);
-    resultedMap.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID, IDEBridgeFactory.findInstance()
-        .getIDEGeneratorId());
+    resultedMap.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID,
+        IDEBridgeFactory.findInstance()
+            .getIDEGeneratorId());
     resultedMap.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_SHOW_JUMPS, "true");
 
     final Topic rootTopic = requireNonNull(resultedMap.getRoot());

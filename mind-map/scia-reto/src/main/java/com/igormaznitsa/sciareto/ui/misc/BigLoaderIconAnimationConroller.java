@@ -15,14 +15,12 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+
 package com.igormaznitsa.sciareto.ui.misc;
 
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import java.awt.Image;
 import java.awt.image.ImageObserver;
-import static java.awt.image.ImageObserver.ABORT;
-import static java.awt.image.ImageObserver.ALLBITS;
-import static java.awt.image.ImageObserver.FRAMEBITS;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import javax.annotation.Nonnull;
@@ -31,8 +29,44 @@ import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
 public final class BigLoaderIconAnimationConroller {
-  
-  public static final ImageIcon LOADING = new ImageIcon(UiUtils.class.getClassLoader().getResource("icons/bigloader.gif")); //NOI18N
+
+  public static final ImageIcon LOADING =
+      new ImageIcon(UiUtils.class.getClassLoader().getResource("icons/bigloader.gif")); //NOI18N
+  private static final BigLoaderIconAnimationConroller INSTANCE =
+      new BigLoaderIconAnimationConroller();
+  private final List<LoadingIconRedrawer> registeredRedrawers = new CopyOnWriteArrayList<>();
+
+  private BigLoaderIconAnimationConroller() {
+    LOADING.setImageObserver(new ImageObserver() {
+      @Override
+      public boolean imageUpdate(Image img, int flags, int x, int y, int width, int height) {
+        if ((flags & (FRAMEBITS | ALLBITS)) != 0) {
+          for (final LoadingIconRedrawer redrawer : registeredRedrawers) {
+            redrawer.redraw();
+          }
+        }
+        return (flags & (ALLBITS | ABORT)) == 0;
+      }
+    });
+
+  }
+
+  @Nonnull
+  public static BigLoaderIconAnimationConroller getInstance() {
+    return INSTANCE;
+  }
+
+  public void registerLabel(@Nonnull final JLabel label) {
+    this.registeredRedrawers.add(new LoadingIconRedrawer(label));
+  }
+
+  public void unregisterLabel(@Nonnull final JLabel label) {
+    for (final LoadingIconRedrawer r : registeredRedrawers) {
+      if (r.label == label) {
+        this.registeredRedrawers.remove(r);
+      }
+    }
+  }
 
   private static final class LoadingIconRedrawer {
 
@@ -51,41 +85,5 @@ public final class BigLoaderIconAnimationConroller {
     }
   }
 
-  private final List<LoadingIconRedrawer> registeredRedrawers = new CopyOnWriteArrayList<>();
- 
-  private static final BigLoaderIconAnimationConroller INSTANCE = new BigLoaderIconAnimationConroller();
- 
-  private BigLoaderIconAnimationConroller(){
-    LOADING.setImageObserver(new ImageObserver() {
-      @Override
-      public boolean imageUpdate(Image img, int flags, int x, int y, int width, int height) {
-        if ((flags & (FRAMEBITS | ALLBITS)) != 0) {
-          for (final LoadingIconRedrawer redrawer : registeredRedrawers) {
-            redrawer.redraw();
-          }
-        }
-        return (flags & (ALLBITS | ABORT)) == 0;
-      }
-    });
 
-  }
-  
-  @Nonnull
-  public static BigLoaderIconAnimationConroller getInstance() {
-    return INSTANCE;
-  }
-  
-  public void registerLabel(@Nonnull final JLabel label) {
-    this.registeredRedrawers.add(new LoadingIconRedrawer(label));
-  }
-
-  public void unregisterLabel(@Nonnull final JLabel label) {
-    for (final LoadingIconRedrawer r : registeredRedrawers) {
-      if (r.label == label) {  
-        this.registeredRedrawers.remove(r);
-      }
-    }
-  }
-
- 
 }

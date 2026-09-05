@@ -63,11 +63,12 @@ public class IntegerParameter extends AbstractParameter<Long> {
   public long getMax() {
     return this.max;
   }
+
   @Override
   public void fromString(final String value) {
-    try{
+    try {
       this.setValue(value == null ? this.min : Long.parseLong(value.trim()));
-    }catch (NumberFormatException ex){
+    } catch (NumberFormatException ex) {
       this.setValue(this.min);
     }
   }

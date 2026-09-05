@@ -27,12 +27,14 @@ import javax.swing.JMenuItem;
 
 public class CollapseAllPlugin extends AbstractPopupMenuItem {
 
-  private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_COLLAPSEALL);
+  private static final Icon ICO =
+      ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_COLLAPSEALL);
 
   @Override
   public JMenuItem makeMenuItem(final PluginContext context, final Topic topic) {
     final JMenuItem result =
-        UI_COMPO_FACTORY.makeMenuItem(this.getResourceBundle().getString("MMDGraphEditor.makePopUp.miCollapseAll"),
+        UI_COMPO_FACTORY.makeMenuItem(
+            this.getResourceBundle().getString("MMDGraphEditor.makePopUp.miCollapseAll"),
             ICO);
     result.setEnabled(context.getModel().getRoot() != null);
     result.addActionListener(e -> context.getPanel().collapseOrExpandAll(true));

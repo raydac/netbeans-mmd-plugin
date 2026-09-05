@@ -26,9 +26,11 @@ import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 import javax.swing.Icon;
 
-public class ExtraJumpPlugin extends AbstractFocusedTopicPlugin implements ExternallyExecutedPlugin {
+public class ExtraJumpPlugin extends AbstractFocusedTopicPlugin
+    implements ExternallyExecutedPlugin {
 
-  private static final Icon ICO = ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_EXTRAS_JUMP);
+  private static final Icon ICO =
+      ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_EXTRAS_JUMP);
 
 
   @Override

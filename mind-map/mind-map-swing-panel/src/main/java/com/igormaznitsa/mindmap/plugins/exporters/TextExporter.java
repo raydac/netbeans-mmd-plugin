@@ -55,6 +55,24 @@ public class TextExporter extends AbstractExporter {
   private static final int SHIFT_STEP = 1;
   private static final Icon ICO =
       ImageIconServiceProvider.findInstance().getIconForId(IconID.POPUP_EXPORT_TEXT);
+  private static final ExtrasToStringConverter DEFAULT_TEXT_EXTRAS_CONVERTER =
+      new ExtrasToStringConverter() {
+        @Override
+        public String apply(final PluginContext pluginContext, final Extra<?> extra) {
+          switch (extra.getType()) {
+            case FILE:
+              return ((ExtraFile) extra).getValue().asString(false, false);
+            case LINK:
+              return ((ExtraLink) extra).getValue().asString(false, true);
+            case NOTE:
+              return ((ExtraNote) extra).getValue();
+            case TOPIC:
+              return ((ExtraTopic) extra).getValue();
+            default:
+              throw new IllegalArgumentException("Unknown extras: " + extra);
+          }
+        }
+      };
 
   private static String[] split(final String text) {
     return text.replace("\r", "").split("\\n");
@@ -114,25 +132,6 @@ public class TextExporter extends AbstractExporter {
     }
     return max;
   }
-
-  private static final ExtrasToStringConverter DEFAULT_TEXT_EXTRAS_CONVERTER =
-      new ExtrasToStringConverter() {
-        @Override
-        public String apply(final PluginContext pluginContext, final Extra<?> extra) {
-          switch (extra.getType()) {
-            case FILE:
-              return ((ExtraFile) extra).getValue().asString(false, false);
-            case LINK:
-              return ((ExtraLink) extra).getValue().asString(false, true);
-            case NOTE:
-              return ((ExtraNote) extra).getValue();
-            case TOPIC:
-              return ((ExtraTopic) extra).getValue();
-            default:
-              throw new IllegalArgumentException("Unknown extras: " + extra);
-          }
-        }
-      };
 
   @Override
   public ExtrasToStringConverter getDefaultExtrasStringConverter() {

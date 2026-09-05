@@ -22,21 +22,21 @@ import com.igormaznitsa.meta.annotation.MayContainNull;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.awt.*;
+import java.awt.Desktop;
 import java.io.File;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 class DesktopAppHandler implements Platform {
 
   private final Logger LOGGER = LoggerFactory.getLogger(DesktopAppHandler.class);
 
-  private final Map<PlatformMenuEvent, PlatformMenuAction> actions = Collections.synchronizedMap(new EnumMap<>(PlatformMenuEvent.class));
+  private final Map<PlatformMenuEvent, PlatformMenuAction> actions =
+      Collections.synchronizedMap(new EnumMap<>(PlatformMenuEvent.class));
 
   DesktopAppHandler() {
     try {
@@ -68,12 +68,13 @@ class DesktopAppHandler implements Platform {
           qr.performQuit();
         }
       });
-    }catch (Throwable ex) {
+    } catch (Throwable ex) {
       LOGGER.error("Detected error during platform event handler init", ex);
     }
   }
 
-  private boolean processMenuEvent(@Nonnull final PlatformMenuEvent event, @Nullable @MayContainNull final Object... args) {
+  private boolean processMenuEvent(@Nonnull final PlatformMenuEvent event,
+                                   @Nullable @MayContainNull final Object... args) {
     final PlatformMenuAction action = this.actions.get(event);
     boolean handled = false;
     if (action == null) {
@@ -100,7 +101,8 @@ class DesktopAppHandler implements Platform {
   }
 
   @Override
-  public boolean registerPlatformMenuEvent(@Nonnull final PlatformMenuEvent event, @Nonnull final PlatformMenuAction action) {
+  public boolean registerPlatformMenuEvent(@Nonnull final PlatformMenuEvent event,
+                                           @Nonnull final PlatformMenuAction action) {
     this.actions.put(event, Assertions.assertNotNull(action));
     return true;
   }

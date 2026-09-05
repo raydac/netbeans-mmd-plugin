@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.nbmindmap.nb.refactoring.gui;
 
+import com.igormaznitsa.meta.common.utils.Assertions;
 import javax.swing.event.ChangeListener;
-
 import org.netbeans.modules.refactoring.api.AbstractRefactoring;
 import org.netbeans.modules.refactoring.api.Problem;
 import org.netbeans.modules.refactoring.api.WhereUsedQuery;
@@ -26,32 +27,30 @@ import org.openide.util.HelpCtx;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
 
-import com.igormaznitsa.meta.common.utils.Assertions;
-
 public class WhereUsedRefactoringUI extends AbstractMMDRefactoringUI {
 
   private final WhereUsedQuery query;
-  private WhereUsedPanel panel;
   private final String name;
   private final String nameWithExt;
   private final Lookup lookup;
-  
-  public WhereUsedRefactoringUI(final Lookup lookup, final FileObject mmd){
+  private WhereUsedPanel panel;
+
+  public WhereUsedRefactoringUI(final Lookup lookup, final FileObject mmd) {
     this.lookup = lookup;
-    
+
     this.name = mmd.getName();
     this.nameWithExt = mmd.getNameExt();
     this.query = new WhereUsedQuery(Lookups.fixed(mmd, this));
   }
-  
+
   @Override
   public String getName() {
-    return String.format(BUNDLE.getString("WhereUsedUI.getName"),this.nameWithExt);
+    return String.format(BUNDLE.getString("WhereUsedUI.getName"), this.nameWithExt);
   }
 
   @Override
   public String getDescription() {
-    return String.format(BUNDLE.getString("WhereUsedUI.getDescription"),this.nameWithExt);
+    return String.format(BUNDLE.getString("WhereUsedUI.getDescription"), this.nameWithExt);
   }
 
   @Override
@@ -61,15 +60,16 @@ public class WhereUsedRefactoringUI extends AbstractMMDRefactoringUI {
 
   @Override
   public CustomRefactoringPanel getPanel(final ChangeListener parent) {
-    if (this.panel == null){
-      this.panel = new WhereUsedPanel(lookup,this.name, false, parent);
+    if (this.panel == null) {
+      this.panel = new WhereUsedPanel(lookup, this.name, false, parent);
     }
     return this.panel;
   }
 
   @Override
   public Problem setParameters() {
-    this.query.putValue(WhereUsedQuery.SEARCH_IN_COMMENTS, Assertions.assertNotNull(this.panel).isSearchInComments());
+    this.query.putValue(WhereUsedQuery.SEARCH_IN_COMMENTS,
+        Assertions.assertNotNull(this.panel).isSearchInComments());
     return this.query.checkParameters();
   }
 
@@ -92,5 +92,5 @@ public class WhereUsedRefactoringUI extends AbstractMMDRefactoringUI {
   public HelpCtx getHelpCtx() {
     return null;
   }
-  
+
 }

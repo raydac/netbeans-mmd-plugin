@@ -47,15 +47,21 @@ public final class MMDPrintOptionsPanel extends JPanel {
 
   private final MMDPrintOptions options;
 
-  private final JRadioButton radioZoomTo = UIComponentFactoryProvider.findInstance().makeRadioButton();
-  private final JRadioButton radioFitWidthTo = UIComponentFactoryProvider.findInstance().makeRadioButton();
-  private final JRadioButton radioFitHeightTo = UIComponentFactoryProvider.findInstance().makeRadioButton();
-  private final JRadioButton radioFitToPage = UIComponentFactoryProvider.findInstance().makeRadioButton();
-  private final JComboBox<String> comboZoom = UIComponentFactoryProvider.findInstance().makeComboBox(String.class);
+  private final JRadioButton radioZoomTo =
+      UIComponentFactoryProvider.findInstance().makeRadioButton();
+  private final JRadioButton radioFitWidthTo =
+      UIComponentFactoryProvider.findInstance().makeRadioButton();
+  private final JRadioButton radioFitHeightTo =
+      UIComponentFactoryProvider.findInstance().makeRadioButton();
+  private final JRadioButton radioFitToPage =
+      UIComponentFactoryProvider.findInstance().makeRadioButton();
+  private final JComboBox<String> comboZoom =
+      UIComponentFactoryProvider.findInstance().makeComboBox(String.class);
   private final JSpinner spinnerFitWidth = UIComponentFactoryProvider.findInstance().makeSpinner();
   private final JSpinner spinnerFitHeight = UIComponentFactoryProvider.findInstance().makeSpinner();
 
   private final ResourceBundle bundle = MmdI18n.getInstance().findBundle();
+
   public MMDPrintOptionsPanel(final MMDPrintOptions options) {
     super(new GridBagLayout());
     this.options = new MMDPrintOptions(options);
@@ -171,7 +177,8 @@ public final class MMDPrintOptionsPanel extends JPanel {
     page2.setText(' ' + this.bundle.getString("MMDPrintOptionsPanel.Page_s"));
     result.add(page2, gbc);
 
-    this.comboZoom.setSelectedIndex(Math.max(0, Math.min(this.comboZoom.getModel().getSize() - 1, (int) Math.round(this.options.getScale() * 100 / 25) - 1)));
+    this.comboZoom.setSelectedIndex(Math.max(0, Math.min(this.comboZoom.getModel().getSize() - 1,
+        (int) Math.round(this.options.getScale() * 100 / 25) - 1)));
     this.spinnerFitWidth.getModel().setValue(this.options.getPagesInRow());
     this.spinnerFitHeight.getModel().setValue(this.options.getPagesInColumn());
 

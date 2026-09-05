@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.nbmindmap.nb.refactoring.elements;
 
 import com.igormaznitsa.mindmap.model.MMapURI;
@@ -23,27 +24,30 @@ import org.openide.ErrorManager;
 
 public class DeleteElement extends AbstractElement {
 
-  public DeleteElement(final MindMapLink mindMap, final File projectFolder, final MMapURI fileObject) {
+  public DeleteElement(final MindMapLink mindMap, final File projectFolder,
+                       final MMapURI fileObject) {
     super(mindMap, projectFolder, fileObject);
   }
 
   @Override
   public String getText() {
-    return String.format(BUNDLE.getString("DeleteElement.getText"),this.processedFile.asString(false, false));
+    return String.format(BUNDLE.getString("DeleteElement.getText"),
+        this.processedFile.asString(false, false));
   }
 
   @Override
   public void performChange() {
     super.performChange();
-    try{
+    try {
       final MindMap parsed = this.mindMapFile.asMindMap();
-      if (parsed.deleteAllLinksToFile(this.projectFolder, this.processedFile)){
+      if (parsed.deleteAllLinksToFile(this.projectFolder, this.processedFile)) {
         this.mindMapFile.writeMindMap();
       }
-    }catch(Exception ex){
-      LOGGER.error("Error during mind map refactoring",ex); //NOI18N
-      ErrorManager.getDefault().log(ErrorManager.EXCEPTION, "Can't process mind map and remove file link"); //NOI18N
+    } catch (Exception ex) {
+      LOGGER.error("Error during mind map refactoring", ex); //NOI18N
+      ErrorManager.getDefault()
+          .log(ErrorManager.EXCEPTION, "Can't process mind map and remove file link"); //NOI18N
     }
   }
-  
+
 }

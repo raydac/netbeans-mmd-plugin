@@ -43,9 +43,11 @@ public class TextAlignMenuPlugin extends AbstractPopupMenuItem {
       ImageIconServiceProvider.findInstance().getIconForId(IconID.ICON_TEXT_ALIGN_LEFT);
   private static final Icon ICON_RIGHT =
       ImageIconServiceProvider.findInstance().getIconForId(IconID.ICON_TEXT_ALIGN_RIGHT);
+
   @Override
   public JMenuItem makeMenuItem(final PluginContext context, final Topic activeTopic) {
-    final JMenu result = UI_COMPO_FACTORY.makeMenu(this.getResourceBundle().getString("TextAlign.Plugin.MenuTitle"));
+    final JMenu result =
+        UI_COMPO_FACTORY.makeMenu(this.getResourceBundle().getString("TextAlign.Plugin.MenuTitle"));
     result.setIcon(ICON);
 
     final ButtonGroup buttonGroup = UI_COMPO_FACTORY.makeButtonGroup();

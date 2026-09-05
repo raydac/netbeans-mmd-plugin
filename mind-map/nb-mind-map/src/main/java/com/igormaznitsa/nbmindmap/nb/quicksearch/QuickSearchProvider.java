@@ -26,6 +26,36 @@ import org.netbeans.spi.quicksearch.*;
 
 public class QuickSearchProvider implements SearchProvider {
 
+  private static final List<SearchedItem> ITEMS =
+      Arrays.asList(new SearchedItem(".*mind.*|.*map.*|.*", "Mind Map", new Runnable() {
+        @Override
+        public void run() {
+          SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+              NbUtils.plainMessageOk(null,
+                  java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle")
+                      .getString("MMDCfgPanel.buttonAbout.Text"), new AboutPanel());
+            }
+          });
+        }
+
+      }));
+
+  @Override
+  public void evaluate(final SearchRequest request, final SearchResponse response) {
+    final String text = request.getText();
+
+    for (final SearchedItem item : ITEMS) {
+      if (item.isSatisfied(text)) {
+        if (!response.addResult(item.getRunnable(), item.getDisplayName())) {
+          break;
+        }
+      }
+    }
+
+  }
+
   private static class SearchedItem {
 
     private final String displayName;
@@ -49,33 +79,6 @@ public class QuickSearchProvider implements SearchProvider {
     public boolean isSatisfied(final String searchText) {
       return pattern.matcher(searchText).find();
     }
-  }
-
-  private static final List<SearchedItem> ITEMS = Arrays.asList(new SearchedItem(".*mind.*|.*map.*|.*", "Mind Map", new Runnable() {
-            @Override
-            public void run() {
-              SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                  NbUtils.plainMessageOk(null, java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle").getString("MMDCfgPanel.buttonAbout.Text"), new AboutPanel());
-                }
-              });
-            }
-
-          }));
-
-  @Override
-  public void evaluate(final SearchRequest request, final SearchResponse response) {
-    final String text = request.getText();
-
-    for (final SearchedItem item : ITEMS) {
-      if (item.isSatisfied(text)) {
-        if (!response.addResult(item.getRunnable(), item.getDisplayName())) {
-          break;
-        }
-      }
-    }
-
   }
 
 }

@@ -48,7 +48,10 @@ import org.apache.commons.io.FilenameUtils;
 public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ImagePopUpMenuPlugin.class);
-  private static final Icon ICON = ImageIconServiceProvider.findInstance().getIconForId(IconID.ICON_IMAGES);
+  private static final Icon ICON =
+      ImageIconServiceProvider.findInstance().getIconForId(IconID.ICON_IMAGES);
+  private static final PathStore PATH_STORE = new PathStore();
+  private static int lastSelectedImportIndex = 0;
   private final FileFilter imageFileFilter = new FileFilter() {
     @Override
     public boolean accept(final File f) {
@@ -63,8 +66,6 @@ public class ImagePopUpMenuPlugin extends AbstractPopupMenuItem {
     }
 
   };
-  private static final PathStore PATH_STORE = new PathStore();
-  private static int lastSelectedImportIndex = 0;
 
   @Override
   public JMenuItem makeMenuItem(final PluginContext context, final Topic activeTopic) {

@@ -15,6 +15,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+
 package com.igormaznitsa.sciareto.ui;
 
 import javax.annotation.Nonnull;
@@ -31,13 +32,13 @@ public enum Icons {
   COINS("coins_in_hand16.png"); //NOI18N
 
   private final ImageIcon icon;
-  
-  @Nonnull
-  public ImageIcon getIcon(){
-    return this.icon;
-  }
-  
+
   private Icons(@Nonnull final String name) {
     this.icon = new ImageIcon(UiUtils.loadIcon(name));
+  }
+
+  @Nonnull
+  public ImageIcon getIcon() {
+    return this.icon;
   }
 }

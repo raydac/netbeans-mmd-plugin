@@ -15,6 +15,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+
 package com.igormaznitsa.sciareto.ui;
 
 import java.io.File;
@@ -78,7 +79,8 @@ public final class FileUtils {
   }
 
   @Nonnull
-  public static File replaceParentInPath(@Nonnull final File oldParent, @Nonnull final File newParent, @Nonnull final File file) {
+  public static File replaceParentInPath(@Nonnull final File oldParent,
+                                         @Nonnull final File newParent, @Nonnull final File file) {
     final Path filePath = file.toPath();
     final Path oldParentPath = oldParent.toPath();
     final Path newParentPath = newParent.toPath();

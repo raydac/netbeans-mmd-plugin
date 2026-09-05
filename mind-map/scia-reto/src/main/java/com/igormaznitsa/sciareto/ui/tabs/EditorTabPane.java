@@ -58,10 +58,8 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
   private static final Logger LOGGER = LoggerFactory.getLogger(EditorTabPane.class);
 
   private final Context context;
-
-  private boolean enabledNotificationAboutChange;
-
   private final List<ActionListener> maxMinEditorListeners = new CopyOnWriteArrayList<>();
+  private boolean enabledNotificationAboutChange;
 
   public EditorTabPane(@Nonnull final Context context) {
     super(JTabbedPane.TOP);
@@ -204,7 +202,8 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
       result = new JPopupMenu();
 
       if (title.isChanged()) {
-        final JMenuItem saveItem = new JMenuItem(SrI18n.getInstance().findBundle().getString("panelEditorTab.menuItemSave"));
+        final JMenuItem saveItem = new JMenuItem(
+            SrI18n.getInstance().findBundle().getString("panelEditorTab.menuItemSave"));
         saveItem.addActionListener(e -> {
           try {
             title.save();
@@ -212,14 +211,16 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
             LOGGER.error("Can't save file", ex); //NOI18N
             DialogProviderManager.getInstance().getDialogProvider()
                 .msgError(SciaRetoStarter.getApplicationFrame(),
-                    SrI18n.getInstance().findBundle().getString("panelEditorTab.errorCantSaveDocument"));
+                    SrI18n.getInstance().findBundle()
+                        .getString("panelEditorTab.errorCantSaveDocument"));
           }
         });
         result.add(saveItem);
       }
 
       if (title.getProvider().isSavable()) {
-        final JMenuItem saveAsItem = new JMenuItem(SrI18n.getInstance().findBundle().getString("panelEditorTab.menuItemSaveAs"));
+        final JMenuItem saveAsItem = new JMenuItem(
+            SrI18n.getInstance().findBundle().getString("panelEditorTab.menuItemSaveAs"));
         saveAsItem.addActionListener((@Nonnull final ActionEvent e) -> {
           try {
             title.saveAs();
@@ -227,20 +228,23 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
             LOGGER.error("Can't save file", ex); //NOI18N
             DialogProviderManager.getInstance().getDialogProvider()
                 .msgError(SciaRetoStarter.getApplicationFrame(),
-                    SrI18n.getInstance().findBundle().getString("panelEditorTab.errorCantSaveDocument"));
+                    SrI18n.getInstance().findBundle()
+                        .getString("panelEditorTab.errorCantSaveDocument"));
           }
         });
         result.add(saveAsItem);
       }
       result.add(new JSeparator());
 
-      final JMenuItem closeItem = new JMenuItem(SrI18n.getInstance().findBundle().getString("panelEditorTab.menuItemClose"));
+      final JMenuItem closeItem = new JMenuItem(
+          SrI18n.getInstance().findBundle().getString("panelEditorTab.menuItemClose"));
       closeItem.addActionListener((@Nonnull final ActionEvent e) -> {
         title.doSafeClose();
       });
       result.add(closeItem);
 
-      final JMenuItem closeOthers = new JMenuItem(SrI18n.getInstance().findBundle().getString("panelEditorTab.menuItemCloseOthers"));
+      final JMenuItem closeOthers = new JMenuItem(
+          SrI18n.getInstance().findBundle().getString("panelEditorTab.menuItemCloseOthers"));
       closeOthers.addActionListener((@Nonnull ActionEvent e) -> {
         final List<TabTitle> list = new ArrayList<>();
         for (final TabTitle t : theInstance) {
@@ -252,7 +256,8 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
       });
       result.add(closeOthers);
 
-      final JMenuItem closeAll = new JMenuItem(SrI18n.getInstance().findBundle().getString("panelEditorTab.menuItemCloseAll"));
+      final JMenuItem closeAll = new JMenuItem(
+          SrI18n.getInstance().findBundle().getString("panelEditorTab.menuItemCloseAll"));
       closeAll.addActionListener((@Nonnull ActionEvent e) -> {
         final List<TabTitle> list = new ArrayList<>();
         for (final TabTitle t : theInstance) {
@@ -264,13 +269,15 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
 
       result.add(new JSeparator());
 
-      final JMenuItem showInTree = new JMenuItem(SrI18n.getInstance().findBundle().getString("panelEditorTab.menuItemSelectInTree"));
+      final JMenuItem showInTree = new JMenuItem(
+          SrI18n.getInstance().findBundle().getString("panelEditorTab.menuItemSelectInTree"));
       showInTree.addActionListener((ActionEvent e) -> {
         context.focusInTree(title);
       });
       result.add(showInTree);
 
-      final JMenuItem openInSystem = new JMenuItem(SrI18n.getInstance().findBundle().getString("panelEditorTab.menuItemOpenInSystem"));
+      final JMenuItem openInSystem = new JMenuItem(
+          SrI18n.getInstance().findBundle().getString("panelEditorTab.menuItemOpenInSystem"));
       openInSystem.addActionListener((ActionEvent e) -> {
         final File file = title.getAssociatedFile();
         if (file != null && file.exists()) {
@@ -335,18 +342,18 @@ public class EditorTabPane extends JTabbedPane implements Iterable<TabTitle> {
 
   @Nonnull
   public Optional<TabTitle> findForFile(@Nonnull final File file) {
-      final Path path = file.toPath();
+    final Path path = file.toPath();
 
-      for (int i = 0; i < this.getTabCount(); i++) {
-          final TabTitle item = (TabTitle) this.getTabComponentAt(i);
-          if (item.getAssociatedFile() != null && path.equals(item.getAssociatedFile().toPath())) {
-              return Optional.of(item);
-          }
+    for (int i = 0; i < this.getTabCount(); i++) {
+      final TabTitle item = (TabTitle) this.getTabComponentAt(i);
+      if (item.getAssociatedFile() != null && path.equals(item.getAssociatedFile().toPath())) {
+        return Optional.of(item);
       }
-      
-      return Optional.empty();
+    }
+
+    return Optional.empty();
   }
-  
+
   public boolean removeTab(@Nonnull final TabTitle title) {
     int index = -1;
     for (int i = 0; i < this.getTabCount(); i++) {

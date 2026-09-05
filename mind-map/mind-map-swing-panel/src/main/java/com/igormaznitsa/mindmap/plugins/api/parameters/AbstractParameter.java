@@ -20,44 +20,13 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Objects;
 
-public abstract class AbstractParameter<T> implements Comparable<AbstractParameter<T>>{
+public abstract class AbstractParameter<T> implements Comparable<AbstractParameter<T>> {
   private final String id;
   private final String title;
   private final String comment;
-  private T value;
-
-  private Importance importance;
-
   private final int order;
-
-  public Importance getImportance() {
-    return this.importance;
-  }
-
-  public int getOrder() {
-    return this.order;
-  }
-
-  public String getTitle() {
-    return this.title;
-  }
-
-  @Override
-  public int compareTo(final AbstractParameter<T> that) {
-    int compareResult = Integer.compare(this.order, that.order);
-    if (compareResult == 0) {
-      compareResult = this.id.compareTo(that.id);
-    }
-    return compareResult;
-  }
-
-  public void setValue(final T value) {
-    this.value = value;
-  }
-
-  public T getValue() {
-    return this.value;
-  }
+  private T value;
+  private Importance importance;
 
   public AbstractParameter(final String id,
                            final String title,
@@ -91,6 +60,35 @@ public abstract class AbstractParameter<T> implements Comparable<AbstractParamet
                            final String comment,
                            final T defaultValue) {
     this(id, title, comment, defaultValue, 0);
+  }
+
+  public Importance getImportance() {
+    return this.importance;
+  }
+
+  public int getOrder() {
+    return this.order;
+  }
+
+  public String getTitle() {
+    return this.title;
+  }
+
+  @Override
+  public int compareTo(final AbstractParameter<T> that) {
+    int compareResult = Integer.compare(this.order, that.order);
+    if (compareResult == 0) {
+      compareResult = this.id.compareTo(that.id);
+    }
+    return compareResult;
+  }
+
+  public T getValue() {
+    return this.value;
+  }
+
+  public void setValue(final T value) {
+    this.value = value;
   }
 
   public String getComment() {

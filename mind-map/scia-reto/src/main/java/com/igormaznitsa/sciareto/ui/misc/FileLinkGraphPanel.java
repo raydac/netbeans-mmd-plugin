@@ -15,6 +15,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+
 package com.igormaznitsa.sciareto.ui.misc;
 
 import com.igormaznitsa.mindmap.model.MMapURI;
@@ -65,7 +66,6 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-import net.sourceforge.plantuml.bpm.Col;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -75,10 +75,253 @@ public final class FileLinkGraphPanel extends JPanel {
   private static final long serialVersionUID = -5145163577941732908L;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(FileLinkGraphPanel.class);
-
+  private static final Icon RELAYOUT_ICON = new ImageIcon(UiUtils.loadIcon("graph16.png")); //NOI18N
   private FileVertex selectedVertex;
 
-  private static final Icon RELAYOUT_ICON = new ImageIcon(UiUtils.loadIcon("graph16.png")); //NOI18N
+  public FileLinkGraphPanel(@Nullable final File projectFolder, @Nullable final File startMindMap) {
+    initComponents();
+
+    final Dimension SCROLL_COMPONENT_SIZE = new Dimension(600, 450);
+
+    final Graph<FileVertex, Number> graph = makeGraph(projectFolder, startMindMap);
+
+    final Color colorBackground = Utils.isDarkTheme() ? Color.DARK_GRAY : Color.WHITE;
+    final Color colorArrow = Utils.isDarkTheme() ? Color.ORANGE : Color.ORANGE.darker();
+    final Color colorLabels = Utils.isDarkTheme() ? Color.LIGHT_GRAY : Color.BLACK;
+
+    if (graph.getVertexCount() == 0) {
+      this.add(new JLabel(
+              SrI18n.getInstance().findBundle().getString("panelFileLinkGraph.labelNotAnyMindMap")),
+          BorderLayout.CENTER);
+    } else {
+      final ISOMLayout<FileVertex, Number> graphLayout = new ISOMLayout<>(graph);
+
+      final VisualizationModel<FileVertex, Number> viewModel =
+          new DefaultVisualizationModel<>(graphLayout, new Dimension(2000, 2000));
+      final VisualizationViewer<FileVertex, Number> graphViewer =
+          new VisualizationViewer<>(viewModel, new Dimension(800, 800));
+
+      final DefaultModalGraphMouse graphMouse = new DefaultModalGraphMouse() {
+        @Override
+        protected void loadPlugins() {
+          this.scalingPlugin = new ScalingGraphMousePlugin(new ViewScalingControl(), 0);
+          this.pickingPlugin = new PickingGraphMousePlugin();
+          add(this.scalingPlugin);
+          add(this.pickingPlugin);
+          setMode(Mode.PICKING);
+        }
+
+      };
+      graphViewer.setGraphMouse(graphMouse);
+      graphViewer.setGraphLayout(new CircleLayout<>(graph));
+
+      graphViewer.getRenderContext().setVertexIconTransformer(f -> f.getType().getIcon());
+
+      graphViewer.setBackground(colorBackground);
+      graphViewer.setForeground(colorLabels);
+      graphViewer.getRenderContext().setVertexLabelTransformer(new ToStringLabeller());
+
+      final DefaultVertexLabelRenderer labelRenderer = new DefaultVertexLabelRenderer(colorLabels);
+
+      graphViewer.getRenderContext().setVertexLabelRenderer(labelRenderer);
+      graphViewer.getRenderer().getVertexLabelRenderer()
+          .setPosition(Renderer.VertexLabel.Position.S);
+
+      final java.util.function.Function<Number, Paint> edgePaintTransformer = input -> colorArrow;
+
+      graphViewer.getRenderContext().setEdgeDrawPaintTransformer(edgePaintTransformer::apply);
+      graphViewer.getRenderContext().setArrowFillPaintTransformer(edgePaintTransformer::apply);
+      graphViewer.getRenderContext().setArrowDrawPaintTransformer(edgePaintTransformer::apply);
+
+      graphViewer.setVertexToolTipTransformer(FileVertex::getTooltip);
+
+      graphViewer.addGraphMouseListener(new GraphMouseListener<>() {
+        @Override
+        public void graphClicked(@Nonnull final FileVertex v, @Nonnull final MouseEvent me) {
+          if (!me.isPopupTrigger() && me.getClickCount() > 1 &&
+              v.getType() != FileVertexType.NOTFOUND) {
+            selectedVertex = v;
+            final Window window = SwingUtilities.getWindowAncestor(graphViewer);
+            if (window != null) {
+              window.setVisible(false);
+            }
+          }
+        }
+
+        @Override
+        public void graphPressed(@Nonnull final FileVertex v, @Nonnull final MouseEvent me) {
+        }
+
+        @Override
+        public void graphReleased(@Nonnull final FileVertex v, @Nonnull final MouseEvent me) {
+        }
+      });
+
+      final GraphZoomScrollPane scroll = new GraphZoomScrollPane(graphViewer);
+      scroll.setPreferredSize(SCROLL_COMPONENT_SIZE);
+
+      UiUtils.makeOwningDialogResizable(this);
+
+      graphViewer.scaleToLayout(new LayoutScalingControl());
+
+      final JButton layoutButton = new JButton(RELAYOUT_ICON);
+      layoutButton.setToolTipText(
+          SrI18n.getInstance().findBundle().getString("panelFileLinkGraph.layoutButton.tooltip"));
+      layoutButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+      layoutButton.addActionListener(e -> {
+        graphViewer.setGraphLayout(new CircleLayout<>(graph));
+        graphViewer.repaint();
+        scroll.revalidate();
+        scroll.repaint();
+      });
+
+      scroll.setCorner(layoutButton);
+
+      this.add(scroll, BorderLayout.CENTER);
+    }
+  }
+
+  @Nullable
+  private static FileVertex addMindMapAndFillByItsLinks(@Nullable final FileVertex parent, @Nonnull
+                                                        final @Nullable Graph<FileVertex, Number> graph, @Nullable final File projectFolder,
+                                                        @Nonnull final File mindMapFile,
+                                                        @Nonnull final AtomicInteger edgeCounter,
+                                                        @Nonnull Set<File> mapFilesInProcessing) {
+
+    MindMap map;
+
+    FileVertex thisVertex;
+
+    try {
+
+      thisVertex = new FileVertex(mindMapFile, FileVertexType.MINDMAP);
+      map = new MindMap(
+          new StringReader(FileUtils.readFileToString(mindMapFile, StandardCharsets.UTF_8)));
+
+      if (parent != null) {
+        for (final MMapURI fileUri : MapUtils.extractAllFileLinks(map)) {
+          if (parent.getFile().equals(fileUri.asFile(projectFolder))) {
+            graph.addEdge(edgeCounter.getAndIncrement(), thisVertex, parent, EdgeType.DIRECTED);
+            break;
+          }
+        }
+        if (mapFilesInProcessing.contains(mindMapFile)) {
+          return null;
+        }
+      }
+    } catch (final Exception ex) {
+      LOGGER.error("Can't load mind map : " + mindMapFile, ex); //NOI18N
+      thisVertex = new FileVertex(mindMapFile, FileVertexType.UNKNOWN);
+      map = null;
+    }
+
+    mapFilesInProcessing.add(mindMapFile);
+
+    graph.addVertex(thisVertex);
+
+    if (map != null) {
+      for (final MMapURI fileUri : MapUtils.extractAllFileLinks(map)) {
+        final FileVertex that;
+
+        final File convertedFile = convertUriInFile(mindMapFile, projectFolder, fileUri);
+
+        if (convertedFile == null) {
+          that = new FileVertex(fileUri.asFile(projectFolder), FileVertexType.NOTFOUND);
+        } else if (convertedFile.isDirectory()) {
+          that = new FileVertex(convertedFile, FileVertexType.FOLDER);
+        } else if (convertedFile.isFile()) {
+
+          if (convertedFile.getName().endsWith(".mmd")) { //NOI18N
+            if (convertedFile.equals(mindMapFile)) {
+              that = thisVertex;
+            } else {
+              that = addMindMapAndFillByItsLinks(thisVertex, graph, projectFolder, convertedFile,
+                  edgeCounter, mapFilesInProcessing);
+            }
+          } else {
+            that = new FileVertex(convertedFile, FileVertexType.DOCUMENT);
+          }
+
+        } else {
+          that = new FileVertex(convertedFile,
+              convertedFile.exists() ? FileVertexType.UNKNOWN : FileVertexType.NOTFOUND);
+        }
+
+        if (that != null) {
+          graph.addEdge(edgeCounter.getAndIncrement(), thisVertex, that, EdgeType.DIRECTED);
+        }
+      }
+    }
+
+    return thisVertex;
+  }
+
+  @Nullable
+  private static File convertUriInFile(@Nonnull final File containingMindMap,
+                                       @Nullable final File baseFolder,
+                                       @Nonnull final MMapURI uri) {
+    File result = uri.asFile(baseFolder);
+
+    if (!uri.isAbsolute() && !result.exists()) {
+      File basePath =
+          com.igormaznitsa.sciareto.ui.FileUtils.removeLastElementInPath(containingMindMap);
+      do {
+        result = uri.asFile(basePath);
+        if (result.exists()) {
+          break;
+        }
+        result = null;
+        basePath = com.igormaznitsa.sciareto.ui.FileUtils.removeLastElementInPath(basePath);
+      }
+      while (!com.igormaznitsa.sciareto.ui.FileUtils.isRootFile(basePath));
+    }
+
+    return result;
+  }
+
+  @Nonnull
+  private Graph<FileVertex, Number> makeGraph(@Nullable final File projectFolder,
+                                              @Nullable final File startMindMap) {
+    final DirectedSparseGraph<FileVertex, Number> result = new DirectedSparseGraph<>();
+
+    final AtomicInteger edgeCounter = new AtomicInteger();
+
+    final Set<File> mapFilesInProcessing = new HashSet<>();
+
+    if (startMindMap != null) {
+      addMindMapAndFillByItsLinks(null, result, projectFolder, startMindMap, edgeCounter,
+          mapFilesInProcessing);
+    } else if (projectFolder != null) {
+      final Iterator<File> iterator =
+          FileUtils.iterateFiles(projectFolder, new String[] {"mmd"}, true); //NOI18N
+      while (iterator.hasNext()) {
+        final File mmdFile = iterator.next();
+        if (mmdFile.isFile()) {
+          addMindMapAndFillByItsLinks(null, result, projectFolder, mmdFile, edgeCounter,
+              mapFilesInProcessing);
+        }
+      }
+    }
+
+    return result;
+  }
+
+  @Nullable
+  public FileVertex getSelectedFile() {
+    return this.selectedVertex;
+  }
+
+  /**
+   * This method is called from within the constructor to initialize the form.
+   * WARNING: Do NOT modify this code. The content of this method is always
+   * regenerated by the Form Editor.
+   */
+  @SuppressWarnings("unchecked")
+  // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+  private void initComponents() {
+
+    setLayout(new BorderLayout());
+  }// </editor-fold>//GEN-END:initComponents
 
   public enum FileVertexType {
     FOLDER("folder.png"),
@@ -95,7 +338,7 @@ public final class FileLinkGraphPanel extends JPanel {
 
     @Nonnull
     public String getText() {
-      return SrI18n.getInstance().findBundle().getString("FileVertexType."+this.name()+".text");
+      return SrI18n.getInstance().findBundle().getString("FileVertexType." + this.name() + ".text");
     }
 
     @Nonnull
@@ -114,7 +357,8 @@ public final class FileLinkGraphPanel extends JPanel {
     public FileVertex(@Nonnull final File file, @Nonnull final FileVertexType type) {
       this.type = type;
       this.text = file.getName();
-      this.tooltip = "<html><b>" + type.getText() + "</b><br>" + StringEscapeUtils.unescapeHtml3(FilenameUtils.normalizeNoEndSeparator(file.getAbsolutePath())) + "</html>"; //NOI18N
+      this.tooltip = "<html><b>" + type.getText() + "</b><br>" + StringEscapeUtils.unescapeHtml3(
+          FilenameUtils.normalizeNoEndSeparator(file.getAbsolutePath())) + "</html>"; //NOI18N
       this.file = file;
     }
 
@@ -155,232 +399,6 @@ public final class FileLinkGraphPanel extends JPanel {
       return this.type;
     }
   }
-
-  @Nonnull
-  private Graph<FileVertex, Number> makeGraph(@Nullable final File projectFolder, @Nullable final File startMindMap) {
-    final DirectedSparseGraph<FileVertex, Number> result = new DirectedSparseGraph<>();
-
-    final AtomicInteger edgeCounter = new AtomicInteger();
-
-    final Set<File> mapFilesInProcessing = new HashSet<>();
-
-    if (startMindMap != null) {
-      addMindMapAndFillByItsLinks(null, result, projectFolder, startMindMap, edgeCounter, mapFilesInProcessing);
-    } else if (projectFolder != null) {
-      final Iterator<File> iterator = FileUtils.iterateFiles(projectFolder, new String[]{"mmd"}, true); //NOI18N
-      while (iterator.hasNext()) {
-        final File mmdFile = iterator.next();
-        if (mmdFile.isFile()) {
-          addMindMapAndFillByItsLinks(null, result, projectFolder, mmdFile, edgeCounter, mapFilesInProcessing);
-        }
-      }
-    }
-
-    return result;
-  }
-
-  @Nullable
-  private static FileVertex addMindMapAndFillByItsLinks(@Nullable final FileVertex parent, @Nonnull final @Nullable Graph<FileVertex, Number> graph, @Nullable final File projectFolder, @Nonnull final File mindMapFile, @Nonnull final AtomicInteger edgeCounter, @Nonnull Set<File> mapFilesInProcessing) {
-
-    MindMap map;
-
-    FileVertex thisVertex;
-
-    try {
-
-      thisVertex = new FileVertex(mindMapFile, FileVertexType.MINDMAP);
-      map = new MindMap(new StringReader(FileUtils.readFileToString(mindMapFile, StandardCharsets.UTF_8)));
-
-      if (parent != null) {
-        for (final MMapURI fileUri : MapUtils.extractAllFileLinks(map)) {
-          if (parent.getFile().equals(fileUri.asFile(projectFolder))) {
-            graph.addEdge(edgeCounter.getAndIncrement(), thisVertex, parent, EdgeType.DIRECTED);
-            break;
-          }
-        }
-        if (mapFilesInProcessing.contains(mindMapFile)) {
-          return null;
-        }
-      }
-    }
-    catch (final Exception ex) {
-      LOGGER.error("Can't load mind map : " + mindMapFile, ex); //NOI18N
-      thisVertex = new FileVertex(mindMapFile, FileVertexType.UNKNOWN);
-      map = null;
-    }
-
-    mapFilesInProcessing.add(mindMapFile);
-
-    graph.addVertex(thisVertex);
-
-    if (map != null) {
-      for (final MMapURI fileUri : MapUtils.extractAllFileLinks(map)) {
-        final FileVertex that;
-
-        final File convertedFile = convertUriInFile(mindMapFile, projectFolder, fileUri);
-
-        if (convertedFile == null) {
-          that = new FileVertex(fileUri.asFile(projectFolder), FileVertexType.NOTFOUND);
-        } else if (convertedFile.isDirectory()) {
-          that = new FileVertex(convertedFile, FileVertexType.FOLDER);
-        } else if (convertedFile.isFile()) {
-
-          if (convertedFile.getName().endsWith(".mmd")) { //NOI18N
-            if (convertedFile.equals(mindMapFile)) {
-              that = thisVertex;
-            } else {
-              that = addMindMapAndFillByItsLinks(thisVertex, graph, projectFolder, convertedFile, edgeCounter, mapFilesInProcessing);
-            }
-          } else {
-            that = new FileVertex(convertedFile, FileVertexType.DOCUMENT);
-          }
-
-        } else {
-          that = new FileVertex(convertedFile, convertedFile.exists() ? FileVertexType.UNKNOWN : FileVertexType.NOTFOUND);
-        }
-
-        if (that != null) {
-          graph.addEdge(edgeCounter.getAndIncrement(), thisVertex, that, EdgeType.DIRECTED);
-        }
-      }
-    }
-
-    return thisVertex;
-  }
-
-  @Nullable
-  private static File convertUriInFile(@Nonnull final File containingMindMap, @Nullable final File baseFolder, @Nonnull final MMapURI uri) {
-    File result = uri.asFile(baseFolder);
-
-    if (!uri.isAbsolute() && !result.exists()) {
-      File basePath = com.igormaznitsa.sciareto.ui.FileUtils.removeLastElementInPath(containingMindMap);
-      do {
-        result = uri.asFile(basePath);
-        if (result.exists()) {
-          break;
-        }
-        result = null;
-        basePath = com.igormaznitsa.sciareto.ui.FileUtils.removeLastElementInPath(basePath);
-      }
-      while (!com.igormaznitsa.sciareto.ui.FileUtils.isRootFile(basePath));
-    }
-
-    return result;
-  }
-
-  public FileLinkGraphPanel(@Nullable final File projectFolder, @Nullable final File startMindMap) {
-    initComponents();
-
-    final Dimension SCROLL_COMPONENT_SIZE = new Dimension(600, 450);
-
-    final Graph<FileVertex, Number> graph = makeGraph(projectFolder, startMindMap);
-
-    final Color colorBackground = Utils.isDarkTheme() ? Color.DARK_GRAY : Color.WHITE;
-    final Color colorArrow = Utils.isDarkTheme() ? Color.ORANGE : Color.ORANGE.darker();
-    final Color colorLabels = Utils.isDarkTheme() ? Color.LIGHT_GRAY : Color.BLACK;
-
-    if (graph.getVertexCount() == 0) {
-      this.add(new JLabel(SrI18n.getInstance().findBundle().getString("panelFileLinkGraph.labelNotAnyMindMap")), BorderLayout.CENTER);
-    } else {
-      final ISOMLayout<FileVertex, Number> graphLayout = new ISOMLayout<>(graph);
-
-      final VisualizationModel<FileVertex, Number> viewModel = new DefaultVisualizationModel<>(graphLayout, new Dimension(2000, 2000));
-      final VisualizationViewer<FileVertex, Number> graphViewer = new VisualizationViewer<>(viewModel, new Dimension(800, 800));
-
-      final DefaultModalGraphMouse graphMouse = new DefaultModalGraphMouse() {
-        @Override
-        protected void loadPlugins() {
-          this.scalingPlugin = new ScalingGraphMousePlugin(new ViewScalingControl(), 0);
-          this.pickingPlugin = new PickingGraphMousePlugin();
-          add(this.scalingPlugin);
-          add(this.pickingPlugin);
-          setMode(Mode.PICKING);
-        }
-
-      };
-      graphViewer.setGraphMouse(graphMouse);
-      graphViewer.setGraphLayout(new CircleLayout<>(graph));
-
-      graphViewer.getRenderContext().setVertexIconTransformer(f -> f.getType().getIcon());
-
-      graphViewer.setBackground(colorBackground);
-      graphViewer.setForeground(colorLabels);
-      graphViewer.getRenderContext().setVertexLabelTransformer(new ToStringLabeller());
-
-      final DefaultVertexLabelRenderer labelRenderer = new DefaultVertexLabelRenderer(colorLabels);
-
-      graphViewer.getRenderContext().setVertexLabelRenderer(labelRenderer);
-      graphViewer.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.S);
-
-      final java.util.function.Function<Number, Paint> edgePaintTransformer = input -> colorArrow;
-
-      graphViewer.getRenderContext().setEdgeDrawPaintTransformer(edgePaintTransformer::apply);
-      graphViewer.getRenderContext().setArrowFillPaintTransformer(edgePaintTransformer::apply);
-      graphViewer.getRenderContext().setArrowDrawPaintTransformer(edgePaintTransformer::apply);
-
-      graphViewer.setVertexToolTipTransformer(FileVertex::getTooltip);
-
-      graphViewer.addGraphMouseListener(new GraphMouseListener<>() {
-        @Override
-        public void graphClicked(@Nonnull final FileVertex v, @Nonnull final MouseEvent me) {
-          if (!me.isPopupTrigger() && me.getClickCount() > 1 &&
-              v.getType() != FileVertexType.NOTFOUND) {
-            selectedVertex = v;
-            final Window window = SwingUtilities.getWindowAncestor(graphViewer);
-            if (window != null) {
-              window.setVisible(false);
-            }
-          }
-        }
-
-        @Override
-        public void graphPressed(@Nonnull final FileVertex v, @Nonnull final MouseEvent me) {
-        }
-
-        @Override
-        public void graphReleased(@Nonnull final FileVertex v, @Nonnull final MouseEvent me) {
-        }
-      });
-
-      final GraphZoomScrollPane scroll = new GraphZoomScrollPane(graphViewer);
-      scroll.setPreferredSize(SCROLL_COMPONENT_SIZE);
-
-      UiUtils.makeOwningDialogResizable(this);
-
-      graphViewer.scaleToLayout(new LayoutScalingControl());
-
-      final JButton layoutButton = new JButton(RELAYOUT_ICON);
-      layoutButton.setToolTipText(SrI18n.getInstance().findBundle().getString("panelFileLinkGraph.layoutButton.tooltip"));
-      layoutButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-      layoutButton.addActionListener(e -> {
-        graphViewer.setGraphLayout(new CircleLayout<>(graph));
-        graphViewer.repaint();
-        scroll.revalidate();
-        scroll.repaint();
-      });
-
-      scroll.setCorner(layoutButton);
-
-      this.add(scroll, BorderLayout.CENTER);
-    }
-  }
-
-  @Nullable
-  public FileVertex getSelectedFile() {
-    return this.selectedVertex;
-  }
-
-  /**
-   * This method is called from within the constructor to initialize the form.
-   * WARNING: Do NOT modify this code. The content of this method is always
-   * regenerated by the Form Editor.
-   */
-  @SuppressWarnings("unchecked")
-  // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-  private void initComponents() {
-
-    setLayout(new BorderLayout());
-  }// </editor-fold>//GEN-END:initComponents
 
 
   // Variables declaration - do not modify//GEN-BEGIN:variables

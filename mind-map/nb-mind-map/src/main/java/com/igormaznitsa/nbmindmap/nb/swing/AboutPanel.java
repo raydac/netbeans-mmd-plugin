@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.nbmindmap.nb.swing;
 
 import com.igormaznitsa.mindmap.model.logger.Logger;
@@ -29,7 +30,10 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
   private static final long serialVersionUID = -3231534203788095969L;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AboutPanel.class);
-  
+  // Variables declaration - do not modify//GEN-BEGIN:variables
+  private javax.swing.JLabel labelIcon;
+  private com.igormaznitsa.ui.JHtmlLabel textLabel;
+
   public AboutPanel() {
     initComponents();
 
@@ -37,8 +41,7 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
     final String version;
     if (info == null) {
       version = "UNKNOWN";
-    }
-    else {
+    } else {
       version = info.getImplementationVersion();
     }
 
@@ -51,9 +54,9 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
 
   @Override
   public void onLinkActivated(final JHtmlLabel source, final String href) {
-    try{
+    try {
       NbUtils.browseURI(new URI(href), false);
-    }catch(Exception ex){
+    } catch (Exception ex) {
       LOGGER.error("Can't process link in 'About'", ex);
     }
   }
@@ -70,9 +73,11 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
     labelIcon = new javax.swing.JLabel();
     textLabel = new com.igormaznitsa.ui.JHtmlLabel();
 
-    labelIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/logo/logo.png"))); // NOI18N
+    labelIcon.setIcon(new javax.swing.ImageIcon(
+        getClass().getResource("/com/igormaznitsa/nbmindmap/icons/logo/logo.png"))); // NOI18N
 
-    java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
+    java.util.ResourceBundle bundle =
+        java.util.ResourceBundle.getBundle("com/igormaznitsa/nbmindmap/i18n/Bundle"); // NOI18N
     textLabel.setText(bundle.getString("AboutText")); // NOI18N
     textLabel.setVerticalAlignment(javax.swing.SwingConstants.TOP);
     textLabel.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
@@ -80,30 +85,25 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
     this.setLayout(layout);
     layout.setHorizontalGroup(
-      layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(layout.createSequentialGroup()
-        .addContainerGap()
-        .addComponent(labelIcon)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(textLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 544, Short.MAX_VALUE)
-        .addContainerGap())
+        layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(labelIcon)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(textLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 544, Short.MAX_VALUE)
+                .addContainerGap())
     );
     layout.setVerticalGroup(
-      layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(layout.createSequentialGroup()
-        .addContainerGap()
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(textLabel)
-          .addGroup(layout.createSequentialGroup()
-            .addComponent(labelIcon)
-            .addGap(0, 0, Short.MAX_VALUE)))
-        .addContainerGap())
+        layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(textLabel)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(labelIcon)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
     );
   }// </editor-fold>//GEN-END:initComponents
-
-
-  // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JLabel labelIcon;
-  private com.igormaznitsa.ui.JHtmlLabel textLabel;
   // End of variables declaration//GEN-END:variables
 }

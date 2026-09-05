@@ -16,12 +16,13 @@
 
 package com.igormaznitsa.mindmap.plugins.api.parameters;
 
-public class DoubleParameter extends AbstractParameter<Double>{
+public class DoubleParameter extends AbstractParameter<Double> {
 
   private final double min;
   private final double max;
 
-  public DoubleParameter(final String id, final String title, final String comment, final double min, final double max, final double defaultValue) {
+  public DoubleParameter(final String id, final String title, final String comment,
+                         final double min, final double max, final double defaultValue) {
     this(id, title, comment, min, max, defaultValue, 0);
   }
 
@@ -47,9 +48,9 @@ public class DoubleParameter extends AbstractParameter<Double>{
 
   @Override
   public void fromString(final String value) {
-    try{
+    try {
       this.setValue(value == null ? this.min : Double.parseDouble(value.trim()));
-    }catch (NumberFormatException ex){
+    } catch (NumberFormatException ex) {
       this.setValue(this.min);
     }
   }
