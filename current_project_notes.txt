@@ -1,4 +1,5 @@
 ## 1. Implementation Progress
+- scia-reto: PlantUML dependency bumped to 1.2026.8 (`plantuml.version` in `scia-reto/pom.xml`). GitHub release exists; Maven Central not published yet — installed jar+sources into local `~/.m2` from the GitHub release so offline resolve works.
 - mind-map-model: API-stable correctness fixes — MindMap `readResolve` restores listeners after deserialize; Topic.parse honors `ignoreErrors` and skips snippet body when start missing; setExtra/removeExtras/removeAllExtras call `detachedToTopic`; moveToNewParent rejects descendant cycles; parent cleared on delete/remove; findPrev null checker matches findNext; MMapURI no longer shares mutable empty Properties; equals includes fileUriFlag; ModelUtils.toFile guards empty path; JavaLoggerServiceImpl no longer mutates JUL root level; MindMapModelEvent.getPath returns a clone; cloneTopicInMap checks map ownership.
 - IJ sources use type imports plus `import static` for frequent factories (`getLogger`, `getBundle`, `getEncoder`/`getDecoder`, `UTF_8`, Swing/AWT constants) so method bodies do not use FQCN.
 - IJ 1.6.10 hardening: single document parse path, file links open in the IDE, PSI/editor share module-aware root resolution, facet "inside browser" honored via HTMLEditorProvider with system-browser fallback, settings migrated from `application-components` to `applicationService`, config listener unregistered on editor dispose.
@@ -11,7 +12,8 @@
 - Latest IDE `getInternalTemplate()` no longer fabricates a dummy template; if the name is missing it calls `getJ2eeTemplate()` and throws `Template not found`. Empty-map template is now also under `fileTemplates/internal/` and `fileTemplates/j2ee/`, registered as `<internalFileTemplate name="SciaReto Mind Map"/>`. Create action resolves across categories and writes default MMD text if none is found.
 - mind-map-swing-panel: cleaned Swing action/event handling without API changes — title-editor key adapter held as field, dead typed Enter end-edit and unused `lastReleasedEvent` removed, duplicate drag hit-test removed, zoom keyboard path shared via `applyScaleAndRefresh`, popup state listener attached once per menu, `catchEscInParentDialog` wired once per dialog root pane, dead default `doActionForTopic` external branch removed.
 - scia-reto UI Swing audit (module-only): PlantUML render no longer clears `lastSuccessfullyRenderedText` in finally before EDT success; loader animation unregister moved to EDT completion; `hideTextPanel` no longer re-adds KeyListener; DnDTree null-safe transferable; loading GIF redraw marshaled to EDT; project unload animation unregister on EDT.
-- scia-reto: FlatLaf accent/focus borders removed from large workspace scroll containers (mind map, text/PlantUML editors, explorer tree) via `UiUtils.hideContainerBorder`; topic selection indicator remains the focus cue.
+- scia-reto: FlatLaf focus accent on large workspace scroll containers frozen via `UiUtils.disableContainerFocusBorder` (`focusWidth: 0` + `focusedBorderColor` = normal border); regular container borders remain.
+- scia-reto: exit paths unified via `MainFrame.tryCloseApplication` / `shutdownApplication` (window X, File→Exit, platform Quit); `TextFileBackup` is daemon + `finishIfStarted()` so the process does not stay alive after the GUI closes.
 
 ## 2. Architecture & Technical Discoveries
 - Do not put `<fileType>` as a root `<idea-plugin>` child. 222 PluginManager treats that as `Unknown element: fileType` (`XmlReader.readRootElementChild`). It must live under `<extensions defaultExtensionNs="com.intellij">`.
@@ -37,9 +39,11 @@
 ## 4. Current Work In Progress
 - Version bumped to 1.7.0-SNAPSHOT in all pom.xml modules and idea-mindmap plugin.xml.
 - mind-map-model source audit completed (public API preserved; unit tests green).
+- scia-reto close/exit hang risk addressed (backup worker + unified shutdown).
 - Verify File | New create on latest IntelliJ after reinstall (previous report: type visible, "Template not found"); confirm New menu order places SciaReto after Directory.
 - Verify opening an existing MMD file after the blank-editor fix (default model set before first paint; skip-reload no longer calls getModel() with a null panel model).
-- Verify FlatLaf editor/explorer containers no longer show permanent purple focus borders after restart.
+- Verify FlatLaf editor/explorer containers keep a normal border and no longer switch to purple focus accent.
+- Verify scia-reto exits cleanly via window close, File | Exit, and platform Quit after editing text files (backup worker started).
 
 ## 5. Known Issues & Limitations
 - Sandbox/build target remains `IC-222.4554.10`; latest-IDE New File UI cannot be verified in that sandbox.

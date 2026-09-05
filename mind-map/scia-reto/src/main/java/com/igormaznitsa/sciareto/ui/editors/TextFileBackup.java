@@ -97,6 +97,13 @@ public class TextFileBackup {
     return instance.get();
   }
 
+  public static void finishIfStarted() {
+    final TextFileBackup backup = instance.get();
+    if (backup != null) {
+      backup.finish();
+    }
+  }
+
   public void finish() {
     this.add(END_WORK);
   }
@@ -132,7 +139,7 @@ public class TextFileBackup {
 
   private void start() {
     final Thread thread = new Thread(this::run, "edit-text-content-backuper");
-    thread.setDaemon(false);
+    thread.setDaemon(true);
     thread.start();
   }
 

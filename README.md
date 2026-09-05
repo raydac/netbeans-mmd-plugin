@@ -21,8 +21,9 @@ __1.7.0 (SNAPSHOT)__
 - SR:  added 'Quick note' panel [#128](https://github.com/raydac/netbeans-mmd-plugin/issues/128)
 - SR:  minimum Java version for SciaReto lifted up to Java 21
 - SR:  updated embedded JDK to 26.0.2+13
-- SR:  PlantUML updated to 1.2026.7
-- SR:  disabled FlatLaf focus borders around large editor and explorer containers
+- SR:  PlantUML updated to 1.2026.8
+- SR:  keep FlatLaf container borders but stop focus-accent color changes on large editor and explorer panes
+- SR:  fixed application exit so File | Exit and Quit always stop the backup worker and do not leave a process without a window
 
 __1.6.9 (19-okt-2025)__
 - ALL: improvements in processing of key type in topic title editor

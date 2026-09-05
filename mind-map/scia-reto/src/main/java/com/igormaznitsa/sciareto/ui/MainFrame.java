@@ -272,19 +272,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     this.addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(@Nonnull final WindowEvent e) {
-        if (doClosing()) {
-          try {
-            for (final TabTitle t : tabPane) {
-              t.getProvider().getEditor().deleteBackup();
-            }
-          } finally {
-            try {
-              dispose();
-            } finally {
-              TextFileBackup.getInstance().finish();
-            }
-          }
-        }
+        MainFrame.this.tryCloseApplication();
       }
     });
 
@@ -754,10 +742,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       }
       break;
       case QUIT: {
-        handled = doClosing();
-        if (handled) {
-          dispose();
-        }
+        handled = this.tryCloseApplication();
       }
       break;
       case REOPEN_APPLICATION: {
@@ -774,8 +759,31 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     return handled;
   }
 
+  private boolean tryCloseApplication() {
+    if (!this.doClosing()) {
+      return false;
+    }
+
+    this.shutdownApplication();
+    return true;
+  }
+
+  private void shutdownApplication() {
+    try {
+      for (final TabTitle title : this.tabPane) {
+        title.getProvider().getEditor().deleteBackup();
+      }
+    } finally {
+      try {
+        this.dispose();
+      } finally {
+        TextFileBackup.finishIfStarted();
+      }
+    }
+  }
+
   private boolean doClosing() {
-    endFullScreenIfActive();
+    this.endFullScreenIfActive();
 
     final boolean tryKeepUnsaved = this.isTryKeepNonSavedDocs() && !this.stateless;
     final List<MultiFileContainer.FileItem> unsavedFileItems = new ArrayList<>();
@@ -2088,9 +2096,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
   private void menuExitActionPerformed(
       java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuExitActionPerformed
-    if (doClosing()) {
-      dispose();
-    }
+    this.tryCloseApplication();
   }//GEN-LAST:event_menuExitActionPerformed
 
   private boolean tryCreateKnowledgeFolderIn(@Nonnull final File folder) {
