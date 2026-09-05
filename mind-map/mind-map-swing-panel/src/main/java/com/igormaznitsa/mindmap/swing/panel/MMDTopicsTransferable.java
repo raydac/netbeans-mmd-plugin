@@ -37,8 +37,7 @@ import java.util.Map;
 public class MMDTopicsTransferable implements Transferable {
 
   public static final DataFlavor MMD_DATA_FLAVOR;
-  private static final DataFlavor[] FLAVORS
-      = new DataFlavor[] {DataFlavor.stringFlavor, MMD_DATA_FLAVOR};
+  private static final DataFlavor[] FLAVORS;
   private static final String END_OF_LINE = System.getProperty("line.separator", "\n");
 
   static {
@@ -46,9 +45,10 @@ public class MMDTopicsTransferable implements Transferable {
       MMD_DATA_FLAVOR = new DataFlavor(DataFlavor.javaSerializedObjectMimeType + ";class=\"" +
           NBMindMapTopicsContainer.class.getName() + "\"", "nb-mindmap-topic-list",
           NBMindMapTopicsContainer.class.getClassLoader());
-    } catch (ClassNotFoundException ex) {
+    } catch (final ClassNotFoundException ex) {
       throw new Error("Can't find class", ex);
     }
+    FLAVORS = new DataFlavor[] {DataFlavor.stringFlavor, MMD_DATA_FLAVOR};
   }
 
   private final Topic[] topics;
