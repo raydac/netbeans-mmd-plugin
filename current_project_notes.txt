@@ -5,6 +5,7 @@
 - IJ 1.6.10: MMD disappeared from File | New on latest IntelliJ because New File now reads declarative `com.intellij.fileType`, not deprecated `FileTypeFactory`.
 - Replaced `fileTypeFactory` with `<fileType>` inside `<extensions>` (supported since 2019.2; project already requires 222.4554.10).
 - Added `CreateMindMapFileAction` to `NewGroup` so File | New keeps an explicit SciaReto Mind Map item on both old and new IDEs.
+- New-menu item anchored `after` `NewDir` (Directory), so it sits below File / Scratch File / Directory.
 - Removed `MindMapFileTypeFactory`.
 - Corrected file-template group name to `SciaReto Mind Map.mmd` (matches `fileTemplates/SciaReto Mind Map.mmd.ft`).
 - Latest IDE `getInternalTemplate()` no longer fabricates a dummy template; if the name is missing it calls `getJ2eeTemplate()` and throws `Template not found`. Empty-map template is now also under `fileTemplates/internal/` and `fileTemplates/j2ee/`, registered as `<internalFileTemplate name="SciaReto Mind Map"/>`. Create action resolves across categories and writes default MMD text if none is found.
@@ -36,7 +37,7 @@
 ## 4. Current Work In Progress
 - Version bumped to 1.7.0-SNAPSHOT in all pom.xml modules and idea-mindmap plugin.xml.
 - mind-map-model source audit completed (public API preserved; unit tests green).
-- Verify File | New create on latest IntelliJ after reinstall (previous report: type visible, "Template not found").
+- Verify File | New create on latest IntelliJ after reinstall (previous report: type visible, "Template not found"); confirm New menu order places SciaReto after Directory.
 - Verify opening an existing MMD file after the blank-editor fix (default model set before first paint; skip-reload no longer calls getModel() with a null panel model).
 - Verify FlatLaf editor/explorer containers no longer show permanent purple focus borders after restart.
 

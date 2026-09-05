@@ -3,7 +3,7 @@ __1.7.0 (SNAPSHOT)__
 - ALL: fixed ret lost focus during fast sibling topic create by  enter
 - ALL: hardened mind map model against deserialize listener NPE, broken ignoreErrors parsing, topic-graph cycles, and stale note encryption attributes
 - IJ:  removed use of internal IDEA API
-- IJ:  restored MMD in File | New on latest IntelliJ IDEA without dropping older IDE support
+- IJ:  restored MMD in File | New on latest IntelliJ IDEA without dropping older IDE support; item appears after Directory instead of first
 - IJ:  file links now open in the IDE, and resolve against the same module or Maven root as the visual editor
 - IJ:  facet option to open URIs in the IDE browser now works
 - IJ:  mind map no longer reloads twice on every document change

@@ -15,7 +15,7 @@
         <p>1.7.0 (SNAPSHOT)</p>
         <ul>
             <li>Removed use of internal IDEA API</li>
-            <li>Restored MMD in File | New on latest IntelliJ IDEA while keeping compatibility with previous versions</li>
+            <li>Restored MMD in File | New on latest IntelliJ IDEA while keeping compatibility with previous versions; item appears after Directory instead of first</li>
             <li>File links open in the IDE instead of doing nothing when a document already exists</li>
             <li>File links in the text view resolve against the same module or Maven root as the visual editor</li>
             <li>Facet option to open URIs in the IDE browser now works</li>
@@ -320,7 +320,7 @@
                 text="SciaReto Mind Map"
                 description="Create a new SciaReto Mind Map file"
                 icon="/icons/mmdfile.png">
-            <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFile"/>
+            <add-to-group group-id="NewGroup" anchor="after" relative-to-action="NewDir"/>
         </action>
     </actions>
 
