@@ -111,7 +111,7 @@ public final class ExplorerTree extends JScrollPane {
         new NodeProjectGroup(predicateShowHiddenFiles, context, ".")); //NOI18N
     this.projectTree.setRootVisible(false);
     this.setViewportView(this.projectTree);
-    UiUtils.hideContainerBorder(this);
+    UiUtils.disableContainerFocusBorder(this);
 
     this.projectTree.addKeyListener(new KeyAdapter() {
       @Override

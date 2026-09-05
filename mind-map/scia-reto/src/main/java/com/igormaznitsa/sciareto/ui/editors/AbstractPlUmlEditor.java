@@ -218,7 +218,7 @@ public abstract class AbstractPlUmlEditor extends AbstractTextEditor {
     this.mainPanel = new SplitPaneExt(JSplitPane.VERTICAL_SPLIT);
 
     final RTextScrollPane scrollPane = new RTextScrollPane(this.editor, true);
-    UiUtils.hideContainerBorder(scrollPane);
+    UiUtils.disableContainerFocusBorder(scrollPane);
 
     this.renderedPanel = new JPanel(new BorderLayout());
     this.renderedScrollPane = new EditorScrollPanel();

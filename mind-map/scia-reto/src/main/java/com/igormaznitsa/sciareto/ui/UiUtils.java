@@ -21,6 +21,7 @@ package com.igormaznitsa.sciareto.ui;
 import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.html2color;
 import static com.igormaznitsa.sciareto.preferences.AdditionalPreferences.PROPERTY_TEXT_EDITOR_FONT;
 
+import com.formdev.flatlaf.FlatClientProperties;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.meta.common.utils.IOUtils;
@@ -77,7 +78,6 @@ import java.util.prefs.Preferences;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -164,9 +164,10 @@ public final class UiUtils {
         SwingUtilities.isEventDispatchThread());
   }
 
-  public static void hideContainerBorder(@Nonnull final JComponent component) {
+  public static void disableContainerFocusBorder(@Nonnull final JComponent component) {
     Objects.requireNonNull(component, "component must not be null");
-    component.setBorder(BorderFactory.createEmptyBorder());
+    component.putClientProperty(FlatClientProperties.STYLE,
+        "focusWidth: 0; focusedBorderColor: $Component.borderColor");
   }
 
   @Nullable

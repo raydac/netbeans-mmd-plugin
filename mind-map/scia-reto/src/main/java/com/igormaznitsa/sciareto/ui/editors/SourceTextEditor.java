@@ -214,7 +214,7 @@ public final class SourceTextEditor extends AbstractTextEditor {
     this.mainPanel = new JPanel(new BorderLayout());
 
     final RTextScrollPane scrollPane = new RTextScrollPane(this.editor, true);
-    UiUtils.hideContainerBorder(scrollPane);
+    UiUtils.disableContainerFocusBorder(scrollPane);
     this.mainPanel.add(scrollPane, BorderLayout.CENTER);
 
     final JPanel status = new JPanel(new FlowLayout(FlowLayout.RIGHT));
