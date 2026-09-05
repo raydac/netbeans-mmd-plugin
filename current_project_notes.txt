@@ -13,7 +13,7 @@
 - mind-map-swing-panel: cleaned Swing action/event handling without API changes — title-editor key adapter held as field, dead typed Enter end-edit and unused `lastReleasedEvent` removed, duplicate drag hit-test removed, zoom keyboard path shared via `applyScaleAndRefresh`, popup state listener attached once per menu, `catchEscInParentDialog` wired once per dialog root pane, dead default `doActionForTopic` external branch removed.
 - scia-reto UI Swing audit (module-only): PlantUML render no longer clears `lastSuccessfullyRenderedText` in finally before EDT success; loader animation unregister moved to EDT completion; `hideTextPanel` no longer re-adds KeyListener; DnDTree null-safe transferable; loading GIF redraw marshaled to EDT; project unload animation unregister on EDT.
 - scia-reto: FlatLaf focus accent on large workspace scroll containers frozen via `UiUtils.disableContainerFocusBorder` (`focusWidth: 0` + `focusedBorderColor` = normal border); regular container borders remain.
-- scia-reto: exit paths unified via `MainFrame.tryCloseApplication` / `shutdownApplication` (window X, File→Exit, platform Quit); `TextFileBackup` is daemon + `finishIfStarted()` so the process does not stay alive after the GUI closes.
+- scia-reto: exit paths unified via `MainFrame.tryCloseApplication` / `shutdownApplication`; `TextFileBackup.finishAndAwait()` drains pending backup/delete jobs then joins the daemon worker so exit neither loses flush nor hangs the process.
 
 ## 2. Architecture & Technical Discoveries
 - Do not put `<fileType>` as a root `<idea-plugin>` child. 222 PluginManager treats that as `Unknown element: fileType` (`XmlReader.readRootElementChild`). It must live under `<extensions defaultExtensionNs="com.intellij">`.

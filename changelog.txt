@@ -15,7 +15,7 @@ __1.7.0 (SNAPSHOT)__
 - SR:  fixed PlantUML preview render race and duplicate auto-refresh key listeners
 - SR:  hardened tree drag-and-drop and loading-icon animation against EDT issues
 - SR:  keep FlatLaf container borders but stop focus-accent color changes on large editor and explorer panes
-- SR:  fixed application exit so File | Exit and Quit always stop the backup worker and do not leave a process without a window
+- SR:  fixed application exit so File | Exit and Quit always flush editor backups, await the backup worker, and do not leave a process without a window
 
 __1.6.9 (19-okt-2025)__
 - ALL: improvements in processing of key type in topic title editor

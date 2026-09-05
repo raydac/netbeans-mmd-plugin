@@ -17,3 +17,4 @@
 @TemplateRegistration(folder = "Other", iconBase = "com/igormaznitsa/nbmindmap/icons/logo/logo16.png", displayName = "NB Mind Map", description = "templateDescription.html", content = "MindMap.mmd.template")
 package com.igormaznitsa.nbmindmap.nb;
 
+import org.netbeans.api.templates.TemplateRegistration;
