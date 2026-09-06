@@ -24,6 +24,7 @@ __1.7.0 (SNAPSHOT)__
 - SR:  PlantUML updated to 1.2026.8
 - SR:  keep FlatLaf container borders but stop focus-accent color changes on large editor and explorer panes
 - SR:  fixed application exit so File | Exit and Quit always flush editor backups, await the backup worker, and do not leave a process without a window
+- SR:  fixed platform start scripts so install-dir launch, JAVA_HOME, and file arguments work reliably on Windows, Linux, macOS, and AppImage
 
 __1.6.9 (19-okt-2025)__
 - ALL: improvements in processing of key type in topic title editor

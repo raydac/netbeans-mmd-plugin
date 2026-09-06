@@ -9,4 +9,6 @@ set "JAVA_FLAGS=-client -XX:+IgnoreUnrecognizedVMOptions -Xmx2G --add-opens=java
 set "JAVA_RUN=javaw.exe"
 set "JAVA_LOG=-Djava.util.logging.config.file=%SCIARETO_HOME%logger.properties"
 
-start "SciaReto" "%SCIARETO_HOME%jre\bin\%JAVA_RUN%" %JAVA_FLAGS% %JAVA_EXTRA_GFX_FLAGS% %JAVA_LOG% -jar "%SCIARETO_HOME%scia-reto.jar" %*
+if defined JAVA_HOME if exist "%JAVA_HOME%\bin\%JAVA_RUN%" set "JAVA_RUN=%JAVA_HOME%\bin\%JAVA_RUN%"
+
+start "SciaReto" "%JAVA_RUN%" %JAVA_FLAGS% %JAVA_EXTRA_GFX_FLAGS% %JAVA_LOG% -jar "%SCIARETO_HOME%scia-reto.jar" %*

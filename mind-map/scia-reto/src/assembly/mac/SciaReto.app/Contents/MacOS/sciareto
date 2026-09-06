@@ -1,4 +1,17 @@
 #!/bin/sh
-BASEDIR=`dirname "$0"`
+BASEDIR=$(cd "$(dirname "$0")" && pwd)
 
-exec "$BASEDIR"/jre/bin/java -Xmx2G --add-opens java.desktop/com.apple.eawt=ALL-UNNAMED -Djava.util.logging.config.file="$BASEDIR"/logger.properties -jar "$BASEDIR"/scia-reto-*.jar
+JAR=
+for candidate in "$BASEDIR"/scia-reto-*.jar; do
+  if [ -f "$candidate" ]; then
+    JAR=$candidate
+    break
+  fi
+done
+
+if [ -z "$JAR" ]; then
+  echo "SciaReto jar not found under $BASEDIR" >&2
+  exit 1
+fi
+
+exec "$BASEDIR/jre/bin/java" -Xmx2G --add-opens=java.desktop/com.apple.eawt=ALL-UNNAMED -Djava.util.logging.config.file="$BASEDIR/logger.properties" -jar "$JAR" "$@"
