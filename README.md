@@ -16,7 +16,7 @@ Initially I developed a plugin for NetBeans IDE then the IntellijIDEA plugin was
 
 __1.7.0 (06-sep-2026)__
 
-- ALL: fixed ret lost focus during fast sibling topic create by  enter
+- ALL: fixed lost focus during fast sibling topic create by Enter
 - IJ:  removed use of internal IDEA API
 - SR:  added 'Quick note' panel [#128](https://github.com/raydac/netbeans-mmd-plugin/issues/128)
 - SR:  minimum Java version for SciaReto lifted up to Java 21

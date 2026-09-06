@@ -1,6 +1,6 @@
 __1.7.0 (06-sep-2026)__
 
-- ALL: fixed ret lost focus during fast sibling topic create by  enter
+- ALL: fixed lost focus during fast sibling topic create by Enter
 - ALL: hardened mind map model against deserialize listener NPE, broken ignoreErrors parsing, topic-graph cycles, and stale note encryption attributes
 - IJ:  removed use of internal IDEA API
 - IJ:  restored MMD in File | New on latest IntelliJ IDEA without dropping older IDE support; item appears after Directory instead of first
@@ -10,7 +10,7 @@ __1.7.0 (06-sep-2026)__
 - IJ:  opening an MMD file no longer shows a blank editor
 - SR:  added 'Quick note' panel [#128](https://github.com/raydac/netbeans-mmd-plugin/issues/128)
 - SR:  minimum Java version for SciaReto lifted up to Java 21
-- SR:  updated embedded JDK to 26.02+13
+- SR:  updated embedded JDK to 26.0.2+13
 - SR:  PlantUML updated to 1.2026.8
 - SR:  fixed PlantUML preview render race and duplicate auto-refresh key listeners
 - SR:  hardened tree drag-and-drop and loading-icon animation against EDT issues
