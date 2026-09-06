@@ -14,7 +14,7 @@ Initially I developed a plugin for NetBeans IDE then the IntellijIDEA plugin was
 
 # Changelog
 
-__1.7.0 (SNAPSHOT)__
+__1.7.0 (06-sep-2026)__
 
 - ALL: fixed ret lost focus during fast sibling topic create by  enter
 - IJ:  removed use of internal IDEA API

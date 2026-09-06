@@ -2,7 +2,7 @@
 <idea-plugin>
     <id>nb-mind-map-idea</id>
     <name>SciaReto Mind Map</name>
-    <version>1.7.0-SNAPSHOT</version>
+    <version>1.7.0</version>
     <vendor url="https://www.igormaznitsa.com">Igor Maznitsa</vendor>
 
     <category>Knowledge management</category>
@@ -12,7 +12,7 @@
     ]]></description>
 
     <change-notes><![CDATA[
-        <p>1.7.0 (SNAPSHOT)</p>
+        <p>1.7.0 (06-sep-2026)</p>
         <ul>
             <li>Removed use of internal IDEA API</li>
             <li>Restored MMD in File | New on latest IntelliJ IDEA while keeping compatibility with previous versions; item appears after Directory instead of first</li>

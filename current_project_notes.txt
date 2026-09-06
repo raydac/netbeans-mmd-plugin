@@ -1,4 +1,5 @@
 ## 1. Implementation Progress
+- Version set to **1.7.0** for release (2026-09-06): root + all module `pom.xml`, IntelliJ `plugin.xml`, changelog/README headers, mac `Info.plist`, annotation-processor fallback.
 - scia-reto: PlantUML dependency bumped to 1.2026.8 (`plantuml.version` in `scia-reto/pom.xml`). GitHub release exists; Maven Central not published yet — installed jar+sources into local `~/.m2` from the GitHub release so offline resolve works.
 - scia-reto: assembly launch scripts fixed — Windows `%~dp0`+CRLF (+ nojre `start.cmd`), linux-nojre honors `JAVA_HOME`, quoted paths/`"$@"`, mac jar resolve + Apple `--add-opens`, AppImage `Exec=AppRun`.
 - mind-map-model: API-stable correctness fixes — MindMap `readResolve` restores listeners after deserialize; Topic.parse honors `ignoreErrors` and skips snippet body when start missing; setExtra/removeExtras/removeAllExtras call `detachedToTopic`; moveToNewParent rejects descendant cycles; parent cleared on delete/remove; findPrev null checker matches findNext; MMapURI no longer shares mutable empty Properties; equals includes fileUriFlag; ModelUtils.toFile guards empty path; JavaLoggerServiceImpl no longer mutates JUL root level; MindMapModelEvent.getPath returns a clone; cloneTopicInMap checks map ownership.
@@ -38,21 +39,20 @@
 - scia-reto scale gestures still tied to deprecated `getModifiers()` + `CTRL_MASK` until panel config migrates to `getModifiersEx()`.
 
 ## 4. Current Work In Progress
-- Version bumped to 1.7.0-SNAPSHOT in all pom.xml modules and idea-mindmap plugin.xml.
-- mind-map-model source audit completed (public API preserved; unit tests green).
-- scia-reto close/exit hang risk addressed (backup worker + unified shutdown).
-- scia-reto `src/assembly` launch scripts fixed and re-validated (`bash -n`, CRLF on `.cmd`, desktop-file-validate).
-- Remaining assembly non-script hygiene (shared `<id>withjre_windows</id>`, Info.plist `1.4.6`, `mac-nojre.xml` `icon.svgicns` typo, linux `fileMode`) still open if desired later.
-- Verify File | New create on latest IntelliJ after reinstall (previous report: type visible, "Template not found"); confirm New menu order places SciaReto after Directory.
-- Verify opening an existing MMD file after the blank-editor fix (default model set before first paint; skip-reload no longer calls getModel() with a null panel model).
-- Verify FlatLaf editor/explorer containers keep a normal border and no longer switch to purple focus accent.
-- Verify scia-reto exits cleanly via window close, File | Exit, and platform Quit after editing text files (backup worker started).
+- Release 1.7.0 prepared (06-sep-2026): all pom.xml modules, idea-mindmap `plugin.xml`, README/changelog headers, mac Info.plist `CFBundleShortVersionString`, and AP fallback version set to `1.7.0` (no SNAPSHOT).
+- Already aligned before this bump: `SciaRetoStarter.IDE_VERSION`, win-launcher `res/versioninfo.json`.
+- Remaining assembly non-script hygiene (shared `<id>withjre_windows</id>`, `mac-nojre.xml` `icon.svgicns` typo, linux `fileMode`) still open if desired later.
+- Next after tag/publish: bump to `1.7.1-SNAPSHOT` (or next planned) for continued development.
+- Verify File | New create on latest IntelliJ after reinstall; New menu order after Directory.
+- Verify opening an existing MMD file after the blank-editor fix.
+- Verify FlatLaf editor/explorer containers keep normal border (no focus-accent color change).
+- Verify scia-reto exits cleanly via window close, File | Exit, and platform Quit after editing text files.
 
 ## 5. Known Issues & Limitations
 - Sandbox/build target remains `IC-222.4554.10`; latest-IDE New File UI cannot be verified in that sandbox.
 - `MindMapPanel.getModel()` throws if no model has been set; IJ editor now installs a default empty map immediately after construction.
 - `processPopUpForShortcut` with empty selection only selects root and does not open the menu; `VK_CONTEXT_MENU` always opens — intentional difference, leave unless UX change is requested.
-- scia-reto assembly (non-script): all descriptors still share `<id>withjre_windows</id>`; `mac-nojre.xml` exclude typo `icon.svgicns`; Info.plist `CFBundleShortVersionString` still `1.4.6`; linux fileSets omit explicit `fileMode` 0755; `mac-aarch64/` tree unused (packs from `mac/`).
+- scia-reto assembly (non-script): all descriptors still share `<id>withjre_windows</id>`; `mac-nojre.xml` exclude typo `icon.svgicns`; linux fileSets omit explicit `fileMode` 0755; `mac-aarch64/` tree unused (packs from `mac/`).
 - AppImage: Linux `Taskbar API is not supported` at start is expected and does not block the GUI; packaging (AppRun/desktop/JRE/`libawt_xawt`) is fine for GUI. Early console is quiet because JUL starts at WARNING until after splash. `StartupWMClass=scia.reto.editor` does not match real WM_CLASS `SciaReto`.
 
 ## 6. Open Questions & Pending Decisions

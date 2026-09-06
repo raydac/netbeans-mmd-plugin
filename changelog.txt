@@ -1,4 +1,4 @@
-__1.7.0 (SNAPSHOT)__
+__1.7.0 (06-sep-2026)__
 
 - ALL: fixed ret lost focus during fast sibling topic create by  enter
 - ALL: hardened mind map model against deserialize listener NPE, broken ignoreErrors parsing, topic-graph cycles, and stale note encryption attributes
