@@ -1,5 +1,6 @@
 ## 1. Implementation Progress
-- Version set to **1.7.0** for release (2026-09-06): root + all module `pom.xml`, IntelliJ `plugin.xml`, changelog/README headers, mac `Info.plist`, annotation-processor fallback.
+- Version set to **1.7.1-SNAPSHOT** for continued development: root + all module `pom.xml`, IntelliJ `plugin.xml`, changelog/README SNAPSHOT headers, mac `Info.plist` `1.7.1`, win-launcher `versioninfo.json`, `SciaRetoStarter.IDE_VERSION`, AP fallback.
+- Release **1.7.0** prepared (2026-09-06): root + all module `pom.xml`, IntelliJ `plugin.xml`, changelog/README headers, mac `Info.plist`, annotation-processor fallback.
 - scia-reto: PlantUML dependency bumped to 1.2026.8 (`plantuml.version` in `scia-reto/pom.xml`). GitHub release exists; Maven Central not published yet — installed jar+sources into local `~/.m2` from the GitHub release so offline resolve works.
 - scia-reto: assembly launch scripts fixed — Windows `%~dp0`+CRLF (+ nojre `start.cmd`), linux-nojre honors `JAVA_HOME`, quoted paths/`"$@"`, mac jar resolve + Apple `--add-opens`, AppImage `Exec=AppRun`.
 - mind-map-model: API-stable correctness fixes — MindMap `readResolve` restores listeners after deserialize; Topic.parse honors `ignoreErrors` and skips snippet body when start missing; setExtra/removeExtras/removeAllExtras call `detachedToTopic`; moveToNewParent rejects descendant cycles; parent cleared on delete/remove; findPrev null checker matches findNext; MMapURI no longer shares mutable empty Properties; equals includes fileUriFlag; ModelUtils.toFile guards empty path; JavaLoggerServiceImpl no longer mutates JUL root level; MindMapModelEvent.getPath returns a clone; cloneTopicInMap checks map ownership.
@@ -40,10 +41,8 @@
 - scia-reto scale gestures still tied to deprecated `getModifiers()` + `CTRL_MASK` until panel config migrates to `getModifiersEx()`.
 
 ## 4. Current Work In Progress
-- Release 1.7.0 prepared (06-sep-2026): all pom.xml modules, idea-mindmap `plugin.xml`, README/changelog headers, mac Info.plist `CFBundleShortVersionString`, and AP fallback version set to `1.7.0` (no SNAPSHOT).
-- Already aligned before this bump: `SciaRetoStarter.IDE_VERSION`, win-launcher `res/versioninfo.json`.
+- Development version **1.7.1-SNAPSHOT** started (06-sep-2026): all `pom.xml`, changelog/README `__1.7.1 (SNAPSHOT)__`, IJ `plugin.xml`, mac Info.plist `1.7.1`, win `versioninfo.json`, `IDE_VERSION` 1.7.1, AP fallback `1.7.1`.
 - Remaining assembly non-script hygiene (shared `<id>withjre_windows</id>`, `mac-nojre.xml` `icon.svgicns` typo, linux `fileMode`) still open if desired later.
-- Next after tag/publish: bump to `1.7.1-SNAPSHOT` (or next planned) for continued development.
 - Verify File | New create on latest IntelliJ after reinstall; New menu order after Directory.
 - Verify opening an existing MMD file after the blank-editor fix.
 - Verify FlatLaf editor/explorer containers keep normal border (no focus-accent color change).
