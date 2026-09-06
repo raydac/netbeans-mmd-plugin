@@ -21,6 +21,7 @@
             <li>Facet option to open URIs in the IDE browser now works</li>
             <li>Mind map no longer reloads twice on every document change</li>
             <li>Opening an MMD file no longer shows a blank editor</li>
+            <li>Removed deprecated applicationService preload for marketplace verifier compatibility</li>
         </ul>
         <p>1.6.9 (19-okt-2025)</p>
         <ul>
@@ -305,8 +306,7 @@
 
         <customScopesProvider implementation="com.igormaznitsa.ideamindmap.view.MmdFileScopesProvider"/>
         <applicationService
-                serviceImplementation="com.igormaznitsa.ideamindmap.settings.MindMapApplicationSettings"
-                preload="true"/>
+                serviceImplementation="com.igormaznitsa.ideamindmap.settings.MindMapApplicationSettings"/>
     </extensions>
 
     <actions>

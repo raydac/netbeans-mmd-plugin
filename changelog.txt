@@ -8,6 +8,7 @@ __1.7.0 (06-sep-2026)__
 - IJ:  facet option to open URIs in the IDE browser now works
 - IJ:  mind map no longer reloads twice on every document change
 - IJ:  opening an MMD file no longer shows a blank editor
+- IJ:  removed deprecated applicationService preload for marketplace verifier compatibility
 - SR:  added 'Quick note' panel [#128](https://github.com/raydac/netbeans-mmd-plugin/issues/128)
 - SR:  minimum Java version for SciaReto lifted up to Java 21
 - SR:  updated embedded JDK to 26.0.2+13

@@ -18,6 +18,7 @@
 - scia-reto: exit paths unified via `MainFrame.tryCloseApplication` / `shutdownApplication`; `TextFileBackup.finishAndAwait()` drains pending backup/delete jobs then joins the daemon worker so exit neither loses flush nor hangs the process.
 
 ## 2. Architecture & Technical Discoveries
+- IJ: settings stay an `applicationService` (`MindMapApplicationSettings`); removed deprecated `preload="true"` so the marketplace verifier is satisfied — service still initializes lazily on first `getService`/`getInstance` (plugins registered in the constructor).
 - Do not put `<fileType>` as a root `<idea-plugin>` child. 222 PluginManager treats that as `Unknown element: fileType` (`XmlReader.readRootElementChild`). It must live under `<extensions defaultExtensionNs="com.intellij">`.
 - `fileType` attributes that exist on 222: `name`, `implementationClass`, `fieldName`, `language`, `extensions`. `name` must match `FileType.getName()`, `language` must match `MMLanguage` id `NBMindMap`.
 - `MindMapFileType` constructor is private; `fieldName="INSTANCE"` is required.
