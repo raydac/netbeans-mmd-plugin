@@ -1,4 +1,5 @@
 ## 1. Implementation Progress
+- Documented the MMD file format from `mind-map-model` lexer/parser/tests as `mind-map/MMD_Format.MD` (version 1.1, header/topics/extras/snippets/attributes); Appendix A lists 407 swing-panel emoticon ids from `icon.lst`.
 - Version set to **1.7.1-SNAPSHOT** for continued development: root + all module `pom.xml`, IntelliJ `plugin.xml`, changelog/README SNAPSHOT headers, mac `Info.plist` `1.7.1`, win-launcher `versioninfo.json`, `SciaRetoStarter.IDE_VERSION`, AP fallback.
 - Release **1.7.0** prepared (2026-09-06): root + all module `pom.xml`, IntelliJ `plugin.xml`, changelog/README headers, mac `Info.plist`, annotation-processor fallback.
 - scia-reto: PlantUML dependency bumped to 1.2026.8 (`plantuml.version` in `scia-reto/pom.xml`). GitHub release exists; Maven Central not published yet — installed jar+sources into local `~/.m2` from the GitHub release so offline resolve works.
@@ -59,6 +60,7 @@
 - Whether to hide the Files-category auto-template (move to `fileTemplates/internal/`) if older IDEs show a duplicate New item.
 
 ## 7. Useful References
+- MMD format spec: `mind-map/MMD_Format.MD` (derived from `mind-map-model` parser + tests).
 - Register file type: https://plugins.jetbrains.com/docs/intellij/registering-file-type.html
 - File templates / New menu: https://plugins.jetbrains.com/docs/intellij/using-file-templates.html
 - Build plugin: `mvn22 -pl idea-mindmap -am package` from `mind-map/` (Gradle is invoked as `gradle8`).
