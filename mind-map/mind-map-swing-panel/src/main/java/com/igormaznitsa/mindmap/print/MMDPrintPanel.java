@@ -32,6 +32,7 @@ import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -44,6 +45,9 @@ import java.awt.print.PrinterJob;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import javax.print.attribute.HashPrintRequestAttributeSet;
+import javax.print.attribute.PrintRequestAttributeSet;
+import javax.print.attribute.standard.PrintQuality;
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.Icon;
@@ -148,32 +152,43 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
               throw new IndexOutOfBoundsException();
             }
             return (graphics, format1, pageIndex1) -> {
-              final Graphics2D gfx = (Graphics2D) graphics;
-
-              gfx.translate((int) format1.getImageableX(), (int) format1.getImageableY());
-              thePage.print(gfx);
-
-              if (drawBorder) {
-                final Stroke stroke = gfx.getStroke();
-                gfx.setStroke(BORDER_STYLE);
-                gfx.draw(new Rectangle2D.Double(0d, 0d, format1.getImageableWidth(),
+              final Graphics2D gfx = (Graphics2D) graphics.create();
+              try {
+                gfx.translate(format1.getImageableX(), format1.getImageableY());
+                gfx.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,
+                    RenderingHints.VALUE_STROKE_PURE);
+                gfx.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS,
+                    RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+                gfx.clip(new Rectangle2D.Double(0d, 0d, format1.getImageableWidth(),
                     format1.getImageableHeight()));
-                gfx.setColor(BORDER_COLOR);
-                gfx.setStroke(stroke);
+                thePage.print(gfx);
+
+                if (drawBorder) {
+                  final Stroke stroke = gfx.getStroke();
+                  gfx.setStroke(BORDER_STYLE);
+                  gfx.setColor(BORDER_COLOR);
+                  gfx.draw(new Rectangle2D.Double(0d, 0d, format1.getImageableWidth(),
+                      format1.getImageableHeight()));
+                  gfx.setStroke(stroke);
+                }
+              } finally {
+                gfx.dispose();
               }
-              gfx.translate(-(int) format1.getImageableX(), -(int) format1.getImageableY());
               return Printable.PAGE_EXISTS;
             };
           }
         });
 
-        if (printerJob.printDialog()) {
+        final PrintRequestAttributeSet printAttributes = new HashPrintRequestAttributeSet();
+        printAttributes.add(PrintQuality.HIGH);
+
+        if (printerJob.printDialog(printAttributes)) {
           theAdaptor.startBackgroundTask(MMDPrintPanel.this,
               resourceBundle.getString("MMDPrintPanel.JobTitle"),
               () -> {
                 try {
                   LOGGER.info("Start print job");
-                  printerJob.print();
+                  printerJob.print(printAttributes);
                 } catch (PrinterException ex) {
                   LOGGER.error("Print error", ex);
                   throw new RuntimeException("Error during print job", ex);
@@ -326,8 +341,9 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
 
   private void splitToPagesForCurrentFormat() {
     final MMDPrint printer =
-        new MMDPrint(this.printableObject, (int) this.pageFormat.getImageableWidth(),
-            (int) this.pageFormat.getImageableHeight(), this.options);
+        new MMDPrint(this.printableObject,
+            Math.max(1, (int) Math.round(this.pageFormat.getImageableWidth())),
+            Math.max(1, (int) Math.round(this.pageFormat.getImageableHeight())), this.options);
     this.pages = printer.getPages();
   }
 

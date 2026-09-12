@@ -821,31 +821,6 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
     });
   }
 
-  @Override
-  public void addNotify() {
-    super.addNotify();
-    if (this.disposed == null || this.disposed.get()) {
-      return;
-    }
-    this.tryApplyPendingRootViewportCentering();
-  }
-
-  @Override
-  public void setBounds(final int x, final int y, final int width, final int height) {
-    final boolean sizeChanged = width != this.getWidth() || height != this.getHeight();
-    super.setBounds(x, y, width, height);
-
-    if (this.disposed == null || this.disposed.get() || !this.pendingRootViewportCentering) {
-      return;
-    }
-
-    if (!this.insideLayout && sizeChanged && width > 0 && height > 0) {
-      this.doLayout();
-    }
-
-    this.tryApplyPendingRootViewportCentering();
-  }
-
   private static void drawBackground(final MMGraphics g, final MindMapPanelConfig cfg) {
     final Rectangle clipBounds = g.getClipBounds();
 
@@ -1252,6 +1227,55 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
       }
     }
     return buffer.toArray(new Topic[0]);
+  }
+
+  static Point calculateViewportPositionToCenter(
+      final Rectangle2D topicBounds,
+      final Dimension extentSize,
+      final Dimension viewSize
+  ) {
+    final int x = (int) Math.round(topicBounds.getCenterX() - extentSize.getWidth() / 2.0d);
+    final int y = (int) Math.round(topicBounds.getCenterY() - extentSize.getHeight() / 2.0d);
+    final int maxX = Math.max(0, viewSize.width - extentSize.width);
+    final int maxY = Math.max(0, viewSize.height - extentSize.height);
+    return new Point(Math.max(0, Math.min(maxX, x)), Math.max(0, Math.min(maxY, y)));
+  }
+
+  static Dimension expandToAtLeastPaper(final Dimension diagramSize, final Dimension2D paperSize) {
+    if (diagramSize == null) {
+      return null;
+    }
+    if (paperSize == null || paperSize.getWidth() <= 0.0d || paperSize.getHeight() <= 0.0d) {
+      return diagramSize;
+    }
+    return new Dimension(
+        Math.max(diagramSize.width, (int) Math.round(paperSize.getWidth())),
+        Math.max(diagramSize.height, (int) Math.round(paperSize.getHeight())));
+  }
+
+  @Override
+  public void addNotify() {
+    super.addNotify();
+    if (this.disposed == null || this.disposed.get()) {
+      return;
+    }
+    this.tryApplyPendingRootViewportCentering();
+  }
+
+  @Override
+  public void setBounds(final int x, final int y, final int width, final int height) {
+    final boolean sizeChanged = width != this.getWidth() || height != this.getHeight();
+    super.setBounds(x, y, width, height);
+
+    if (this.disposed == null || this.disposed.get() || !this.pendingRootViewportCentering) {
+      return;
+    }
+
+    if (!this.insideLayout && sizeChanged && width > 0 && height > 0) {
+      this.doLayout();
+    }
+
+    this.tryApplyPendingRootViewportCentering();
   }
 
   public UUID getUuid() {
@@ -2294,30 +2318,6 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
       viewport.setViewPosition(nextPosition);
     }
     return true;
-  }
-
-  static Point calculateViewportPositionToCenter(
-      final Rectangle2D topicBounds,
-      final Dimension extentSize,
-      final Dimension viewSize
-  ) {
-    final int x = (int) Math.round(topicBounds.getCenterX() - extentSize.getWidth() / 2.0d);
-    final int y = (int) Math.round(topicBounds.getCenterY() - extentSize.getHeight() / 2.0d);
-    final int maxX = Math.max(0, viewSize.width - extentSize.width);
-    final int maxY = Math.max(0, viewSize.height - extentSize.height);
-    return new Point(Math.max(0, Math.min(maxX, x)), Math.max(0, Math.min(maxY, y)));
-  }
-
-  static Dimension expandToAtLeastPaper(final Dimension diagramSize, final Dimension2D paperSize) {
-    if (diagramSize == null) {
-      return null;
-    }
-    if (paperSize == null || paperSize.getWidth() <= 0.0d || paperSize.getHeight() <= 0.0d) {
-      return diagramSize;
-    }
-    return new Dimension(
-        Math.max(diagramSize.width, (int) Math.round(paperSize.getWidth())),
-        Math.max(diagramSize.height, (int) Math.round(paperSize.getHeight())));
   }
 
   private JViewport findEnclosingViewport() {

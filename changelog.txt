@@ -1,6 +1,7 @@
 __1.7.1 (SNAPSHOT)__
 
 - ALL: newly opened mind maps show the root topic centered without a visible jump
+- ALL: printing keeps printer resolution instead of a low-DPI bitmap, so small map and image details stay readable; topic frames stay around the text when printing to PDF or PostScript
 
 __1.7.0 (06-sep-2026)__
 

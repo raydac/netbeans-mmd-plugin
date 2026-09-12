@@ -1,4 +1,5 @@
 ## 1. Implementation Progress
+- Print path no longer rasterizes mind maps/images at Java’s 72-DPI page units. Vector print lays out on the printer graphics (so topic frames match PostScript/PDF text), then draws; images keep the original pixels via affine scale; “draw as image” rasterizes per page at device DPI (capped at 300). Page count uses ceil. Fit-to-page stays vector. Print uses PrintQuality.HIGH, fractional metrics, pure strokes, and clips to the imageable area.
 - Mind map panel now centers the root topic in its `JViewport` during layout, before the first paint, so newly opened maps do not jump after load (Scia Reto) or start in the top-left corner (IntelliJ).
 - Documented the MMD file format from `mind-map-model` lexer/parser/tests as `mind-map/MMD_Format.MD` (version 1.1, header/topics/extras/snippets/attributes); Appendix A lists 407 swing-panel emoticon ids from `icon.lst`. Encrypted notes: file flags plus the Swing `CryptoUtils` AES-256-ECB scheme (password never stored).
 - Agent skills to copy into a user’s agent live in repo `skills/` (see `skills/README.md`). The MMD skill (`skills/mmd/`) parses, writes, validates, and decrypts notes (after asking for the password) with stdlib Python matching Swing `CryptoUtils`.
@@ -22,6 +23,7 @@
 - scia-reto: exit paths unified via `MainFrame.tryCloseApplication` / `shutdownApplication`; `TextFileBackup.finishAndAwait()` drains pending backup/delete jobs then joins the daemon worker so exit neither loses flush nor hangs the process.
 
 ## 2. Architecture & Technical Discoveries
+- Java `Printable` user space is 1/72 inch. Printer `Graphics2D` already includes a DPI scale (often 300/72). Pre-rendering a `BufferedImage` at `PageFormat.getImageableWidth()` pixels is ~72 DPI and looks soft when the driver upscales it. Draw vectors (or the original image with `AffineTransform`) in that user space so the printer samples at device resolution.
 - IJ: settings stay an `applicationService` (`MindMapApplicationSettings`); removed deprecated `preload="true"` so the marketplace verifier is satisfied — service still initializes lazily on first `getService`/`getInstance` (plugins registered in the constructor).
 - Do not put `<fileType>` as a root `<idea-plugin>` child. 222 PluginManager treats that as `Unknown element: fileType` (`XmlReader.readRootElementChild`). It must live under `<extensions defaultExtensionNs="com.intellij">`.
 - `fileType` attributes that exist on 222: `name`, `implementationClass`, `fieldName`, `language`, `extensions`. `name` must match `FileType.getName()`, `language` must match `MMLanguage` id `NBMindMap`.
@@ -46,6 +48,7 @@
 - scia-reto scale gestures still tied to deprecated `getModifiers()` + `CTRL_MASK` until panel config migrates to `getModifiersEx()`.
 
 ## 4. Current Work In Progress
+- Print quality: vector/high-DPI raster path is in; verify on a real printer and print-to-PDF that small extras/emoticons stay sharp at 100% zoom and at Fit to page.
 - Development version **1.7.1-SNAPSHOT** started (06-sep-2026): all `pom.xml`, changelog/README `__1.7.1 (SNAPSHOT)__`, IJ `plugin.xml`, mac Info.plist `1.7.1`, win `versioninfo.json`, `IDE_VERSION` 1.7.1, AP fallback `1.7.1`.
 - Newly opened maps center the root topic in the swing panel before first paint.
 - Remaining assembly non-script hygiene (shared `<id>withjre_windows</id>`, `mac-nojre.xml` `icon.svgicns` typo, linux `fileMode`) still open if desired later.
