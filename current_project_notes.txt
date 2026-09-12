@@ -1,4 +1,5 @@
 ## 1. Implementation Progress
+- Mind map panel now centers the root topic in its `JViewport` during layout, before the first paint, so newly opened maps do not jump after load (Scia Reto) or start in the top-left corner (IntelliJ).
 - Documented the MMD file format from `mind-map-model` lexer/parser/tests as `mind-map/MMD_Format.MD` (version 1.1, header/topics/extras/snippets/attributes); Appendix A lists 407 swing-panel emoticon ids from `icon.lst`. Encrypted notes: file flags plus the Swing `CryptoUtils` AES-256-ECB scheme (password never stored).
 - Agent skills to copy into a user’s agent live in repo `skills/` (see `skills/README.md`). The MMD skill (`skills/mmd/`) parses, writes, validates, and decrypts notes (after asking for the password) with stdlib Python matching Swing `CryptoUtils`.
 - Version set to **1.7.1-SNAPSHOT** for continued development: root + all module `pom.xml`, IntelliJ `plugin.xml`, changelog/README SNAPSHOT headers, mac `Info.plist` `1.7.1`, win-launcher `versioninfo.json`, `SciaRetoStarter.IDE_VERSION`, AP fallback.
@@ -28,6 +29,7 @@
 - Latest IntelliJ New File popup lists file types from the declarative EP. `FileTypeFactory` is deprecated and ignored or unloaded there, so MMD vanished from New while the editor could still open existing files.
 - `CreateFileFromTemplateAction` on 222: constructor `(text, description, icon)`, `buildDialog(Project, PsiDirectory, Builder)`, `getActionName(...)`. `createFile` resolves the template via `getInternalTemplate`, which also falls back to Files-category templates.
 - Panel shortcuts are KeyListener + `MindMapPanelConfig` maps, not panel ActionMap/InputMap. Host IDEs must not assume Swing Action registration on the panel.
+- `MindMapPanel` applies first-open root centering synchronously in layout/`setBounds`/`addNotify` when hosted in a `JViewport`. Do not use `invokeLater` after paint — that is the visible jump (and FlatLaf smooth-scroll animates it). Undo/redo `setModel` does not re-request centering; import and first document load call `requestRootCenteringInViewport()`.
 - Title editor Enter end-edit must use keyPressed/keyReleased (`getKeyCode()`); KEY_TYPED has `VK_UNDEFINED` so typed-path end-edit was dead.
 - Shift+Enter next-line intentionally handled in both typed and released for RUS layout under Linux/IDEA.
 - scia-reto: tree model notifications already use `Utils.safeSwingCall`; subtree load mutates `children` off EDT but listeners are notified on EDT via `notifyProjectStateChanged` / `invokeLater` fireNotifySubtreeChanged.
@@ -45,6 +47,7 @@
 
 ## 4. Current Work In Progress
 - Development version **1.7.1-SNAPSHOT** started (06-sep-2026): all `pom.xml`, changelog/README `__1.7.1 (SNAPSHOT)__`, IJ `plugin.xml`, mac Info.plist `1.7.1`, win `versioninfo.json`, `IDE_VERSION` 1.7.1, AP fallback `1.7.1`.
+- Newly opened maps center the root topic in the swing panel before first paint.
 - Remaining assembly non-script hygiene (shared `<id>withjre_windows</id>`, `mac-nojre.xml` `icon.svgicns` typo, linux `fileMode`) still open if desired later.
 - Verify File | New create on latest IntelliJ after reinstall; New menu order after Directory.
 - Verify opening an existing MMD file after the blank-editor fix.

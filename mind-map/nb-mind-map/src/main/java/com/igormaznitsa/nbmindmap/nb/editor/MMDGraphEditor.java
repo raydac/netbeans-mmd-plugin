@@ -23,7 +23,6 @@ import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_B
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_FILL_COLOR;
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.ATTR_TEXT_COLOR;
 import static com.igormaznitsa.mindmap.swing.panel.StandardTopicAttribute.doesContainOnlyStandardAttributes;
-import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispatchThread;
 import static org.openide.windows.TopComponent.PERSISTENCE_NEVER;
 
 import com.igormaznitsa.mindmap.ide.commons.DnDUtils;
@@ -250,9 +249,9 @@ public final class MMDGraphEditor extends CloneableEditor
       mindMapPanel.pasteTopicsFromClipboard();
     }
   };
-  private volatile boolean rootToCentre = true;
   private MultiViewElementCallback callback;
   private boolean dragAcceptableType = false;
+  private boolean initialRootCenteredInViewport;
 
   public MMDGraphEditor() {
     this(Lookup.getDefault().lookup(MMDEditorSupport.class));
@@ -545,24 +544,6 @@ public final class MMDGraphEditor extends CloneableEditor
   public void componentActivated() {
     this.editorSupport.onEditorActivated();
 
-    if (this.rootToCentre) {
-      this.rootToCentre = false;
-      SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
-          final Topic root = mindMapPanel.getModel().getRoot();
-          if (mindMapPanel.hasSelectedTopics()) {
-            topicToCentre(mindMapPanel.getFirstSelected());
-          } else if (root != null) {
-            mindMapPanel.select(root, false);
-            mindMapPanel.getModel().clearAllPayloads();
-            ;
-            topicToCentre(root);
-          }
-        }
-      });
-    }
-
     registerCustomCCPActions(this);
     registerAsClipboardListener();
 
@@ -646,6 +627,7 @@ public final class MMDGraphEditor extends CloneableEditor
           } else {
             this.mindMapPanel.setModel(new MindMap(new StringReader(text)), false);
           }
+          this.centerRootAfterInitialDocumentLoad();
         } catch (IllegalArgumentException ex) {
           LOGGER.warn("Can't detect mind map"); //NOI18N
           this.mindMapPanel.setErrorText(
@@ -657,6 +639,14 @@ public final class MMDGraphEditor extends CloneableEditor
         }
       }
     }
+  }
+
+  private void centerRootAfterInitialDocumentLoad() {
+    if (this.initialRootCenteredInViewport || this.mindMapPanel.isDisposed()) {
+      return;
+    }
+    this.initialRootCenteredInViewport = true;
+    this.mindMapPanel.requestRootCenteringInViewport();
   }
 
   @Override
@@ -720,39 +710,7 @@ public final class MMDGraphEditor extends CloneableEditor
   }
 
   public boolean topicToCentre(@Nullable Topic topic) {
-    boolean result = false;
-
-    assertSwingDispatchThread();
-
-    if (topic != null) {
-      // to make it sure that topic is from the same model
-      topic = this.mindMapPanel.getModel().findAtPosition(topic.getPositionPath());
-      if (topic != null) {
-        AbstractElement element = (AbstractElement) topic.getPayload();
-
-        if (element == null &&
-            this.mindMapPanel.updateElementsAndSizeForCurrentGraphics(true, true)) {
-          element = (AbstractElement) topic.getPayload();
-          this.mainScrollPane.getViewport().doLayout();
-        }
-
-        if (element != null) {
-          final Rectangle2D bounds = element.getBounds();
-          final Dimension viewPortSize = mainScrollPane.getViewport().getExtentSize();
-
-          final int x = Math.max(0,
-              (int) Math.round(bounds.getX() - (viewPortSize.getWidth() - bounds.getWidth()) / 2));
-          final int y = Math.max(0, (int) Math.round(
-              bounds.getY() - (viewPortSize.getHeight() - bounds.getHeight()) / 2));
-
-          this.mainScrollPane.getViewport().setViewPosition(new Point(x, y));
-
-          result = true;
-        }
-      }
-    }
-
-    return result;
+    return this.mindMapPanel.centerTopicInViewport(topic);
   }
 
   @Override

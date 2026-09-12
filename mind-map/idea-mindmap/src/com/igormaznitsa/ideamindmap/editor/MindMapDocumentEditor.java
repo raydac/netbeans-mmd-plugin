@@ -20,7 +20,6 @@ import static com.igormaznitsa.ideamindmap.utils.SwingUtils.safeSwing;
 import static com.igormaznitsa.mindmap.ide.commons.Misc.FILELINK_ATTR_LINE;
 import static com.igormaznitsa.mindmap.ide.commons.Misc.FILELINK_ATTR_OPEN_IN_SYSTEM;
 import static com.igormaznitsa.mindmap.model.logger.LoggerFactory.getLogger;
-import static com.igormaznitsa.mindmap.swing.panel.utils.Utils.assertSwingDispatchThread;
 import static java.util.ResourceBundle.getBundle;
 
 import com.igormaznitsa.ideamindmap.facet.MindMapFacet;
@@ -137,6 +136,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
   private final DocumentListener documentListener;
   private final FindTextPanel findTextPanel;
   private boolean dragAcceptableType = false;
+  private boolean initialRootCenteredInViewport;
 
   private static final Set<TopicFinder> TOPIC_FINDERS = MindMapPluginRegistry.getInstance()
           .findAllTopicFinders();
@@ -227,29 +227,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
   }
 
   public void topicToCentre(@Nullable Topic topic) {
-    assertSwingDispatchThread();
-
-    if (topic != null) {
-      AbstractElement element = (AbstractElement) topic.getPayload();
-
-      if (element == null && this.mindMapPanel.updateElementsAndSizeForCurrentGraphics(true, true)) {
-        topic = this.mindMapPanel.getModel().findAtPosition(topic.getPositionPath());
-        if (topic != null) {
-          element = (AbstractElement) topic.getPayload();
-          this.mainScrollPane.getViewport().doLayout();
-        }
-      }
-
-      if (element != null) {
-        final Rectangle2D bounds = element.getBounds();
-        final Dimension viewPortSize = this.mainScrollPane.getViewport().getExtentSize();
-
-        final int x = Math.max(0, (int) Math.round(bounds.getX() - (viewPortSize.getWidth() - bounds.getWidth()) / 2));
-        final int y = Math.max(0, (int) Math.round(bounds.getY() - (viewPortSize.getHeight() - bounds.getHeight()) / 2));
-
-        this.mainScrollPane.getViewport().setViewPosition(new Point(x, y));
-      }
-    }
+    this.mindMapPanel.centerTopicInViewport(topic);
   }
 
 
@@ -282,7 +260,12 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
   }
 
   private void applyDocumentText(@Nonnull final String documentText) {
-    if (this.mindMapPanel.isDisposed() || this.isSameAsCurrentModel(documentText)) {
+    if (this.mindMapPanel.isDisposed()) {
+      return;
+    }
+
+    if (this.isSameAsCurrentModel(documentText)) {
+      this.centerRootAfterInitialDocumentLoad();
       return;
     }
 
@@ -293,10 +276,19 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
       } else {
         this.mindMapPanel.setModel(new MindMap(new StringReader(documentText)));
       }
+      this.centerRootAfterInitialDocumentLoad();
     } catch (final Exception ex) {
       LOGGER.error("Can't parse MindMap text", ex);
       this.mindMapPanel.setErrorText("Can't parse mind map content");
     }
+  }
+
+  private void centerRootAfterInitialDocumentLoad() {
+    if (this.initialRootCenteredInViewport || this.mindMapPanel.isDisposed()) {
+      return;
+    }
+    this.initialRootCenteredInViewport = true;
+    this.mindMapPanel.requestRootCenteringInViewport();
   }
 
   private MindMap createDefaultMindMap() {

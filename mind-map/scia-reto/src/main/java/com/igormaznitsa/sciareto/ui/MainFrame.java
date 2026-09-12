@@ -2056,10 +2056,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
     final TabTitle title = this.getFocusedTab();
     if (title != null &&
         title.getProvider().getEditor().getEditorContentType() == EditorContentType.MINDMAP) {
-      SwingUtilities.invokeLater(() -> {
-        ((MMDEditor) title.getProvider().getEditor()).rootToCentre();
-      });
-
+      ((MMDEditor) title.getProvider().getEditor()).rootToCentre();
       result = true;
     }
     return result;

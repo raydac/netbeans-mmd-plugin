@@ -82,6 +82,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.HierarchyEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -166,6 +167,9 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   private transient DraggedElement draggedElement = null;
   private transient AbstractElement destinationElement = null;
   private Point lastMousePressed = null;
+  private boolean pendingRootViewportCentering = true;
+  private boolean insideLayout;
+  private boolean applyingRootViewportCentering;
 
   /**
    * Constructor.
@@ -778,6 +782,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
         public void componentResized(final ComponentEvent e) {
           doLayout();
           updateEditorAfterResizing();
+          tryApplyPendingRootViewportCentering();
         }
       });
 
@@ -805,6 +810,40 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
         }
       }
     });
+
+    this.addHierarchyListener(e -> {
+      if (this.disposed.get()) {
+        return;
+      }
+      if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) != 0 && this.isShowing()) {
+        this.tryApplyPendingRootViewportCentering();
+      }
+    });
+  }
+
+  @Override
+  public void addNotify() {
+    super.addNotify();
+    if (this.disposed == null || this.disposed.get()) {
+      return;
+    }
+    this.tryApplyPendingRootViewportCentering();
+  }
+
+  @Override
+  public void setBounds(final int x, final int y, final int width, final int height) {
+    final boolean sizeChanged = width != this.getWidth() || height != this.getHeight();
+    super.setBounds(x, y, width, height);
+
+    if (this.disposed == null || this.disposed.get() || !this.pendingRootViewportCentering) {
+      return;
+    }
+
+    if (!this.insideLayout && sizeChanged && width > 0 && height > 0) {
+      this.doLayout();
+    }
+
+    this.tryApplyPendingRootViewportCentering();
   }
 
   private static void drawBackground(final MMGraphics g, final MindMapPanelConfig cfg) {
@@ -2147,8 +2186,9 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
         p.onPanelModelChange(this, oldModel, this.model);
       }
 
-      doLayout();
-      revalidate();
+      this.doLayout();
+      this.revalidate();
+      this.tryApplyPendingRootViewportCentering();
 
       boolean selectionChanged = false;
       for (final int[] posPath : selectedPaths) {
@@ -2182,6 +2222,131 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
 
   public void setModel(final MindMap model) {
     this.setModel(model, false);
+  }
+
+  /**
+   * Ask the panel to place the root topic in the center of its viewport on the
+   * next successful layout. The position is applied during layout, before paint.
+   *
+   * @since 1.7.1
+   */
+  public void requestRootCenteringInViewport() {
+    this.assertNotDisposed();
+    this.pendingRootViewportCentering = true;
+    this.tryApplyPendingRootViewportCentering();
+  }
+
+  /**
+   * Place the current root topic in the center of the enclosing viewport.
+   *
+   * @return true if the viewport position was applied
+   * @since 1.7.1
+   */
+  public boolean centerRootInViewport() {
+    this.assertNotDisposed();
+    return this.model != null && this.centerTopicInViewport(this.model.getRoot());
+  }
+
+  /**
+   * Place a topic in the center of the enclosing {@link JViewport}, if the panel
+   * is hosted there and both topic bounds and viewport extent are known.
+   *
+   * @param topic topic to center, can be null
+   * @return true if the viewport position was applied
+   * @since 1.7.1
+   */
+  public boolean centerTopicInViewport(final Topic topic) {
+    this.assertNotDisposed();
+    assertSwingDispatchThread();
+
+    if (topic == null || this.model == null) {
+      return false;
+    }
+
+    final Topic toCenter = this.model.findAtPosition(topic.getPositionPath());
+    if (toCenter == null) {
+      return false;
+    }
+
+    final JViewport viewport = this.findEnclosingViewport();
+    if (viewport == null) {
+      return false;
+    }
+
+    final Dimension extentSize = viewport.getExtentSize();
+    if (extentSize.width <= 0 || extentSize.height <= 0) {
+      return false;
+    }
+
+    AbstractElement element = (AbstractElement) toCenter.getPayload();
+    if (element == null) {
+      this.updateElementsAndSizeForCurrentGraphics(true, false);
+      element = (AbstractElement) toCenter.getPayload();
+    }
+    if (element == null) {
+      return false;
+    }
+
+    final Dimension viewSize = this.resolveViewSizeForViewport(extentSize);
+    final Point nextPosition =
+        calculateViewportPositionToCenter(element.getBounds(), extentSize, viewSize);
+    if (!nextPosition.equals(viewport.getViewPosition())) {
+      viewport.setViewPosition(nextPosition);
+    }
+    return true;
+  }
+
+  static Point calculateViewportPositionToCenter(
+      final Rectangle2D topicBounds,
+      final Dimension extentSize,
+      final Dimension viewSize
+  ) {
+    final int x = (int) Math.round(topicBounds.getCenterX() - extentSize.getWidth() / 2.0d);
+    final int y = (int) Math.round(topicBounds.getCenterY() - extentSize.getHeight() / 2.0d);
+    final int maxX = Math.max(0, viewSize.width - extentSize.width);
+    final int maxY = Math.max(0, viewSize.height - extentSize.height);
+    return new Point(Math.max(0, Math.min(maxX, x)), Math.max(0, Math.min(maxY, y)));
+  }
+
+  static Dimension expandToAtLeastPaper(final Dimension diagramSize, final Dimension2D paperSize) {
+    if (diagramSize == null) {
+      return null;
+    }
+    if (paperSize == null || paperSize.getWidth() <= 0.0d || paperSize.getHeight() <= 0.0d) {
+      return diagramSize;
+    }
+    return new Dimension(
+        Math.max(diagramSize.width, (int) Math.round(paperSize.getWidth())),
+        Math.max(diagramSize.height, (int) Math.round(paperSize.getHeight())));
+  }
+
+  private JViewport findEnclosingViewport() {
+    final Container parent = this.getParent();
+    return parent instanceof JViewport ? (JViewport) parent : null;
+  }
+
+  private Dimension resolveViewSizeForViewport(final Dimension extentSize) {
+    final Dimension currentSize = this.getSize();
+    final Dimension preferredSize = this.getPreferredSize();
+    return new Dimension(
+        Math.max(extentSize.width, Math.max(currentSize.width, preferredSize.width)),
+        Math.max(extentSize.height, Math.max(currentSize.height, preferredSize.height)));
+  }
+
+  private void tryApplyPendingRootViewportCentering() {
+    if (this.disposed == null || this.disposed.get() || this.model == null
+        || !this.pendingRootViewportCentering || this.applyingRootViewportCentering) {
+      return;
+    }
+
+    this.applyingRootViewportCentering = true;
+    try {
+      if (this.centerTopicInViewport(this.model.getRoot())) {
+        this.pendingRootViewportCentering = false;
+      }
+    } finally {
+      this.applyingRootViewportCentering = false;
+    }
   }
 
   public double getScale() {
@@ -2293,13 +2458,19 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
 
   @Override
   public void doLayout() {
-    assertNotDisposed();
+    this.assertNotDisposed();
 
     final Runnable run = () -> {
-      invalidate();
-      updateElementsAndSizeForCurrentGraphics(true, false);
-      repaint();
-      MindMapPanel.super.doLayout();
+      this.insideLayout = true;
+      try {
+        this.invalidate();
+        this.updateElementsAndSizeForCurrentGraphics(true, false);
+        MindMapPanel.super.doLayout();
+        this.tryApplyPendingRootViewportCentering();
+        this.repaint();
+      } finally {
+        this.insideLayout = false;
+      }
     };
 
     if (SwingUtilities.isEventDispatchThread()) {
@@ -2317,29 +2488,29 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
 
   public boolean updateElementsAndSizeForGraphics(final Graphics2D graph, final boolean forceLayout,
                                                   final boolean doListenerNotification) {
-    assertNotDisposed();
+    this.assertNotDisposed();
     boolean result = false;
-    if (forceLayout || !isValid()) {
+    if (forceLayout || !this.isValid()) {
       if (graph != null) {
         final MMGraphics gfx = new MMGraphics2DWrapper(graph);
         if (calculateElementSizes(gfx, this.model, this.config)) {
 
-          Dimension pageSize = getSize();
+          Dimension pageSize = this.getSize();
 
           final Container parent = this.getParent();
-          if (parent != null) {
-            if (parent instanceof JViewport) {
-              pageSize = ((JViewport) parent).getExtentSize();
-            }
+          if (parent instanceof JViewport) {
+            pageSize = ((JViewport) parent).getExtentSize();
           }
 
-          changeSizeOfComponent(
-              layoutFullDiagramWithCenteringToPaper(gfx, this.model, this.config, pageSize),
+          this.changeSizeOfComponent(
+              expandToAtLeastPaper(
+                  layoutFullDiagramWithCenteringToPaper(gfx, this.model, this.config, pageSize),
+                  pageSize),
               doListenerNotification);
           result = true;
 
           if (doListenerNotification) {
-            fireNotificationComponentElementsLayouted(graph);
+            this.fireNotificationComponentElementsLayouted(graph);
           }
         }
       }
@@ -2350,15 +2521,18 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
   public boolean updateElementsAndSizeForCurrentGraphics(final boolean enforce,
                                                          final boolean doListenerNotification) {
     assertSwingDispatchThread();
-    Graphics2D gfx = (Graphics2D) this.getGraphics();
-    try {
-      if (gfx == null) {
-        gfx = new BufferedImage(32, 32, BufferedImage.TYPE_INT_RGB).createGraphics();
-      }
-      return updateElementsAndSizeForGraphics((Graphics2D) getGraphics(), enforce,
+    final Graphics componentGraphics = this.getGraphics();
+    if (componentGraphics instanceof Graphics2D) {
+      return this.updateElementsAndSizeForGraphics((Graphics2D) componentGraphics, enforce,
           doListenerNotification);
+    }
+
+    final Graphics2D offscreen =
+        new BufferedImage(32, 32, BufferedImage.TYPE_INT_RGB).createGraphics();
+    try {
+      return this.updateElementsAndSizeForGraphics(offscreen, enforce, doListenerNotification);
     } finally {
-      gfx.dispose();
+      offscreen.dispose();
     }
   }
 

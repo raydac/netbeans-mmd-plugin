@@ -165,7 +165,6 @@ public final class MMDEditor extends AbstractTextEditor
   private final JScrollPane scrollPane;
   private final FileFilter fileFilter = makeFileFilter();
   private boolean dragAcceptableType;
-  private boolean firstLayouting = true;
 
   public MMDEditor(@Nonnull final Context context, @Nonnull File file) throws IOException {
     super();
@@ -337,43 +336,12 @@ public final class MMDEditor extends AbstractTextEditor
   }
 
   public void rootToCentre() {
-    final Topic root = this.mindMapPanel.getModel().getRoot();
-    if (root != null) {
-      topicToCentre(root);
-    }
+    this.mindMapPanel.centerRootInViewport();
   }
 
   @UiThread
   public boolean topicToCentre(@Nullable final Topic topic) {
-    boolean result = false;
-
-    assertSwingDispatchThread();
-    if (topic != null) {
-      AbstractElement element = (AbstractElement) topic.getPayload();
-
-      if (element == null) {
-        this.mindMapPanel.doLayout();
-        element = (AbstractElement) topic.getPayload();
-      }
-
-      if (element != null) {
-        final Rectangle2D bounds = element.getBounds();
-        final Dimension viewPortSize = this.scrollPane.getViewport().getExtentSize();
-
-        final int x = Math.max(0,
-            (int) Math.round(bounds.getX() - (viewPortSize.getWidth() - bounds.getWidth()) / 2));
-        final int y = Math.max(0,
-            (int) Math.round(bounds.getY() - (viewPortSize.getHeight() - bounds.getHeight()) / 2));
-
-        this.scrollPane.getViewport().setViewPosition(new Point(x, y));
-        result = true;
-      }
-
-      this.scrollPane.revalidate();
-      this.scrollPane.repaint();
-    }
-
-    return result;
+    return this.mindMapPanel.centerTopicInViewport(topic);
   }
 
   @Override
@@ -497,14 +465,6 @@ public final class MMDEditor extends AbstractTextEditor
   @Override
   public void onComponentElementsLayout(@Nonnull final MindMapPanel source,
                                         @Nonnull final Graphics2D g) {
-    if (this.firstLayouting) {
-      this.firstLayouting = false;
-      SwingUtilities.invokeLater(() -> {
-        topicToCentre(mindMapPanel.getModel().getRoot());
-        scrollPane.revalidate();
-        scrollPane.repaint();
-      });
-    }
   }
 
   @Override

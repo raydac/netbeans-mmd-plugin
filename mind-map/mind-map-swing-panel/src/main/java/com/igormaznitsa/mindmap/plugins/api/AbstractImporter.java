@@ -68,11 +68,12 @@ public abstract class AbstractImporter extends AbstractPopupMenuItem implements 
             map.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID,
                 IDEBridgeFactory.findInstance()
                     .getIDEGeneratorId());
-            SwingUtilities.invokeLater(() -> context.getPanel().setModel(map, true));
             SwingUtilities.invokeLater(() -> {
+              final MindMapPanel panel = context.getPanel();
+              panel.setModel(map, true);
+              panel.requestRootCenteringInViewport();
               final Topic root = map.getRoot();
               if (root != null) {
-                final MindMapPanel panel = context.getPanel();
                 panel.doLayout();
                 panel.revalidate();
                 panel.focusTo(root);

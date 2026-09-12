@@ -190,7 +190,7 @@ public final class ExplorerTree extends JScrollPane {
       final File file = node.makeFileForNode();
       if (file != null) {
         if (context.openFileAsTab(file, -1)) {
-          SwingUtilities.invokeLater(context::centerRootTopicIfFocusedMMD);
+          context.centerRootTopicIfFocusedMMD();
         } else {
           UiUtils.openInSystemViewer(file);
         }
