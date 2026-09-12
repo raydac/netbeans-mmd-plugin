@@ -1,6 +1,7 @@
 target/
 .gradle/
 .idea/
+__pycache__/
 .settings/
 .classpath
 .project

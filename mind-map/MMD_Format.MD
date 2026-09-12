@@ -427,9 +427,9 @@ UI-generated UIDs are hex-like (`14F9D4CD31DA`, `1553A050A42A`). Any non-empty s
 
 ## 5. Code snippets
 
-A topic may hold one snippet per language name. Syntax is a Markdown fenced block attached to the **current** topic:
+A topic may hold one snippet per language name. Syntax is a Markdown fenced block attached to the **current** topic. The examples use a four-backtick wrapper so GitHub leaves the inner MMD fences intact.
 
-```
+````text
 # Root
 ```Java
 System.exit(0);
@@ -437,41 +437,37 @@ System.exit(0);
 ```Shell
 exit
 ```
-```
+````
 
-The opening fence is a line that starts with `` ``` `` and is **not** made only of backticks. The rest of that line (after the three backticks), trimmed, is the language key:
-
-```
-```Java
-```
+The opening fence is a line that starts with <code>&#96;&#96;&#96;</code> and is **not** made only of backticks. The rest of that line (after the three backticks), trimmed, is the language key, for example <code>&#96;&#96;&#96;Java</code>.
 
 The closing fence is a line that is exactly three backticks at column 0 (optional trailing `\n`). These are **not** closers and stay in the body:
 
 | Line | Role |
 |------|------|
-| `` ``` `` | closer |
-| `` ```` `` or more | body |
-| `` ```a `` | body |
-| `` a``` `` | body |
-| `` ``` `` (space before) | body |
-| `` ``` ` `` (space then backtick) | body |
+| <code>&#96;&#96;&#96;</code> | closer |
+| <code>&#96;&#96;&#96;&#96;</code> or more | body |
+| <code>&#96;&#96;&#96;a</code> | body |
+| <code>a&#96;&#96;&#96;</code> | body |
+| leading space before <code>&#96;&#96;&#96;</code> | body |
+| <code>&#96;&#96;&#96;</code> then space then a backtick | body |
 
 An empty snippet is stored as `""`:
 
-```
+````text
 ```Java
 ```
-```
+````
 
 An unclosed snippet is **not** stored.
 
 On write, languages are sorted, a trailing `\n` is added to the body if missing, and the block is:
 
-```
+````text
 ```{language}
 {body}
 ```
-```
+````
 
 Several snippets on one topic are allowed. The same language key overwrites the previous snippet.
 
@@ -535,7 +531,7 @@ Colors in existing maps are `#` plus 6 hex digits.
 4. Code snippets, sorted by language.
 5. Child topics, each starting with a blank line before its heading.
 
-```
+````text
 # Level1
 > hello=``wor`ld``
 
@@ -549,7 +545,7 @@ exit
 ```
 
 ## Child
-```
+````
 
 ## 7. Canonical written file
 
@@ -584,7 +580,7 @@ A map with a root and one attribute:
 
 ## 8. Full example
 
-```
+````text
 [Scia Reto](https://sciareto.org) mind map
 > __version__=`1.1`,generatorId=`com.igormaznitsa:mind-map-annotation-processor:1.7.0`,showJumps=`true`
 ---
@@ -613,7 +609,7 @@ one more line</pre>
 ```Java
 System.out.println("Hello world!")
 ```
-```
+````
 
 Tree:
 
@@ -637,9 +633,9 @@ Root topic          [colors, emoticon, UID, file, link, note]
 | `TOPIC_TITLE` | Remainder of the heading line. |
 | `EXTRA_TYPE` | `- TYPE…` line. |
 | `EXTRA_TEXT` | `<pre>…</pre>` (must start with `<pre>`). |
-| `CODE_SNIPPET_START` | Opening `` ```lang `` line. |
+| `CODE_SNIPPET_START` | Opening <code>&#96;&#96;&#96;lang</code> line. |
 | `CODE_SNIPPET_BODY` | Text until a valid closer. |
-| `CODE_SNIPPET_END` | Closer `` ``` ``. |
+| `CODE_SNIPPET_END` | Closer <code>&#96;&#96;&#96;</code>. |
 | `UNKNOWN_LINE` | Anything else (ignored by the topic parser, except that it cancels a pending extra type). |
 
 Tokens are contiguous: each token’s start equals the previous token’s end. The lexer test `cancer_risk.mmd` concatenates every token and must reproduce the file exactly.
