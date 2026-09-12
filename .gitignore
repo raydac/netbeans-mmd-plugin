@@ -42,6 +42,7 @@ buildNumber.properties
 /mind-map/idea-mindmap/gradlew.bat
 /mind-map/nb-configuration.xml
 /mind-map/.idea/
+/mind-map/com/
 /mind-map/idea-mindmap/idea-mindmap.iws
 /mind-map/idea-mindmap/idea-mindmap.ipr
 *.iml

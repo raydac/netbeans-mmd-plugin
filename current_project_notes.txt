@@ -1,4 +1,5 @@
 ## 1. Implementation Progress
+- Removed stray `mind-map/com/` (accidental FlatLaf `FlatClientProperties.java` from an IDE source extract) and gitignored `/mind-map/com/` so library dumps under the Maven parent are not committed again.
 - Print path no longer rasterizes mind maps/images at Java’s 72-DPI page units. Vector print lays out on the printer graphics (so topic frames match PostScript/PDF text), then draws; images keep the original pixels via affine scale; “draw as image” rasterizes per page at device DPI (capped at 300). Page count uses ceil. Fit-to-page stays vector. Print uses PrintQuality.HIGH, fractional metrics, pure strokes, and clips to the imageable area.
 - Mind map panel now centers the root topic in its `JViewport` during layout, before the first paint, so newly opened maps do not jump after load (Scia Reto) or start in the top-left corner (IntelliJ).
 - Documented the MMD file format from `mind-map-model` lexer/parser/tests as `mind-map/MMD_Format.MD` (version 1.1, header/topics/extras/snippets/attributes); Appendix A lists 407 swing-panel emoticon ids from `icon.lst`. Encrypted notes: file flags plus the Swing `CryptoUtils` AES-256-ECB scheme (password never stored).
@@ -82,5 +83,6 @@
 - Do not break public APIs of mind-map-model (signatures, Serializable UIDs, logger SPI) when fixing internals.
 - Restrict scia-reto Swing audits/fixes to the `scia-reto` submodule unless the user widens scope.
 - For user-facing fixes and changes, update both root `README.md` (Changelog section) and `changelog.txt`.
+- When a common change affects the shared mind-map panel and therefore the IDE plugins (changelog `ALL:` items), also update IntelliJ IDEA `mind-map/idea-mindmap/resources/META-INF/plugin.xml` `<change-notes>` for the current SNAPSHOT/unreleased version. That is the marketplace changelog IDEA users see; do not leave it empty when README/`changelog.txt` already list shared panel/plugin behavior.
 - When an encrypted MMD note is needed for work, ask the user for the password and decrypt with the skill `crypto.py` scripts; do not guess the password or treat ciphertext as text.
 - Ship agent skills in repo `skills/` for users to copy; do not keep them only under `.cursor/skills/`.

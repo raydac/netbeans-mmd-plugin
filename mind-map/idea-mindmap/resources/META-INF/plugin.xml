@@ -14,7 +14,8 @@
     <change-notes><![CDATA[
         <p>1.7.1 (SNAPSHOT)</p>
         <ul>
-            <li></li>
+            <li>Newly opened mind maps show the root topic centered without a visible jump</li>
+            <li>Printing keeps printer resolution instead of a low-DPI bitmap, so small map and image details stay readable; topic frames stay around the text when printing to PDF or PostScript</li>
         </ul>
         <p>1.7.0 (06-sep-2026)</p>
         <ul>
