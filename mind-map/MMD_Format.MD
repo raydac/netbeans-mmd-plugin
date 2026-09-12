@@ -4,7 +4,7 @@ MMD is a UTF-8 plain-text mind map format used by Scia Reto, the NetBeans plugin
 
 Canonical current format version written by the model is **`1.1`** (`MindMap.FORMAT_VERSION`). The parser always stores `__version__` as `1.1` after a successful load, even if the file contained another value.
 
-This description matches the `mind-map-model` lexer (`MindMapLexer`), map parser (`MindMap`), topic parser (`Topic.parse`), extras, and their unit tests.
+This description matches the `mind-map-model` lexer (`MindMapLexer`), map parser (`MindMap`), topic parser (`Topic.parse`), extras, and their unit tests. Encrypted-note **ciphertext** is produced outside the model, by Swing `CryptoUtils`; the algorithm is specified under [encrypted notes](#encrypted-notes).
 
 ## 1. File anatomy
 
@@ -266,22 +266,101 @@ A note may contain backticks and HTML; they are escaped in the `<pre>` body, not
 
 parses as title `` `Root\ntopic` `` and note `Hello world \n <br>```Some``` `.
 
-**Encrypted notes** keep ciphertext in the `<pre>` body and flags on the topic attribute line:
+#### Encrypted notes
+
+`mind-map-model` does **not** encrypt or decrypt. It stores an opaque `NOTE` payload plus two topic attributes. Scia Reto, the NetBeans plugin, and the IntelliJ plugin encrypt and decrypt that payload with `com.igormaznitsa.mindmap.swing.panel.utils.CryptoUtils` (`CryptoUtilsTest` is the interoperability vector). The password is never written to the file.
 
 ```
 # Secret
 > extras.note.encrypted=`true`,extras.note.encrypted.hint=`tip`
 
 - NOTE
-<pre>Encrypted world</pre>
+<pre>gJLc5oWXTyeLeu24WhyqdlDFoGMgvuTvTzOx4hdCRx8JYjXMUoziQFR+fyiO3/rtRiiy2BVXTM04CUbp8dkb5A==</pre>
 ```
 
-| Attribute | Meaning |
-|-----------|---------|
-| `extras.note.encrypted` | `"true"` if the `<pre>` body is ciphertext |
-| `extras.note.encrypted.hint` | Optional non-encrypted password hint |
+| Attribute | Required when encrypted | Meaning |
+|-----------|-------------------------|---------|
+| `extras.note.encrypted` | yes | Ciphertext flag. Parsed with `Boolean.parseBoolean` (true only for `"true"` ignoring case). Missing, empty, or any other string means **not** encrypted. Writer emits `true`. |
+| `extras.note.encrypted.hint` | no | Password **hint** in clear text. Not a secret. Omitted when there is no hint. |
 
-Encrypted notes are not exported and are not searched by content.
+On write, `ExtraNote` emits `extras.note.encrypted=`true`` when `isEncrypted()` is true, and emits the hint when it is non-null. On attach to a topic, a non-encrypted note **removes** both attributes.
+
+The `<pre>` body is the ciphertext string (Base64). It is HTML-unescaped like any other note (`Extra.ExtraType.parseLoaded`); the Base64 alphabet `A–Z a–z 0–9 + / =` is unchanged by that unescape. The body is **not** trimmed; `\r\n` is kept.
+
+Encrypted notes are not exported (`ExtraNote.isExportable()` is false) and are not matched by content search (`containsPattern` skips encrypted notes).
+
+##### Password
+
+- The password is only in memory while the editor (or a compatible tool) encrypts or decrypts.
+- Editors take it from `PasswordPanel` and **trim** surrounding whitespace (`String.trim()`) before `CryptoUtils`.
+- `AbstractNoteEditorData.isEncrypted()` is true only when the password is non-null and not empty after trim. An empty password therefore does not set `extras.note.encrypted`.
+- `CryptoUtils.encrypt` with a null or empty password returns the plaintext **unchanged** (no AES). Callers that still mark the note encrypted would store readable text under the encrypted flag; the UI does not do that.
+
+##### Cipher
+
+`Cipher.getInstance("AES")` with a 32-byte `SecretKeySpec` is **AES-256 / ECB / PKCS5Padding** (PKCS #7 padding on 16-byte blocks). There is **no IV and no salt**. Key and integrity check both use SHA-256.
+
+| Piece | Value |
+|-------|--------|
+| Character encoding | UTF-8 (`StandardCharsets.UTF_8`) |
+| Key | `SHA-256(UTF-8 password)` — 32 bytes = AES-256 |
+| Integrity prefix | `SHA-256(UTF-8 plaintext)` — 32 bytes, prepended **before** AES |
+| Payload | `SHA-256(plaintext) \|\| UTF-8 plaintext` |
+| Cipher | AES-256-ECB, PKCS5/PKCS7 padding |
+| File encoding | `java.util.Base64` basic encoder / decoder (`Utils.base64encode` / `base64decode`), no line wrapping |
+
+##### Encrypt (`CryptoUtils.encrypt`)
+
+1. If the password is null or empty, return the plaintext as-is.
+2. `textBytes = UTF-8(plaintext)`.
+3. `payload = SHA-256(textBytes) || textBytes`.
+4. `key = SHA-256(UTF-8(password))`.
+5. AES-256-ECB-PKCS5 encrypt `payload` with `key`.
+6. If the ciphertext bytes equal `payload`, throw (`IllegalStateException`) — the provider did not encrypt.
+7. Return Base64 of the ciphertext (ASCII, with `=` padding as needed).
+
+##### Decrypt (`CryptoUtils.decrypt`)
+
+1. `key = SHA-256(UTF-8(password))`.
+2. Base64-decode the `<pre>` body.
+3. AES-256-ECB-PKCS5 decrypt.
+4. If the result is shorter than 32 bytes, fail (return `false`).
+5. Split into `storedHash = bytes[0..32)` and `textPart = bytes[32..]`.
+6. If `SHA-256(textPart)` is not equal to `storedHash`, fail (wrong password or corrupt data).
+7. Append `UTF-8(textPart)` to the output buffer and return `true`.
+
+| Failure | Result |
+|---------|--------|
+| Wrong password (bad PKCS5 padding) | `false` (`BadPaddingException`) |
+| Wrong password (padding luckily valid, hash mismatch) | `false` |
+| Empty ciphertext | `false` (too short after decrypt, or empty input) |
+| Invalid Base64 | `IllegalArgumentException` from the decoder (not treated as a wrong password) |
+| Other JCA errors (`IllegalBlockSizeException`, missing AES) | `RuntimeException` |
+
+Editors show an error dialog on `false` (“wrong password”) or on `RuntimeException` (“can’t decode”). They do not replace the stored ciphertext with guessed plaintext.
+
+##### Interoperability vector (`CryptoUtilsTest`)
+
+| Field | Value |
+|-------|--------|
+| Password | `hello` |
+| Plaintext | `Hello Crypto-World` |
+| Ciphertext (Base64) | `gJLc5oWXTyeLeu24WhyqdlDFoGMgvuTvTzOx4hdCRx8JYjXMUoziQFR+fyiO3/rtRiiy2BVXTM04CUbp8dkb5A==` |
+
+Wrong passwords `hello1` and `""` must fail. That string is also the payload in the example topic above.
+
+##### Layout of the AES input
+
+```
++----------------------+---------------------------+-----+
+| SHA-256(plaintext)   | UTF-8 plaintext           | pad |
+| 32 bytes             | N bytes                   | 1–16|
++----------------------+---------------------------+-----+
+        \________________ AES-256-ECB-PKCS5 _____________/
+                          then Base64
+```
+
+PKCS5 padding is always present (a full 16-byte block of `0x10` when `32 + N` is already a multiple of 16).
 
 ### 4.2 `LINK` — URI
 
@@ -439,8 +518,8 @@ A value that is only spaces or empty is legal (`name=`` ` `` with appropriate fe
 | `mmd.image` | Base64 | Embedded image bytes. |
 | `mmd.image.name` | file name | Image name. |
 | `mmd.image.uri` | URI | Image URI. |
-| `extras.note.encrypted` | `true` | See [encrypted notes](#41-note--text-note). |
-| `extras.note.encrypted.hint` | text | Password hint. |
+| `extras.note.encrypted` | `true` | See [encrypted notes](#encrypted-notes). |
+| `extras.note.encrypted.hint` | text | Clear-text password hint. Never the password. |
 
 Custom attributes are allowed and round-trip.
 
@@ -583,6 +662,7 @@ These behaviours are covered by `MindMapTest`, `TopicTest`, `MindMapLexerTest`, 
 | `<pra>…</pre>` | not an extra (`UNKNOWN_LINE`) |
 | Spaces inside LINK `<pre>` | trimmed, URI must still parse |
 | NOTE body | not trimmed; `\r\n` kept |
+| `extras.note.encrypted=`true`` | `<pre>` is Base64 ciphertext; model does not decrypt |
 | Default `new MindMap(reader)` | `ignoreErrors=true` |
 | `new MindMap(reader, false)` | invalid extras throw |
 | After load | `__version__` forced to `1.1` |
@@ -649,6 +729,16 @@ Header may be any text plus `---`. The writer always adds the Scia Reto title an
 <pre>Read the spec first.</pre>
 ```
 
+**Encrypted note** (password `hello` → plaintext `Hello Crypto-World`; see [encrypted notes](#encrypted-notes)):
+
+```
+# Secret
+> extras.note.encrypted=`true`,extras.note.encrypted.hint=`tip`
+
+- NOTE
+<pre>gJLc5oWXTyeLeu24WhyqdlDFoGMgvuTvTzOx4hdCRx8JYjXMUoziQFR+fyiO3/rtRiiy2BVXTM04CUbp8dkb5A==</pre>
+```
+
 ## 13. Implementation map
 
 | Concern | Class |
@@ -660,6 +750,9 @@ Header may be any text plus `---`. The writer always adds the Scia Reto title an
 | Map attribute names | `com.igormaznitsa.mindmap.model.StandardMmdAttributes` |
 | Topic attribute names | `com.igormaznitsa.mindmap.model.StandardTopicAttributes` |
 | Extra types | `ExtraNote`, `ExtraLink`, `ExtraFile`, `ExtraTopic` |
+| Encrypted-note attributes | `ExtraNote.ATTR_ENCRYPTED`, `ATTR_PASSWORD_HINT` (`StandardTopicAttributes`) |
+| Note encrypt / decrypt | `com.igormaznitsa.mindmap.swing.panel.utils.CryptoUtils` (not in `mind-map-model`) |
+| Base64 for ciphertext | `com.igormaznitsa.mindmap.swing.panel.utils.Utils.base64encode` / `base64decode` |
 | Newlines | `Constants.NEXT_LINE` (`\n`), `NEXT_PARAGRAPH` (`   \n`) |
 | Emoticon catalog | `com.igormaznitsa.mindmap.swing.panel.utils.MiscIcons` |
 
