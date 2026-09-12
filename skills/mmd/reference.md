@@ -1,6 +1,6 @@
 # MMD skill reference
 
-Canonical format: [MMD_Format.MD](../../../MMD_Format.MD) (parser/writer rules plus Appendix A emoticon ids).
+Canonical format: [MMD_Format.MD](../../mind-map/MMD_Format.MD) (parser/writer rules plus Appendix A emoticon ids).
 
 The Python scripts reimplement `mind-map-model` (`MindMap`, `Topic.parse`, `ModelUtils`). They do not call the JVM.
 
@@ -19,7 +19,7 @@ Exit status `0` on success, `1` on format, I/O, or decrypt errors.
 
 Password: ask the user, then pass via stdin (`--password-stdin` with `--text` / `--file`) or env `MMD_NOTE_PASSWORD`. Do not put the password on the command line. The editor trims surrounding whitespace; the CLI does too.
 
-Crypto matches Swing `CryptoUtils` as specified in [MMD_Format.MD — Encrypted notes](../../../MMD_Format.MD#encrypted-notes): AES-256-ECB PKCS5, key = SHA-256(UTF-8 password), payload = SHA-256(UTF-8 text) || text, Base64. Empty password on encrypt leaves the text unchanged. Wrong password prints `wrong password or invalid ciphertext`.
+Crypto matches Swing `CryptoUtils` as specified in [MMD_Format.MD — Encrypted notes](../../mind-map/MMD_Format.MD#encrypted-notes): AES-256-ECB PKCS5, key = SHA-256(UTF-8 password), payload = SHA-256(UTF-8 text) || text, Base64. Empty password on encrypt leaves the text unchanged. Wrong password prints `wrong password or invalid ciphertext`.
 
 ## What the writer canonicalizes
 

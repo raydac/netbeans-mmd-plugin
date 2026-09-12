@@ -16,10 +16,10 @@ python3 scripts/validate.py path.mmd
 python3 scripts/crypto.py list path.mmd
 ```
 
-From the `mind-map/` workspace root:
+From this repository (before copying the skill elsewhere):
 
 ```bash
-python3 .cursor/skills/mmd/scripts/parse.py path.mmd
+python3 skills/mmd/scripts/parse.py path.mmd
 ```
 
 ## Workflow
@@ -93,7 +93,7 @@ If the encrypted note is not needed (for example only renaming a topic), leave t
 - Scripts own Markdown / `<pre>` / backtick escaping. Put raw title text and raw extra payloads in JSON.
 - Writer always emits format `__version__` `1.1` and the canonical Scia Reto header.
 - Internal jumps: set `topicLinkUID` on the target and `extras.TOPIC` on the source to that id. Set map `showJumps` to `"true"` to draw them.
-- Emoticon ids: `mmd.emoticon` values from [MMD_Format.MD](../../../MMD_Format.MD) Appendix A. Chooser id `empty` means remove the attribute.
+- Emoticon ids: `mmd.emoticon` values from [MMD_Format.MD](../../mind-map/MMD_Format.MD) Appendix A. Chooser id `empty` means remove the attribute.
 
 ## New map
 
@@ -114,4 +114,4 @@ Minimal JSON:
 
 ## Details
 
-Format rules, extras, [encrypted notes](../../../MMD_Format.MD#encrypted-notes), and the emoticon catalog: [reference.md](reference.md) and [MMD_Format.MD](../../../MMD_Format.MD).
+Format rules, extras, [encrypted notes](../../mind-map/MMD_Format.MD#encrypted-notes), and the emoticon catalog: [reference.md](reference.md) and [MMD_Format.MD](../../mind-map/MMD_Format.MD). After this skill is copied out of the repo, use `reference.md` and the spec in the cloned project or on GitHub.

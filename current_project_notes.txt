@@ -1,5 +1,6 @@
 ## 1. Implementation Progress
-- Documented the MMD file format from `mind-map-model` lexer/parser/tests as `mind-map/MMD_Format.MD` (version 1.1, header/topics/extras/snippets/attributes); Appendix A lists 407 swing-panel emoticon ids from `icon.lst`.
+- Documented the MMD file format from `mind-map-model` lexer/parser/tests as `mind-map/MMD_Format.MD` (version 1.1, header/topics/extras/snippets/attributes); Appendix A lists 407 swing-panel emoticon ids from `icon.lst`. Encrypted notes: file flags plus the Swing `CryptoUtils` AES-256-ECB scheme (password never stored).
+- Agent skills to copy into a user’s agent live in repo `skills/` (see `skills/README.md`). The MMD skill (`skills/mmd/`) parses, writes, validates, and decrypts notes (after asking for the password) with stdlib Python matching Swing `CryptoUtils`.
 - Version set to **1.7.1-SNAPSHOT** for continued development: root + all module `pom.xml`, IntelliJ `plugin.xml`, changelog/README SNAPSHOT headers, mac `Info.plist` `1.7.1`, win-launcher `versioninfo.json`, `SciaRetoStarter.IDE_VERSION`, AP fallback.
 - Release **1.7.0** prepared (2026-09-06): root + all module `pom.xml`, IntelliJ `plugin.xml`, changelog/README headers, mac `Info.plist`, annotation-processor fallback.
 - scia-reto: PlantUML dependency bumped to 1.2026.8 (`plantuml.version` in `scia-reto/pom.xml`). GitHub release exists; Maven Central not published yet — installed jar+sources into local `~/.m2` from the GitHub release so offline resolve works.
@@ -31,6 +32,7 @@
 - Shift+Enter next-line intentionally handled in both typed and released for RUS layout under Linux/IDEA.
 - scia-reto: tree model notifications already use `Utils.safeSwingCall`; subtree load mutates `children` off EDT but listeners are notified on EDT via `notifyProjectStateChanged` / `invokeLater` fireNotifySubtreeChanged.
 - scia-reto: `MindMapPanelConfig.getScaleModifiers()` still uses old `KeyEvent.CTRL_MASK` style — keep `getModifiers()` when matching wheel/scale shortcuts against that config.
+- Encrypted MMD notes live in the model as ciphertext + `extras.note.encrypted`; AES is only in Swing `CryptoUtils` (AES-256-ECB PKCS5, SHA-256 prefix). The skill `crypto.py` reimplements that in stdlib Python so agents can decrypt after asking the user for the password.
 
 ## 3. Technical Debt & Refactoring
 - Files-category template plus `NewGroup` action can show two "SciaReto Mind Map" entries on older File | New menus. Prefer keeping both over missing the item on the new New File popup.
@@ -61,6 +63,7 @@
 
 ## 7. Useful References
 - MMD format spec: `mind-map/MMD_Format.MD` (derived from `mind-map-model` parser + tests).
+- MMD agent skill (copy into your agent): `skills/mmd/` (`python3 scripts/parse.py|write.py|validate.py|crypto.py`). Encrypted notes use `crypto.py` (AES-256-ECB matching `CryptoUtils`); ask the user for the password, never guess. Install notes: `skills/README.md`.
 - Register file type: https://plugins.jetbrains.com/docs/intellij/registering-file-type.html
 - File templates / New menu: https://plugins.jetbrains.com/docs/intellij/using-file-templates.html
 - Build plugin: `mvn22 -pl idea-mindmap -am package` from `mind-map/` (Gradle is invoked as `gradle8`).
@@ -73,3 +76,5 @@
 - Do not break public APIs of mind-map-model (signatures, Serializable UIDs, logger SPI) when fixing internals.
 - Restrict scia-reto Swing audits/fixes to the `scia-reto` submodule unless the user widens scope.
 - For user-facing fixes and changes, update both root `README.md` (Changelog section) and `changelog.txt`.
+- When an encrypted MMD note is needed for work, ask the user for the password and decrypt with the skill `crypto.py` scripts; do not guess the password or treat ciphertext as text.
+- Ship agent skills in repo `skills/` for users to copy; do not keep them only under `.cursor/skills/`.
