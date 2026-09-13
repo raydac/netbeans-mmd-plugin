@@ -6,7 +6,7 @@ Each skill is a folder with `SKILL.md` (required) plus optional scripts and refe
 
 ## Install
 
-Copy the whole skill folder (for example `mmd/`), not only `SKILL.md`.
+Copy the whole skill folder (for example `mmd/`), not only `SKILL.md`. The `mmd` folder includes scripts, [`reference.md`](mmd/reference.md), and the full format spec [`MMD_Format.MD`](mmd/MMD_Format.MD).
 
 **Cursor**
 
@@ -37,5 +37,3 @@ Scripts are stdlib Python 3. After copying, run them from the skill folder:
 python3 scripts/parse.py path.mmd
 python3 scripts/validate.py path.mmd
 ```
-
-The full MMD format spec stays in the repo: [`mind-map/MMD_Format.MD`](../mind-map/MMD_Format.MD). A short copy travels with the skill in [`mmd/reference.md`](mmd/reference.md).

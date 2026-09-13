@@ -2,8 +2,8 @@
 - Removed stray `mind-map/com/` (accidental FlatLaf `FlatClientProperties.java` from an IDE source extract) and gitignored `/mind-map/com/` so library dumps under the Maven parent are not committed again.
 - Print path no longer rasterizes mind maps/images at Java’s 72-DPI page units. Vector print lays out on the printer graphics (so topic frames match PostScript/PDF text), then draws; images keep the original pixels via affine scale; “draw as image” rasterizes per page at device DPI (capped at 300). Page count uses ceil. Fit-to-page stays vector. Print uses PrintQuality.HIGH, fractional metrics, pure strokes, and clips to the imageable area.
 - Mind map panel now centers the root topic in its `JViewport` during layout, before the first paint, so newly opened maps do not jump after load (Scia Reto) or start in the top-left corner (IntelliJ).
-- Documented the MMD file format from `mind-map-model` lexer/parser/tests as `mind-map/MMD_Format.MD` (version 1.1, header/topics/extras/snippets/attributes); Appendix A lists 407 swing-panel emoticon ids from `icon.lst`. Encrypted notes: file flags plus the Swing `CryptoUtils` AES-256-ECB scheme (password never stored).
-- Agent skills to copy into a user’s agent live in repo `skills/` (see `skills/README.md`). The MMD skill (`skills/mmd/`) parses, writes, validates, and decrypts notes (after asking for the password) with stdlib Python matching Swing `CryptoUtils`.
+- Canonical MMD format spec (version 1.1, header/topics/extras/snippets/attributes, Appendix A 407 emoticon ids, encrypted-note AES-256-ECB) lives in `skills/mmd/MMD_Format.MD` so a copied skill folder includes it.
+- Agent skills to copy into a user’s agent live in repo `skills/` (see `skills/README.md`). The MMD skill (`skills/mmd/`) is self-contained: `SKILL.md`, `reference.md`, `MMD_Format.MD`, and stdlib Python scripts (parse/write/validate/crypto matching Swing `CryptoUtils`).
 - Version set to **1.7.1-SNAPSHOT** for continued development: root + all module `pom.xml`, IntelliJ `plugin.xml`, changelog/README SNAPSHOT headers, mac `Info.plist` `1.7.1`, win-launcher `versioninfo.json`, `SciaRetoStarter.IDE_VERSION`, AP fallback.
 - Release **1.7.0** prepared (2026-09-06): root + all module `pom.xml`, IntelliJ `plugin.xml`, changelog/README headers, mac `Info.plist`, annotation-processor fallback.
 - scia-reto: PlantUML dependency bumped to 1.2026.8 (`plantuml.version` in `scia-reto/pom.xml`). GitHub release exists; Maven Central not published yet — installed jar+sources into local `~/.m2` from the GitHub release so offline resolve works.
@@ -52,6 +52,7 @@
 - Print quality: vector/high-DPI raster path is in; verify on a real printer and print-to-PDF that small extras/emoticons stay sharp at 100% zoom and at Fit to page.
 - Development version **1.7.1-SNAPSHOT** started (06-sep-2026): all `pom.xml`, changelog/README `__1.7.1 (SNAPSHOT)__`, IJ `plugin.xml`, mac Info.plist `1.7.1`, win `versioninfo.json`, `IDE_VERSION` 1.7.1, AP fallback `1.7.1`.
 - Newly opened maps center the root topic in the swing panel before first paint.
+- MMD format spec moved into `skills/mmd/MMD_Format.MD` so skill copies include the full description.
 - Remaining assembly non-script hygiene (shared `<id>withjre_windows</id>`, `mac-nojre.xml` `icon.svgicns` typo, linux `fileMode`) still open if desired later.
 - Verify File | New create on latest IntelliJ after reinstall; New menu order after Directory.
 - Verify opening an existing MMD file after the blank-editor fix.
@@ -69,8 +70,8 @@
 - Whether to hide the Files-category auto-template (move to `fileTemplates/internal/`) if older IDEs show a duplicate New item.
 
 ## 7. Useful References
-- MMD format spec: `mind-map/MMD_Format.MD` (derived from `mind-map-model` parser + tests).
-- MMD agent skill (copy into your agent): `skills/mmd/` (`python3 scripts/parse.py|write.py|validate.py|crypto.py`). Encrypted notes use `crypto.py` (AES-256-ECB matching `CryptoUtils`); ask the user for the password, never guess. Install notes: `skills/README.md`.
+- MMD format spec: `skills/mmd/MMD_Format.MD` (derived from `mind-map-model` parser + tests).
+- MMD agent skill (copy the whole folder): `skills/mmd/` (`SKILL.md`, `MMD_Format.MD`, `reference.md`, `python3 scripts/parse.py|write.py|validate.py|crypto.py`). Encrypted notes use `crypto.py` (AES-256-ECB matching `CryptoUtils`); ask the user for the password, never guess. Install notes: `skills/README.md`.
 - Register file type: https://plugins.jetbrains.com/docs/intellij/registering-file-type.html
 - File templates / New menu: https://plugins.jetbrains.com/docs/intellij/using-file-templates.html
 - Build plugin: `mvn22 -pl idea-mindmap -am package` from `mind-map/` (Gradle is invoked as `gradle8`).

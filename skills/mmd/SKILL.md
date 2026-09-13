@@ -7,6 +7,8 @@ description: Parse, create, edit, and validate Scia Reto MMD mind maps (.mmd). D
 
 Work with `.mmd` files through the scripts in this skill. Do **not** freehand-write MMD except a trivial empty map, then still run `validate.py`.
 
+This folder is self-contained: `SKILL.md`, [reference.md](reference.md), [MMD_Format.MD](MMD_Format.MD), and `scripts/`. Copy the whole folder.
+
 Scripts are stdlib Python 3. Run them from this skill directory, or pass the script path from the workspace root.
 
 ```bash
@@ -93,7 +95,7 @@ If the encrypted note is not needed (for example only renaming a topic), leave t
 - Scripts own Markdown / `<pre>` / backtick escaping. Put raw title text and raw extra payloads in JSON.
 - Writer always emits format `__version__` `1.1` and the canonical Scia Reto header.
 - Internal jumps: set `topicLinkUID` on the target and `extras.TOPIC` on the source to that id. Set map `showJumps` to `"true"` to draw them.
-- Emoticon ids: `mmd.emoticon` values from [MMD_Format.MD](../../mind-map/MMD_Format.MD) Appendix A. Chooser id `empty` means remove the attribute.
+- Emoticon ids: `mmd.emoticon` values from [MMD_Format.MD](MMD_Format.MD) Appendix A. Chooser id `empty` means remove the attribute.
 
 ## New map
 
@@ -114,4 +116,4 @@ Minimal JSON:
 
 ## Details
 
-Format rules, extras, [encrypted notes](../../mind-map/MMD_Format.MD#encrypted-notes), and the emoticon catalog: [reference.md](reference.md) and [MMD_Format.MD](../../mind-map/MMD_Format.MD). After this skill is copied out of the repo, use `reference.md` and the spec in the cloned project or on GitHub.
+Format rules, extras, [encrypted notes](MMD_Format.MD#encrypted-notes), and the emoticon catalog: [MMD_Format.MD](MMD_Format.MD). Script commands: [reference.md](reference.md).
