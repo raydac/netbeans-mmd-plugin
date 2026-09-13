@@ -246,7 +246,6 @@ public class MMDPrintPanel extends JPanel implements HasPreferredFocusComponent 
       final int percent =
           Integer.parseInt(comboBoxScale.getSelectedItem().toString().split("\\s")[0]);
       pageZoomFactor = (double) percent / 100d;
-      splitToPagesForCurrentFormat();
       scrollPane.revalidate();
       scrollPane.getViewport().revalidate();
       scrollPane.repaint();

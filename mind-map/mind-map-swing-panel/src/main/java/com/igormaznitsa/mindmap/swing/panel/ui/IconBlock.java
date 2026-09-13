@@ -81,34 +81,44 @@ public class IconBlock {
   }
 
   public void paint(final MMGraphics gfx) {
-    if (!this.model.isExtrasEmpty()) {
-      double offsetX = this.bounds.getX();
-      final int offsetY = (int) Math.round(this.bounds.getY());
-      final double scaledIconWidth = ScalableIcon.BASE_WIDTH * this.scale;
-      for (final Extra<?> e : this.currentExtras) {
-        final ScalableIcon ico;
-        switch (e.getType()) {
-          case FILE:
-            ico = findIconForFileType((ExtraFile) e);
-            break;
-          case LINK:
-            final String uri = e.getAsString();
-            ico = uri.startsWith("mailto:") ? ScalableIcon.LINK_EMAIL : ScalableIcon.LINK;
-            break;
-          case NOTE:
-            ico = ScalableIcon.TEXT;
-            break;
-          case TOPIC:
-            ico = ScalableIcon.TOPIC;
-            break;
-          default:
-            throw new Error("Unexpected extras");
-        }
-        if (scaledIconWidth >= 1.0d) {
-          gfx.drawImage(ico.getImage(this.scale), (int) Math.round(offsetX), offsetY);
-          offsetX += scaledIconWidth;
-        }
-      }
+    if (this.model.isExtrasEmpty() || this.currentExtras == null) {
+      return;
+    }
+
+    double offsetX = this.bounds.getX();
+    final double offsetY = this.bounds.getY();
+    final double scaledIconWidth = ScalableIcon.BASE_WIDTH * this.scale;
+    final double scaledIconHeight = ScalableIcon.BASE_HEIGHT * this.scale;
+
+    if (scaledIconWidth < 1.0d || scaledIconHeight < 1.0d) {
+      return;
+    }
+
+    for (final Extra<?> extra : this.currentExtras) {
+      gfx.drawImage(
+          this.iconFor(extra).getBaseImage(),
+          offsetX,
+          offsetY,
+          scaledIconWidth,
+          scaledIconHeight);
+      offsetX += scaledIconWidth;
+    }
+  }
+
+  private ScalableIcon iconFor(final Extra<?> extra) {
+    switch (extra.getType()) {
+      case FILE:
+        return this.findIconForFileType((ExtraFile) extra);
+      case LINK:
+        return extra.getAsString().startsWith("mailto:")
+            ? ScalableIcon.LINK_EMAIL
+            : ScalableIcon.LINK;
+      case NOTE:
+        return ScalableIcon.TEXT;
+      case TOPIC:
+        return ScalableIcon.TOPIC;
+      default:
+        throw new Error("Unexpected extras");
     }
   }
 

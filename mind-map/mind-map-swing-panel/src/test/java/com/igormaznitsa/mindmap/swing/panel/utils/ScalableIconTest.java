@@ -45,6 +45,13 @@ public class ScalableIconTest {
   }
 
   @Test
+  public void testBaseImageKeepsNativePixels() {
+    final Image base = ScalableIcon.FILE.getBaseImage();
+    assertEquals(32, base.getWidth(null));
+    assertEquals(32, base.getHeight(null));
+  }
+
+  @Test
   public void testIconScale_2x() {
     final Image img = ScalableIcon.FILE.getImage(2.0f);
     assertEquals(32, img.getWidth(null));

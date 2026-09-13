@@ -59,6 +59,10 @@ public interface MMGraphics {
    */
   Rectangle getClipBounds();
 
+  default Rectangle2D getClipRect() {
+    return this.getClipBounds();
+  }
+
   /**
    * Sets the stroke.
    *
@@ -131,6 +135,26 @@ public interface MMGraphics {
    * @param y     left top Y
    */
   void drawImage(Image image, int x, int y);
+
+  /**
+   * Draw the original image pixels into a destination rectangle so a printer or HiDPI transform
+   * can sample the source instead of an already-shrunk bitmap.
+   *
+   * @param image  image to draw, ignored when null
+   * @param x      left top X
+   * @param y      left top Y
+   * @param width  destination width
+   * @param height destination height
+   */
+  default void drawImage(
+      final Image image,
+      final double x,
+      final double y,
+      final double width,
+      final double height
+  ) {
+    this.drawImage(image, (int) Math.round(x), (int) Math.round(y));
+  }
 
   /**
    * Set current font for draw operations

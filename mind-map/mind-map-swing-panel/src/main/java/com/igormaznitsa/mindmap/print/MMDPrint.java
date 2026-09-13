@@ -16,15 +16,18 @@
 
 package com.igormaznitsa.mindmap.print;
 
-import static com.igormaznitsa.mindmap.swing.panel.MindMapPanel.calculateSizeOfMapInPixels;
+import static com.igormaznitsa.mindmap.swing.panel.MindMapPanel.calculateElementSizes;
 import static com.igormaznitsa.mindmap.swing.panel.MindMapPanel.drawOnGraphicsForConfiguration;
+import static com.igormaznitsa.mindmap.swing.panel.MindMapPanel.layoutModelElements;
 import static java.util.Objects.requireNonNull;
 
 import com.igormaznitsa.mindmap.model.MindMap;
+import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanel;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
+import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics2DWrapper;
 import com.igormaznitsa.mindmap.swing.panel.utils.RenderQuality;
 import java.awt.Color;
@@ -36,6 +39,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Dimension2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.util.function.Consumer;
 
 public class MMDPrint {
 
@@ -137,23 +141,29 @@ public class MMDPrint {
     }
 
     this.layoutMap(model, cfg, mapSize);
+    this.shrinkLaidOutMapToPageLimit(model, cfg, paperWidth, paperHeight, options);
+
+    final Rectangle2D occupied = this.unionOfTopicBounds(model);
+    this.shiftDiagramOntoPaper(model, occupied);
+
+    final double contentWidth = Math.max(0.0d, occupied.getMaxX());
+    final double contentHeight = Math.max(0.0d, occupied.getMaxY());
 
     double paintScale = 1.0d;
-    int pagesHorz = countPagesAlong(mapSize.getWidth(), paperWidth);
-    int pagesVert = countPagesAlong(mapSize.getHeight(), paperHeight);
+    int pagesHorz = countPagesAlong(contentWidth, paperWidth);
+    int pagesVert = countPagesAlong(contentHeight, paperHeight);
 
     if (options.getScaleType() == MMDPrintOptions.ScaleType.FIT_TO_SINGLE_PAGE
         && (pagesHorz > 1 || pagesVert > 1)) {
-      paintScale =
-          this.scaleToFit(mapSize.getWidth(), mapSize.getHeight(), paperWidth, paperHeight);
+      paintScale = this.scaleToFit(contentWidth, contentHeight, paperWidth, paperHeight);
       pagesHorz = 1;
       pagesVert = 1;
     }
 
     final Point offset = this.calcCenteredOffset(pagesHorz, pagesVert, paperWidth, paperHeight,
-        mapSize.getWidth() * paintScale, mapSize.getHeight() * paintScale);
+        contentWidth * paintScale, contentHeight * paintScale);
 
-    return this.createMindMapTiles(model, cfg, mapSize, offset, pagesHorz, pagesVert, paperWidth,
+    return this.createMindMapTiles(model, cfg, offset, pagesHorz, pagesVert, paperWidth,
         paperHeight, paintScale, options.isDrawAsImage());
   }
 
@@ -201,6 +211,11 @@ public class MMDPrint {
         this.fitMapToTarget(model, cfg, paperWidth, paperHeight,
             Double.POSITIVE_INFINITY, options.getPagesInColumn() * paperHeight,
             UNBOUNDED_PAGES, options.getPagesInColumn());
+        break;
+      case FIT_TO_PAGES:
+        this.fitMapToTarget(model, cfg, paperWidth, paperHeight,
+            options.getPagesInRow() * paperWidth, options.getPagesInColumn() * paperHeight,
+            options.getPagesInRow(), options.getPagesInColumn());
         break;
       case FIT_TO_SINGLE_PAGE:
         this.fitMapToTarget(model, cfg, paperWidth, paperHeight, paperWidth, paperHeight, 1, 1);
@@ -269,6 +284,68 @@ public class MMDPrint {
     }
   }
 
+  private void shrinkLaidOutMapToPageLimit(
+      final MindMap model,
+      final MindMapPanelConfig cfg,
+      final int paperWidth,
+      final int paperHeight,
+      final MMDPrintOptions options
+  ) {
+    final int maxPagesHorz = this.horizontalPageLimit(options);
+    final int maxPagesVert = this.verticalPageLimit(options);
+    if (maxPagesHorz == UNBOUNDED_PAGES && maxPagesVert == UNBOUNDED_PAGES) {
+      return;
+    }
+
+    double scale = cfg.getScale();
+    Rectangle2D occupied = this.unionOfTopicBounds(model);
+
+    while (this.exceedsOccupiedPageLimit(occupied, paperWidth, paperHeight, maxPagesHorz,
+        maxPagesVert)
+        && scale > MIN_SCALE) {
+      scale = Math.max(MIN_SCALE, scale - SCALE_STEP);
+      cfg.setScale(scale);
+      final Dimension2D size = requireNonNull(this.measureMap(model, cfg));
+      this.layoutMap(model, cfg, size);
+      occupied = this.unionOfTopicBounds(model);
+    }
+  }
+
+  private int horizontalPageLimit(final MMDPrintOptions options) {
+    switch (options.getScaleType()) {
+      case FIT_WIDTH_TO_PAGES:
+      case FIT_TO_PAGES:
+        return options.getPagesInRow();
+      case FIT_TO_SINGLE_PAGE:
+        return 1;
+      default:
+        return UNBOUNDED_PAGES;
+    }
+  }
+
+  private int verticalPageLimit(final MMDPrintOptions options) {
+    switch (options.getScaleType()) {
+      case FIT_HEIGHT_TO_PAGES:
+      case FIT_TO_PAGES:
+        return options.getPagesInColumn();
+      case FIT_TO_SINGLE_PAGE:
+        return 1;
+      default:
+        return UNBOUNDED_PAGES;
+    }
+  }
+
+  private boolean exceedsOccupiedPageLimit(
+      final Rectangle2D occupied,
+      final int paperWidth,
+      final int paperHeight,
+      final int maxPagesHorz,
+      final int maxPagesVert
+  ) {
+    return countPagesAlong(occupied.getMaxX(), paperWidth) > maxPagesHorz
+        || countPagesAlong(occupied.getMaxY(), paperHeight) > maxPagesVert;
+  }
+
   private boolean exceedsPageLimit(
       final Dimension2D size,
       final int paperWidth,
@@ -298,6 +375,9 @@ public class MMDPrint {
       case FIT_HEIGHT_TO_PAGES:
         return this.scaleToFit(imageWidth, imageHeight, Double.POSITIVE_INFINITY,
             options.getPagesInColumn() * paperHeight);
+      case FIT_TO_PAGES:
+        return this.scaleToFit(imageWidth, imageHeight, options.getPagesInRow() * paperWidth,
+            options.getPagesInColumn() * paperHeight);
       case FIT_TO_SINGLE_PAGE:
         return this.scaleToFit(imageWidth, imageHeight, paperWidth, paperHeight);
       default:
@@ -306,7 +386,26 @@ public class MMDPrint {
   }
 
   private Dimension2D measureMap(final MindMap model, final MindMapPanelConfig cfg) {
-    return calculateSizeOfMapInPixels(model, null, cfg, false, RenderQuality.QUALITY);
+    final MindMap copy = model.makeCopy();
+    final BufferedImage probe = new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
+    final Graphics2D graphics = probe.createGraphics();
+    try {
+      this.preparePrintGraphics(graphics);
+      if (!calculateElementSizes(new MMGraphics2DWrapper(graphics), copy, cfg)) {
+        return null;
+      }
+
+      final Dimension2D blockSize = layoutModelElements(copy, cfg);
+      if (blockSize == null) {
+        return null;
+      }
+
+      final double paperMargin = cfg.getPaperMargins() * cfg.getScale();
+      return new Size2D(blockSize.getWidth() + paperMargin * 2.0d,
+          blockSize.getHeight() + paperMargin * 2.0d);
+    } finally {
+      graphics.dispose();
+    }
   }
 
   private void layoutMap(
@@ -344,7 +443,6 @@ public class MMDPrint {
   private PrintPage[][] createMindMapTiles(
       final MindMap model,
       final MindMapPanelConfig cfg,
-      final Dimension2D mapSize,
       final Point offset,
       final int pagesHorz,
       final int pagesVert,
@@ -358,7 +456,7 @@ public class MMDPrint {
       for (int pageX = 0; pageX < pagesHorz; pageX++) {
         final int tileX = pageX;
         final int tileY = pageY;
-        result[pageY][pageX] = g -> this.paintMindMapPage((Graphics2D) g, model, cfg, mapSize,
+        result[pageY][pageX] = g -> this.paintMindMapPage((Graphics2D) g, model, cfg,
             offset, tileX, tileY, paperWidth, paperHeight, paintScale, rasterize);
       }
     }
@@ -390,7 +488,6 @@ public class MMDPrint {
       final Graphics2D pageGraphics,
       final MindMap model,
       final MindMapPanelConfig cfg,
-      final Dimension2D mapSize,
       final Point offset,
       final int pageX,
       final int pageY,
@@ -409,24 +506,38 @@ public class MMDPrint {
       this.clipToPaper(gfx, paperWidth, paperHeight);
 
       if (rasterize) {
-        this.paintMindMapAsDeviceRaster(gfx, model, cfg, mapSize, offset, pageX, pageY, paperWidth,
+        this.paintMindMapAsDeviceRaster(gfx, model, cfg, offset, pageX, pageY, paperWidth,
             paperHeight, paintScale);
       } else {
-        this.layoutMapOn(gfx, model, cfg, mapSize);
-        this.translateToPage(gfx, offset, pageX, pageY, paperWidth, paperHeight);
-        gfx.scale(paintScale, paintScale);
-        this.drawMindMap(gfx, model, cfg);
+        this.paintLaidOutMindMap(gfx, model, cfg, offset, pageX, pageY, paperWidth, paperHeight,
+            paintScale);
       }
     } finally {
       gfx.dispose();
     }
   }
 
+  private void paintLaidOutMindMap(
+      final Graphics2D gfx,
+      final MindMap model,
+      final MindMapPanelConfig cfg,
+      final Point offset,
+      final int pageX,
+      final int pageY,
+      final int paperWidth,
+      final int paperHeight,
+      final double paintScale
+  ) {
+    this.translateToPage(gfx, offset, pageX, pageY, paperWidth, paperHeight);
+    gfx.scale(paintScale, paintScale);
+    this.clipToMapTile(gfx, offset, pageX, pageY, paperWidth, paperHeight, paintScale);
+    this.drawMindMap(gfx, model, cfg);
+  }
+
   private void paintMindMapAsDeviceRaster(
       final Graphics2D gfx,
       final MindMap model,
       final MindMapPanelConfig cfg,
-      final Dimension2D mapSize,
       final Point offset,
       final int pageX,
       final int pageY,
@@ -436,10 +547,8 @@ public class MMDPrint {
   ) {
     final double rasterScale = this.resolveRasterScale(gfx);
     if (rasterScale <= 1.0d) {
-      this.layoutMapOn(gfx, model, cfg, mapSize);
-      this.translateToPage(gfx, offset, pageX, pageY, paperWidth, paperHeight);
-      gfx.scale(paintScale, paintScale);
-      this.drawMindMap(gfx, model, cfg);
+      this.paintLaidOutMindMap(gfx, model, cfg, offset, pageX, pageY, paperWidth, paperHeight,
+          paintScale);
       return;
     }
 
@@ -453,20 +562,16 @@ public class MMDPrint {
       try {
         this.preparePrintGraphics(tileGraphics);
         tileGraphics.scale(rasterScale, rasterScale);
-        this.layoutMapOn(tileGraphics, model, cfg, mapSize);
-        this.translateToPage(tileGraphics, offset, pageX, pageY, paperWidth, paperHeight);
-        tileGraphics.scale(paintScale, paintScale);
-        this.drawMindMap(tileGraphics, model, cfg);
+        this.paintLaidOutMindMap(tileGraphics, model, cfg, offset, pageX, pageY, paperWidth,
+            paperHeight, paintScale);
       } finally {
         tileGraphics.dispose();
       }
       gfx.drawImage(tile, 0, 0, paperWidth, paperHeight, null);
     } catch (final OutOfMemoryError error) {
       LOGGER.error("Not enough memory for high-resolution print raster, drawing vector", error);
-      this.layoutMapOn(gfx, model, cfg, mapSize);
-      this.translateToPage(gfx, offset, pageX, pageY, paperWidth, paperHeight);
-      gfx.scale(paintScale, paintScale);
-      this.drawMindMap(gfx, model, cfg);
+      this.paintLaidOutMindMap(gfx, model, cfg, offset, pageX, pageY, paperWidth, paperHeight,
+          paintScale);
     }
   }
 
@@ -517,6 +622,77 @@ public class MMDPrint {
     gfx.clip(new Rectangle2D.Double(0.0d, 0.0d, paperWidth, paperHeight));
   }
 
+  private void clipToMapTile(
+      final Graphics2D gfx,
+      final Point offset,
+      final int pageX,
+      final int pageY,
+      final int paperWidth,
+      final int paperHeight,
+      final double paintScale
+  ) {
+    final double scale = paintScale <= 0.0d ? 1.0d : paintScale;
+    gfx.setClip(new Rectangle2D.Double(
+        (pageX * (double) paperWidth - offset.x) / scale,
+        (pageY * (double) paperHeight - offset.y) / scale,
+        paperWidth / scale,
+        paperHeight / scale));
+  }
+
+  private Rectangle2D unionOfTopicBounds(final MindMap model) {
+    final Rectangle2D union = new Rectangle2D.Double();
+    final Topic root = model.getRoot();
+    if (root == null) {
+      return union;
+    }
+
+    final Rectangle2D rootBounds = this.boundsOf(root);
+    if (rootBounds != null) {
+      union.setRect(rootBounds);
+    }
+
+    this.visitTopics(root, topic -> {
+      if (topic == root) {
+        return;
+      }
+      final Rectangle2D bounds = this.boundsOf(topic);
+      if (bounds != null) {
+        union.add(bounds);
+      }
+    });
+
+    return union;
+  }
+
+  private Rectangle2D boundsOf(final Topic topic) {
+    final Object payload = topic.getPayload();
+    return payload instanceof AbstractElement ? ((AbstractElement) payload).getBounds() : null;
+  }
+
+  private void visitTopics(final Topic topic, final Consumer<Topic> visitor) {
+    visitor.accept(topic);
+    for (final Topic child : topic.getChildren()) {
+      this.visitTopics(child, visitor);
+    }
+  }
+
+  private void shiftDiagramOntoPaper(final MindMap model, final Rectangle2D occupied) {
+    final double shiftX = -Math.min(0.0d, occupied.getMinX());
+    final double shiftY = -Math.min(0.0d, occupied.getMinY());
+    if (shiftX == 0.0d && shiftY == 0.0d) {
+      return;
+    }
+
+    final Topic root = model.getRoot();
+    if (root == null || !(root.getPayload() instanceof AbstractElement)) {
+      return;
+    }
+
+    ((AbstractElement) root.getPayload()).moveWholeTreeBranchCoordinates(shiftX, shiftY);
+    occupied.setRect(occupied.getX() + shiftX, occupied.getY() + shiftY, occupied.getWidth(),
+        occupied.getHeight());
+  }
+
   private double resolveRasterScale(final Graphics2D gfx) {
     final AffineTransform transform = gfx.getTransform();
     final double deviceScale = Math.max(Math.abs(transform.getScaleX()),
@@ -547,5 +723,30 @@ public class MMDPrint {
     }
 
     return new Point(x, y);
+  }
+
+  private static final class Size2D extends Dimension2D {
+    private double width;
+    private double height;
+
+    private Size2D(final double width, final double height) {
+      this.setSize(width, height);
+    }
+
+    @Override
+    public double getWidth() {
+      return this.width;
+    }
+
+    @Override
+    public double getHeight() {
+      return this.height;
+    }
+
+    @Override
+    public void setSize(final double width, final double height) {
+      this.width = width;
+      this.height = height;
+    }
   }
 }

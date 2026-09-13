@@ -55,6 +55,8 @@ public final class MMDPrintOptionsPanel extends JPanel {
       UIComponentFactoryProvider.findInstance().makeRadioButton();
   private final JRadioButton radioFitToPage =
       UIComponentFactoryProvider.findInstance().makeRadioButton();
+  private final JRadioButton radioFitToPages =
+      UIComponentFactoryProvider.findInstance().makeRadioButton();
   private final JComboBox<String> comboZoom =
       UIComponentFactoryProvider.findInstance().makeComboBox(String.class);
   private final JSpinner spinnerFitWidth = UIComponentFactoryProvider.findInstance().makeSpinner();
@@ -70,6 +72,7 @@ public final class MMDPrintOptionsPanel extends JPanel {
     this.radioFitWidthTo.setText(this.bundle.getString("MMDPrintOptionsPanel.FitWithTo"));
     this.radioFitHeightTo.setText(this.bundle.getString("MMDPrintOptionsPanel.FitHeightTo"));
     this.radioFitToPage.setText(this.bundle.getString("MMDPrintOptionsPanel.FitToPage"));
+    this.radioFitToPages.setText(this.bundle.getString("MMDPrintOptionsPanel.FitToPages"));
 
     this.spinnerFitHeight.setModel(new SpinnerNumberModel(1, 1, 100, 1));
     this.spinnerFitWidth.setModel(new SpinnerNumberModel(1, 1, 100, 1));
@@ -103,6 +106,7 @@ public final class MMDPrintOptionsPanel extends JPanel {
     final ButtonGroup radioGroup = new ButtonGroup();
     radioGroup.add(this.radioFitHeightTo);
     radioGroup.add(this.radioFitWidthTo);
+    radioGroup.add(this.radioFitToPages);
     radioGroup.add(this.radioZoomTo);
     radioGroup.add(this.radioFitToPage);
 
@@ -115,6 +119,7 @@ public final class MMDPrintOptionsPanel extends JPanel {
 
     this.radioFitHeightTo.addActionListener(zoomActionListener);
     this.radioFitWidthTo.addActionListener(zoomActionListener);
+    this.radioFitToPages.addActionListener(zoomActionListener);
     this.radioZoomTo.addActionListener(zoomActionListener);
     this.radioFitToPage.addActionListener(zoomActionListener);
 
@@ -143,6 +148,9 @@ public final class MMDPrintOptionsPanel extends JPanel {
     gbc.gridy = 1;
     gbc.gridwidth = 2;
     result.add(this.radioFitToPage, gbc);
+
+    gbc.gridy = 2;
+    result.add(this.radioFitToPages, gbc);
 
     gbc.anchor = GridBagConstraints.EAST;
 
@@ -198,6 +206,9 @@ public final class MMDPrintOptionsPanel extends JPanel {
       case FIT_WIDTH_TO_PAGES:
         this.radioFitWidthTo.setSelected(true);
         break;
+      case FIT_TO_PAGES:
+        this.radioFitToPages.setSelected(true);
+        break;
       case FIT_TO_SINGLE_PAGE:
         this.radioFitToPage.setSelected(true);
         break;
@@ -214,6 +225,8 @@ public final class MMDPrintOptionsPanel extends JPanel {
       this.options.setScaleType(MMDPrintOptions.ScaleType.FIT_TO_SINGLE_PAGE);
     } else if (this.radioFitWidthTo.isSelected()) {
       this.options.setScaleType(MMDPrintOptions.ScaleType.FIT_WIDTH_TO_PAGES);
+    } else if (this.radioFitToPages.isSelected()) {
+      this.options.setScaleType(MMDPrintOptions.ScaleType.FIT_TO_PAGES);
     } else if (this.radioZoomTo.isSelected()) {
       this.options.setScaleType(MMDPrintOptions.ScaleType.ZOOM);
     }
@@ -234,6 +247,10 @@ public final class MMDPrintOptionsPanel extends JPanel {
         break;
       case FIT_WIDTH_TO_PAGES:
         this.spinnerFitWidth.setEnabled(true);
+        break;
+      case FIT_TO_PAGES:
+        this.spinnerFitWidth.setEnabled(true);
+        this.spinnerFitHeight.setEnabled(true);
         break;
       case FIT_TO_SINGLE_PAGE:
         break;

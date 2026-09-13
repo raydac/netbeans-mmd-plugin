@@ -66,6 +66,10 @@ public final class ScalableIcon {
     return this.scale;
   }
 
+  public Image getBaseImage() {
+    return this.baseImage;
+  }
+
   public Image getImage(final double scale) {
     if (Double.compare(this.scale, scale) != 0) {
       this.scaledCachedImage = null;

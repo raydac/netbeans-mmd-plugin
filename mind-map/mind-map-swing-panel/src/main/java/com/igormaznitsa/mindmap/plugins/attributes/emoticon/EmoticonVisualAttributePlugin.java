@@ -21,11 +21,10 @@ import com.igormaznitsa.mindmap.model.Topic;
 import com.igormaznitsa.mindmap.plugins.api.MindMapPlugin;
 import com.igormaznitsa.mindmap.plugins.api.PluginContext;
 import com.igormaznitsa.mindmap.plugins.api.Renderable;
-import com.igormaznitsa.mindmap.plugins.api.RenderableImage;
 import com.igormaznitsa.mindmap.plugins.api.VisualAttributePlugin;
 import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
+import com.igormaznitsa.mindmap.swing.panel.ui.gfx.MMGraphics;
 import com.igormaznitsa.mindmap.swing.panel.utils.MiscIcons;
-import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import java.awt.Image;
 import java.io.File;
 import java.util.HashMap;
@@ -37,29 +36,30 @@ public class EmoticonVisualAttributePlugin implements VisualAttributePlugin {
 
   static final String ATTR_KEY = "mmd.emoticon";
 
-  private final Map<String, ScaledImage> SCALED_IMAGE_CACHE = new HashMap<>();
+  private final Map<String, ScaledImage> IMAGE_CACHE = new HashMap<>();
 
   @Override
-  public Renderable getScaledImage(final MindMapPanelConfig config,
-                                   final Topic topic) {
+  public Renderable getScaledImage(final MindMapPanelConfig config, final Topic topic) {
     final String name = topic.getAttribute(ATTR_KEY);
     if (name == null) {
       return null;
-    } else {
-      ScaledImage scaled = SCALED_IMAGE_CACHE.get(name);
-      if (scaled == null) {
-        scaled = new ScaledImage(name, config.getScale());
-        SCALED_IMAGE_CACHE.put(name, scaled);
-      }
-      return scaled.getImage(config.getScale());
     }
+
+    ScaledImage cached = this.IMAGE_CACHE.get(name);
+    if (cached == null) {
+      cached = new ScaledImage(name);
+      this.IMAGE_CACHE.put(name, cached);
+    }
+    return cached.hasImage() ? cached : null;
   }
 
   @Override
-  public boolean doesTopicContentMatches(Topic topic, File baseFolder,
-                                         Pattern pattern,
-                                         Set<Extra.ExtraType> extraTypes) {
-
+  public boolean doesTopicContentMatches(
+      final Topic topic,
+      final File baseFolder,
+      final Pattern pattern,
+      final Set<Extra.ExtraType> extraTypes
+  ) {
     boolean result = false;
     if (extraTypes != null && extraTypes.contains(Extra.ExtraType.NOTE)) {
       final String name = topic.getAttribute(ATTR_KEY);
@@ -70,10 +70,13 @@ public class EmoticonVisualAttributePlugin implements VisualAttributePlugin {
     return result;
   }
 
-
   @Override
-  public boolean onClick(final PluginContext context, final Topic topic,
-                         final boolean activeGroupModifier, final int clickCount) {
+  public boolean onClick(
+      final PluginContext context,
+      final Topic topic,
+      final boolean activeGroupModifier,
+      final int clickCount
+  ) {
     return false;
   }
 
@@ -98,50 +101,51 @@ public class EmoticonVisualAttributePlugin implements VisualAttributePlugin {
   }
 
   @Override
-  public int compareTo(final MindMapPlugin o) {
-    return Integer.compare(this.getOrder(), o.getOrder());
+  public int compareTo(final MindMapPlugin plugin) {
+    return Integer.compare(this.getOrder(), plugin.getOrder());
   }
 
-  private static final class ScaledImage {
+  private static final class ScaledImage implements Renderable {
 
     private static final int ICON_SIZE = 32;
 
-    private final double BASE_SCALE_X;
-    private final double BASE_SCALE_Y;
     private final Image baseImage;
-    private double scale = -1.0d;
-    private Renderable scaledImage;
 
-    public ScaledImage(final String imageName, final double scale) {
+    private ScaledImage(final String imageName) {
       this.baseImage = MiscIcons.findForName(imageName);
-      if (this.baseImage != null) {
-        this.BASE_SCALE_X = (double) ICON_SIZE / (double) this.baseImage.getWidth(null);
-        this.BASE_SCALE_Y = (double) ICON_SIZE / (double) this.baseImage.getHeight(null);
-      } else {
-        this.BASE_SCALE_X = 1.0d;
-        this.BASE_SCALE_Y = 1.0d;
-      }
-      getImage(scale);
     }
 
-    public Renderable getImage(final double scale) {
-      final Renderable result;
-      if (this.baseImage == null || Double.compare(this.scale, scale) == 0) {
-        result = this.scaledImage;
-      } else {
-        this.scale = scale;
-        final Image scaled = Utils.scaleImage(this.baseImage, BASE_SCALE_X, BASE_SCALE_Y, scale);
-        if (scaled == null) {
-          result = null;
-          this.scaledImage = null;
-        } else {
-          this.scaledImage = new RenderableImage(scaled);
-          result = this.scaledImage;
-        }
-      }
-      return result;
+    private boolean hasImage() {
+      return this.baseImage != null;
     }
 
+    @Override
+    public int getWidth(final double scale) {
+      return (int) Math.round(ICON_SIZE * scale);
+    }
+
+    @Override
+    public int getHeight(final double scale) {
+      return (int) Math.round(ICON_SIZE * scale);
+    }
+
+    @Override
+    public void renderAt(
+        final MMGraphics gfx,
+        final MindMapPanelConfig config,
+        final int x,
+        final int y
+    ) {
+      if (this.baseImage == null) {
+        return;
+      }
+
+      gfx.drawImage(
+          this.baseImage,
+          x,
+          y,
+          ICON_SIZE * config.getScale(),
+          ICON_SIZE * config.getScale());
+    }
   }
-
 }

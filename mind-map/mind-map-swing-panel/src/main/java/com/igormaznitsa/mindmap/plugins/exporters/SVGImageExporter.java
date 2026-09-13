@@ -844,19 +844,50 @@ public class SVGImageExporter extends AbstractExporter {
     @Override
     public void drawImage(final Image image, final int x, final int y) {
       if (image != null) {
-        if (image instanceof RenderedImage) {
-          final RenderedImage renderedImage = (RenderedImage) image;
-          final String imageUid = this.imageCache.add(renderedImage);
-          this.buffer.append("<use href=\"#").append(imageUid).append("\" xlink:href=\"#")
-              .append(imageUid).append("\" ")
-              .append("x=\"").append(dbl2str(this.translateX + x)).append("\" ")
-              .append("y=\"").append(dbl2str(this.translateY + y)).append("\"/>")
-              .append(NEXT_LINE);
-        } else {
-          LOGGER.warn(
-              "Can't place image because it is not rendered one : " + image.getClass().getName());
-        }
+        this.drawImage(image, x, y, image.getWidth(null), image.getHeight(null));
       }
+    }
+
+    @Override
+    public void drawImage(
+        final Image image,
+        final double x,
+        final double y,
+        final double width,
+        final double height
+    ) {
+      if (image == null || width < 1.0d || height < 1.0d) {
+        return;
+      }
+
+      if (!(image instanceof RenderedImage)) {
+        LOGGER.warn(
+            "Can't place image because it is not rendered one : " + image.getClass().getName());
+        return;
+      }
+
+      final RenderedImage renderedImage = (RenderedImage) image;
+      final double sourceWidth = renderedImage.getWidth();
+      final double sourceHeight = renderedImage.getHeight();
+      if (sourceWidth <= 0.0d || sourceHeight <= 0.0d) {
+        return;
+      }
+
+      final String imageUid = this.imageCache.add(renderedImage);
+      this.buffer.append("<use href=\"#").append(imageUid).append("\" xlink:href=\"#")
+          .append(imageUid).append("\" ");
+
+      if (Math.abs(sourceWidth - width) < 0.5d && Math.abs(sourceHeight - height) < 0.5d) {
+        this.buffer.append("x=\"").append(dbl2str(this.translateX + x)).append("\" ")
+            .append("y=\"").append(dbl2str(this.translateY + y)).append("\"/>");
+      } else {
+        this.buffer.append("transform=\"translate(")
+            .append(dbl2str(this.translateX + x)).append(',')
+            .append(dbl2str(this.translateY + y)).append(") scale(")
+            .append(dbl2str(width / sourceWidth)).append(',')
+            .append(dbl2str(height / sourceHeight)).append(")\"/>");
+      }
+      this.buffer.append(NEXT_LINE);
     }
 
     @Override

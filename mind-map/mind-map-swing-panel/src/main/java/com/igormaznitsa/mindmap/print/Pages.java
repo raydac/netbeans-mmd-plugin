@@ -21,6 +21,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.print.PageFormat;
 import javax.swing.JPanel;
@@ -102,17 +103,20 @@ class Pages extends JPanel {
 
     final boolean drawBorder = this.parent.isDrawBorder();
 
+    final AffineTransform original = gfx.getTransform();
     gfx.scale(scale, scale);
+    final AffineTransform pageOrigin = gfx.getTransform();
     for (final PrintPage[] pages : allPages) {
       int x = INTERVAL_X;
       for (final PrintPage p : pages) {
+        gfx.setTransform(pageOrigin);
         gfx.translate(x, y);
 
         gfx.setColor(SHADOW);
-        pageBack.setRect(SHADOW_X, SHADOW_Y, pageBack.getWidth(), pageBack.getHeight());
+        pageBack.setRect(SHADOW_X, SHADOW_Y, PAGE_WIDTH, PAGE_HEIGHT);
         gfx.fill(pageBack);
         gfx.setColor(Color.WHITE);
-        pageBack.setRect(0.0d, 0.0d, pageBack.getWidth(), pageBack.getHeight());
+        pageBack.setRect(0.0d, 0.0d, PAGE_WIDTH, PAGE_HEIGHT);
         gfx.fill(pageBack);
 
         gfx.translate(AREA_X, AREA_Y);
@@ -130,14 +134,11 @@ class Pages extends JPanel {
           gfx.setStroke(oldStroke);
         }
 
-        gfx.translate(-AREA_X, -AREA_Y);
-
-        gfx.translate(-x, -y);
         x += INTERVAL_X + PAGE_WIDTH;
       }
       y += INTERVAL_Y + PAGE_HEIGHT;
     }
-    gfx.scale(1.0d, 1.0d);
+    gfx.setTransform(original);
 
     paintBorder(g);
   }

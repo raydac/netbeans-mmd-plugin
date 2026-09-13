@@ -24,6 +24,7 @@ import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 
@@ -82,6 +83,12 @@ public class MMGraphics2DWrapper implements MMGraphics {
   @Override
   public Rectangle getClipBounds() {
     return this.delegate.getClipBounds();
+  }
+
+  @Override
+  public Rectangle2D getClipRect() {
+    final Shape clip = this.delegate.getClip();
+    return clip == null ? null : clip.getBounds2D();
   }
 
   @Override
@@ -164,6 +171,29 @@ public class MMGraphics2DWrapper implements MMGraphics {
     if (image != null) {
       this.delegate.drawImage(image, x, y, null);
     }
+  }
+
+  @Override
+  public void drawImage(
+      final Image image,
+      final double x,
+      final double y,
+      final double width,
+      final double height
+  ) {
+    if (image == null || width < 1.0d || height < 1.0d) {
+      return;
+    }
+
+    final int sourceWidth = image.getWidth(null);
+    final int sourceHeight = image.getHeight(null);
+    if (sourceWidth <= 0 || sourceHeight <= 0) {
+      return;
+    }
+
+    final AffineTransform transform = AffineTransform.getTranslateInstance(x, y);
+    transform.scale(width / (double) sourceWidth, height / (double) sourceHeight);
+    this.delegate.drawImage(image, transform, null);
   }
 
   @Override

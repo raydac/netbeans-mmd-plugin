@@ -29,7 +29,6 @@ import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.geom.Dimension2D;
 import java.awt.geom.Rectangle2D;
 import javax.swing.text.JTextComponent;
@@ -172,12 +171,9 @@ public abstract class AbstractElement {
         doPaintConnectors(g, isLeftDirection(), cfg);
       }
 
-      final Rectangle clip = g.getClipBounds();
+      final Rectangle2D clip = g.getClipRect();
 
-      if (clip == null) {
-        gfx.translate(this.bounds.getX(), this.bounds.getY());
-        drawComponent(gfx, cfg, drawCollapsator);
-      } else if (clip.intersects(this.bounds)) {
+      if (clip == null || clip.intersects(this.bounds)) {
         gfx.translate(this.bounds.getX(), this.bounds.getY());
         drawComponent(gfx, cfg, drawCollapsator);
       }
