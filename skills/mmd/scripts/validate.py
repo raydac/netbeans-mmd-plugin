@@ -17,9 +17,9 @@ def main() -> int:
     parser.add_argument("path", help="path to a .mmd file")
     args = parser.parse_args()
     try:
-        with open(args.path, "r", encoding="utf-8", newline="") as handle:
+        with open(args.path, "r", encoding="utf-8-sig", newline="") as handle:
             text = handle.read()
-    except OSError as error:
+    except (OSError, UnicodeError) as error:
         sys.stderr.write("%s\n" % error)
         return 1
     issues = mmd.validate_mmd(text)

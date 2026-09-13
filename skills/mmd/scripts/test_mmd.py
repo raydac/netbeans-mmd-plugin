@@ -389,10 +389,10 @@ class CancerRiskTests(unittest.TestCase):
 
 class CliTests(unittest.TestCase):
     def test_parse_write_validate_scripts(self) -> None:
-        sample = os.path.join(SCRIPTS, "_sample.mmd")
-        tree_path = os.path.join(SCRIPTS, "_sample.json")
-        out_path = os.path.join(SCRIPTS, "_sample_out.mmd")
-        try:
+        with tempfile.TemporaryDirectory() as folder:
+            sample = os.path.join(folder, "sample.mmd")
+            tree_path = os.path.join(folder, "sample.json")
+            out_path = os.path.join(folder, "sample_out.mmd")
             with open(sample, "w", encoding="utf-8", newline="\n") as handle:
                 handle.write("---\n# Root\n## Child\n")
             parse = subprocess.run(
@@ -423,10 +423,6 @@ class CliTests(unittest.TestCase):
                 text=True,
             )
             self.assertEqual("OK\n", validate.stdout)
-        finally:
-            for path in (sample, tree_path, out_path):
-                if os.path.isfile(path):
-                    os.remove(path)
 
 
 JAVA_NOTE_CIPHERTEXT = (
@@ -540,6 +536,86 @@ class CryptoTests(unittest.TestCase):
         payload = json.loads(result.stdout)
         self.assertEqual("tip", payload[0]["hint"])
         self.assertEqual(JAVA_NOTE_CIPHERTEXT, payload[0]["ciphertext"])
+
+    def test_cli_rejects_password_flag(self) -> None:
+        result = subprocess.run(
+            [
+                sys.executable,
+                os.path.join(SCRIPTS, "crypto.py"),
+                "decrypt",
+                "--password",
+                "hello",
+                "--text",
+                JAVA_NOTE_CIPHERTEXT,
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertNotEqual(0, result.returncode)
+
+    def test_load_map_does_not_treat_brace_header_as_json(self) -> None:
+        packed = "{comment\n---\n# Root\n"
+        handle = tempfile.NamedTemporaryFile("w", encoding="utf-8", suffix=".mmd", delete=False)
+        try:
+            handle.write(packed)
+            handle.close()
+            loaded = crypto.load_map(handle.name)
+        finally:
+            os.remove(handle.name)
+        self.assertEqual("Root", loaded.root.text)
+
+
+class SafetyTests(unittest.TestCase):
+    def test_write_does_not_mutate_attributes(self) -> None:
+        tree = mmd.MindMap()
+        tree.attributes["hello"] = "World"
+        written = mmd.write_mmd(tree)
+        self.assertNotIn("__version__", tree.attributes)
+        self.assertIn("__version__=`1.1`", written)
+
+    def test_json_boolean_attribute_is_lowercase(self) -> None:
+        tree = mmd.loads_tree(
+            '{"root": {"text": "Root", "attributes": {"extras.note.encrypted": true},'
+            ' "extras": {}, "snippets": {}, "children": []}}'
+        )
+        self.assertEqual("true", tree.root.attributes["extras.note.encrypted"])
+
+    def test_json_nested_attribute_rejected(self) -> None:
+        with self.assertRaises(mmd.MmdError):
+            mmd.loads_tree(
+                '{"root": {"text": "Root", "attributes": {"bad": {"x": 1}},'
+                ' "extras": {}, "snippets": {}, "children": []}}'
+            )
+
+    def test_json_children_must_be_array(self) -> None:
+        with self.assertRaises(mmd.MmdError):
+            mmd.loads_tree(
+                '{"root": {"text": "Root", "attributes": {}, "extras": {},'
+                ' "snippets": {}, "children": "nope"}}'
+            )
+
+    def test_invalid_link_uri_is_dropped(self) -> None:
+        parsed = mmd.parse_mmd("---\n# Topic\n- LINK\n<pre>http://example.com/a b</pre>\n")
+        self.assertNotIn("LINK", parsed.root.extras)
+
+    def test_bom_is_ignored(self) -> None:
+        parsed = mmd.parse_mmd("\ufeff---\n# Root\n")
+        self.assertEqual("Root", parsed.root.text)
+
+    def test_nbsp_is_not_java_whitespace(self) -> None:
+        self.assertFalse(mmd.is_java_whitespace("\u00a0"))
+        self.assertTrue(mmd.is_java_whitespace(" "))
+        self.assertFalse(mmd.is_java_whitespace("\u0085"))
+
+    def test_pre_unescape_requires_semicolon(self) -> None:
+        self.assertEqual("a &amp b", mmd.unescape_pre("a &amp b"))
+        self.assertEqual('a & "b"', mmd.unescape_pre("a &amp; &quot;b&quot;"))
+        self.assertEqual("x\u00a0y", mmd.unescape_pre("x&nbsp;y"))
+
+    def test_header_attribute_with_indent(self) -> None:
+        parsed = mmd.parse_mmd("title\n  > hello=`World`\n---\n# Root\n")
+        self.assertEqual("World", parsed.attributes["hello"])
 
 
 if __name__ == "__main__":

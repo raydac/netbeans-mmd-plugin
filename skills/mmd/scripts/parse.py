@@ -24,10 +24,10 @@ def main() -> int:
     args = parser.parse_args()
     try:
         tree = mmd.parse_file(args.path, ignore_errors=not args.strict)
-    except (OSError, mmd.MmdError) as error:
+        sys.stdout.write(mmd.dumps_tree(tree, pretty=not args.compact))
+    except (OSError, ValueError, mmd.MmdError) as error:
         sys.stderr.write("%s\n" % error)
         return 1
-    sys.stdout.write(mmd.dumps_tree(tree, pretty=not args.compact))
     return 0
 
 

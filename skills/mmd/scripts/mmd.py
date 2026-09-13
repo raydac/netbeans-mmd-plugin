@@ -6,9 +6,12 @@ Behaviour follows mind-map-model MindMap / Topic.parse / ModelUtils.
 
 from __future__ import annotations
 
-import html
+import html.entities
 import json
+import os
 import re
+import tempfile
+import unicodedata
 from typing import Any, Dict, List, Mapping, Optional, Tuple
 
 FORMAT_VERSION = "1.1"
@@ -19,6 +22,10 @@ UNESCAPE_BR = re.compile(r"(?i)<\s*?br\s*?/?>")
 MD_ESCAPED_PATTERN = re.compile(r"(\\[\\`*_{}\[\]()#<>+-.!])")
 PATTERN_ATTRIBUTES = re.compile(r"^\s*>\s(.+)$")
 PATTERN_ATTRIBUTE = re.compile(r"[,]?[ \t]*(\S+?)[ \t]*=[ \t]*(`+)(.*?)(\2)")
+PRE_ENTITY = re.compile(r"&(#x[0-9A-Fa-f]+|#\d+|[A-Za-z][A-Za-z0-9]+);")
+URI_ILLEGAL_ASCII = frozenset(" <>\"{}|\\^`")
+JAVA_WHITESPACE_ASCII = frozenset(range(0x09, 0x0E)) | frozenset(range(0x1C, 0x20)) | {0x20}
+JAVA_WHITESPACE_EXCLUDED = frozenset((0x00A0, 0x2007, 0x202F))
 
 
 class MmdError(ValueError):
@@ -63,7 +70,12 @@ def is_iso_control(char: str) -> bool:
 
 
 def is_java_whitespace(char: str) -> bool:
-    return char.isspace()
+    code = ord(char)
+    if code in JAVA_WHITESPACE_ASCII:
+        return True
+    if code in JAVA_WHITESPACE_EXCLUDED:
+        return False
+    return unicodedata.category(char) in ("Zs", "Zl", "Zp")
 
 
 def remove_iso_controls(text: str) -> str:
@@ -120,7 +132,25 @@ def escape_pre(text: str) -> str:
 
 
 def unescape_pre(text: str) -> str:
-    return html.unescape(text)
+    def replace_entity(match: re.Match[str]) -> str:
+        body = match.group(1)
+        try:
+            if body.startswith("#x") or body.startswith("#X"):
+                code = int(body[2:], 16)
+            elif body.startswith("#"):
+                code = int(body[1:], 10)
+            else:
+                mapped = html.entities.name2codepoint.get(body)
+                if mapped is None:
+                    return match.group(0)
+                code = mapped
+            if code == 0 or code > 0x10FFFF or 0xD800 <= code <= 0xDFFF:
+                return match.group(0)
+            return chr(code)
+        except ValueError:
+            return match.group(0)
+
+    return PRE_ENTITY.sub(replace_entity, text)
 
 
 def fill_map_by_attributes(line: str, target: Dict[str, str]) -> bool:
@@ -198,12 +228,12 @@ def line_is_all_char(line: str, char: str) -> bool:
 
 
 def find_pre_end(text: str, start: int) -> Optional[int]:
-    if not text.startswith("<pre>", start):
+    if start < 0 or not text.startswith("<pre>", start):
         return None
     index = start + 5
     length = len(text)
     while index < length:
-        if text[index] == ">" and text.startswith("</pre>", index - 5):
+        if text[index] == ">" and index >= 5 and text.startswith("</pre>", index - 5):
             return index + 1
         index += 1
     return None
@@ -249,7 +279,19 @@ def find_snippet_closer(text: str, body_start: int) -> Tuple[bool, int, int]:
 
 
 def java_uri_ok(value: str) -> bool:
-    return bool(value.strip())
+    for char in value:
+        code = ord(char)
+        if code < 128 and (code < 0x20 or char in URI_ILLEGAL_ASCII):
+            return False
+    index = 0
+    while True:
+        percent_at = value.find("%", index)
+        if percent_at < 0:
+            return True
+        hex_part = value[percent_at + 1 : percent_at + 3]
+        if len(hex_part) < 2 or any(char not in "0123456789abcdefABCDEF" for char in hex_part):
+            return False
+        index = percent_at + 3
 
 
 def preprocess_extra(extra_type: str, raw: str) -> Optional[str]:
@@ -393,20 +435,20 @@ def parse_body(body: str, ignore_errors: bool) -> Optional[Topic]:
 
 
 def parse_mmd(text: str, ignore_errors: bool = True) -> MindMap:
+    if text.startswith("\ufeff"):
+        text = text[1:]
     header, body = split_header(text)
     mind_map = MindMap()
     mind_map.header = first_header_title(header)
     for raw_line in header.split("\n"):
-        line = raw_line.replace("\r", "")
-        if line.startswith("> "):
-            fill_map_by_attributes(line, mind_map.attributes)
+        fill_map_by_attributes(raw_line.replace("\r", ""), mind_map.attributes)
     mind_map.root = parse_body(body, ignore_errors)
     mind_map.attributes["__version__"] = FORMAT_VERSION
     return mind_map
 
 
 def parse_file(path: str, ignore_errors: bool = True) -> MindMap:
-    with open(path, "r", encoding="utf-8", newline="") as handle:
+    with open(path, "r", encoding="utf-8-sig", newline="") as handle:
         return parse_mmd(handle.read(), ignore_errors)
 
 
@@ -430,33 +472,61 @@ def mind_map_to_dict(mind_map: MindMap) -> Dict[str, Any]:
     }
 
 
+def _json_scalar_to_str(value: Any) -> str:
+    if value is None:
+        return ""
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    if isinstance(value, (dict, list)):
+        raise MmdError("JSON tree fields must be scalars, not nested objects")
+    return str(value)
+
+
+def _string_map(value: Any, field: str) -> Dict[str, str]:
+    if value is None:
+        return {}
+    if not isinstance(value, Mapping):
+        raise MmdError("%s must be an object" % field)
+    return {str(key): _json_scalar_to_str(item) for key, item in value.items()}
+
+
 def topic_from_dict(data: Optional[Mapping[str, Any]], parent: Optional[Topic] = None) -> Optional[Topic]:
     if data is None:
         return None
-    topic = Topic(str(data.get("text", "")), parent)
-    attributes = data.get("attributes") or {}
-    extras = data.get("extras") or {}
-    snippets = data.get("snippets") or {}
-    topic.attributes.update({str(key): str(value) for key, value in attributes.items()})
-    for key, value in extras.items():
-        extra_name = str(key)
-        if extra_name in EXTRA_TYPES:
-            topic.extras[extra_name] = str(value)
-    topic.snippets.update({str(key): str(value) for key, value in snippets.items()})
-    for child in data.get("children") or []:
+    if not isinstance(data, Mapping):
+        raise MmdError("topic JSON must be an object")
+    topic = Topic(_json_scalar_to_str(data.get("text", "")), parent)
+    topic.attributes.update(_string_map(data.get("attributes"), "attributes"))
+    extras = _string_map(data.get("extras"), "extras")
+    for extra_name, extra_value in extras.items():
+        if extra_name not in EXTRA_TYPES:
+            continue
+        prepared = preprocess_extra(extra_name, extra_value)
+        if prepared is not None:
+            topic.extras[extra_name] = prepared
+    topic.snippets.update(_string_map(data.get("snippets"), "snippets"))
+    children = data.get("children") or []
+    if not isinstance(children, list):
+        raise MmdError("children must be an array")
+    for child in children:
         topic_from_dict(child, topic)
     return topic
 
 
 def mind_map_from_dict(data: Mapping[str, Any]) -> MindMap:
+    if not isinstance(data, Mapping):
+        raise MmdError("JSON tree must be an object")
     mind_map = MindMap()
     header = data.get("header")
     if header:
-        mind_map.header = str(header)
-    attributes = data.get("attributes") or {}
-    mind_map.attributes.update({str(key): str(value) for key, value in attributes.items()})
+        mind_map.header = _json_scalar_to_str(header)
+    mind_map.attributes.update(_string_map(data.get("attributes"), "attributes"))
     mind_map.attributes["__version__"] = FORMAT_VERSION
-    mind_map.root = topic_from_dict(data.get("root"))
+    root = data.get("root")
+    try:
+        mind_map.root = topic_from_dict(root)
+    except RecursionError as error:
+        raise MmdError("mind map is too deeply nested") from error
     return mind_map
 
 
@@ -496,22 +566,50 @@ def write_topic(topic: Topic, level: int, out: List[str]) -> None:
 
 
 def write_mmd(mind_map: MindMap) -> str:
-    mind_map.attributes["__version__"] = FORMAT_VERSION
-    parts = [CANONICAL_HEADER, "   \n> ", attributes_as_string(mind_map.attributes), "\n---\n"]
-    if mind_map.root is not None:
-        write_topic(mind_map.root, 1, parts)
+    attributes = dict(mind_map.attributes)
+    attributes["__version__"] = FORMAT_VERSION
+    parts = [CANONICAL_HEADER, "   \n> ", attributes_as_string(attributes), "\n---\n"]
+    try:
+        if mind_map.root is not None:
+            write_topic(mind_map.root, 1, parts)
+    except RecursionError as error:
+        raise MmdError("mind map is too deeply nested") from error
     return "".join(parts)
 
 
+def write_file(path: str, text: str) -> None:
+    directory = os.path.dirname(os.path.abspath(path)) or "."
+    handle, tmp_path = tempfile.mkstemp(prefix=".mmd-write-", suffix=".tmp", dir=directory)
+    try:
+        with os.fdopen(handle, "w", encoding="utf-8", newline="\n") as output:
+            output.write(text)
+            output.flush()
+            os.fsync(output.fileno())
+        os.replace(tmp_path, path)
+        tmp_path = ""
+    finally:
+        if tmp_path:
+            try:
+                os.unlink(tmp_path)
+            except OSError:
+                pass
+
+
 def dumps_tree(mind_map: MindMap, pretty: bool = True) -> str:
-    payload = mind_map_to_dict(mind_map)
+    try:
+        payload = mind_map_to_dict(mind_map)
+    except RecursionError as error:
+        raise MmdError("mind map is too deeply nested") from error
     if pretty:
         return json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
     return json.dumps(payload, ensure_ascii=False) + "\n"
 
 
 def loads_tree(text: str) -> MindMap:
-    data = json.loads(text)
+    try:
+        data = json.loads(text)
+    except json.JSONDecodeError as error:
+        raise MmdError("invalid JSON tree: %s" % error) from error
     if not isinstance(data, dict):
         raise MmdError("JSON tree must be an object")
     return mind_map_from_dict(data)
@@ -568,13 +666,19 @@ def validate_mmd(text: str) -> List[str]:
         parsed = parse_mmd(text, ignore_errors=True)
     except MmdError as error:
         return [str(error)]
-    issues.extend(collect_issues(parsed))
-    rewritten = write_mmd(parsed)
     try:
+        issues.extend(collect_issues(parsed))
+        rewritten = write_mmd(parsed)
         again = parse_mmd(rewritten, ignore_errors=True)
+    except RecursionError:
+        issues.append("mind map is too deeply nested")
+        return issues
     except MmdError as error:
         issues.append("canonical write failed to parse: %s" % error)
         return issues
-    if comparable_tree(parsed) != comparable_tree(again):
-        issues.append("round-trip tree mismatch after canonical write")
+    try:
+        if comparable_tree(parsed) != comparable_tree(again):
+            issues.append("round-trip tree mismatch after canonical write")
+    except RecursionError:
+        issues.append("mind map is too deeply nested")
     return issues

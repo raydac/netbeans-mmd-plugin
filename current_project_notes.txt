@@ -2,7 +2,8 @@
 - Removed stray `mind-map/com/` (accidental FlatLaf `FlatClientProperties.java` from an IDE source extract) and gitignored `/mind-map/com/` so library dumps under the Maven parent are not committed again.
 - Print path no longer rasterizes mind maps/images at Java’s 72-DPI page units. Vector print lays out on the printer graphics (so topic frames match PostScript/PDF text), then draws; images keep the original pixels via affine scale; “draw as image” rasterizes per page at device DPI (capped at 300). Page count uses ceil. Fit-to-page stays vector. Print uses PrintQuality.HIGH, fractional metrics, pure strokes, and clips to the imageable area.
 - Mind map panel now centers the root topic in its `JViewport` during layout, before the first paint, so newly opened maps do not jump after load (Scia Reto) or start in the top-left corner (IntelliJ).
-- Canonical MMD format spec (version 1.1, header/topics/extras/snippets/attributes, Appendix A 407 emoticon ids, encrypted-note AES-256-ECB) lives in `skills/mmd/MMD_Format.MD` so a copied skill folder includes it.
+- Hardened `skills/mmd/scripts`: no `--password` argv leak, atomic `.mmd` writes, Java-like URI/HTML/whitespace parsing, JSON tree type checks, crypto `hmac.compare_digest`, UTF-8 BOM reads.
+- `mind-map-model` read/write round-trips CJK and emoji (titles, notes, snippets, attributes, file extras); covered by `MindMapTest` / `ModelUtilsTest`.
 - Agent skills to copy into a user’s agent live in repo `skills/` (see `skills/README.md`). The MMD skill (`skills/mmd/`) is self-contained: `SKILL.md`, `reference.md`, `MMD_Format.MD`, and stdlib Python scripts (parse/write/validate/crypto matching Swing `CryptoUtils`).
 - Version set to **1.7.1-SNAPSHOT** for continued development: root + all module `pom.xml`, IntelliJ `plugin.xml`, changelog/README SNAPSHOT headers, mac `Info.plist` `1.7.1`, win-launcher `versioninfo.json`, `SciaRetoStarter.IDE_VERSION`, AP fallback.
 - Release **1.7.0** prepared (2026-09-06): root + all module `pom.xml`, IntelliJ `plugin.xml`, changelog/README headers, mac `Info.plist`, annotation-processor fallback.
@@ -53,6 +54,7 @@
 - Development version **1.7.1-SNAPSHOT** started (06-sep-2026): all `pom.xml`, changelog/README `__1.7.1 (SNAPSHOT)__`, IJ `plugin.xml`, mac Info.plist `1.7.1`, win `versioninfo.json`, `IDE_VERSION` 1.7.1, AP fallback `1.7.1`.
 - Newly opened maps center the root topic in the swing panel before first paint.
 - MMD format spec moved into `skills/mmd/MMD_Format.MD` so skill copies include the full description.
+- MMD skill scripts reviewed and hardened (password argv removed, atomic writes, Java-matching extras/HTML).
 - Remaining assembly non-script hygiene (shared `<id>withjre_windows</id>`, `mac-nojre.xml` `icon.svgicns` typo, linux `fileMode`) still open if desired later.
 - Verify File | New create on latest IntelliJ after reinstall; New menu order after Directory.
 - Verify opening an existing MMD file after the blank-editor fix.

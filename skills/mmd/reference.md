@@ -17,7 +17,7 @@ The Python scripts reimplement `mind-map-model` (`MindMap`, `Topic.parse`, `Mode
 
 Exit status `0` on success, `1` on format, I/O, or decrypt errors.
 
-Password: ask the user, then pass via stdin (`--password-stdin` with `--text` / `--file`) or env `MMD_NOTE_PASSWORD`. Do not put the password on the command line. The editor trims surrounding whitespace; the CLI does too.
+Password: ask the user, then pass via stdin (`--password-stdin` with `--text` / `--file`) or env `MMD_NOTE_PASSWORD`. Do not put the password on the command line (there is no `--password` flag). The editor trims surrounding whitespace with Java `String.trim()`; the CLI does too.
 
 Crypto matches Swing `CryptoUtils` as specified in [MMD_Format.MD — Encrypted notes](MMD_Format.MD#encrypted-notes): AES-256-ECB PKCS5, key = SHA-256(UTF-8 password), payload = SHA-256(UTF-8 text) || text, Base64. Empty password on encrypt leaves the text unchanged. Wrong password prints `wrong password or invalid ciphertext`.
 

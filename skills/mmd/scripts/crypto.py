@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import base64
 import hashlib
+import hmac
 import json
 import os
 import sys
@@ -178,6 +179,8 @@ def _mix_columns(state: bytes, inverse: bool) -> bytes:
 
 
 def aes256_encrypt_block(block: bytes, round_keys: List[bytes]) -> bytes:
+    if len(block) != 16:
+        raise ValueError("AES block must be 16 bytes")
     state = _add_round_key(block, round_keys[0])
     for round_index in range(1, 14):
         state = _sub_bytes(state, _SBOX)
@@ -190,6 +193,8 @@ def aes256_encrypt_block(block: bytes, round_keys: List[bytes]) -> bytes:
 
 
 def aes256_decrypt_block(block: bytes, round_keys: List[bytes]) -> bytes:
+    if len(block) != 16:
+        raise ValueError("AES block must be 16 bytes")
     state = _add_round_key(block, round_keys[14])
     state = _inv_shift_rows(state)
     state = _sub_bytes(state, _INV_SBOX)
@@ -216,6 +221,8 @@ def _pkcs7_unpad(data: bytes) -> bytes:
 
 
 def aes256_ecb_encrypt(key: bytes, data: bytes) -> bytes:
+    if len(key) != 32:
+        raise ValueError("AES-256 key must be 32 bytes")
     round_keys = _expand_key(key)
     padded = _pkcs7_pad(data)
     return b"".join(
@@ -225,6 +232,8 @@ def aes256_ecb_encrypt(key: bytes, data: bytes) -> bytes:
 
 
 def aes256_ecb_decrypt(key: bytes, data: bytes) -> bytes:
+    if len(key) != 32:
+        raise ValueError("AES-256 key must be 32 bytes")
     if len(data) % 16:
         raise DecryptError("wrong password or invalid ciphertext")
     round_keys = _expand_key(key)
@@ -264,9 +273,22 @@ def decrypt(password: str, text: str) -> str:
         raise DecryptError("wrong password or invalid ciphertext")
     digest = decrypted[:32]
     body = decrypted[32:]
-    if digest != sha256(body):
+    if not hmac.compare_digest(digest, sha256(body)):
         raise DecryptError("wrong password or invalid ciphertext")
-    return body.decode("utf-8")
+    try:
+        return body.decode("utf-8")
+    except UnicodeDecodeError as error:
+        raise DecryptError("wrong password or invalid ciphertext") from error
+
+
+def java_trim(text: str) -> str:
+    start = 0
+    end = len(text)
+    while start < end and ord(text[start]) <= 0x20:
+        start += 1
+    while end > start and ord(text[end - 1]) <= 0x20:
+        end -= 1
+    return text[start:end]
 
 
 def is_encrypted_flag(value: Optional[str]) -> bool:
@@ -278,7 +300,7 @@ def find_encrypted_notes(
 ) -> List[Dict[str, Any]]:
     if topic is None:
         return []
-    current_path = (path or []) + [topic.text]
+    current_path = ([] if path is None else path) + [topic.text]
     found: List[Dict[str, Any]] = []
     if is_encrypted_flag(topic.attributes.get(ATTR_ENCRYPTED)) and "NOTE" in topic.extras:
         hint = topic.attributes.get(ATTR_HINT, "")
@@ -295,33 +317,35 @@ def find_encrypted_notes(
 
 
 def load_map(path: str) -> mmd.MindMap:
-    with open(path, "r", encoding="utf-8", newline="") as handle:
+    with open(path, "r", encoding="utf-8-sig", newline="") as handle:
         text = handle.read()
-    stripped = text.lstrip()
-    if path.endswith(".json") or stripped.startswith("{"):
+    if path.lower().endswith(".json"):
         return mmd.loads_tree(text)
-    return mmd.parse_mmd(text)
+    try:
+        return mmd.parse_mmd(text)
+    except mmd.MmdError:
+        if text.lstrip().startswith("{"):
+            return mmd.loads_tree(text)
+        raise
 
 
 def _read_payload(args: argparse.Namespace, strip_text: bool) -> str:
     if args.text is not None:
-        return args.text.strip() if strip_text else args.text
+        return java_trim(args.text) if strip_text else args.text
     if args.file is not None:
-        with open(args.file, "r", encoding="utf-8") as handle:
+        with open(args.file, "r", encoding="utf-8-sig", newline="") as handle:
             payload = handle.read()
-        return payload.strip() if strip_text else payload
+        return java_trim(payload) if strip_text else payload
     payload = sys.stdin.read()
-    return payload.strip() if strip_text else payload
+    return java_trim(payload) if strip_text else payload
 
 
 def _read_password(args: argparse.Namespace) -> str:
-    if args.password is not None:
-        return args.password.strip()
     env_password = os.environ.get(PASSWORD_ENV)
     if env_password is not None:
-        return env_password.strip()
+        return java_trim(env_password)
     if args.password_stdin:
-        return sys.stdin.readline().rstrip("\r\n").strip()
+        return java_trim(sys.stdin.readline().rstrip("\r\n"))
     raise SystemExit(
         "password required: ask the user, then pass it via %s or --password-stdin" % PASSWORD_ENV
     )
@@ -330,10 +354,13 @@ def _read_password(args: argparse.Namespace) -> str:
 def _command_list(args: argparse.Namespace) -> int:
     try:
         mind_map = load_map(args.path)
+        notes = find_encrypted_notes(mind_map.root)
+    except RecursionError:
+        sys.stderr.write("mind map is too deeply nested\n")
+        return 1
     except (OSError, ValueError, mmd.MmdError) as error:
         sys.stderr.write("%s\n" % error)
         return 1
-    notes = find_encrypted_notes(mind_map.root)
     sys.stdout.write(json.dumps(notes, ensure_ascii=False, indent=2) + "\n")
     return 0
 
@@ -374,7 +401,6 @@ def main() -> int:
     decrypt_parser = sub.add_parser("decrypt", help="decrypt a note ciphertext to plaintext")
     decrypt_parser.add_argument("--text", help="Base64 ciphertext")
     decrypt_parser.add_argument("--file", help="file containing Base64 ciphertext")
-    decrypt_parser.add_argument("--password", help=argparse.SUPPRESS)
     decrypt_parser.add_argument(
         "--password-stdin",
         action="store_true",
@@ -385,7 +411,6 @@ def main() -> int:
     encrypt_parser = sub.add_parser("encrypt", help="encrypt plaintext to a note ciphertext")
     encrypt_parser.add_argument("--text", help="plaintext")
     encrypt_parser.add_argument("--file", help="file containing plaintext")
-    encrypt_parser.add_argument("--password", help=argparse.SUPPRESS)
     encrypt_parser.add_argument(
         "--password-stdin",
         action="store_true",

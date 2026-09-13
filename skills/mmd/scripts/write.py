@@ -31,14 +31,13 @@ def main() -> int:
         if args.source == "-":
             payload = sys.stdin.read()
         else:
-            with open(args.source, "r", encoding="utf-8") as handle:
+            with open(args.source, "r", encoding="utf-8-sig") as handle:
                 payload = handle.read()
         text = mmd.write_mmd(mmd.loads_tree(payload))
         if args.target == "-":
             sys.stdout.write(text)
         else:
-            with open(args.target, "w", encoding="utf-8", newline="\n") as handle:
-                handle.write(text)
+            mmd.write_file(args.target, text)
     except (OSError, ValueError, mmd.MmdError) as error:
         sys.stderr.write("%s\n" % error)
         return 1
