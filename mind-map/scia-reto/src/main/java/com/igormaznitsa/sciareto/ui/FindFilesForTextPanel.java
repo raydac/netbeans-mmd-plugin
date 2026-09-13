@@ -132,7 +132,7 @@ public final class FindFilesForTextPanel extends javax.swing.JPanel {
       public void keyPressed(final KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_ENTER) {
           e.consume();
-          if (fieldText.getText().length() >= MIN_TEXT_LENGTH) {
+          if (!fieldText.getText().isEmpty()) {
             buttonFind.doClick();
           }
         }
@@ -200,7 +200,7 @@ public final class FindFilesForTextPanel extends javax.swing.JPanel {
 
   private void updateStateForText() {
     final String text = this.fieldText.getText();
-    if (text.length() >= MIN_TEXT_LENGTH) {
+    if (!text.isEmpty()) {
       this.buttonFind.setEnabled(true);
     } else {
       this.buttonFind.setEnabled(false);

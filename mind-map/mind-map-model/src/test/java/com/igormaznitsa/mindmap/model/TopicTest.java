@@ -102,7 +102,7 @@ public class TopicTest {
     assertEquals(1, topic.getChildren().size());
     assertEquals(2, topic.getExtras().size());
     assertEquals("   Some   \r\n    text     \n    line  \r\n  end \r\n   ",
-            topic.getExtras().get(Extra.ExtraType.NOTE).getValue());
+        topic.getExtras().get(Extra.ExtraType.NOTE).getValue());
     assertEquals(new URI("http://www.google.com"),
         ((MMapURI) topic.getExtras().get(Extra.ExtraType.LINK).getValue()).asURI());
     final Topic second = topic.getFirst();

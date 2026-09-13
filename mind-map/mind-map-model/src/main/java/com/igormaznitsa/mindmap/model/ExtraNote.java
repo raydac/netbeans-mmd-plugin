@@ -131,25 +131,21 @@ public class ExtraNote extends Extra<String> {
 
   @Override
   public boolean equals(final Object that) {
-    if (that == null) {
-      return false;
-    }
     if (this == that) {
       return true;
     }
-    if (that instanceof ExtraNote) {
-      final ExtraNote thatNote = (ExtraNote) that;
-      return (Objects.equals(this.hint, thatNote.hint))
-          && this.encrypted == thatNote.encrypted
-          && this.text.equals(((ExtraNote) that).text);
-    } else {
+    if (!(that instanceof ExtraNote)) {
       return false;
     }
+    final ExtraNote thatNote = (ExtraNote) that;
+    return this.encrypted == thatNote.encrypted
+        && this.text.equals(thatNote.text)
+        && Objects.equals(this.hint, thatNote.hint);
   }
 
   @Override
   public int hashCode() {
-    return this.text.hashCode();
+    return Objects.hash(this.text, this.encrypted, this.hint);
   }
 
   @Override

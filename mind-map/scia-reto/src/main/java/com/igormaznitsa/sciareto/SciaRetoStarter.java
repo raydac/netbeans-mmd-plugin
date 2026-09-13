@@ -19,6 +19,8 @@
 package com.igormaznitsa.sciareto;
 
 import static java.lang.System.currentTimeMillis;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.SystemUtils.IS_OS_WINDOWS;
 
 import com.formdev.flatlaf.FlatDarculaLaf;
@@ -81,7 +83,6 @@ import com.igormaznitsa.sciareto.ui.MainFrame;
 import com.igormaznitsa.sciareto.ui.SystemUtils;
 import com.igormaznitsa.sciareto.ui.UiUtils;
 import com.igormaznitsa.sciareto.ui.UiUtils.SplashScreen;
-import com.igormaznitsa.sciareto.ui.misc.JHtmlLabel;
 import com.igormaznitsa.sciareto.ui.platform.PlatformProvider;
 import java.awt.Component;
 import java.awt.GraphicsConfiguration;
@@ -89,6 +90,7 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.Taskbar;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
@@ -102,10 +104,8 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.lang.reflect.InvocationTargetException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
@@ -136,7 +136,7 @@ public class SciaRetoStarter {
   public static final String APP_TITLE = "Scia Reto";
   public static final Image APP_ICON = UiUtils.loadIcon("logo256x256.png");
   public static final long UPSTART = currentTimeMillis();
-  public static final Version IDE_VERSION = new Version("sciareto", new long[] {1L, 7L, 1L}, null);
+  public static final Version IDE_VERSION = new Version("sciareto", new long[] {1L, 8L, 0L}, null);
   public static final String PROPERTY_LOOKANDFEEL = "selected.look.and.feel"; //NOI18N
   public static final String PROPERTY_SCALE_GUI = "general.gui.scale"; //NOI18N
   //NOI18N
@@ -180,18 +180,16 @@ public class SciaRetoStarter {
 
   private static boolean trySetTaskBarValues() {
     try {
-      final Object taskbar = Class.forName("java.awt.Taskbar").getMethod("getTaskbar").invoke(null);
-      try {
-        taskbar.getClass().getMethod("setIconImage", Image.class).invoke(taskbar, APP_ICON);
-      } catch (InvocationTargetException ex) {
-        LOGGER.warn("Can't set icon through Taskbar: " + ex.getCause());
+      final Taskbar taskbar = Taskbar.getTaskbar();
+      if (taskbar.isSupported(Taskbar.Feature.ICON_IMAGE)) {
+        taskbar.setIconImage(APP_ICON);
       }
       return true;
-    } catch (InvocationTargetException exx) {
-      LOGGER.error("trySetTaskBarValues: " + exx.getCause().toString());
+    } catch (final UnsupportedOperationException | SecurityException ex) {
+      LOGGER.warn("Taskbar values set failed: " + ex);
       return false;
-    } catch (Exception exx) {
-      LOGGER.error("trySetTaskBarValues: " + exx.toString());
+    } catch (final Exception ex) {
+      LOGGER.error("trySetTaskBarValues: " + ex);
       return false;
     }
   }
@@ -290,7 +288,7 @@ public class SciaRetoStarter {
 
       try {
         if (!latch.await(10, TimeUnit.SECONDS)) {
-          LOGGER.warn("Splash latch as not decremented!");
+          LOGGER.warn("Splash latch was not decremented!");
         }
       } catch (InterruptedException ex) {
         Thread.currentThread().interrupt();
@@ -425,15 +423,6 @@ public class SciaRetoStarter {
         MAIN_FRAME.setVisible(true);
 
         MAIN_FRAME.setExtendedState(MAIN_FRAME.getExtendedState() | JFrame.MAXIMIZED_BOTH);
-        final JHtmlLabel label = new JHtmlLabel(
-            "<html>You use the application already for some time. If you like it then you could support its author and <a href=\"http://www.google.com\"><b>make some donation</b></a>.</html>");
-        label.addLinkListener((source, link) -> {
-          try {
-            UiUtils.browseURI(new URI(link), false);
-          } catch (URISyntaxException ex) {
-            LOGGER.error("Can't make URI", ex); //NOI18N
-          }
-        });
       });
 
       new MessagesService().execute();
@@ -536,11 +525,16 @@ public class SciaRetoStarter {
       }
     }
 
+    if (allOk && detected >= 0) {
+      LOGGER.error("Missing value for conversion argument"); //NOI18N
+      allOk = false;
+    }
+
     if (allOk) {
       for (final String s : params) {
         if (s == null) {
           LOGGER.error("Not provided required parameter"); //NOI18N
-          allOk = true;
+          allOk = false;
           break;
         }
       }
@@ -567,7 +561,7 @@ public class SciaRetoStarter {
           if (settingsFile != null) {
             try {
               config.loadFrom(
-                  new PropertiesPreferences(FileUtils.readFileToString(settingsFile, "UTF-8")));
+                  new PropertiesPreferences(FileUtils.readFileToString(settingsFile, UTF_8)));
             } catch (IOException ex) {
               LOGGER.error("Can't load settings file : " + settingsFile, ex); //NOI18N
               allOk = false;
@@ -603,7 +597,7 @@ public class SciaRetoStarter {
     config.saveTo(prefs);
 
     try {
-      FileUtils.write(settingsFile, prefs.toString(), "UTF-8");
+      FileUtils.write(settingsFile, prefs.toString(), UTF_8);
     } catch (final Exception ex) {
       LOGGER.error("Can't export settings for error", ex); //NOI18N
       result = false;
@@ -616,7 +610,7 @@ public class SciaRetoStarter {
     boolean result = true;
     try {
       final PropertiesPreferences prefs =
-          new PropertiesPreferences(FileUtils.readFileToString(settingsFile, "UTF-8"));
+          new PropertiesPreferences(FileUtils.readFileToString(settingsFile, UTF_8));
       final MindMapPanelConfig config = new MindMapPanelConfig();
       config.loadFrom(prefs);
       config.saveTo(PreferencesManager.getInstance().getPreferences());
@@ -849,14 +843,14 @@ public class SciaRetoStarter {
         panel.setModel(map);
 
         map = fromFormat.doImport(panel.getController().makePluginContext(panel));
-        if (map != null) {
-          map.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID,
-              IDEBridgeFactory.findInstance()
-                  .getIDEGeneratorId());
-          panel.setModel(map);
-        } else {
-          dialog.msgError(MAIN_FRAME, "Can't import map");
+        if (map == null) {
+          throw new IllegalArgumentException("Can't import map");
         }
+
+        map.putAttribute(StandardMmdAttributes.MMD_ATTRIBUTE_GENERATOR_ID,
+            IDEBridgeFactory.findInstance()
+                .getIDEGeneratorId());
+        panel.setModel(map);
 
         final Set<AbstractParameter<?>> exportParameters = toFormat.makeDefaultParameters();
         if (!exportParameters.isEmpty()) {
@@ -868,13 +862,10 @@ public class SciaRetoStarter {
           }
         }
 
-        final FileOutputStream result = new FileOutputStream(to, false);
-        try {
+        try (final FileOutputStream result = new FileOutputStream(to, false)) {
           toFormat
               .doExport(panel.getController().makePluginContext(panel), exportParameters, result);
           result.flush();
-        } finally {
-          IOUtils.closeQuietly(result);
         }
       } catch (Exception ex) {
         error.set(ex);
@@ -888,23 +879,16 @@ public class SciaRetoStarter {
   @Nonnull
   private static String makeMnemonicList(
       @Nonnull @MustNotContainNull final List<? extends MindMapPlugin> plugins) {
-    final StringBuilder result = new StringBuilder();
-    for (final MindMapPlugin p : plugins) {
-      if (p instanceof HasMnemonic) {
-        final String mnemo = ((HasMnemonic) p).getMnemonic();
-        if (mnemo != null) {
-          if (result.length() > 0) {
-            result.append('|');
-          }
-          result.append(mnemo);
-        }
-      }
-    }
-    return result.toString();
+    return plugins.stream()
+        .filter(HasMnemonic.class::isInstance)
+        .map(HasMnemonic.class::cast)
+        .map(HasMnemonic::getMnemonic)
+        .filter(Objects::nonNull)
+        .collect(joining("|"));
   }
 
   private static void printCliHelp(@Nonnull final PrintStream out) {
-    out.println(IDE_VERSION.toString());
+    out.println(IDE_VERSION);
     out.println("Project page : https://github.com/raydac/netbeans-mmd-plugin"); //NOI18N
     out.println();
     out.println("Usage from command line:"); //NOI18N
@@ -927,10 +911,10 @@ public class SciaRetoStarter {
     out.println();
     out.println("   --convert - command to make conversion, must be the first argument"); //NOI18N
     out.println("   --in FILE - file to be converted"); //NOI18N
-    out.println("   --from FORMAT - type of source format, be default 'mmd' (allowed " +
+    out.println("   --from FORMAT - type of source format, by default 'mmd' (allowed " +
         allowedFormatsFrom + ')'); //NOI18N
-    out.println("   --out FILE - destination file, if file exists it will be overrided"); //NOI18N
-    out.println("   --to FORMAT - type of destination format, bye default 'mmd' (allowed " +
+    out.println("   --out FILE - destination file, if file exists it will be overridden"); //NOI18N
+    out.println("   --to FORMAT - type of destination format, by default 'mmd' (allowed " +
         allowedFormatsTo + ')'); //NOI18N
     out.println("   --settings FILE - use graphic settings defined in Java property file"); //NOI18N
     out.println(
@@ -946,7 +930,7 @@ public class SciaRetoStarter {
       final File fileToImport = context.getDialogProvider()
           .msgOpenFileDialog(null, context, "", "", null, true, new FileFilter[0], ""); //NOI18N
       return new MindMap(
-          new StringReader(FileUtils.readFileToString(fileToImport, "UTF-8"))); //NOI18N
+          new StringReader(FileUtils.readFileToString(fileToImport, UTF_8))); //NOI18N
     }
 
     @Nonnull
@@ -987,7 +971,7 @@ public class SciaRetoStarter {
                          @Nullable OutputStream out,
                          @Nonnull ExtrasToStringConverter stringConverter) throws IOException {
       final MindMap map = context.getModel();
-      IOUtils.write(map.write(new StringWriter()).toString(), out, "UTF-8"); //NOI18N
+      IOUtils.write(map.write(new StringWriter()).toString(), out, UTF_8); //NOI18N
     }
 
     @Override

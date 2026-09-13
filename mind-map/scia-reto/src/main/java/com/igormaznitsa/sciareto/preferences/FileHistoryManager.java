@@ -60,7 +60,9 @@ public final class FileHistoryManager {
       fillList(folders, this.lastOpenedProjects);
       fillList(files, this.lastOpenedFiles);
     } catch (Exception ex) {
-      throw new Error("Can't init module", ex); //NOI18N
+      LOGGER.error("Can't restore file history from preferences", ex); //NOI18N
+      this.lastOpenedProjects.clear();
+      this.lastOpenedFiles.clear();
     }
   }
 
@@ -73,7 +75,7 @@ public final class FileHistoryManager {
   private static String packToString(@Nonnull @MustNotContainNull final File[] files) {
     final StringBuilder result = new StringBuilder();
     for (final File f : files) {
-      if (result.length() > 0) {
+      if (!result.isEmpty()) {
         result.append(File.pathSeparatorChar);
       }
       result.append(FilenameUtils.normalize(f.getAbsolutePath()));

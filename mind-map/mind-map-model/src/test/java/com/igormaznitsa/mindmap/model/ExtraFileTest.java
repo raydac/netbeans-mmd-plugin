@@ -13,11 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.model;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class ExtraFileTest {
 
@@ -29,72 +34,126 @@ public class ExtraFileTest {
 
   @Test
   public void testHasParent() throws Exception {
-    assertFalse(new ExtraFile("file:///item1/item2/item2.txt").hasParent(null, new MMapURI("file:///item1/item2/item2.txt")));
-    assertTrue(new ExtraFile("file:///item1/item2/item2.txt").hasParent(null, new MMapURI("file:///item1/item2")));
-    assertTrue(new ExtraFile("file:///item1/item2/item2.txt").hasParent(null, new MMapURI("file:///item1/")));
-    assertTrue(new ExtraFile("file:///item1/item2/item2.txt").hasParent(null, new MMapURI("file:///")));
+    assertFalse(new ExtraFile("file:///item1/item2/item2.txt").hasParent(null,
+        new MMapURI("file:///item1/item2/item2.txt")));
+    assertTrue(new ExtraFile("file:///item1/item2/item2.txt").hasParent(null,
+        new MMapURI("file:///item1/item2")));
+    assertTrue(new ExtraFile("file:///item1/item2/item2.txt").hasParent(null,
+        new MMapURI("file:///item1/")));
+    assertTrue(
+        new ExtraFile("file:///item1/item2/item2.txt").hasParent(null, new MMapURI("file:///")));
 
-    assertFalse(new ExtraFile("file:///item1/item2/item2.txt").hasParent(null, new MMapURI("file:///item3/item2/item2.txt")));
-    assertFalse(new ExtraFile("file:///item1/item2/item2.txt").hasParent(null, new MMapURI("file:///item1/item2/item2.tx")));
-    assertFalse(new ExtraFile("file:///item1/item2/item2.txt").hasParent(null, new MMapURI("file:///item3/item2")));
-    assertFalse(new ExtraFile("file:///item1/item2/item2.txt").hasParent(null, new MMapURI("file:///item3")));
-    assertFalse(new ExtraFile("file:///item1/item2/item2.txt").hasParent(null, new MMapURI("file:///item")));
-    assertFalse(new ExtraFile("file:///item1/item2.txt").hasParent(null, new MMapURI("file:///item1/item2/")));
+    assertFalse(new ExtraFile("file:///item1/item2/item2.txt").hasParent(null,
+        new MMapURI("file:///item3/item2/item2.txt")));
+    assertFalse(new ExtraFile("file:///item1/item2/item2.txt").hasParent(null,
+        new MMapURI("file:///item1/item2/item2.tx")));
+    assertFalse(new ExtraFile("file:///item1/item2/item2.txt").hasParent(null,
+        new MMapURI("file:///item3/item2")));
+    assertFalse(new ExtraFile("file:///item1/item2/item2.txt").hasParent(null,
+        new MMapURI("file:///item3")));
+    assertFalse(new ExtraFile("file:///item1/item2/item2.txt").hasParent(null,
+        new MMapURI("file:///item")));
+    assertFalse(new ExtraFile("file:///item1/item2.txt").hasParent(null,
+        new MMapURI("file:///item1/item2/")));
 
     final File base = new File("/some/base");
 
-    assertFalse(new ExtraFile(MMapURI.makeFromFilePath(base, "chunga/changa.txt", null)).hasParent(base, new MMapURI(base, new File("chunga/changa.txt"), null)));
-    assertFalse(new ExtraFile(MMapURI.makeFromFilePath(base, "chunga/changa.txt", null)).hasParent(base, new MMapURI(base, new File("chunga/changa.tx"), null)));
-    assertFalse(new ExtraFile(MMapURI.makeFromFilePath(base, "chunga/changa.tx", null)).hasParent(base, new MMapURI(base, new File("chunga/changa.txt"), null)));
-    assertTrue(new ExtraFile(MMapURI.makeFromFilePath(base, "chunga/changa.tx", null)).hasParent(base, new MMapURI(base, new File("chunga"), null)));
+    assertFalse(
+        new ExtraFile(MMapURI.makeFromFilePath(base, "chunga/changa.txt", null)).hasParent(base,
+            new MMapURI(base, new File("chunga/changa.txt"), null)));
+    assertFalse(
+        new ExtraFile(MMapURI.makeFromFilePath(base, "chunga/changa.txt", null)).hasParent(base,
+            new MMapURI(base, new File("chunga/changa.tx"), null)));
+    assertFalse(
+        new ExtraFile(MMapURI.makeFromFilePath(base, "chunga/changa.tx", null)).hasParent(base,
+            new MMapURI(base, new File("chunga/changa.txt"), null)));
+    assertTrue(
+        new ExtraFile(MMapURI.makeFromFilePath(base, "chunga/changa.tx", null)).hasParent(base,
+            new MMapURI(base, new File("chunga"), null)));
 
-    assertTrue(new ExtraFile(MMapURI.makeFromFilePath(base, "chunga/changa.txt", null)).hasParent(base, new MMapURI("file:///some/base/chunga")));
+    assertTrue(
+        new ExtraFile(MMapURI.makeFromFilePath(base, "chunga/changa.txt", null)).hasParent(base,
+            new MMapURI("file:///some/base/chunga")));
   }
-  
+
   @Test
   public void testIsSame() throws Exception {
-    assertTrue(new ExtraFile("file:///item1/item2/item2.txt").isSame(null, new MMapURI("file:///item1/item2/item2.txt")));
-    assertFalse(new ExtraFile("file:///item1/item2/item2.txt").isSame(null, new MMapURI("file:///item1/item2")));
-    assertFalse(new ExtraFile("file:///item1/item2/item2.txt").isSame(null, new MMapURI("file:///item1/")));
-    assertFalse(new ExtraFile("file:///item1/item2/item2.txt").isSame(null, new MMapURI("file:///")));
+    assertTrue(new ExtraFile("file:///item1/item2/item2.txt").isSame(null,
+        new MMapURI("file:///item1/item2/item2.txt")));
+    assertFalse(new ExtraFile("file:///item1/item2/item2.txt").isSame(null,
+        new MMapURI("file:///item1/item2")));
+    assertFalse(
+        new ExtraFile("file:///item1/item2/item2.txt").isSame(null, new MMapURI("file:///item1/")));
+    assertFalse(
+        new ExtraFile("file:///item1/item2/item2.txt").isSame(null, new MMapURI("file:///")));
 
-    assertFalse(new ExtraFile("file:///item1/item2/item2.txt").isSame(null, new MMapURI("file:///item3/item2/item2.txt")));
-    assertFalse(new ExtraFile("file:///item1/item2/item2.txt").isSame(null, new MMapURI("file:///item1/item2/item2.tx")));
-    assertFalse(new ExtraFile("file:///item1/item2/item2.txt").isSame(null, new MMapURI("file:///item3/item2")));
-    assertFalse(new ExtraFile("file:///item1/item2/item2.txt").isSame(null, new MMapURI("file:///item3")));
-    assertFalse(new ExtraFile("file:///item1/item2/item2.txt").isSame(null, new MMapURI("file:///item")));
-    assertFalse(new ExtraFile("file:///item1/item2.txt").isSame(null, new MMapURI("file:///item1/item2/")));
+    assertFalse(new ExtraFile("file:///item1/item2/item2.txt").isSame(null,
+        new MMapURI("file:///item3/item2/item2.txt")));
+    assertFalse(new ExtraFile("file:///item1/item2/item2.txt").isSame(null,
+        new MMapURI("file:///item1/item2/item2.tx")));
+    assertFalse(new ExtraFile("file:///item1/item2/item2.txt").isSame(null,
+        new MMapURI("file:///item3/item2")));
+    assertFalse(
+        new ExtraFile("file:///item1/item2/item2.txt").isSame(null, new MMapURI("file:///item3")));
+    assertFalse(
+        new ExtraFile("file:///item1/item2/item2.txt").isSame(null, new MMapURI("file:///item")));
+    assertFalse(
+        new ExtraFile("file:///item1/item2.txt").isSame(null, new MMapURI("file:///item1/item2/")));
 
     final File base = new File("/some/base");
 
-    assertTrue(new ExtraFile(MMapURI.makeFromFilePath(base, "chunga/changa.txt", null)).isSame(base, new MMapURI(base, new File("chunga/changa.txt"), null)));
-    assertFalse(new ExtraFile(MMapURI.makeFromFilePath(base, "chunga/changa.txt", null)).isSame(base, new MMapURI(base, new File("chunga/changa.tx"), null)));
-    assertFalse(new ExtraFile(MMapURI.makeFromFilePath(base, "chunga/changa.tx", null)).isSame(base, new MMapURI(base, new File("chunga/changa.txt"), null)));
-    assertFalse(new ExtraFile(MMapURI.makeFromFilePath(base, "chunga/changa.tx", null)).isSame(base, new MMapURI(base, new File("chunga"), null)));
+    assertTrue(new ExtraFile(MMapURI.makeFromFilePath(base, "chunga/changa.txt", null)).isSame(base,
+        new MMapURI(base, new File("chunga/changa.txt"), null)));
+    assertFalse(
+        new ExtraFile(MMapURI.makeFromFilePath(base, "chunga/changa.txt", null)).isSame(base,
+            new MMapURI(base, new File("chunga/changa.tx"), null)));
+    assertFalse(new ExtraFile(MMapURI.makeFromFilePath(base, "chunga/changa.tx", null)).isSame(base,
+        new MMapURI(base, new File("chunga/changa.txt"), null)));
+    assertFalse(new ExtraFile(MMapURI.makeFromFilePath(base, "chunga/changa.tx", null)).isSame(base,
+        new MMapURI(base, new File("chunga"), null)));
 
-    assertTrue(new ExtraFile(MMapURI.makeFromFilePath(base, "chunga/changa.txt", null)).isSame(base, new MMapURI("file:///some/base/chunga/changa.txt")));
+    assertTrue(new ExtraFile(MMapURI.makeFromFilePath(base, "chunga/changa.txt", null)).isSame(base,
+        new MMapURI("file:///some/base/chunga/changa.txt")));
   }
-  
+
   @Test
   public void testIsSameOrHasParent() throws Exception {
-    assertTrue(new ExtraFile("file:///item1/item2/item2.txt").isSameOrHasParent(null, new MMapURI("file:///item1/item2/item2.txt")));
-    assertTrue(new ExtraFile("file:///item1/item2/item2.txt").isSameOrHasParent(null, new MMapURI("file:///item1/item2")));
-    assertTrue(new ExtraFile("file:///item1/item2/item2.txt").isSameOrHasParent(null, new MMapURI("file:///item1/")));
-    assertTrue(new ExtraFile("file:///item1/item2/item2.txt").isSameOrHasParent(null, new MMapURI("file:///")));
-    
-    assertFalse(new ExtraFile("file:///item1/item2/item2.txt").isSameOrHasParent(null, new MMapURI("file:///item3/item2/item2.txt")));
-    assertFalse(new ExtraFile("file:///item1/item2/item2.txt").isSameOrHasParent(null, new MMapURI("file:///item1/item2/item2.tx")));
-    assertFalse(new ExtraFile("file:///item1/item2/item2.txt").isSameOrHasParent(null, new MMapURI("file:///item3/item2")));
-    assertFalse(new ExtraFile("file:///item1/item2/item2.txt").isSameOrHasParent(null, new MMapURI("file:///item3")));
-    assertFalse(new ExtraFile("file:///item1/item2/item2.txt").isSameOrHasParent(null, new MMapURI("file:///item")));
-    assertFalse(new ExtraFile("file:///item1/item2.txt").isSameOrHasParent(null, new MMapURI("file:///item1/item2/")));
- 
+    assertTrue(new ExtraFile("file:///item1/item2/item2.txt").isSameOrHasParent(null,
+        new MMapURI("file:///item1/item2/item2.txt")));
+    assertTrue(new ExtraFile("file:///item1/item2/item2.txt").isSameOrHasParent(null,
+        new MMapURI("file:///item1/item2")));
+    assertTrue(new ExtraFile("file:///item1/item2/item2.txt").isSameOrHasParent(null,
+        new MMapURI("file:///item1/")));
+    assertTrue(new ExtraFile("file:///item1/item2/item2.txt").isSameOrHasParent(null,
+        new MMapURI("file:///")));
+
+    assertFalse(new ExtraFile("file:///item1/item2/item2.txt").isSameOrHasParent(null,
+        new MMapURI("file:///item3/item2/item2.txt")));
+    assertFalse(new ExtraFile("file:///item1/item2/item2.txt").isSameOrHasParent(null,
+        new MMapURI("file:///item1/item2/item2.tx")));
+    assertFalse(new ExtraFile("file:///item1/item2/item2.txt").isSameOrHasParent(null,
+        new MMapURI("file:///item3/item2")));
+    assertFalse(new ExtraFile("file:///item1/item2/item2.txt").isSameOrHasParent(null,
+        new MMapURI("file:///item3")));
+    assertFalse(new ExtraFile("file:///item1/item2/item2.txt").isSameOrHasParent(null,
+        new MMapURI("file:///item")));
+    assertFalse(new ExtraFile("file:///item1/item2.txt").isSameOrHasParent(null,
+        new MMapURI("file:///item1/item2/")));
+
     final File base = new File("/some/base");
-    
-    assertTrue(new ExtraFile(MMapURI.makeFromFilePath(base, "chunga/changa.txt", null)).isSameOrHasParent(base, new MMapURI(base,new File("chunga/changa.txt"),null)));
-    assertFalse(new ExtraFile(MMapURI.makeFromFilePath(base, "chunga/changa.txt", null)).isSameOrHasParent(base, new MMapURI(base,new File("chunga/changa.tx"),null)));
-    assertFalse(new ExtraFile(MMapURI.makeFromFilePath(base, "chunga/changa.tx", null)).isSameOrHasParent(base, new MMapURI(base,new File("chunga/changa.txt"),null)));
-    
-    assertTrue(new ExtraFile(MMapURI.makeFromFilePath(base, "chunga/changa.txt", null)).isSameOrHasParent(base, new MMapURI("file:///some/base/chunga/changa.txt")));
+
+    assertTrue(
+        new ExtraFile(MMapURI.makeFromFilePath(base, "chunga/changa.txt", null)).isSameOrHasParent(
+            base, new MMapURI(base, new File("chunga/changa.txt"), null)));
+    assertFalse(
+        new ExtraFile(MMapURI.makeFromFilePath(base, "chunga/changa.txt", null)).isSameOrHasParent(
+            base, new MMapURI(base, new File("chunga/changa.tx"), null)));
+    assertFalse(
+        new ExtraFile(MMapURI.makeFromFilePath(base, "chunga/changa.tx", null)).isSameOrHasParent(
+            base, new MMapURI(base, new File("chunga/changa.txt"), null)));
+
+    assertTrue(
+        new ExtraFile(MMapURI.makeFromFilePath(base, "chunga/changa.txt", null)).isSameOrHasParent(
+            base, new MMapURI("file:///some/base/chunga/changa.txt")));
   }
 }

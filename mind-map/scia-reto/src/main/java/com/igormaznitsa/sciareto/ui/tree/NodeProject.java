@@ -51,8 +51,8 @@ public class NodeProject extends NodeFileOrFolder {
   private static final Logger LOGGER = LoggerFactory.getLogger(NodeProject.class);
   private final AtomicBoolean loading = new AtomicBoolean(true);
   private final AtomicReference<Disposable> loadDispose = new AtomicReference<>();
+  private final boolean knowledgeFolderPresented;
   private volatile File folder = null;
-  private volatile boolean knowledgeFolderPresented;
 
   public NodeProject(@Nonnull final Predicate<NodeFileOrFolder> predicateShowHiddenFiles,
                      @Nonnull final NodeProjectGroup group, @Nonnull final File folder)
@@ -166,10 +166,8 @@ public class NodeProject extends NodeFileOrFolder {
         .flatMap(p -> super.readSubtree(addHiddenFilesAndFolders))
         .doFinally(signalType -> {
           Collections.sort(this.children, this);
-          LOGGER.info(String.format("Project %s reloaded, spent %d ms", this.toString(),
+          LOGGER.info(String.format("Project %s reloaded, spent %d ms", this,
               System.currentTimeMillis() - time.get()));
-        })
-        .doOnTerminate(() -> {
           this.loading.set(false);
           this.loadDispose.set(null);
           this.getGroup().notifyProjectStateChanged(this);
@@ -205,9 +203,10 @@ public class NodeProject extends NodeFileOrFolder {
 
   public void cancelLoading() {
     final Disposable disposable = this.loadDispose.getAndSet(null);
-    if (disposable != null) {
+    if (disposable != null && !disposable.isDisposed()) {
       disposable.dispose();
-      this.getGroup().notifyProjectStateChanged(this);
     }
+    this.loading.set(false);
+    this.getGroup().notifyProjectStateChanged(this);
   }
 }

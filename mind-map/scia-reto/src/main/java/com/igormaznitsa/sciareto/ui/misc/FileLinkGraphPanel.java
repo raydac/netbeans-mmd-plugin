@@ -332,7 +332,7 @@ public final class FileLinkGraphPanel extends JPanel {
 
     private final Icon icon;
 
-    private FileVertexType(@Nonnull final String icon) {
+    FileVertexType(@Nonnull final String icon) {
       this.icon = new ImageIcon(UiUtils.loadIcon("graph/" + icon)); //NOI18N
     }
 

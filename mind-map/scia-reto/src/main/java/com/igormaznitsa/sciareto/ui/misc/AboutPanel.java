@@ -58,6 +58,7 @@ public final class AboutPanel extends javax.swing.JPanel implements JHtmlLabel.L
   private javax.swing.JTable tableThirdPartLibraries;
   private com.igormaznitsa.sciareto.ui.misc.JHtmlLabel textLabel;
   private com.igormaznitsa.sciareto.ui.misc.JHtmlLabel textLabelDonation;
+
   public AboutPanel() {
     initComponents();
 

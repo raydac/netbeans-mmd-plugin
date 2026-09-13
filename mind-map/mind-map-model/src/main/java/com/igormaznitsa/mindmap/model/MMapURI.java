@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
@@ -36,7 +35,7 @@ import java.util.Properties;
  */
 public class MMapURI implements Serializable {
 
-  public static final long serialVersionUID = 27896411234L;
+  private static final long serialVersionUID = 27896411234L;
 
   private final URI uri;
   private final Properties parameters;
@@ -167,23 +166,13 @@ public class MMapURI implements Serializable {
     if (this == that) {
       return true;
     }
-    if (that instanceof MMapURI) {
-      final MMapURI thatURI = (MMapURI) that;
-      if (this.parameters.size() != thatURI.parameters.size()) {
-        return false;
-      }
-      for (final String s : this.parameters.stringPropertyNames()) {
-        if (!thatURI.parameters.containsKey(s)) {
-          return false;
-        }
-        if (!this.parameters.getProperty(s).equals(thatURI.parameters.getProperty(s))) {
-          return false;
-        }
-      }
-      return this.fileUriFlag == thatURI.fileUriFlag && this.uri.equals(thatURI.uri);
-    } else {
+    if (!(that instanceof MMapURI)) {
       return false;
     }
+    final MMapURI thatUri = (MMapURI) that;
+    return this.fileUriFlag == thatUri.fileUriFlag
+        && this.uri.equals(thatUri.uri)
+        && this.parameters.equals(thatUri.parameters);
   }
 
   /**
@@ -249,8 +238,8 @@ public class MMapURI implements Serializable {
     final MMapURI result;
     final String normalizedName = ModelUtils.escapeURIPath(newName).replace('\\', '/');
 
-    final String[] parsedNormalized = normalizedName.split("\\/");
-    final String[] parsedCurrentPath = this.uri.getPath().split("\\/");
+    final String[] parsedNormalized = normalizedName.split("/");
+    final String[] parsedCurrentPath = this.uri.getPath().split("/");
 
     final int baseLength = Math.max(0, parsedCurrentPath.length - parsedNormalized.length);
 
@@ -277,7 +266,7 @@ public class MMapURI implements Serializable {
         this.uri.getPort(),
         buffer.toString(),
         this.uri.getQuery(),
-        this.uri.getFragment()), this.fileUriFlag, parameters);
+        this.uri.getFragment()), this.fileUriFlag, this.parameters);
     return result;
   }
 
@@ -359,12 +348,8 @@ public class MMapURI implements Serializable {
     if (this.uri.isAbsolute()) {
       result = ModelUtils.toFile(this.uri);
     } else {
-      try {
-        result = new File(baseFolder,
-            URLDecoder.decode(this.uri.getPath(), StandardCharsets.UTF_8.name()));
-      } catch (UnsupportedEncodingException ex) {
-        throw new Error("Unexpected error", ex);
-      }
+      result = new File(baseFolder,
+          URLDecoder.decode(this.uri.getPath(), StandardCharsets.UTF_8));
     }
     return result;
   }

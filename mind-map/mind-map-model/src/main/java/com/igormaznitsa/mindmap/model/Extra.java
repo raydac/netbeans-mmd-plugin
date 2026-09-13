@@ -16,7 +16,6 @@
 
 package com.igormaznitsa.mindmap.model;
 
-import static java.util.Objects.requireNonNull;
 import static org.apache.commons.text.StringEscapeUtils.unescapeHtml3;
 
 import java.io.File;
@@ -116,8 +115,8 @@ public abstract class Extra<T> implements Serializable, Constants, Cloneable {
    * @throws IOException thrown if any error
    */
   public final void write(final Writer out) throws IOException {
-    out.append("- ").append(getType().name()).append(NEXT_LINE);
-    out.append(ModelUtils.makePreBlock(provideAsStringForSave()));
+    out.append("- ").append(this.getType().name()).append(NEXT_LINE);
+    out.append(ModelUtils.makePreBlock(this.provideAsStringForSave()));
   }
 
   @Override
@@ -162,7 +161,7 @@ public abstract class Extra<T> implements Serializable, Constants, Cloneable {
           case LINK: {
             try {
               result = str.trim();
-              requireNonNull(URI.create(result));
+              URI.create(result);
             } catch (IllegalArgumentException ex) {
               result = null;
             }

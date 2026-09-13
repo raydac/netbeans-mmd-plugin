@@ -33,7 +33,7 @@ public enum Icons {
 
   private final ImageIcon icon;
 
-  private Icons(@Nonnull final String name) {
+  Icons(@Nonnull final String name) {
     this.icon = new ImageIcon(UiUtils.loadIcon(name));
   }
 

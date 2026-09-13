@@ -20,7 +20,6 @@ import static java.util.Locale.ENGLISH;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
@@ -177,9 +176,7 @@ public final class ModelUtils implements Constants {
    */
   public static void repeatChar(final Appendable out, final char chr, final int times)
       throws IOException {
-    for (int i = 0; i < times; i++) {
-      out.append(chr);
-    }
+    out.append(String.valueOf(chr).repeat(Math.max(0, times)));
   }
 
   /**
@@ -190,9 +187,7 @@ public final class ModelUtils implements Constants {
    * @param times number of times to repeat the char
    */
   public static void repeatChar(final StringBuilder out, final char chr, final int times) {
-    for (int i = 0; i < times; i++) {
-      out.append(chr);
-    }
+    out.append(String.valueOf(chr).repeat(Math.max(0, times)));
   }
 
   /**
@@ -203,7 +198,7 @@ public final class ModelUtils implements Constants {
    */
   public static String unescapeMarkdown(final String text) {
     String unescaped = UNESCAPE_BR.matcher(text).replaceAll(NEXT_LINE);
-    final StringBuffer result = new StringBuffer(text.length());
+    final StringBuilder result = new StringBuilder(text.length());
     final Matcher escaped = MD_ESCAPED_PATTERN.matcher(unescaped);
     while (escaped.find()) {
       final String group = escaped.group(1);
@@ -220,11 +215,8 @@ public final class ModelUtils implements Constants {
    * @param maxLength max allowed length of text, must be positive one
    * @return ellipsis if text longer than asked length
    */
-  public static String makeEllipsis(String text, final int maxLength) {
-    if (text.length() > maxLength) {
-      text = text.substring(0, maxLength) + "...";
-    }
-    return text;
+  public static String makeEllipsis(final String text, final int maxLength) {
+    return text.length() > maxLength ? text.substring(0, maxLength) + "..." : text;
   }
 
   /**
@@ -250,22 +242,7 @@ public final class ModelUtils implements Constants {
    * @return array of lines, must not be null
    */
   public static String[] breakToLines(final String text) {
-    final int lineNum = countLines(text);
-    final String[] result = new String[lineNum];
-    final StringBuilder line = new StringBuilder();
-
-    int index = 0;
-
-    for (int i = 0; i < text.length(); i++) {
-      if (text.charAt(i) == NEXT_LINE_CHAR) {
-        result[index++] = line.toString();
-        line.setLength(0);
-      } else {
-        line.append(text.charAt(i));
-      }
-    }
-    result[index] = line.toString();
-    return result;
+    return text.split("\n", -1);
   }
 
   /**
@@ -283,19 +260,15 @@ public final class ModelUtils implements Constants {
     final List<String> keysInOrder = new ArrayList<>(properties.stringPropertyNames());
     Collections.sort(keysInOrder);
 
-    try {
-      for (final String k : keysInOrder) {
-        final String encodedKey = URLEncoder.encode(k, StandardCharsets.UTF_8.name());
-        final String encodedValue =
-            URLEncoder.encode(properties.getProperty(k), StandardCharsets.UTF_8.name());
+    for (final String k : keysInOrder) {
+      final String encodedKey = URLEncoder.encode(k, StandardCharsets.UTF_8);
+      final String encodedValue =
+          URLEncoder.encode(properties.getProperty(k), StandardCharsets.UTF_8);
 
-        if (buffer.length() > 0) {
-          buffer.append(URI_QUERY_PARAMETER_SEPARATOR);
-        }
-        buffer.append(encodedKey).append('=').append(encodedValue);
+      if (buffer.length() > 0) {
+        buffer.append(URI_QUERY_PARAMETER_SEPARATOR);
       }
-    } catch (final UnsupportedEncodingException ex) {
-      throw new Error("Unexpected error", ex);
+      buffer.append(encodedKey).append('=').append(encodedValue);
     }
     return buffer.toString();
   }
@@ -314,13 +287,9 @@ public final class ModelUtils implements Constants {
       final Matcher matcher = URI_QUERY_PARAMETERS.matcher(rawQuery);
 
       while (matcher.find()) {
-        try {
-          final String key = URLDecoder.decode(matcher.group(1), StandardCharsets.UTF_8.name());
-          final String value = URLDecoder.decode(matcher.group(2), StandardCharsets.UTF_8.name());
-          result.put(key, value);
-        } catch (UnsupportedEncodingException ex) {
-          throw new Error(ex);
-        }
+        final String key = URLDecoder.decode(matcher.group(1), StandardCharsets.UTF_8);
+        final String value = URLDecoder.decode(matcher.group(2), StandardCharsets.UTF_8);
+        result.put(key, value);
       }
     }
 
@@ -349,7 +318,8 @@ public final class ModelUtils implements Constants {
 
     for (int i = 0; i < text.length(); i++) {
       final char c = text.charAt(i);
-      if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || "-_.~".indexOf(c) >= 0) {
+      if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')
+          || "-_.~".indexOf(c) >= 0) {
         result.append(c);
       } else {
         if (":/?#[]@!$^'()*+,;= ".indexOf(c) >= 0) {

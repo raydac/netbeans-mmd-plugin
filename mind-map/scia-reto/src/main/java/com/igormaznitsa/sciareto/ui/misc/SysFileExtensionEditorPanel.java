@@ -60,7 +60,7 @@ public class SysFileExtensionEditorPanel extends javax.swing.JPanel {
         if (trimmed.isEmpty()) {
           continue;
         }
-        if (builder.length() > 0) {
+        if (!builder.isEmpty()) {
           builder.append(',');
         }
         builder.append(trimmed);
@@ -84,20 +84,20 @@ public class SysFileExtensionEditorPanel extends javax.swing.JPanel {
         continue;
       }
       if (curChar == null || curChar != trimmed.charAt(0)) {
-        if (buffer.length() > 0) {
+        if (!buffer.isEmpty()) {
           result.add(buffer.toString());
         }
         curChar = trimmed.charAt(0);
         buffer.setLength(0);
         buffer.append(s);
       } else {
-        if (buffer.length() > 0) {
+        if (!buffer.isEmpty()) {
           buffer.append(',');
         }
         buffer.append(s);
       }
     }
-    if (buffer.length() > 0) {
+    if (!buffer.isEmpty()) {
       result.add(buffer.toString());
     }
     return result.toArray(new String[result.size()]);

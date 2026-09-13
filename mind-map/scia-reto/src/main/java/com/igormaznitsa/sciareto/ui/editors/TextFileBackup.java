@@ -53,6 +53,7 @@ public class TextFileBackup {
   private static final AtomicReference<TextFileBackup> instance = new AtomicReference<>();
   private static final long SHUTDOWN_JOIN_TIMEOUT_MS = 30_000L;
   private static final long SHUTDOWN_INTERRUPT_JOIN_TIMEOUT_MS = 5_000L;
+  private static final int MAX_UNPACKED_BACKUP_BYTES = 64 * 1024 * 1024;
 
   private final BlockingQueue<BackupContent> contentQueue = new ArrayBlockingQueue<>(32);
   private final AtomicReference<Thread> workerThread = new AtomicReference<>();
@@ -76,6 +77,10 @@ public class TextFileBackup {
   @Nullable
   public static File findBackupForFile(@Nonnull final File file) {
     final File root = file.getParentFile();
+    if (root == null) {
+      return null;
+    }
+
     final File backup0 = new File(root, makeBackupFileName(file, 0));
     final File backup1 = new File(root, makeBackupFileName(file, 1));
 
@@ -125,10 +130,11 @@ public class TextFileBackup {
       writeLong(timestamp, bao);
       writeLong(crc32value, bao);
       final ByteArrayOutputStream packedDataBuffer = new ByteArrayOutputStream(content.length());
-      final DeflaterOutputStream zos = new DeflaterOutputStream(packedDataBuffer, new Deflater(2));
-      IOUtils.write(textAsBytes, zos);
-      zos.flush();
-      zos.finish();
+      try (final DeflaterOutputStream zos = new DeflaterOutputStream(packedDataBuffer,
+          new Deflater(2))) {
+        IOUtils.write(textAsBytes, zos);
+        zos.finish();
+      }
       final byte[] packedContent = packedDataBuffer.toByteArray();
       writeLong(textAsBytes.length, bao);
       writeLong(packedContent.length, bao);
@@ -150,6 +156,10 @@ public class TextFileBackup {
 
   private void removeBackup(@Nonnull final File file) {
     final File root = file.getParentFile();
+    if (root == null) {
+      return;
+    }
+
     final File backup0 = new File(root, makeBackupFileName(file, 0));
     final File backup1 = new File(root, makeBackupFileName(file, 1));
     FileUtils.deleteQuietly(backup0);
@@ -159,6 +169,11 @@ public class TextFileBackup {
   private void backup(@Nonnull final File file, @Nonnull final byte[] data) {
     if (data.length > 0) {
       final File root = file.getParentFile();
+      if (root == null) {
+        LOGGER.error("Can't save backup file without parent directory: " + file);
+        return;
+      }
+
       final File backup0 = new File(root, makeBackupFileName(file, 0));
       final File backup1 = new File(root, makeBackupFileName(file, 1));
 
@@ -272,15 +287,23 @@ public class TextFileBackup {
           Files.newInputStream(file.toPath()))) {
         this.timestamp = readLong(inStream);
         this.crc32 = readLong(inStream);
-        this.unpackedSize = (int) readLong(inStream);
-        this.packedSize = (int) readLong(inStream);
-        this.content = new byte[unpackedSize];
+        final long unpacked = readLong(inStream);
+        final long packed = readLong(inStream);
+        if (unpacked < 0L || unpacked > MAX_UNPACKED_BACKUP_BYTES) {
+          throw new IOException("Invalid unpacked backup size: " + unpacked);
+        }
+        if (packed < 0L || packed > Integer.MAX_VALUE) {
+          throw new IOException("Invalid packed backup size: " + packed);
+        }
+        this.unpackedSize = (int) unpacked;
+        this.packedSize = (int) packed;
+        this.content = new byte[this.unpackedSize];
         try (final InflaterInputStream zipIn = new InflaterInputStream(inStream)) {
           IOUtils.readFully(zipIn, this.content);
         }
         final CRC32 calcCrc32 = new CRC32();
-        calcCrc32.update(content);
-        if (crc32 != calcCrc32.getValue()) {
+        calcCrc32.update(this.content);
+        if (this.crc32 != calcCrc32.getValue()) {
           throw new IOException("CRC32 error");
         }
       }

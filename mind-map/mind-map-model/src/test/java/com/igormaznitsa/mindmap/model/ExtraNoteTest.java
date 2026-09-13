@@ -13,14 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.model;
 
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.regex.Pattern;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 public class ExtraNoteTest {
 
@@ -63,7 +67,8 @@ public class ExtraNoteTest {
     assertTrue(note.containsPattern(new File(System.getProperty("user.home")),
         Pattern.compile(Pattern.quote("num=1341507344"))));
 
-    assertFalse(note.containsPattern(null, Pattern.compile(Pattern.quote("yab3"), Pattern.CASE_INSENSITIVE)));
+    assertFalse(note.containsPattern(null,
+        Pattern.compile(Pattern.quote("yab3"), Pattern.CASE_INSENSITIVE)));
   }
-  
+
 }

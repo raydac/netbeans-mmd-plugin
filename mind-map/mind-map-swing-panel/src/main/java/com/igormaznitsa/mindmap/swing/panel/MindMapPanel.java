@@ -2252,7 +2252,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
    * Ask the panel to place the root topic in the center of its viewport on the
    * next successful layout. The position is applied during layout, before paint.
    *
-   * @since 1.7.1
+   * @since 1.8.0
    */
   public void requestRootCenteringInViewport() {
     this.assertNotDisposed();
@@ -2264,7 +2264,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
    * Place the current root topic in the center of the enclosing viewport.
    *
    * @return true if the viewport position was applied
-   * @since 1.7.1
+   * @since 1.8.0
    */
   public boolean centerRootInViewport() {
     this.assertNotDisposed();
@@ -2277,7 +2277,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
    *
    * @param topic topic to center, can be null
    * @return true if the viewport position was applied
-   * @since 1.7.1
+   * @since 1.8.0
    */
   public boolean centerTopicInViewport(final Topic topic) {
     this.assertNotDisposed();

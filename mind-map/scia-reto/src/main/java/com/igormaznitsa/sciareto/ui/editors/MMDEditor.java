@@ -778,12 +778,12 @@ public final class MMDEditor extends AbstractTextEditor
             if (Boolean.parseBoolean(
                 uri.getParameters().getProperty(FILELINK_ATTR_OPEN_IN_SYSTEM, "false"))) { //NOI18N
               UiUtils.openInSystemViewer(theFile);
-            } else if (theFile.isDirectory()) {
-              this.context.openProject(theFile, false);
             } else if (!this.context.openFileAsTab(theFile, FilePathWithLine
                 .strToLine(uri.getParameters().getProperty(FILELINK_ATTR_LINE, null)))) {
               UiUtils.openInSystemViewer(theFile);
             }
+          } else if (theFile.isDirectory()) {
+            this.context.openProject(theFile, false);
           } else {
             DialogProviderManager.getInstance().getDialogProvider()
                 .msgWarn(SciaRetoStarter.getApplicationFrame(), String

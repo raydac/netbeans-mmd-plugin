@@ -85,7 +85,7 @@ public final class MindMapLexer {
    * @return current buffered char sequence for position, must not be null
    */
   public CharSequence getTokenSequence() {
-    return getBufferSequence().subSequence(this.tokenStart, this.tokenEnd);
+    return this.getBufferSequence().subSequence(this.tokenStart, this.tokenEnd);
   }
 
   /**
@@ -94,7 +94,7 @@ public final class MindMapLexer {
    * @return string currently presented in buffer, must not be null
    */
   public String getTokenText() {
-    return getTokenSequence().toString();
+    return this.getTokenSequence().toString();
   }
 
   /**
@@ -279,14 +279,8 @@ public final class MindMapLexer {
   }
 
   private boolean isLineStart() {
-    boolean result;
     final int startPos = this.position.offset - 1;
-    if (startPos < 0) {
-      result = true;
-    } else {
-      result = this.buffer.charAt(startPos) == '\n';
-    }
-    return result;
+    return startPos < 0 || this.buffer.charAt(startPos) == '\n';
   }
 
   private boolean isEmptyToken() {

@@ -132,6 +132,7 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileView;
 import org.apache.commons.io.FilenameUtils;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.SignalType;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
@@ -153,8 +154,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
   private final JPanel mainPanel;
   private final AtomicReference<FindTextPanel> currentFindTextPanel = new AtomicReference<>();
   private final JSplitPane mainSplitPane;
+  private final MindMapPanelConfig mindMapPanelConfig = new MindMapPanelConfig();
   private int lastDividerLocation;
-  private MindMapPanelConfig mindMapPanelConfig = new MindMapPanelConfig();
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JPopupMenu.Separator jSeparator1;
   private javax.swing.JPopupMenu.Separator jSeparator2;
@@ -235,6 +236,10 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
 
     PlatformProvider.getPlatform()
         .registerPlatformMenuEvent(PlatformMenuEvent.REOPEN_APPLICATION, this);
+    PlatformProvider.getPlatform()
+        .registerPlatformMenuEvent(PlatformMenuEvent.OPEN_FILE, this);
+    PlatformProvider.getPlatform()
+        .registerPlatformMenuEvent(PlatformMenuEvent.PRINT_FILE, this);
 
     this.stackPanel = new JPanel();
     this.stackPanel.setFocusable(false);
@@ -350,10 +355,8 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
         final File file = new File(filePath);
         if (file.isDirectory()) {
           openedProject = true;
-          openProject(file, true);
-        } else if (file.isFile()) {
-          openFileAsTab(file, -1);
         }
+        this.openFileOrProject(file);
       }
       if (!openedProject) {
         SwingUtilities.invokeLater(() -> {
@@ -751,12 +754,40 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
       }
       break;
       case PREFERENCES: {
-        editPreferences();
+        this.editPreferences();
         handled = true;
+      }
+      break;
+      case OPEN_FILE:
+      case PRINT_FILE: {
+        handled = this.openPathFromPlatformEvent(args);
       }
       break;
     }
     return handled;
+  }
+
+  private boolean openPathFromPlatformEvent(@Nullable @MayContainNull final Object... args) {
+    if (args == null || args.length == 0 || args[0] == null) {
+      return false;
+    }
+
+    final File file = new File(String.valueOf(args[0]));
+    if (!file.isFile() && !file.isDirectory()) {
+      LOGGER.warn("Platform open ignored, path does not exist: " + file);
+      return false;
+    }
+
+    Utils.safeSwingCall(() -> this.openFileOrProject(file));
+    return true;
+  }
+
+  private void openFileOrProject(@Nonnull final File file) {
+    if (file.isDirectory()) {
+      this.openProject(file, true);
+    } else if (file.isFile()) {
+      this.openFileAsTab(file, -1);
+    }
   }
 
   private boolean tryCloseApplication() {
@@ -1047,7 +1078,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
                             .getString("mainFrame.openFileAsTab.VeryBig.title"),
                         SrI18n.getInstance().findBundle()
                             .getString("mainFrame.openFileAsTab.VeryBig.msg"))) {
-              return true;
+              return false;
             }
 
             try {
@@ -1882,7 +1913,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
                                         @Nullable final Runnable... invokeLater) {
     assertSwingThread();
 
-    LOGGER.info("Starting async loading of " + project.toString());
+    LOGGER.info("Starting async loading of " + project);
 
     project.initLoading(Mono.just(project)
         .map(proj -> {
@@ -1901,12 +1932,14 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
                     error.getMessage()));
           });
         })
-        .doOnTerminate(() -> {
+        .doFinally(signalType -> {
           SwingUtilities.invokeLater(() ->
               ProjectLoadingIconAnimationController.getInstance()
                   .unregisterLoadingProject(project));
-          for (final Runnable r : invokeLater) {
-            SwingUtilities.invokeLater(r);
+          if (signalType != SignalType.CANCEL) {
+            for (final Runnable r : invokeLater) {
+              SwingUtilities.invokeLater(r);
+            }
           }
         })
         .subscribeOn(REACTOR_SCHEDULER)
@@ -2040,13 +2073,7 @@ public final class MainFrame extends javax.swing.JFrame implements Context, Plat
             }, SrI18n.getInstance().findBundle()
                 .getString("mainFrame.menuOpenFileActionPerformed.approve"));
     if (file != null) {
-      if (openFileAsTab(file, -1)) {
-        try {
-          FileHistoryManager.getInstance().registerOpenedProject(file);
-        } catch (IOException ex) {
-          LOGGER.error("Can't register last opened file", ex); //NOI18N
-        }
-      }
+      this.openFileAsTab(file, -1);
     }
   }//GEN-LAST:event_menuOpenFileActionPerformed
 

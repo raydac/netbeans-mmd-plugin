@@ -31,6 +31,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -171,7 +172,7 @@ public class FindUsagesPanel extends javax.swing.JPanel {
               Reader reader = null;
               try {
                 reader = new BufferedReader(
-                    new InputStreamReader(new FileInputStream(f), "UTF-8")); //NOI18N
+                    new InputStreamReader(new FileInputStream(f), StandardCharsets.UTF_8)); //NOI18N
                 final MindMap map = new MindMap(reader);
                 if (!MapUtils.findTopicsRelatedToFile(project.getFolder(), nodeFileToSearch, map)
                     .isEmpty()) {
@@ -191,7 +192,7 @@ public class FindUsagesPanel extends javax.swing.JPanel {
                     if (Thread.currentThread().isInterrupted()) {
                       return;
                     }
-                    final String lineFromFile = lineIterator.nextLine();
+                    final String lineFromFile = lineIterator.next();
                     if (lineFromFile.contains(fullNormalizedPath)) {
                       addFileIntoList(file);
                       break;

@@ -64,7 +64,7 @@ public final class DnDTree extends JTree
       SrI18n.getInstance().findBundle().getString("treeDnd.tooltip.noaccess");
   private final String stringReadOnly =
       SrI18n.getInstance().findBundle().getString("treeDnd.tooltip.readonly");
-  private boolean dragAcceptableType = false;
+  private final boolean dragAcceptableType = false;
 
   public DnDTree() {
     super();

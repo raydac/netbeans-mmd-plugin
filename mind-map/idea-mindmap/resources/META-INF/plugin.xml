@@ -2,7 +2,7 @@
 <idea-plugin>
     <id>nb-mind-map-idea</id>
     <name>SciaReto Mind Map</name>
-    <version>1.7.1-SNAPSHOT</version>
+    <version>1.8.0-SNAPSHOT</version>
     <vendor url="https://www.igormaznitsa.com">Igor Maznitsa</vendor>
 
     <category>Knowledge management</category>
@@ -12,8 +12,9 @@
     ]]></description>
 
     <change-notes><![CDATA[
-        <p>1.7.1 (SNAPSHOT)</p>
+        <p>1.8.0 (SNAPSHOT)</p>
         <ul>
+            <li>Minimum Java version lifted from 8 to 11</li>
             <li>Newly opened mind maps show the root topic centered without a visible jump</li>
             <li>Printing keeps printer resolution instead of a low-DPI bitmap, so small map details, topic icons, and images stay readable; topic frames stay around the text when printing to PDF or PostScript; a large map printed across several pages keeps every tile, including 2×2 fit and when preview zoom is not 100%</li>
         </ul>

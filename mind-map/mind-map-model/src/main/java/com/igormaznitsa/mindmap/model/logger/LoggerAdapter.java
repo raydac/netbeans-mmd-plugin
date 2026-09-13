@@ -23,8 +23,8 @@ import static java.util.Objects.requireNonNull;
  */
 public class LoggerAdapter extends Logger {
 
-  public LoggerAdapter(final String namme) {
-    super(requireNonNull(namme));
+  public LoggerAdapter(final String name) {
+    super(requireNonNull(name));
   }
 
   public LoggerAdapter(final Class<?> klazz) {

@@ -36,32 +36,35 @@ public class ExtraTopic extends Extra<String> {
   }
 
   public static ExtraTopic makeLinkTo(final MindMap map, final Topic topic) {
-    ExtraTopic result = null;
-    if (topic != null) {
-      String uid = topic.getAttribute(TOPIC_UID_ATTR);
-      if (uid == null) {
-        String time = Long.toHexString(System.currentTimeMillis() & 0x7FFFFFFFFFFFFFFFL)
-            .toUpperCase(Locale.ENGLISH);
-        char extra = 'A';
-        while (true) {
-          uid = time + extra;
-          if (map.findTopicForLink(new ExtraTopic(uid)) != null) {
-            if (extra == 'Z') {
-              time = Long.toHexString(System.nanoTime() & 0x7FFFFFFFFFFFFFFFL)
-                  .toUpperCase(Locale.ENGLISH);
-              extra = 'A';
-            } else {
-              extra++;
-            }
-          } else {
-            break;
-          }
-        }
-        topic.putAttribute(TOPIC_UID_ATTR, uid);
-      }
-      result = new ExtraTopic(uid);
+    if (topic == null) {
+      return null;
     }
-    return result;
+
+    String uid = topic.getAttribute(TOPIC_UID_ATTR);
+    if (uid == null) {
+      uid = uniqueTopicUid(map);
+      topic.putAttribute(TOPIC_UID_ATTR, uid);
+    }
+    return new ExtraTopic(uid);
+  }
+
+  private static String uniqueTopicUid(final MindMap map) {
+    String time = Long.toHexString(System.currentTimeMillis() & 0x7FFFFFFFFFFFFFFFL)
+        .toUpperCase(Locale.ENGLISH);
+    char extra = 'A';
+    while (true) {
+      final String uid = time + extra;
+      if (map.findTopicForLink(new ExtraTopic(uid)) == null) {
+        return uid;
+      }
+      if (extra == 'Z') {
+        time = Long.toHexString(System.nanoTime() & 0x7FFFFFFFFFFFFFFFL)
+            .toUpperCase(Locale.ENGLISH);
+        extra = 'A';
+      } else {
+        extra++;
+      }
+    }
   }
 
   @Override

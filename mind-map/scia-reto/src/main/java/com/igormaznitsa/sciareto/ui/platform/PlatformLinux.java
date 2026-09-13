@@ -19,6 +19,8 @@
 package com.igormaznitsa.sciareto.ui.platform;
 
 import com.igormaznitsa.meta.annotation.Warning;
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.sciareto.SciaRetoStarter;
 import java.awt.Toolkit;
 import java.lang.reflect.Field;
@@ -26,6 +28,8 @@ import javax.annotation.Nonnull;
 
 @Warning("It is accessible through Class.forName(), don't rename it!")
 public class PlatformLinux extends PlatformDefault {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(PlatformLinux.class);
 
   public PlatformLinux() {
     super();
@@ -37,8 +41,8 @@ public class PlatformLinux extends PlatformDefault {
       final Field awtAppClassNameField = toolkit.getClass().getDeclaredField("awtAppClassName");
       awtAppClassNameField.setAccessible(true);
       awtAppClassNameField.set(toolkit, SciaRetoStarter.APP_TITLE);
-    } catch (Exception ex) {
-      //Do nothing
+    } catch (final Exception ex) {
+      LOGGER.info("Can't set GNOME application title: " + ex.getMessage());
     }
   }
 

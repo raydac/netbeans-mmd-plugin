@@ -20,39 +20,25 @@ import static java.util.Objects.requireNonNull;
 
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerService;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Basic implementations working over java.util.logging.Logger
  */
 public class JavaLoggerServiceImpl implements LoggerService {
 
-  private final Map<Class<?>, Logger> cacheForClasses = new HashMap<>();
-  private final Map<String, Logger> cacheForNames = new HashMap<>();
+  private final Map<Class<?>, Logger> cacheForClasses = new ConcurrentHashMap<>();
+  private final Map<String, Logger> cacheForNames = new ConcurrentHashMap<>();
 
   @Override
   public Logger getLogger(final Class<?> klazz) {
-    synchronized (this.cacheForClasses) {
-      Logger result = this.cacheForClasses.get(requireNonNull(klazz));
-      if (result == null) {
-        result = new JavaLogger(klazz);
-        this.cacheForClasses.put(klazz, result);
-      }
-      return result;
-    }
+    return this.cacheForClasses.computeIfAbsent(requireNonNull(klazz), JavaLogger::new);
   }
 
   @Override
   public Logger getLogger(final String name) {
-    synchronized (this.cacheForNames) {
-      Logger result = this.cacheForNames.get(requireNonNull(name));
-      if (result == null) {
-        result = new JavaLogger(name);
-        this.cacheForNames.put(name, result);
-      }
-      return result;
-    }
+    return this.cacheForNames.computeIfAbsent(requireNonNull(name), JavaLogger::new);
   }
 
 }

@@ -13,35 +13,52 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.igormaznitsa.mindmap.model;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.util.regex.Pattern;
+import org.junit.Test;
 
 public class ExtraLinkTest {
-  
+
   @Test
   public void testEquals() throws Exception {
     assertEquals(new ExtraLink("http://www.google.com"), new ExtraLink("http://www.google.com"));
-    assertEquals(new ExtraLink("http://www.google.com?a=1&b=2"), new ExtraLink("http://www.google.com?a=1&b=2"));
-    assertNotEquals(new ExtraLink("http://www.google.com?a=1&b=2"), new ExtraLink("http://www.googlee.com?a=1&b=2"));
-    assertNotEquals(new ExtraLink("http://www.google.com?a=1&b=2"), new ExtraLink("http://www.google.com?b=2&a=1"));
-    assertNotEquals(new ExtraLink("http://www.google.com?a=1&b=2"), new ExtraLink("http://www.google.com?b=1&a=2"));
+    assertEquals(new ExtraLink("http://www.google.com?a=1&b=2"),
+        new ExtraLink("http://www.google.com?a=1&b=2"));
+    assertNotEquals(new ExtraLink("http://www.google.com?a=1&b=2"),
+        new ExtraLink("http://www.googlee.com?a=1&b=2"));
+    assertNotEquals(new ExtraLink("http://www.google.com?a=1&b=2"),
+        new ExtraLink("http://www.google.com?b=2&a=1"));
+    assertNotEquals(new ExtraLink("http://www.google.com?a=1&b=2"),
+        new ExtraLink("http://www.google.com?b=1&a=2"));
   }
-  
+
   @Test
   public void testContainsPattern() throws Exception {
     final ExtraLink link = new ExtraLink("http://www.1cpp.ru/forum/YaBB.pl?num=1341507344");
-    assertTrue(link.containsPattern(null, Pattern.compile(Pattern.quote("http://www.1cpp.ru/forum/YaBB.pl?num=1341507344"))));
-    assertTrue(link.containsPattern(new File(System.getProperty("user.home")), Pattern.compile(Pattern.quote("http://www.1cpp.ru/forum/YaBB.pl?num=1341507344"))));
-    assertTrue(link.containsPattern(null, Pattern.compile(Pattern.quote("http://www.1cpp.ru/forum/YaBB.pl?num=1341507344"),Pattern.CASE_INSENSITIVE)));
-    assertTrue(link.containsPattern(new File(System.getProperty("user.home")), Pattern.compile(Pattern.quote("http://www.1cpp.ru/forum/YaBB.pl?num=1341507344"),Pattern.CASE_INSENSITIVE)));
+    assertTrue(link.containsPattern(null,
+        Pattern.compile(Pattern.quote("http://www.1cpp.ru/forum/YaBB.pl?num=1341507344"))));
+    assertTrue(link.containsPattern(new File(System.getProperty("user.home")),
+        Pattern.compile(Pattern.quote("http://www.1cpp.ru/forum/YaBB.pl?num=1341507344"))));
+    assertTrue(link.containsPattern(null,
+        Pattern.compile(Pattern.quote("http://www.1cpp.ru/forum/YaBB.pl?num=1341507344"),
+            Pattern.CASE_INSENSITIVE)));
+    assertTrue(link.containsPattern(new File(System.getProperty("user.home")),
+        Pattern.compile(Pattern.quote("http://www.1cpp.ru/forum/YaBB.pl?num=1341507344"),
+            Pattern.CASE_INSENSITIVE)));
     assertTrue(link.containsPattern(null, Pattern.compile(Pattern.quote("num=1341507344"))));
-    assertTrue(link.containsPattern(new File(System.getProperty("user.home")), Pattern.compile(Pattern.quote("num=1341507344"))));
-    
-    assertFalse(link.containsPattern(null, Pattern.compile(Pattern.quote("yab3"),Pattern.CASE_INSENSITIVE)));
+    assertTrue(link.containsPattern(new File(System.getProperty("user.home")),
+        Pattern.compile(Pattern.quote("num=1341507344"))));
+
+    assertFalse(link.containsPattern(null,
+        Pattern.compile(Pattern.quote("yab3"), Pattern.CASE_INSENSITIVE)));
   }
-  
+
 }

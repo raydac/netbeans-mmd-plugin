@@ -1,15 +1,17 @@
 ## 1. Implementation Progress
 - Removed stray `mind-map/com/` (accidental FlatLaf `FlatClientProperties.java` from an IDE source extract) and gitignored `/mind-map/com/` so library dumps under the Maven parent are not committed again.
-- Print path no longer rasterizes mind maps/images at Java’s 72-DPI page units. Vector print lays out on the printer graphics (so topic frames match PostScript/PDF text), then draws; images keep the original pixels via affine scale; “draw as image” rasterizes per page at device DPI (capped at 300). Page count uses ceil. Fit-to-page stays vector. Print uses PrintQuality.HIGH, fractional metrics, pure strokes, and clips to the imageable area.
+- Print path no longer rasterizes mind maps/images at Java’s 72-DPI page units. Vector print lays out once in paper space, then draws; printer/preview zoom only transforms that layout (so 200% preview or 300 DPI does not reflow topics off the page grid). Images keep the original pixels via affine scale; topic extras/emoticons/attached images draw their source bitmaps into the destination size instead of a 16px/logical pre-scale; “draw as image” rasterizes per page at device DPI (capped at 300). Page count uses ceil. Fit-to-page stays vector. Print uses PrintQuality.HIGH, fractional metrics, pure strokes, and clips to the imageable area.
 - Mind map panel now centers the root topic in its `JViewport` during layout, before the first paint, so newly opened maps do not jump after load (Scia Reto) or start in the top-left corner (IntelliJ).
 - Hardened `skills/mmd/scripts`: no `--password` argv leak, atomic `.mmd` writes, Java-like URI/HTML/whitespace parsing, JSON tree type checks, crypto `hmac.compare_digest`, UTF-8 BOM reads.
 - `mind-map-model` read/write round-trips CJK and emoji (titles, notes, snippets, attributes, file extras); covered by `MindMapTest` / `ModelUtilsTest`.
 - Agent skills to copy into a user’s agent live in repo `skills/` (see `skills/README.md`). The MMD skill (`skills/mmd/`) is self-contained: `SKILL.md`, `reference.md`, `MMD_Format.MD`, and stdlib Python scripts (parse/write/validate/crypto matching Swing `CryptoUtils`).
-- Version set to **1.7.1-SNAPSHOT** for continued development: root + all module `pom.xml`, IntelliJ `plugin.xml`, changelog/README SNAPSHOT headers, mac `Info.plist` `1.7.1`, win-launcher `versioninfo.json`, `SciaRetoStarter.IDE_VERSION`, AP fallback.
+- Default Maven `compiler.source`/`compiler.target` lifted from 1.8 to **11** (parent `mind-map/pom.xml`); bytecode enforcer `max.jdk.version` matched to 11. SciaReto stays on 21; IDEA plugin and a few helper modules still override lower. Changelog records the user-facing Java 11 minimum.
+- Version set to **1.8.0-SNAPSHOT** for continued development: root + all module `pom.xml`, IntelliJ `plugin.xml`, changelog/README SNAPSHOT headers, mac `Info.plist` `1.8.0`, win-launcher `versioninfo.json`, `SciaRetoStarter.IDE_VERSION`, AP fallback. Bumped from 1.7.1 because the Java 11 minimum is a minor-version change.
 - Release **1.7.0** prepared (2026-09-06): root + all module `pom.xml`, IntelliJ `plugin.xml`, changelog/README headers, mac `Info.plist`, annotation-processor fallback.
 - scia-reto: PlantUML dependency bumped to 1.2026.8 (`plantuml.version` in `scia-reto/pom.xml`). GitHub release exists; Maven Central not published yet — installed jar+sources into local `~/.m2` from the GitHub release so offline resolve works.
 - scia-reto: assembly launch scripts fixed — Windows `%~dp0`+CRLF (+ nojre `start.cmd`), linux-nojre honors `JAVA_HOME`, quoted paths/`"$@"`, mac jar resolve + Apple `--add-opens`, AppImage `Exec=AppRun`.
 - mind-map-model: API-stable correctness fixes — MindMap `readResolve` restores listeners after deserialize; Topic.parse honors `ignoreErrors` and skips snippet body when start missing; setExtra/removeExtras/removeAllExtras call `detachedToTopic`; moveToNewParent rejects descendant cycles; parent cleared on delete/remove; findPrev null checker matches findNext; MMapURI no longer shares mutable empty Properties; equals includes fileUriFlag; ModelUtils.toFile guards empty path; JavaLoggerServiceImpl no longer mutates JUL root level; MindMapModelEvent.getPath returns a clone; cloneTopicInMap checks map ownership.
+- mind-map-model: internal quality pass with public API kept (signatures, serialVersionUID, logger SPI). Topic parse lives in a private parser; search/file-link/extra lifecycle share helpers; Topic constructor extras call `attachedToTopic`; logger cache is ConcurrentHashMap.
 - IJ sources use type imports plus `import static` for frequent factories (`getLogger`, `getBundle`, `getEncoder`/`getDecoder`, `UTF_8`, Swing/AWT constants) so method bodies do not use FQCN.
 - IJ 1.6.10 hardening: single document parse path, file links open in the IDE, PSI/editor share module-aware root resolution, facet "inside browser" honored via HTMLEditorProvider with system-browser fallback, settings migrated from `application-components` to `applicationService`, config listener unregistered on editor dispose.
 - IJ 1.6.10: MMD disappeared from File | New on latest IntelliJ because New File now reads declarative `com.intellij.fileType`, not deprecated `FileTypeFactory`.
@@ -23,9 +25,11 @@
 - scia-reto UI Swing audit (module-only): PlantUML render no longer clears `lastSuccessfullyRenderedText` in finally before EDT success; loader animation unregister moved to EDT completion; `hideTextPanel` no longer re-adds KeyListener; DnDTree null-safe transferable; loading GIF redraw marshaled to EDT; project unload animation unregister on EDT.
 - scia-reto: FlatLaf focus accent on large workspace scroll containers frozen via `UiUtils.disableContainerFocusBorder` (`focusWidth: 0` + `focusedBorderColor` = normal border); regular container borders remain.
 - scia-reto: exit paths unified via `MainFrame.tryCloseApplication` / `shutdownApplication`; `TextFileBackup.finishAndAwait()` drains pending backup/delete jobs then joins the daemon worker so exit neither loses flush nor hangs the process.
+- scia-reto quality pass (module-only): convert CLI no longer treats missing params as success or exports an empty map after failed import; declining a >2MB file returns false; MMD folder extras call `openProject`; macOS `OPEN_FILE`/`PRINT_FILE` registered; project-load cancel uses `doFinally` so the spinner clears; URI browse uses `ProcessBuilder`; UUID/history/backup restore no longer crash the session.
 
 ## 2. Architecture & Technical Discoveries
 - Java `Printable` user space is 1/72 inch. Printer `Graphics2D` already includes a DPI scale (often 300/72). Pre-rendering a `BufferedImage` at `PageFormat.getImageableWidth()` pixels is ~72 DPI and looks soft when the driver upscales it. Draw vectors (or the original image with `AffineTransform`) in that user space so the printer samples at device resolution.
+- Print tiles must `setClip` in map coordinates after translating to the page. Topic paint culls against `getClipRect()`; a clip left in page space (or stuck at `(0,0,paper,paper)` after translate) drops later tiles of a fitted map whose topics no longer intersect the first page. Preview 10–200% is view-only and must not re-layout or re-paginate.
 - IJ: settings stay an `applicationService` (`MindMapApplicationSettings`); removed deprecated `preload="true"` so the marketplace verifier is satisfied — service still initializes lazily on first `getService`/`getInstance` (plugins registered in the constructor).
 - Do not put `<fileType>` as a root `<idea-plugin>` child. 222 PluginManager treats that as `Unknown element: fileType` (`XmlReader.readRootElementChild`). It must live under `<extensions defaultExtensionNs="com.intellij">`.
 - `fileType` attributes that exist on 222: `name`, `implementationClass`, `fieldName`, `language`, `extensions`. `name` must match `FileType.getName()`, `language` must match `MMLanguage` id `NBMindMap`.
@@ -39,6 +43,7 @@
 - scia-reto: tree model notifications already use `Utils.safeSwingCall`; subtree load mutates `children` off EDT but listeners are notified on EDT via `notifyProjectStateChanged` / `invokeLater` fireNotifySubtreeChanged.
 - scia-reto: `MindMapPanelConfig.getScaleModifiers()` still uses old `KeyEvent.CTRL_MASK` style — keep `getModifiers()` when matching wheel/scale shortcuts against that config.
 - Encrypted MMD notes live in the model as ciphertext + `extras.note.encrypted`; AES is only in Swing `CryptoUtils` (AES-256-ECB PKCS5, SHA-256 prefix). The skill `crypto.py` reimplements that in stdlib Python so agents can decrypt after asking the user for the password.
+- mind-map-model `Topic.parse` is a private `TopicParser`; extras passed to the `Topic` constructor now follow the same attach lifecycle as `setExtra`.
 
 ## 3. Technical Debt & Refactoring
 - Files-category template plus `NewGroup` action can show two "SciaReto Mind Map" entries on older File | New menus. Prefer keeping both over missing the item on the new New File popup.
@@ -46,16 +51,19 @@
 - `IdeaUtils` still uses reflection for Maven, TransactionGuard, and HTMLEditorProvider to stay on 222.
 - Plugin menu wiring (`AbstractExporter`/`AbstractImporter`/`ChangeColorPlugin`/`OptionsPlugin`) still duplicates ExternallyExecutedPlugin listener boilerplate; consolidate later via protected helper on `AbstractPopupMenuItem` without changing public plugin APIs.
 - `Utils.isKeyStrokeEvent` is public and unused; keep for API stability (deprecate later if desired).
+- scia-reto: `MetricsService` still only stamps last-send time (PROJECT_TOKEN unused); leave until a real send path is restored.
 - scia-reto `DnDTree` drop onto folders still unimplemented (rejects / logs); TransferHandler.canImport always false.
 - scia-reto scale gestures still tied to deprecated `getModifiers()` + `CTRL_MASK` until panel config migrates to `getModifiersEx()`.
+- mind-map-model `MindMapLexer.advance` remains a large token state machine; leave it unless parse bugs appear.
 
 ## 4. Current Work In Progress
-- Print quality: vector/high-DPI raster path is in; verify on a real printer and print-to-PDF that small extras/emoticons stay sharp at 100% zoom and at Fit to page.
-- Development version **1.7.1-SNAPSHOT** started (06-sep-2026): all `pom.xml`, changelog/README `__1.7.1 (SNAPSHOT)__`, IJ `plugin.xml`, mac Info.plist `1.7.1`, win `versioninfo.json`, `IDE_VERSION` 1.7.1, AP fallback `1.7.1`.
+- Print quality: vector/high-DPI raster path is in; extra/emoticon/topic images keep source pixels; multi-page print lays out once in paper space, clips each tile in map coordinates, and paginates from the laid-out bounds so later pages are not blank. Preview zoom is view-only. Print options now include Fit to pages (both width and height, e.g. 2×2).
+- Development version **1.8.0-SNAPSHOT** (13-sep-2026): all `pom.xml`, changelog/README `__1.8.0 (SNAPSHOT)__`, IJ `plugin.xml`, mac Info.plist `1.8.0`, win `versioninfo.json`, `IDE_VERSION` 1.8.0, AP fallback `1.8.0`. Replaced unreleased 1.7.1 because the Java 11 minimum belongs on a minor bump.
+- scia-reto Java quality pass applied (convert CLI, large-file open, folder extras, macOS Open With, load-cancel spinner, browse ProcessBuilder, UUID/history/backup hardening).
 - Newly opened maps center the root topic in the swing panel before first paint.
 - MMD format spec moved into `skills/mmd/MMD_Format.MD` so skill copies include the full description.
 - MMD skill scripts reviewed and hardened (password argv removed, atomic writes, Java-matching extras/HTML).
-- Remaining assembly non-script hygiene (shared `<id>withjre_windows</id>`, `mac-nojre.xml` `icon.svgicns` typo, linux `fileMode`) still open if desired later.
+- mind-map-model internal quality pass (API kept): parser DSL, shared search/file helpers, extra attach on construct, ConcurrentHashMap logger cache.
 - Verify File | New create on latest IntelliJ after reinstall; New menu order after Directory.
 - Verify opening an existing MMD file after the blank-editor fix.
 - Verify FlatLaf editor/explorer containers keep normal border (no focus-accent color change).

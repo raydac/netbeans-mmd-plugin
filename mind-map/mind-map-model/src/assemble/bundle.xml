@@ -1,9 +1,8 @@
-
-<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+<assembly xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+          xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
     <id>bundle</id>
-  
+
     <includeBaseDirectory>false</includeBaseDirectory>
     <includeSiteDirectory>false</includeSiteDirectory>
 
@@ -25,8 +24,8 @@
                 <include>*.pom.md5</include>
             </includes>
             <excludes>
-              <exclude>original*.*</exclude>
-              <exclude>*.zip</exclude>
+                <exclude>original*.*</exclude>
+                <exclude>*.zip</exclude>
             </excludes>
         </fileSet>
     </fileSets>

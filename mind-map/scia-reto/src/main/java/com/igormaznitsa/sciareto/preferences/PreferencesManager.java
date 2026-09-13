@@ -43,35 +43,54 @@ public class PreferencesManager {
 
   private PreferencesManager() {
     this.prefs = Preferences.userNodeForPackage(PreferencesManager.class);
-    String packedUuid = this.prefs.get(PROPERTY_UUID, null);
-    if (packedUuid == null) {
-      try {
-        final UUID newUUID = UUID.randomUUID();
-        packedUuid = Base64.encodeBase64String(
-            IOUtils.packData(newUUID.toString().getBytes("UTF-8"))); //NOI18N
-        this.prefs.put(PROPERTY_UUID, packedUuid);
-        this.prefs.flush();
-        LOGGER.info("Generated new installation UUID : " + newUUID.toString()); //NOI18N
-
-        final Thread thread = new Thread(() -> {
-          LOGGER.info("Send first start metrics"); //NOI18N
-          com.igormaznitsa.sciareto.metrics.MetricsService.getInstance().onFirstStart();
-        }, "SCIARETO_FIRST_START_METRICS"); //NOI18N
-        thread.setDaemon(true);
-        thread.start();
-
-      } catch (Exception ex) {
-        LOGGER.error("Can't generate UUID", ex); //NOI18N
-      }
-    }
-    this.installationUUID = UUID.fromString(
-        new String(IOUtils.unpackData(Base64.decodeBase64(packedUuid)), StandardCharsets.UTF_8));
-    LOGGER.info("Installation UUID : " + this.installationUUID.toString()); //NOI18N
+    this.installationUUID = this.restoreOrCreateInstallationUuid();
+    LOGGER.info("Installation UUID : " + this.installationUUID); //NOI18N
   }
 
   @Nonnull
   public static PreferencesManager getInstance() {
     return INSTANCE;
+  }
+
+  @Nonnull
+  private UUID restoreOrCreateInstallationUuid() {
+    final String packedUuid = this.prefs.get(PROPERTY_UUID, null);
+    if (packedUuid != null) {
+      try {
+        return this.unpackInstallationUuid(packedUuid);
+      } catch (final Exception ex) {
+        LOGGER.error("Can't restore installation UUID, generating a new one", ex); //NOI18N
+      }
+    }
+    return this.createAndStoreInstallationUuid();
+  }
+
+  @Nonnull
+  private UUID unpackInstallationUuid(@Nonnull final String packedUuid) {
+    return UUID.fromString(
+        new String(IOUtils.unpackData(Base64.decodeBase64(packedUuid)), StandardCharsets.UTF_8));
+  }
+
+  @Nonnull
+  private UUID createAndStoreInstallationUuid() {
+    final UUID newUUID = UUID.randomUUID();
+    try {
+      final String packedUuid = Base64.encodeBase64String(
+          IOUtils.packData(newUUID.toString().getBytes(StandardCharsets.UTF_8))); //NOI18N
+      this.prefs.put(PROPERTY_UUID, packedUuid);
+      this.prefs.flush();
+      LOGGER.info("Generated new installation UUID : " + newUUID); //NOI18N
+
+      final Thread thread = new Thread(() -> {
+        LOGGER.info("Send first start metrics"); //NOI18N
+        com.igormaznitsa.sciareto.metrics.MetricsService.getInstance().onFirstStart();
+      }, "SCIARETO_FIRST_START_METRICS"); //NOI18N
+      thread.setDaemon(true);
+      thread.start();
+    } catch (final Exception ex) {
+      LOGGER.error("Can't persist installation UUID", ex); //NOI18N
+    }
+    return newUUID;
   }
 
   @Nullable

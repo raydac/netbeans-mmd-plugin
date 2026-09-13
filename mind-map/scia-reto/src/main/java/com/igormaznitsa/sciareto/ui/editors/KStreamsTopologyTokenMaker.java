@@ -180,7 +180,7 @@ public class KStreamsTopologyTokenMaker extends AbstractJFlexTokenMaker {
   private static final int ZZ_NO_MATCH = 1;
   private static final int ZZ_PUSHBACK_2BIG = 2;
   /* error messages for the codes above */
-  private static final String ZZ_ERROR_MSG[] = {
+  private static final String[] ZZ_ERROR_MSG = {
       "Unkown internal scanner error",
       "Error: could not match input",
       "Error: pushback value was too large"
@@ -211,7 +211,7 @@ public class KStreamsTopologyTokenMaker extends AbstractJFlexTokenMaker {
    * this buffer contains the current text to be matched and is
    * the source of the yytext() string
    */
-  private char zzBuffer[];
+  private char[] zzBuffer;
   /**
    * the textposition at the last accepting state
    */

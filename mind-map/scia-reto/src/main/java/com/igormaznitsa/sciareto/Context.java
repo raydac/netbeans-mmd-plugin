@@ -30,7 +30,7 @@ import javax.annotation.Nullable;
 
 public interface Context {
 
-  static String KNOWLEDGE_FOLDER = ".projectKnowledge";
+  String KNOWLEDGE_FOLDER = ".projectKnowledge";
 
   @Nullable
   NodeProject findProjectForFile(@Nonnull File file);

@@ -570,48 +570,45 @@ public final class UiUtils {
     thr.start();
   }
 
-  private static void showURL(@Nonnull final URL url) {
-    showURLExternal(url);
-  }
-
-  private static void showURLExternal(@Nonnull final URL url) {
+  private static boolean showURLExternal(@Nonnull final URL url) {
     if (Desktop.isDesktopSupported()) {
       final Desktop desktop = Desktop.getDesktop();
       if (desktop.isSupported(Desktop.Action.BROWSE)) {
         try {
           desktop.browse(url.toURI());
-        } catch (Exception x) {
+          return true;
+        } catch (final Exception x) {
           LOGGER.error("Can't browse URL in Desktop", x); //NOI18N
-        }
-      } else if (SystemUtils.IS_OS_LINUX) {
-        final Runtime runtime = Runtime.getRuntime();
-        try {
-          runtime.exec("xdg-open " + url); //NOI18N
-        } catch (IOException e) {
-          LOGGER.error("Can't browse URL under Linux", e); //NOI18N
-        }
-      } else if (SystemUtils.IS_OS_MAC) {
-        final Runtime runtime = Runtime.getRuntime();
-        try {
-          runtime.exec("open " + url); //NOI18N
-        } catch (IOException e) {
-          LOGGER.error("Can't browse URL on MAC", e); //NOI18N
         }
       }
     }
 
+    if (SystemUtils.IS_OS_LINUX) {
+      return startBrowserProcess("xdg-open", url);
+    }
+    if (SystemUtils.IS_OS_MAC) {
+      return startBrowserProcess("open", url);
+    }
+
+    return false;
+  }
+
+  private static boolean startBrowserProcess(@Nonnull final String command,
+                                             @Nonnull final URL url) {
+    try {
+      new ProcessBuilder(command, url.toExternalForm()).start();
+      return true;
+    } catch (final IOException e) {
+      LOGGER.error("Can't browse URL with " + command, e); //NOI18N
+      return false;
+    }
   }
 
   public static boolean browseURI(@Nonnull final URI uri,
                                   final boolean preferInsideBrowserIfPossible) {
     try {
-      if (preferInsideBrowserIfPossible) {
-        showURL(uri.toURL());
-      } else {
-        showURLExternal(uri.toURL());
-      }
-      return true;
-    } catch (MalformedURLException ex) {
+      return showURLExternal(uri.toURL());
+    } catch (final MalformedURLException ex) {
       LOGGER.error("MalformedURLException", ex); //NOI18N
       return false;
     }

@@ -98,6 +98,7 @@ public class JHtmlLabel extends JLabel {
     this.addMouseListener(mouseAdapter);
     this.addMouseMotionListener(mouseAdapter);
   }
+
   public JHtmlLabel(@Nullable final String text, final int horizontalAlignment) {
     this(text, null, horizontalAlignment);
   }

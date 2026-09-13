@@ -26,8 +26,6 @@ import java.io.Reader;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -104,39 +102,18 @@ public class MindMap
     final MindMapLexer lexer = new MindMapLexer();
     lexer.start(text, 0, text.length(), MindMapLexer.TokenType.HEAD_LINE);
 
-    Topic rootTopic = null;
-
-    boolean process = true;
-
-    while (process) {
-      final int oldLexerPosition = lexer.getCurrentPosition().getOffset();
-      lexer.advance();
-      final boolean lexerPositionWasNotChanged =
-          oldLexerPosition == lexer.getCurrentPosition().getOffset();
-
-      final MindMapLexer.TokenType token = lexer.getTokenType();
-      if (token == null || lexerPositionWasNotChanged) {
-        throw new IllegalArgumentException("Wrong format of mind map, end of header is not found");
-      }
-      switch (token) {
-        case HEAD_LINE:
-          continue;
-        case ATTRIBUTE: {
-          fillMapByAttributes(lexer.getTokenText(), this.attributes);
-        }
-        break;
-        case HEAD_DELIMITER: {
-          process = false;
-          rootTopic = Topic.parse(this, lexer, ignoreErrors);
-        }
-        break;
-        default:
-          break;
-      }
-    }
-
-    this.root = rootTopic;
+    this.root = this.parseHeaderAndRoot(lexer, ignoreErrors);
     this.attributes.put(MMD_ATTRIBUTE_VERSION, FORMAT_VERSION);
+  }
+
+  private static MindMapLexer.TokenType advanceHeaderToken(final MindMapLexer lexer) {
+    final int oldOffset = lexer.getCurrentPosition().getOffset();
+    lexer.advance();
+    final MindMapLexer.TokenType token = lexer.getTokenType();
+    if (token == null || oldOffset == lexer.getCurrentPosition().getOffset()) {
+      throw new IllegalArgumentException("Wrong format of mind map, end of header is not found");
+    }
+    return token;
   }
 
   static boolean fillMapByAttributes(final String line,
@@ -153,23 +130,26 @@ public class MindMap
   }
 
   static String allAttributesAsString(final Map<String, String> map) throws IOException {
-    final StringBuilder buffer = new StringBuilder();
+    return map.entrySet().stream()
+        .sorted(Map.Entry.comparingByKey())
+        .map(entry -> entry.getKey() + '=' + ModelUtils.makeMDCodeBlock(entry.getValue()))
+        .collect(Collectors.joining(","));
+  }
 
-    final List<String> attrNames = new ArrayList<>(map.keySet());
-    Collections.sort(attrNames);
-
-    boolean nonFirst = false;
-    for (final String k : attrNames) {
-      final String value = map.get(k);
-      if (nonFirst) {
-        buffer.append(',');
-      } else {
-        nonFirst = true;
+  private Topic parseHeaderAndRoot(final MindMapLexer lexer, final boolean ignoreErrors) {
+    while (true) {
+      switch (advanceHeaderToken(lexer)) {
+        case HEAD_LINE:
+          continue;
+        case ATTRIBUTE:
+          fillMapByAttributes(lexer.getTokenText(), this.attributes);
+          break;
+        case HEAD_DELIMITER:
+          return Topic.parse(this, lexer, ignoreErrors);
+        default:
+          break;
       }
-      buffer.append(k).append('=').append(ModelUtils.makeMDCodeBlock(value));
     }
-
-    return buffer.toString();
   }
 
   private Object readResolve() {
@@ -240,29 +220,20 @@ public class MindMap
       throw new IllegalArgumentException("Topic must belong to the mind map");
     }
 
-    Topic result = null;
-
     boolean startFound = start == null;
-    for (final Topic t : this) {
-      if (startFound) {
-        if (t.containsPattern(baseFolder, pattern, findInTopicText, extrasToFind)) {
-          result = t;
-        } else if (topicFinders != null) {
-          for (final TopicFinder f : topicFinders) {
-            if (f.doesTopicContentMatches(t, baseFolder, pattern, extrasToFind)) {
-              result = t;
-              break;
-            }
-          }
+    for (final Topic topic : this) {
+      if (!startFound) {
+        if (topic == start) {
+          startFound = true;
         }
-        if (result != null) {
-          break;
-        }
-      } else if (t == start) {
-        startFound = true;
+        continue;
+      }
+      if (this.matchesSearch(topic, baseFolder, pattern, findInTopicText, extrasToFind,
+          topicFinders)) {
+        return topic;
       }
     }
-    return result;
+    return null;
   }
 
   /**
@@ -307,29 +278,40 @@ public class MindMap
       throw new IllegalArgumentException("Topic doesn't belong to the mind map");
     }
 
-    Topic result = null;
     final List<Topic> plain = this.asList();
     int startIndex = start == null ? plain.size() : plain.indexOf(start);
     if (startIndex < 0) {
       throw new IllegalArgumentException(
           "It looks like that topic doesn't belong to the mind map");
     }
-    if (startIndex > 0) {
-      while (startIndex > 0 && result == null) {
-        final Topic candidate = plain.get(--startIndex);
-        if (candidate.containsPattern(baseFolder, pattern, findInTopicText, extrasToFind)) {
-          result = candidate;
-        } else if (topicFinders != null) {
-          for (TopicFinder f : topicFinders) {
-            if (f.doesTopicContentMatches(candidate, baseFolder, pattern, extrasToFind)) {
-              result = candidate;
-              break;
-            }
-          }
-        }
+
+    while (startIndex > 0) {
+      final Topic candidate = plain.get(--startIndex);
+      if (this.matchesSearch(candidate, baseFolder, pattern, findInTopicText, extrasToFind,
+          topicFinders)) {
+        return candidate;
       }
     }
-    return result;
+    return null;
+  }
+
+  private boolean matchesSearch(
+      final Topic topic,
+      final File baseFolder,
+      final Pattern pattern,
+      final boolean findInTopicText,
+      final Set<Extra.ExtraType> extrasToFind,
+      final Set<TopicFinder> topicFinders
+  ) {
+    if (topic.containsPattern(baseFolder, pattern, findInTopicText, extrasToFind)) {
+      return true;
+    }
+    if (topicFinders == null) {
+      return false;
+    }
+    return topicFinders.stream()
+        .anyMatch(finder -> finder.doesTopicContentMatches(topic, baseFolder, pattern,
+            extrasToFind));
   }
 
   /**
@@ -340,10 +322,8 @@ public class MindMap
    * @throws IllegalStateException if topic is not belong to the mind map
    */
   public void setRoot(final Topic newRoot, final boolean makeNotification) {
-    if (newRoot != null) {
-      if (newRoot.getMap() != this) {
-        throw new IllegalStateException("Base map must be the same");
-      }
+    if (newRoot != null && newRoot.getMap() != this) {
+      throw new IllegalStateException("Base map must be the same");
     }
     this.root = newRoot;
     if (makeNotification) {
@@ -360,7 +340,7 @@ public class MindMap
   public Iterator<Topic> iterator() {
     final Topic theRoot = this.root;
 
-    return new Iterator<Topic>() {
+    return new Iterator<>() {
       Topic rootTopic = theRoot;
       Iterator<Topic> children;
 
@@ -457,21 +437,7 @@ public class MindMap
    * Remove all topic payloads in the mind map.
    */
   public void clearAllPayloads() {
-    if (this.root != null) {
-      clearAllPayloads(this.root);
-    }
-  }
-
-  /**
-   * Remove all payloads for topic and its successors.
-   *
-   * @param topic topic to be processed, must not be null
-   */
-  private void clearAllPayloads(final Topic topic) {
-    topic.setPayload(null);
-    for (final Topic m : topic.getChildren()) {
-      this.clearAllPayloads(m);
-    }
+    this.stream().forEach(topic -> topic.setPayload(null));
   }
 
   /**
@@ -509,16 +475,9 @@ public class MindMap
 
   @Override
   public String toString() {
-    final StringBuilder builder = new StringBuilder();
-    builder.append("MindMap[");
-    String delimiter = "";
-    for (final Topic t : this) {
-      builder.append(delimiter);
-      builder.append(t);
-      delimiter = ",";
-    }
-    builder.append(']');
-    return builder.toString();
+    return this.stream()
+        .map(Topic::toString)
+        .collect(Collectors.joining(",", "MindMap[", "]"));
   }
 
   /**
@@ -578,7 +537,7 @@ public class MindMap
     }
 
     clonedtopic.removeAttributes(true, ExtraTopic.TOPIC_UID_ATTR);
-    fireModelChanged();
+    this.fireModelChanged();
     return clonedtopic;
   }
 
@@ -622,12 +581,9 @@ public class MindMap
    * @return found target topic or null if not found
    */
   public Topic findTopicForLink(final ExtraTopic link) {
-    Topic result = null;
-    final Topic rootTopic = this.root;
-    if (rootTopic != null) {
-      result = rootTopic.findForAttribute(ExtraTopic.TOPIC_UID_ATTR, link.getValue());
-    }
-    return result;
+    return this.root == null
+        ? null
+        : this.root.findForAttribute(ExtraTopic.TOPIC_UID_ATTR, link.getValue());
   }
 
   /**
@@ -637,23 +593,9 @@ public class MindMap
    * @return listed found topics, must not be null
    */
   public List<Topic> findAllTopicsForExtraType(final Extra.ExtraType type) {
-    final List<Topic> result = new ArrayList<>();
-    final Topic rootTopic = this.root;
-    if (rootTopic != null) {
-      _findAllTopicsForExtraType(rootTopic, type, result);
-    }
-    return result;
-  }
-
-  private void _findAllTopicsForExtraType(final Topic topic,
-                                          final Extra.ExtraType type,
-                                          final List<Topic> result) {
-    if (topic.getExtras().containsKey(type)) {
-      result.add(topic);
-    }
-    for (final Topic c : topic.getChildren()) {
-      _findAllTopicsForExtraType(c, type, result);
-    }
+    return this.stream()
+        .filter(topic -> topic.getExtras().containsKey(type))
+        .collect(Collectors.toList());
   }
 
   /**
@@ -698,12 +640,7 @@ public class MindMap
    * @return true if mind map contains link to the file, false otherwise
    */
   public boolean doesContainFile(final File baseFolder, final MMapURI file) {
-    boolean result = false;
-    final Topic rootTopic = this.root;
-    if (rootTopic != null) {
-      return rootTopic.doesContainFileLink(baseFolder, file, true);
-    }
-    return result;
+    return this.root != null && this.root.doesContainFileLink(baseFolder, file, true);
   }
 
   /**
@@ -719,7 +656,7 @@ public class MindMap
     if (rootTopic != null) {
       changed = rootTopic.deleteFileLinkIfPresented(baseFolder, file);
       if (changed) {
-        fireModelChanged();
+        this.fireModelChanged();
       }
     }
     return changed;
@@ -741,7 +678,7 @@ public class MindMap
     if (rootTopic != null) {
       changed = rootTopic.replaceFileLinkIfPresented(baseFolder, oldFile, newFile);
       if (changed) {
-        fireModelChanged();
+        this.fireModelChanged();
       }
     }
     return changed;
