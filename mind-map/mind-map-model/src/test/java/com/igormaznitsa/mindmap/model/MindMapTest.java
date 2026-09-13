@@ -189,6 +189,74 @@ public class MindMapTest {
   }
 
   @Test
+  public void testReadWrite_ChineseAndEmoji() throws Exception {
+    final String title = "中文😀标题";
+    final String traditional = "繁體中文";
+    final String note = "笔记 👨‍👩‍👧‍👦 ☀️";
+    final String snippet = "// 注释 👋🏻\n";
+    final String attribute = "你好🔐";
+    final String filePath = "./文档.txt";
+    final String source = "---\n"
+        + "# " + title + "\n"
+        + "> hello=`" + attribute + "`\n\n"
+        + "- FILE\n"
+        + "<pre>" + filePath + "</pre>\n"
+        + "- NOTE\n"
+        + "<pre>" + note + "</pre>\n"
+        + "```Java\n"
+        + snippet
+        + "```\n"
+        + "## " + traditional + "\n";
+
+    final MindMap parsed = new MindMap(new StringReader(source));
+    this.assertChineseAndEmojiMap(parsed, title, traditional, note, snippet, attribute, filePath);
+
+    final MindMap written = new MindMap(new StringReader(parsed.asString()));
+    this.assertChineseAndEmojiMap(written, title, traditional, note, snippet, attribute, filePath);
+  }
+
+  @Test
+  public void testWriteRead_ChineseAndEmojiFromApi() throws Exception {
+    final String title = "中文😀标题";
+    final String traditional = "繁體中文";
+    final String note = "笔记 👨‍👩‍👧‍👦 ☀️";
+    final String snippet = "// 注释 👋🏻\n";
+    final String attribute = "你好🔐";
+    final String filePath = "./文档.txt";
+
+    final MindMap map = new MindMap(true);
+    final Topic root = map.getRoot();
+    root.setText(title);
+    root.putAttribute("hello", attribute);
+    root.setExtra(new ExtraNote(note), new ExtraFile(filePath));
+    root.putCodeSnippet("Java", snippet);
+    new Topic(map, root, traditional);
+
+    final MindMap parsed = new MindMap(new StringReader(map.asString()));
+    this.assertChineseAndEmojiMap(parsed, title, traditional, note, snippet, attribute, filePath);
+  }
+
+  private void assertChineseAndEmojiMap(
+      final MindMap map,
+      final String title,
+      final String traditional,
+      final String note,
+      final String snippet,
+      final String attribute,
+      final String filePath) {
+    final Topic root = map.getRoot();
+    assertEquals(title, root.getText());
+    assertEquals(attribute, root.getAttribute("hello"));
+    assertEquals(note, ((ExtraNote) root.getExtras().get(Extra.ExtraType.NOTE)).getValue());
+    assertEquals(
+        filePath,
+        ((ExtraFile) root.getExtras().get(Extra.ExtraType.FILE)).provideAsStringForSave());
+    assertEquals(snippet, root.getCodeSnippet("Java"));
+    assertEquals(1, root.getChildren().size());
+    assertEquals(traditional, root.getChildren().get(0).getText());
+  }
+
+  @Test
   public void testSerializableDeserializable_NoErrors() throws Exception {
     final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
     final ObjectOutputStream stream = new ObjectOutputStream(buffer);

@@ -38,6 +38,7 @@ public class ModelUtilsTest {
     assertEscapeUnescapePre("a");
     assertEscapeUnescapePre("a b");
     assertEscapeUnescapePre("абвг");
+    assertEscapeUnescapePre("中文😀 👨‍👩‍👧‍👦 ☀️ 👋🏻");
     assertEscapeUnescapePre("абвг\niuweyqqw123123");
     assertEscapeUnescapePre("<pre>123</pre>");
     assertEscapeUnescapePre("&#32;");
@@ -91,6 +92,7 @@ public class ModelUtilsTest {
         ModelUtils.unescapeMarkdown("\\\\\\`\\*\\_\\{\\}\\[\\]\\(\\)\\#\\<\\>\\+\\-\\.\\!<br/>"));
     assertEquals("Hello `<\nWorld>`", ModelUtils.unescapeMarkdown("Hello \\`<<br/>World\\>\\`"));
     assertEquals("", ModelUtils.unescapeMarkdown(""));
+    assertEquals("中文😀标题", ModelUtils.unescapeMarkdown("中文😀标题"));
   }
 
   @Test
@@ -100,6 +102,7 @@ public class ModelUtilsTest {
         ModelUtils.escapeMarkdown("\\`*_{}[]()#<>+-.!\n"));
     assertEquals("Hello \\`\\<<br/>World\\>\\`", ModelUtils.escapeMarkdown("Hello `<\nWorld>`"));
     assertEquals("", ModelUtils.escapeMarkdown(""));
+    assertEquals("中文😀标题", ModelUtils.escapeMarkdown("中文😀标题"));
   }
 
   @Test
