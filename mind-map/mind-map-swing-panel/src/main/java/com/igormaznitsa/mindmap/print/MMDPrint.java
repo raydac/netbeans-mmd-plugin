@@ -528,9 +528,9 @@ public class MMDPrint {
       final int paperHeight,
       final double paintScale
   ) {
+    this.clipToPaper(gfx, paperWidth, paperHeight);
     this.translateToPage(gfx, offset, pageX, pageY, paperWidth, paperHeight);
     gfx.scale(paintScale, paintScale);
-    this.clipToMapTile(gfx, offset, pageX, pageY, paperWidth, paperHeight, paintScale);
     this.drawMindMap(gfx, model, cfg);
   }
 
@@ -620,23 +620,6 @@ public class MMDPrint {
 
   private void clipToPaper(final Graphics2D gfx, final int paperWidth, final int paperHeight) {
     gfx.clip(new Rectangle2D.Double(0.0d, 0.0d, paperWidth, paperHeight));
-  }
-
-  private void clipToMapTile(
-      final Graphics2D gfx,
-      final Point offset,
-      final int pageX,
-      final int pageY,
-      final int paperWidth,
-      final int paperHeight,
-      final double paintScale
-  ) {
-    final double scale = paintScale <= 0.0d ? 1.0d : paintScale;
-    gfx.setClip(new Rectangle2D.Double(
-        (pageX * (double) paperWidth - offset.x) / scale,
-        (pageY * (double) paperHeight - offset.y) / scale,
-        paperWidth / scale,
-        paperHeight / scale));
   }
 
   private Rectangle2D unionOfTopicBounds(final MindMap model) {

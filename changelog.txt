@@ -2,7 +2,7 @@ __1.8.0 (SNAPSHOT)__
 
 - ALL: minimum Java version lifted from 8 to 11
 - ALL: newly opened mind maps show the root topic centered without a visible jump
-- ALL: printing keeps printer resolution instead of a low-DPI bitmap, so small map details, topic icons, and images stay readable; topic frames stay around the text when printing to PDF or PostScript; a large map printed across several pages keeps every tile, including 2×2 fit and when preview zoom is not 100%
+- ALL: printing keeps printer resolution instead of a low-DPI bitmap, so small map details, topic icons, and images stay readable; topic frames stay around the text when printing to PDF or PostScript; a large map printed across several pages keeps every tile, including 2×2 fit and when preview zoom is not 100%; print preview keeps topics inside the page instead of drawing them on the dialog around the sheet
 - SR:  convert CLI fails instead of writing an empty map when files or import are missing; declining a very large file is treated as cancel; folder file-links open as projects; macOS Finder Open With opens the document; cancelling project load no longer leaves the spinner stuck
 
 __1.7.0 (06-sep-2026)__

@@ -119,19 +119,28 @@ class Pages extends JPanel {
         pageBack.setRect(0.0d, 0.0d, PAGE_WIDTH, PAGE_HEIGHT);
         gfx.fill(pageBack);
 
-        gfx.translate(AREA_X, AREA_Y);
+        final Graphics2D sheetGfx = (Graphics2D) gfx.create();
+        try {
+          sheetGfx.clip(new Rectangle2D.Double(0.0d, 0.0d, PAGE_WIDTH, PAGE_HEIGHT));
+          sheetGfx.translate(AREA_X, AREA_Y);
 
-        final Graphics2D gfxCopy = (Graphics2D) gfx.create();
-        gfxCopy.clip(pageArea);
-        p.print(gfxCopy);
-        gfxCopy.dispose();
+          final Graphics2D gfxCopy = (Graphics2D) sheetGfx.create();
+          try {
+            gfxCopy.clip(pageArea);
+            p.print(gfxCopy);
+          } finally {
+            gfxCopy.dispose();
+          }
 
-        if (drawBorder) {
-          final Stroke oldStroke = gfx.getStroke();
-          gfx.setColor(MMDPrintPanel.BORDER_COLOR);
-          gfx.setStroke(MMDPrintPanel.BORDER_STYLE);
-          gfx.draw(pageArea);
-          gfx.setStroke(oldStroke);
+          if (drawBorder) {
+            final Stroke oldStroke = sheetGfx.getStroke();
+            sheetGfx.setColor(MMDPrintPanel.BORDER_COLOR);
+            sheetGfx.setStroke(MMDPrintPanel.BORDER_STYLE);
+            sheetGfx.draw(pageArea);
+            sheetGfx.setStroke(oldStroke);
+          }
+        } finally {
+          sheetGfx.dispose();
         }
 
         x += INTERVAL_X + PAGE_WIDTH;

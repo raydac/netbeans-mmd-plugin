@@ -137,6 +137,65 @@ public class MMDPrintTest {
   }
 
   @Test
+  public void testPageDoesNotPaintInkOutsidePaper() {
+    final int paperSize = 120;
+    final PrintPage[][] pages = new MMDPrint(
+        PrintableObject.newBuild().mmdpanel(this.panelWithWideMap()).build(),
+        paperSize,
+        paperSize,
+        new MMDPrintOptions().setScaleType(MMDPrintOptions.ScaleType.ZOOM).setScale(1.0d)
+    ).getPages();
+
+    assertTrue(pages[0].length > 1);
+
+    final int canvas = paperSize * 3;
+    final BufferedImage printed = new BufferedImage(canvas, canvas, BufferedImage.TYPE_INT_RGB);
+    final Graphics2D graphics = printed.createGraphics();
+    try {
+      graphics.setColor(Color.MAGENTA);
+      graphics.fillRect(0, 0, canvas, canvas);
+      graphics.setClip(0, 0, paperSize, paperSize);
+      pages[0][0].print(graphics);
+    } finally {
+      graphics.dispose();
+    }
+
+    assertEquals(
+        "Topics that belong on later pages must not paint outside the current sheet",
+        0,
+        this.countNonSentinelOutside(printed, paperSize, paperSize, 0xFF00FF));
+  }
+
+  @Test
+  public void testIncomingPreviewClipIsNotReplaced() {
+    final int paperSize = 120;
+    final PrintPage[][] pages = new MMDPrint(
+        PrintableObject.newBuild().mmdpanel(this.panelWithWideMap()).build(),
+        paperSize,
+        paperSize,
+        new MMDPrintOptions().setScaleType(MMDPrintOptions.ScaleType.ZOOM).setScale(1.0d)
+    ).getPages();
+
+    final int canvas = paperSize * 3;
+    final int previewClip = 50;
+    final BufferedImage printed = new BufferedImage(canvas, canvas, BufferedImage.TYPE_INT_RGB);
+    final Graphics2D graphics = printed.createGraphics();
+    try {
+      graphics.setColor(Color.MAGENTA);
+      graphics.fillRect(0, 0, canvas, canvas);
+      graphics.clipRect(0, 0, previewClip, previewClip);
+      pages[0][0].print(graphics);
+    } finally {
+      graphics.dispose();
+    }
+
+    assertEquals(
+        "Print preview must keep the viewport/page clip instead of replacing it with the full tile",
+        0,
+        this.countNonSentinelOutside(printed, previewClip, previewClip, 0xFF00FF));
+  }
+
+  @Test
   public void testFitWidthToTwoPagesKeepsBothColumns() {
     final PrintPage[][] pages = new MMDPrint(
         PrintableObject.newBuild().mmdpanel(this.panelWithWideMap()).build(),
@@ -444,6 +503,26 @@ public class MMDPrintTest {
 
   private boolean hasInk(final BufferedImage image) {
     return this.countInk(image) > 0;
+  }
+
+  private int countNonSentinelOutside(
+      final BufferedImage image,
+      final int clipWidth,
+      final int clipHeight,
+      final int sentinelRgb
+  ) {
+    int leaked = 0;
+    for (int y = 0; y < image.getHeight(); y++) {
+      for (int x = 0; x < image.getWidth(); x++) {
+        if (x < clipWidth && y < clipHeight) {
+          continue;
+        }
+        if ((image.getRGB(x, y) & 0xFFFFFF) != sentinelRgb) {
+          leaked++;
+        }
+      }
+    }
+    return leaked;
   }
 
   private String repeat(final String text, final int times) {
