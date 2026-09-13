@@ -385,7 +385,8 @@ public class XMind2MindMapImporter extends AbstractImporter {
           topicToProcess.setExtra(new ExtraLink(new MMapURI(URI.create(xlink))));
         } catch (IllegalArgumentException ex) {
           try {
-            topicToProcess.setExtra(new ExtraLink(new MMapURI(URLEncoder.encode(xlink, "UTF-8"))));
+            topicToProcess.setExtra(
+                new ExtraLink(new MMapURI(URLEncoder.encode(xlink, StandardCharsets.UTF_8))));
           } catch (Exception e) {
             LOGGER.error("Can't convert link: " + xlink, e);
           }

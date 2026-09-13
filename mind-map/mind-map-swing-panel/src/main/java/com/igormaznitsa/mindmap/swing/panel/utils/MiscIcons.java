@@ -40,11 +40,9 @@ public class MiscIcons {
   private static final String[] ICON_NAMES;
 
   static {
-    final InputStream iconListReadStream =
-        MiscIcons.class.getResourceAsStream("/com/igormaznitsa/mindmap/swing/miscicons/icon.lst");
     final Map<String, ImageContainer> imageContainers = new HashMap<>();
-
-    try {
+    try (InputStream iconListReadStream = MiscIcons.class.getResourceAsStream(
+        "/com/igormaznitsa/mindmap/swing/miscicons/icon.lst")) {
       imageContainers.put("empty", new ImageContainer("empty"));
 
       final List<String> lines =
@@ -55,8 +53,6 @@ public class MiscIcons {
       }
     } catch (Exception ex) {
       throw new Error("Can't read list of icons", ex);
-    } finally {
-      IOUtils.closeQuietly(iconListReadStream);
     }
 
     IMAGE_CACHE = Collections.unmodifiableMap(imageContainers);
@@ -102,18 +98,15 @@ public class MiscIcons {
     }
 
     private Image loadImage(final String name) {
-      final InputStream in = MiscIcons.class.getResourceAsStream(
-          "/com/igormaznitsa/mindmap/swing/miscicons/" + name + ".png");
-      if (in == null) {
-        return null;
-      }
-      try {
+      try (InputStream in = MiscIcons.class.getResourceAsStream(
+          "/com/igormaznitsa/mindmap/swing/miscicons/" + name + ".png")) {
+        if (in == null) {
+          return null;
+        }
         return ImageIO.read(in);
       } catch (IOException ex) {
         LOGGER.error("IO exception for icon '" + name + '\'');
         return null;
-      } finally {
-        IOUtils.closeQuietly(in);
       }
     }
   }

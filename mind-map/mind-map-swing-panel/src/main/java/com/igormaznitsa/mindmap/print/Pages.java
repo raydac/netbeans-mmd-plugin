@@ -74,81 +74,83 @@ class Pages extends JPanel {
   }
 
   @Override
-  public void paint(final Graphics g) {
-    final Graphics2D gfx = (Graphics2D) g;
-    gfx.setColor(parent.isDarkTheme() ? Color.DARK_GRAY : Color.LIGHT_GRAY);
-    final Dimension size = getSize();
-    gfx.fillRect(0, 0, size.width, size.height);
+  protected void paintComponent(final Graphics g) {
+    super.paintComponent(g);
 
-    final double scale = this.parent.getScale();
-    final PageFormat thePageFormat = this.parent.getPageFormat();
+    final Graphics2D gfx = (Graphics2D) g.create();
+    try {
+      gfx.setColor(this.parent.isDarkTheme() ? Color.DARK_GRAY : Color.LIGHT_GRAY);
+      final Dimension size = this.getSize();
+      gfx.fillRect(0, 0, size.width, size.height);
 
-    final PrintPage[][] allPages = this.parent.getPages();
+      final double scale = this.parent.getScale();
+      final PageFormat thePageFormat = this.parent.getPageFormat();
 
-    final double PAGE_WIDTH = thePageFormat.getWidth();
-    final double PAGE_HEIGHT = thePageFormat.getHeight();
+      final PrintPage[][] allPages = this.parent.getPages();
 
-    final double AREA_WIDTH = thePageFormat.getImageableWidth();
-    final double AREA_HEIGHT = thePageFormat.getImageableHeight();
+      final double pageWidth = thePageFormat.getWidth();
+      final double pageHeight = thePageFormat.getHeight();
 
-    final Rectangle2D pageBack = new Rectangle2D.Double(0.0d, 0.0d, PAGE_WIDTH, PAGE_HEIGHT);
-    final Rectangle2D pageArea = new Rectangle2D.Double(0.0d, 0.0d, AREA_WIDTH, AREA_HEIGHT);
+      final double areaWidth = thePageFormat.getImageableWidth();
+      final double areaHeight = thePageFormat.getImageableHeight();
 
-    final Color SHADOW = new Color(0, 0, 0, 0x50);
+      final Rectangle2D pageBack = new Rectangle2D.Double(0.0d, 0.0d, pageWidth, pageHeight);
+      final Rectangle2D pageArea = new Rectangle2D.Double(0.0d, 0.0d, areaWidth, areaHeight);
 
-    int y = INTERVAL_Y;
+      final Color shadow = new Color(0, 0, 0, 0x50);
 
-    final double AREA_X = thePageFormat.getImageableX();
-    final double AREA_Y = thePageFormat.getImageableY();
+      int y = INTERVAL_Y;
 
-    final boolean drawBorder = this.parent.isDrawBorder();
+      final double areaX = thePageFormat.getImageableX();
+      final double areaY = thePageFormat.getImageableY();
 
-    final AffineTransform original = gfx.getTransform();
-    gfx.scale(scale, scale);
-    final AffineTransform pageOrigin = gfx.getTransform();
-    for (final PrintPage[] pages : allPages) {
-      int x = INTERVAL_X;
-      for (final PrintPage p : pages) {
-        gfx.setTransform(pageOrigin);
-        gfx.translate(x, y);
+      final boolean drawBorder = this.parent.isDrawBorder();
 
-        gfx.setColor(SHADOW);
-        pageBack.setRect(SHADOW_X, SHADOW_Y, PAGE_WIDTH, PAGE_HEIGHT);
-        gfx.fill(pageBack);
-        gfx.setColor(Color.WHITE);
-        pageBack.setRect(0.0d, 0.0d, PAGE_WIDTH, PAGE_HEIGHT);
-        gfx.fill(pageBack);
+      gfx.scale(scale, scale);
+      final AffineTransform pageOrigin = gfx.getTransform();
+      for (final PrintPage[] pages : allPages) {
+        int x = INTERVAL_X;
+        for (final PrintPage page : pages) {
+          gfx.setTransform(pageOrigin);
+          gfx.translate(x, y);
 
-        final Graphics2D sheetGfx = (Graphics2D) gfx.create();
-        try {
-          sheetGfx.clip(new Rectangle2D.Double(0.0d, 0.0d, PAGE_WIDTH, PAGE_HEIGHT));
-          sheetGfx.translate(AREA_X, AREA_Y);
+          gfx.setColor(shadow);
+          pageBack.setRect(SHADOW_X, SHADOW_Y, pageWidth, pageHeight);
+          gfx.fill(pageBack);
+          gfx.setColor(Color.WHITE);
+          pageBack.setRect(0.0d, 0.0d, pageWidth, pageHeight);
+          gfx.fill(pageBack);
 
-          final Graphics2D gfxCopy = (Graphics2D) sheetGfx.create();
+          final Graphics2D sheetGfx = (Graphics2D) gfx.create();
           try {
-            gfxCopy.clip(pageArea);
-            p.print(gfxCopy);
+            sheetGfx.clip(new Rectangle2D.Double(0.0d, 0.0d, pageWidth, pageHeight));
+            sheetGfx.translate(areaX, areaY);
+
+            final Graphics2D gfxCopy = (Graphics2D) sheetGfx.create();
+            try {
+              gfxCopy.clip(pageArea);
+              page.print(gfxCopy);
+            } finally {
+              gfxCopy.dispose();
+            }
+
+            if (drawBorder) {
+              final Stroke oldStroke = sheetGfx.getStroke();
+              sheetGfx.setColor(MMDPrintPanel.BORDER_COLOR);
+              sheetGfx.setStroke(MMDPrintPanel.BORDER_STYLE);
+              sheetGfx.draw(pageArea);
+              sheetGfx.setStroke(oldStroke);
+            }
           } finally {
-            gfxCopy.dispose();
+            sheetGfx.dispose();
           }
 
-          if (drawBorder) {
-            final Stroke oldStroke = sheetGfx.getStroke();
-            sheetGfx.setColor(MMDPrintPanel.BORDER_COLOR);
-            sheetGfx.setStroke(MMDPrintPanel.BORDER_STYLE);
-            sheetGfx.draw(pageArea);
-            sheetGfx.setStroke(oldStroke);
-          }
-        } finally {
-          sheetGfx.dispose();
+          x += INTERVAL_X + (int) Math.round(pageWidth);
         }
-
-        x += INTERVAL_X + PAGE_WIDTH;
+        y += INTERVAL_Y + (int) Math.round(pageHeight);
       }
-      y += INTERVAL_Y + PAGE_HEIGHT;
+    } finally {
+      gfx.dispose();
     }
-    gfx.setTransform(original);
-
-    paintBorder(g);
   }
 }

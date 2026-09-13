@@ -16,6 +16,8 @@
 
 package com.igormaznitsa.mindmap.swing.services;
 
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.api.parameters.AbstractParameter;
 import com.igormaznitsa.mindmap.plugins.api.parameters.BooleanParameter;
 import com.igormaznitsa.mindmap.plugins.api.parameters.DoubleParameter;
@@ -53,6 +55,7 @@ import javax.swing.text.Document;
 
 public class DefaultParametersPanelFactory extends JPanel {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(DefaultParametersPanelFactory.class);
   private static final DefaultParametersPanelFactory INSTANCE = new DefaultParametersPanelFactory();
 
   public static DefaultParametersPanelFactory getInstance() {
@@ -218,7 +221,7 @@ public class DefaultParametersPanelFactory extends JPanel {
           try {
             parameter.setValue(new File(document.getText(0, document.getLength()).trim()));
           } catch (Exception ex) {
-            // ignore
+            LOGGER.error("Can't parse file path from parameter field", ex);
           }
         }
 

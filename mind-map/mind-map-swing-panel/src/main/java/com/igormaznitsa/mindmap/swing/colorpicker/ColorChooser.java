@@ -19,7 +19,6 @@ package com.igormaznitsa.mindmap.swing.colorpicker;
 import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactory;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -36,7 +35,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -152,35 +150,18 @@ public final class ColorChooser {
     buttonTuneColor.setToolTipText(
         this.resourceBundle.getString("ColorChooser.ButtonColorWheel.Tooltip"));
     buttonTuneColor.addActionListener(event -> {
-      Color choosedColor;
-      try {
-        choosedColor =
-            (Color) JColorChooser.class.getMethod("showDialog", Component.class, String.class,
-                    Color.class, boolean.class)
-                .invoke(null, panel,
-                    this.resourceBundle.getString("ColorChooser.ChooseColorDialogTitle"),
-                    sampleDarkFill.getBackground(), false);
-      } catch (Exception ex) {
-        try {
-          choosedColor =
-              (Color) JColorChooser.class.getMethod("showDialog", Component.class, String.class,
-                      Color.class)
-                  .invoke(null, panel,
-                      this.resourceBundle.getString("ColorChooser.ChooseColorDialogTitle"),
-                      sampleDarkFill.getBackground());
-        } catch (Exception exx) {
-          choosedColor = null;
-          JOptionPane.showMessageDialog(panel, exx.getMessage(), "Internal error",
-              JOptionPane.ERROR_MESSAGE);
-        }
-      }
+      final Color choosedColor = JColorChooser.showDialog(
+          this.panel,
+          this.resourceBundle.getString("ColorChooser.ChooseColorDialogTitle"),
+          this.sampleDarkFill.getBackground(),
+          false);
       if (choosedColor != null) {
-        colorPicker.resetSelected();
-        presentedColors.setColor(null);
+        this.colorPicker.resetSelected();
+        this.presentedColors.setColor(null);
         final Color colorWithoutAlpha = new Color(choosedColor.getRGB());
-        tunedColor = colorWithoutAlpha;
-        updateSamples(colorWithoutAlpha);
-        panel.repaint();
+        this.tunedColor = colorWithoutAlpha;
+        this.updateSamples(colorWithoutAlpha);
+        this.panel.repaint();
       }
     });
 
@@ -295,21 +276,4 @@ public final class ColorChooser {
     }
     return tunedColorByWheel;
   }
-
-//  public static void main(@Nonnull @MustNotContainNull String... args) {
-//    SwingUtilities.invokeLater(new Runnable() {
-//      @Override
-//      public void run() {
-//        JFrame frame = new JFrame();
-//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//
-//        final JPanel panel = new JPanel(new BorderLayout());
-//        panel.add(new ColorChooser(Arrays.asList(Color.WHITE, Color.BLACK, Color.RED, Color.ORANGE, Color.PINK), Color.ORANGE).getPanel(), BorderLayout.CENTER);
-//
-//        frame.setContentPane(panel);
-//        frame.pack();
-//        frame.setVisible(true);
-//      }
-//    });
-//  }
 }

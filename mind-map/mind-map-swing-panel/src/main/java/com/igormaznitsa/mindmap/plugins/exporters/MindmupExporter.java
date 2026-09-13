@@ -39,10 +39,8 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.image.BufferedImage;
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
@@ -53,7 +51,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.SwingUtilities;
-import org.apache.commons.io.IOUtils;
 import org.json.JSONStringer;
 
 public class MindmupExporter extends AbstractExporter {
@@ -286,8 +283,7 @@ public class MindmupExporter extends AbstractExporter {
     final String text = this.makeContent(context, stringConverter);
 
     File fileToSaveMap = null;
-    OutputStream theOut = out;
-    if (theOut == null) {
+    if (out == null) {
       fileToSaveMap = MindMapUtils.selectFileToSaveForFileFilter(
           context.getPanel(),
           context,
@@ -299,18 +295,8 @@ public class MindmupExporter extends AbstractExporter {
           this.getResourceBundle().getString("MindmupExporter.approveButtonText"));
       fileToSaveMap =
           MindMapUtils.checkFileAndExtension(context.getPanel(), fileToSaveMap, ".mup");
-      theOut = fileToSaveMap == null ? null :
-          new BufferedOutputStream(new FileOutputStream(fileToSaveMap, false));
     }
-    if (theOut != null) {
-      try {
-        IOUtils.write(text, theOut, "UTF-8");
-      } finally {
-        if (fileToSaveMap != null) {
-          IOUtils.closeQuietly(theOut);
-        }
-      }
-    }
+    writeUtf8(out, fileToSaveMap, text);
   }
 
   @Override

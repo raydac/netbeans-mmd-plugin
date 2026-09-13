@@ -34,9 +34,7 @@ import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Calendar;
@@ -44,7 +42,6 @@ import java.util.Map;
 import java.util.Set;
 import javax.swing.Icon;
 import javax.swing.SwingUtilities;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
 public class ORGMODEExporter extends AbstractExporter {
@@ -377,8 +374,7 @@ public class ORGMODEExporter extends AbstractExporter {
     final String text = this.makeContent(context, stringConverter);
 
     File fileToSaveMap = null;
-    OutputStream theOut = out;
-    if (theOut == null) {
+    if (out == null) {
       fileToSaveMap = MindMapUtils.selectFileToSaveForFileFilter(
           context.getPanel(),
           context,
@@ -390,18 +386,8 @@ public class ORGMODEExporter extends AbstractExporter {
           this.getResourceBundle().getString("ORGMODEExporter.approveButtonText"));
       fileToSaveMap =
           MindMapUtils.checkFileAndExtension(context.getPanel(), fileToSaveMap, ".org");
-      theOut = fileToSaveMap == null ? null :
-          new BufferedOutputStream(new FileOutputStream(fileToSaveMap, false));
     }
-    if (theOut != null) {
-      try {
-        IOUtils.write(text, theOut, "UTF-8");
-      } finally {
-        if (fileToSaveMap != null) {
-          IOUtils.closeQuietly(theOut);
-        }
-      }
-    }
+    writeUtf8(out, fileToSaveMap, text);
   }
 
   @Override

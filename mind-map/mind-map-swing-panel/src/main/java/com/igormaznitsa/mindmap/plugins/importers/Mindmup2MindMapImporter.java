@@ -44,6 +44,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -84,7 +85,8 @@ public class Mindmup2MindMapImporter extends AbstractImporter {
   }
 
   MindMap doImportFile(final File file) throws IOException {
-    final JSONObject parsedJson = new JSONObject(FileUtils.readFileToString(file, "UTF-8"));
+    final JSONObject parsedJson =
+        new JSONObject(FileUtils.readFileToString(file, StandardCharsets.UTF_8));
     final Number formatVersion = parsedJson.getNumber("formatVersion");
     if (formatVersion == null) {
       throw new IllegalArgumentException("Can't find formatVersion");

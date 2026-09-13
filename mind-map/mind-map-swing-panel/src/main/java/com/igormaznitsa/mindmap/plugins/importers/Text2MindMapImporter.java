@@ -26,6 +26,7 @@ import com.igormaznitsa.mindmap.swing.panel.ui.AbstractCollapsableElement;
 import com.igormaznitsa.mindmap.swing.services.IconID;
 import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -47,7 +48,7 @@ public class Text2MindMapImporter extends AbstractImporter {
         "text files (.TXT)", this.getResourceBundle().getString("MMDImporters.ApproveImport"));
     MindMap result = null;
     if (file != null) {
-      final List<String> lines = FileUtils.readLines(file, "UTF-8");
+      final List<String> lines = FileUtils.readLines(file, StandardCharsets.UTF_8);
       result = makeFromLines(lines);
     }
     return result;

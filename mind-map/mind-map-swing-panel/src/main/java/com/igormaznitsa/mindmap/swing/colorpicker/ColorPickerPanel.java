@@ -375,6 +375,7 @@ final class ColorPickerPanel {
 
     @Override
     public void paintComponent(final Graphics gfx) {
+      super.paintComponent(gfx);
       gfx.setColor(this.getBackground());
       gfx.fill3DRect(0, 0, this.getWidth(), this.getHeight(), true);
     }

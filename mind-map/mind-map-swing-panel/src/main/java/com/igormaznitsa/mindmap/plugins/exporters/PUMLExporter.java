@@ -43,13 +43,10 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.image.RenderedImage;
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -65,7 +62,6 @@ import java.util.stream.IntStream;
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.SwingUtilities;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.text.StringEscapeUtils;
 
 public class PUMLExporter extends AbstractExporter {
@@ -425,8 +421,7 @@ public class PUMLExporter extends AbstractExporter {
     final String text = makeContent(context, stringConverter);
 
     File fileToSaveMap = null;
-    OutputStream theOut = out;
-    if (theOut == null) {
+    if (out == null) {
       fileToSaveMap = MindMapUtils.selectFileToSaveForFileFilter(
           context.getPanel(),
           context,
@@ -438,18 +433,8 @@ public class PUMLExporter extends AbstractExporter {
           this.getResourceBundle().getString("PumlExporter.approveButtonText"));
       fileToSaveMap =
           MindMapUtils.checkFileAndExtension(context.getPanel(), fileToSaveMap, ".puml");
-      theOut = fileToSaveMap == null ? null :
-          new BufferedOutputStream(new FileOutputStream(fileToSaveMap, false));
     }
-    if (theOut != null) {
-      try {
-        IOUtils.write(text, theOut, StandardCharsets.UTF_8);
-      } finally {
-        if (fileToSaveMap != null) {
-          IOUtils.closeQuietly(theOut);
-        }
-      }
-    }
+    writeUtf8(out, fileToSaveMap, text);
   }
 
   @Override

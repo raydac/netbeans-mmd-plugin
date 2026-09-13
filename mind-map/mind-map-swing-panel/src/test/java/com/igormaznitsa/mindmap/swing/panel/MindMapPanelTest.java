@@ -18,15 +18,20 @@ package com.igormaznitsa.mindmap.swing.panel;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.igormaznitsa.mindmap.model.MindMap;
+import com.igormaznitsa.mindmap.swing.panel.utils.RenderQuality;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 import javax.swing.SwingUtilities;
 import org.junit.Test;
 
@@ -86,6 +91,46 @@ public class MindMapPanelTest {
       final MindMapPanel panel = new MindMapPanel(controller);
       panel.setModel(new MindMap(true));
       assertFalse(panel.centerRootInViewport());
+    });
+  }
+
+  @Test
+  public void testCalculateSizeOfMapInPixelsDoesNotDisposeCallerGraphics() {
+    final MindMap map = new MindMap(true);
+    map.getRoot().setText("Root");
+
+    final MindMapPanelConfig cfg = new MindMapPanelConfig();
+    final BufferedImage image = new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
+    final Graphics2D graphics = image.createGraphics();
+    try {
+      assertNotNull(
+          MindMapPanel.calculateSizeOfMapInPixels(map, graphics, cfg, false,
+              RenderQuality.QUALITY));
+      graphics.setColor(Color.RED);
+      graphics.fillRect(0, 0, 1, 1);
+    } finally {
+      graphics.dispose();
+    }
+  }
+
+  @Test
+  public void testPaintAfterDisposeDoesNotThrow() throws Exception {
+    final MindMapPanelConfig config = new MindMapPanelConfig();
+    final MindMapPanelController controller = mock(MindMapPanelController.class);
+    when(controller.provideConfigForMindMapPanel(any(MindMapPanel.class))).thenReturn(config);
+
+    SwingUtilities.invokeAndWait(() -> {
+      final MindMapPanel panel = new MindMapPanel(controller);
+      panel.setModel(new MindMap(true));
+      panel.dispose();
+
+      final BufferedImage image = new BufferedImage(16, 16, BufferedImage.TYPE_INT_RGB);
+      final Graphics2D graphics = image.createGraphics();
+      try {
+        panel.paintComponent(graphics);
+      } finally {
+        graphics.dispose();
+      }
     });
   }
 

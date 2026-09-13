@@ -67,32 +67,34 @@ public class InMapBirdsEye implements BirdsEyeVisualizer {
 
   @Override
   public void draw(final MindMapPanel panel, final Graphics2D panelGraphics) {
-    panelGraphics.setColor(Color.WHITE);
+    final Graphics2D gfx = (Graphics2D) panelGraphics.create();
+    try {
+      final Color back = this.panel.getConfiguration().getBirdseyeBackground();
+      final Color front = this.panel.getConfiguration().getBirdseyeFront();
 
-    final Color back = this.panel.getConfiguration().getBirdseyeBackground();
+      gfx.setStroke(new BasicStroke(1.0f));
 
-    final Color front = this.panel.getConfiguration().getBirdseyeFront();
+      if (this.panel.getConfiguration().isDropShadow()) {
+        gfx.setColor(this.panel.getConfiguration().getShadowColor());
+        gfx.fill(
+            new Rectangle2D.Double(this.page.getX() + 16, this.page.getY() + 16,
+                this.page.getWidth(),
+                this.page.getHeight()));
+      }
 
-    panelGraphics.setStroke(new BasicStroke(1.0f));
+      gfx.setColor(back);
+      gfx.fill(this.page);
 
-    if (this.panel.getConfiguration().isDropShadow()) {
-      panelGraphics.setColor(this.panel.getConfiguration().getShadowColor());
-      panelGraphics.fill(
-          new Rectangle2D.Double(this.page.getX() + 16, this.page.getY() + 16, this.page.getWidth(),
-              this.page.getHeight()));
+      gfx.setColor(front);
+      this.drawTopicsTree(this.panel.getModel().getRoot(), gfx);
+
+      gfx.setColor(back);
+      gfx.fill(this.view);
+      gfx.setColor(front);
+      gfx.draw(this.view);
+    } finally {
+      gfx.dispose();
     }
-
-    panelGraphics.setColor(back);
-    panelGraphics.fill(page);
-
-    panelGraphics.setColor(front);
-
-    this.drawTopicsTree(this.panel.getModel().getRoot(), panelGraphics);
-
-    panelGraphics.setColor(back);
-    panelGraphics.fill(view);
-    panelGraphics.setColor(front);
-    panelGraphics.draw(view);
   }
 
   private boolean isMouseOverPageThumbnail(final MouseEvent mouseEvent) {

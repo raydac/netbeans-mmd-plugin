@@ -18,6 +18,8 @@ package com.igormaznitsa.mindmap.swing.panel.utils;
 
 import static java.util.Objects.requireNonNull;
 
+import com.igormaznitsa.mindmap.model.logger.Logger;
+import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.services.CustomTextEditor;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -33,6 +35,8 @@ import javax.swing.text.Utilities;
  * @since 1.6.6
  */
 public class JTextAreaCustomTextEditor implements CustomTextEditor {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(JTextAreaCustomTextEditor.class);
 
   private final JTextArea textArea;
   private final List<CaretPosChangeListener> caretPosChangeListenerList =
@@ -110,7 +114,7 @@ public class JTextAreaCustomTextEditor implements CustomTextEditor {
         result++;
       }
     } catch (BadLocationException e) {
-      // ignore
+      LOGGER.warn("Can't calculate caret row: " + e.getMessage());
     }
     return result;
   }
@@ -121,7 +125,7 @@ public class JTextAreaCustomTextEditor implements CustomTextEditor {
     try {
       return caretPos - Utilities.getRowStart(this.textArea, caretPos) + 1;
     } catch (BadLocationException e) {
-      // ignore
+      LOGGER.warn("Can't calculate caret column: " + e.getMessage());
     }
     return -1;
   }

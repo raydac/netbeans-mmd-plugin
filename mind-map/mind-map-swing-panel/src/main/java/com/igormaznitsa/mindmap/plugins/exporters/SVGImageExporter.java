@@ -64,12 +64,10 @@ import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
@@ -86,7 +84,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.SwingUtilities;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.text.StringEscapeUtils;
 
 public class SVGImageExporter extends AbstractExporter {
@@ -144,7 +141,7 @@ public class SVGImageExporter extends AbstractExporter {
 
   private static String fontFamilyToSVG(final Font font) {
     String fontFamilyStr = font.getFamily();
-    final String[] logicalFontFamily = LOCAL_FONT_MAP.get(font.getName().toLowerCase());
+    final String[] logicalFontFamily = LOCAL_FONT_MAP.get(font.getName().toLowerCase(Locale.ROOT));
     if (logicalFontFamily != null) {
       fontFamilyStr = logicalFontFamily[0];
     } else {
@@ -332,8 +329,7 @@ public class SVGImageExporter extends AbstractExporter {
     final String text = makeContent(context, options);
 
     File fileToSaveMap = null;
-    OutputStream theOut = out;
-    if (theOut == null) {
+    if (out == null) {
       fileToSaveMap = MindMapUtils.selectFileToSaveForFileFilter(
           context.getPanel(),
           context,
@@ -343,18 +339,8 @@ public class SVGImageExporter extends AbstractExporter {
           this.getResourceBundle().getString("SvgExporter.approveButtonText"));
       fileToSaveMap =
           MindMapUtils.checkFileAndExtension(context.getPanel(), fileToSaveMap, ".svg");
-      theOut = fileToSaveMap == null ? null :
-          new BufferedOutputStream(new FileOutputStream(fileToSaveMap, false));
     }
-    if (theOut != null) {
-      try {
-        IOUtils.write(text, theOut, "UTF-8");
-      } finally {
-        if (fileToSaveMap != null) {
-          IOUtils.closeQuietly(theOut);
-        }
-      }
-    }
+    writeUtf8(out, fileToSaveMap, text);
   }
 
   private String prepareStylePart(final MindMapPanelConfig config) {

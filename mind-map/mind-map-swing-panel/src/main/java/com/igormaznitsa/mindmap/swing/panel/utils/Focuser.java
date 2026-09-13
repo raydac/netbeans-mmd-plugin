@@ -41,43 +41,57 @@ public final class Focuser implements AncestorListener {
 
   @Override
   public void ancestorAdded(final AncestorEvent event) {
-    if (event.getID() == AncestorEvent.ANCESTOR_ADDED) {
-      if (event.getAncestor() instanceof Window) {
-        final Window window = (Window) event.getAncestor();
-        window.addWindowListener(new WindowAdapter() {
-          private void doBusiness() {
-            SwingUtilities.invokeLater(() -> {
-              component.requestFocus();
-              for (final Consumer<Window> r : extraActions) {
-                r.accept(window);
-              }
-            });
+    if (event.getID() != AncestorEvent.ANCESTOR_ADDED) {
+      return;
+    }
+    if (!(event.getAncestor() instanceof Window)) {
+      return;
+    }
 
-          }
-
-          @Override
-          public void windowGainedFocus(final WindowEvent e) {
-            this.doBusiness();
-          }
-
-          @Override
-          public void windowActivated(final WindowEvent e) {
-            this.doBusiness();
-          }
-
-          @Override
-          public void windowOpened(final WindowEvent e) {
-            this.doBusiness();
-          }
-
-          @Override
-          public void windowClosing(final WindowEvent e) {
-            ((Window) e.getComponent()).removeWindowListener(this);
+    final Window window = (Window) event.getAncestor();
+    final WindowAdapter adapter = new WindowAdapter() {
+      private void requestFocusOnWindow() {
+        SwingUtilities.invokeLater(() -> {
+          Focuser.this.component.requestFocus();
+          for (final Consumer<Window> action : Focuser.this.extraActions) {
+            action.accept(window);
           }
         });
-        this.component.removeAncestorListener(this);
       }
-    }
+
+      private void unregister() {
+        window.removeWindowListener(this);
+        window.removeWindowFocusListener(this);
+      }
+
+      @Override
+      public void windowGainedFocus(final WindowEvent e) {
+        this.requestFocusOnWindow();
+      }
+
+      @Override
+      public void windowActivated(final WindowEvent e) {
+        this.requestFocusOnWindow();
+      }
+
+      @Override
+      public void windowOpened(final WindowEvent e) {
+        this.requestFocusOnWindow();
+      }
+
+      @Override
+      public void windowClosing(final WindowEvent e) {
+        this.unregister();
+      }
+
+      @Override
+      public void windowClosed(final WindowEvent e) {
+        this.unregister();
+      }
+    };
+    window.addWindowListener(adapter);
+    window.addWindowFocusListener(adapter);
+    this.component.removeAncestorListener(this);
   }
 
   @Override
@@ -86,6 +100,5 @@ public final class Focuser implements AncestorListener {
 
   @Override
   public void ancestorMoved(final AncestorEvent event) {
-
   }
 }

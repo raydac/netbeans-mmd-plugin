@@ -27,8 +27,16 @@ public class DefaultMMDPrintPanelAdaptor implements MMDPrintPanel.Adaptor {
   @Override
   public void startBackgroundTask(final MMDPrintPanel source, final String name,
                                   final Runnable task) {
-    final Thread thread = new Thread(task, name);
+    final Thread thread = new Thread(() -> {
+      try {
+        task.run();
+      } catch (final RuntimeException ex) {
+        LOGGER.error("Print background task failed", ex);
+      }
+    }, name);
     thread.setDaemon(true);
+    thread.setUncaughtExceptionHandler(
+        (failed, error) -> LOGGER.error("Uncaught error in print task", error));
     thread.start();
   }
 

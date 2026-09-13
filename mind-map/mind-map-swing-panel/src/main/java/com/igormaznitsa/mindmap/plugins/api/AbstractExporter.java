@@ -31,7 +31,9 @@ import com.igormaznitsa.mindmap.swing.panel.MindMapPanelConfig;
 import com.igormaznitsa.mindmap.swing.panel.utils.PropertiesPreferences;
 import com.igormaznitsa.mindmap.swing.services.DefaultParametersPanelFactory;
 import java.awt.event.ActionEvent;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
@@ -44,6 +46,7 @@ import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 
 /**
  * Abstract auxiliary class automates way to implement an abstract exporter.
@@ -73,6 +76,35 @@ public abstract class AbstractExporter extends AbstractPopupMenuItem implements 
       throw ex;
     } catch (Exception ex) {
       throw new IOException(ex.getMessage(), ex);
+    }
+  }
+
+  protected static void writeUtf8(final OutputStream providedOut, final File file,
+                                  final String text) throws IOException {
+    if (providedOut != null) {
+      IOUtils.write(text, providedOut, StandardCharsets.UTF_8);
+      return;
+    }
+    if (file == null) {
+      return;
+    }
+    try (OutputStream out = new BufferedOutputStream(new FileOutputStream(file, false))) {
+      IOUtils.write(text, out, StandardCharsets.UTF_8);
+    }
+  }
+
+  protected static void writeBytes(final OutputStream providedOut, final File file,
+                                   final byte[] data) throws IOException {
+    if (providedOut != null) {
+      providedOut.write(data);
+      providedOut.flush();
+      return;
+    }
+    if (file == null) {
+      return;
+    }
+    try (OutputStream out = new BufferedOutputStream(new FileOutputStream(file, false))) {
+      out.write(data);
     }
   }
 

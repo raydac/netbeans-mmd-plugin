@@ -40,9 +40,7 @@ import com.igormaznitsa.mindmap.swing.services.ImageIconServiceProvider;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.time.Instant;
@@ -53,8 +51,6 @@ import java.util.List;
 import java.util.Set;
 import javax.swing.Icon;
 import javax.swing.SwingUtilities;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.text.StringEscapeUtils;
 
 public class FreeMindExporter extends AbstractExporter {
@@ -265,8 +261,7 @@ public class FreeMindExporter extends AbstractExporter {
     final String text = makeContent(context, stringConverter);
 
     File fileToSaveMap = null;
-    OutputStream theOut = out;
-    if (theOut == null) {
+    if (out == null) {
       fileToSaveMap = MindMapUtils.selectFileToSaveForFileFilter(
           context.getPanel(),
           context,
@@ -277,22 +272,8 @@ public class FreeMindExporter extends AbstractExporter {
           this.getResourceBundle().getString("FreeMindExporter.filterDescription"),
           this.getResourceBundle().getString("FreeMindExporter.approveButtonText"));
       fileToSaveMap = MindMapUtils.checkFileAndExtension(context.getPanel(), fileToSaveMap, ".mm");
-      theOut = fileToSaveMap == null ? null :
-          new BufferedOutputStream(new FileOutputStream(fileToSaveMap, false));
     }
-    if (theOut != null) {
-      try {
-        IOUtils.write(text, theOut, "UTF-8");
-      } finally {
-        if (fileToSaveMap != null) {
-          IOUtils.closeQuietly(theOut);
-        }
-      }
-    }
-
-    if (fileToSaveMap != null) {
-      FileUtils.writeStringToFile(fileToSaveMap, text, "UTF-8");
-    }
+    writeUtf8(out, fileToSaveMap, text);
   }
 
   @Override

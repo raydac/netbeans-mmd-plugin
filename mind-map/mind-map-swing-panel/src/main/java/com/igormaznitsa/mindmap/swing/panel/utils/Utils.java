@@ -160,18 +160,12 @@ public final class Utils {
   public static byte[] toByteArray(final ZipFile zipFile, final String path)
       throws IOException {
     final InputStream in = findInputStreamForResource(zipFile, path);
-
-    byte[] result = null;
-
-    if (in != null) {
-      try {
-        result = IOUtils.toByteArray(in);
-      } finally {
-        IOUtils.closeQuietly(in);
-      }
+    if (in == null) {
+      return null;
     }
-
-    return result;
+    try (InputStream stream = in) {
+      return IOUtils.toByteArray(stream);
+    }
   }
 
   public static Document load(
@@ -185,7 +179,7 @@ public final class Utils {
       return new W3CDom().namespaceAware(false).fromJsoup(result);
     } finally {
       if (autoClose) {
-        IOUtils.closeQuietly(inStream);
+        inStream.close();
       }
     }
   }
@@ -241,7 +235,7 @@ public final class Utils {
       document = builder.parse(stream);
     } finally {
       if (autoClose) {
-        IOUtils.closeQuietly(inStream);
+        inStream.close();
       }
     }
 
@@ -405,29 +399,27 @@ public final class Utils {
 
       final BufferedImage buffer = new BufferedImage(swidth, sheight, BufferedImage.TYPE_INT_ARGB);
       final Graphics2D gfx = buffer.createGraphics();
+      try {
+        gfx.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        gfx.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        gfx.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION,
+            RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+        gfx.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+            RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        gfx.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_DISABLE);
+        gfx.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING,
+            RenderingHints.VALUE_COLOR_RENDER_QUALITY);
 
-      gfx.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-      gfx.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-      gfx.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION,
-          RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
-      gfx.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-          RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-      gfx.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_DISABLE);
-      gfx.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING,
-          RenderingHints.VALUE_COLOR_RENDER_QUALITY);
-
-      gfx.drawImage(image, AffineTransform.getScaleInstance(imageScale, imageScale), null);
-      gfx.dispose();
+        gfx.drawImage(image, AffineTransform.getScaleInstance(imageScale, imageScale), null);
+      } finally {
+        gfx.dispose();
+      }
       image = buffer;
     }
 
     final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-    try {
-      if (!ImageIO.write((RenderedImage) image, "png", bos)) {
-        throw new IOException("Can't encode image as PNG");
-      }
-    } finally {
-      IOUtils.closeQuietly(bos);
+    if (!ImageIO.write((RenderedImage) image, "png", bos)) {
+      throw new IOException("Can't encode image as PNG");
     }
     return Utils.base64encode(bos.toByteArray());
   }
@@ -730,12 +722,13 @@ public final class Utils {
     if (scaledH > 0 && scaledW > 0) {
       try {
         result = new BufferedImage(scaledW, scaledH, BufferedImage.TYPE_INT_ARGB);
-        final Graphics2D g = (Graphics2D) result.getGraphics();
-
-        RenderQuality.QUALITY.prepare(g);
-
-        g.drawImage(src, 0, 0, scaledW, scaledH, null);
-        g.dispose();
+        final Graphics2D g = result.createGraphics();
+        try {
+          RenderQuality.QUALITY.prepare(g);
+          g.drawImage(src, 0, 0, scaledW, scaledH, null);
+        } finally {
+          g.dispose();
+        }
       } catch (OutOfMemoryError e) {
         LOGGER.error(
             "OutOfmemoryError in scaleImage (" + baseScaleX + ',' + baseScaleY + ',' + scale + ')',
@@ -763,12 +756,6 @@ public final class Utils {
 
     final BufferedImage result =
         new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB);
-
-    for (int y = 0; y < imageHeight; y++) {
-      for (int x = 0; x < imageWidth; x++) {
-        result.setRGB(x, y, 0);
-      }
-    }
 
     final Graphics2D g = result.createGraphics();
     final MMGraphics gfx = new MMGraphics2DWrapper(g);
@@ -1094,6 +1081,7 @@ public final class Utils {
             processor.accept(dialog);
           }
         });
+        component.removeHierarchyListener(this);
       }
     });
     return component;

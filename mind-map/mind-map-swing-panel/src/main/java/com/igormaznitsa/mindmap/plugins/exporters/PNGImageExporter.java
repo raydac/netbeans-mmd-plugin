@@ -38,11 +38,9 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashSet;
@@ -51,7 +49,6 @@ import java.util.Set;
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.SwingUtilities;
-import org.apache.commons.io.IOUtils;
 
 public final class PNGImageExporter extends AbstractExporter {
 
@@ -198,8 +195,7 @@ public final class PNGImageExporter extends AbstractExporter {
     final byte[] imageData = buff.toByteArray();
 
     File fileToSaveMap = null;
-    OutputStream theOut = out;
-    if (theOut == null) {
+    if (out == null) {
       fileToSaveMap = MindMapUtils.selectFileToSaveForFileFilter(
           context.getPanel(),
           context,
@@ -211,18 +207,8 @@ public final class PNGImageExporter extends AbstractExporter {
           this.getResourceBundle().getString("PNGImageExporter.approveButtonText"));
       fileToSaveMap =
           MindMapUtils.checkFileAndExtension(context.getPanel(), fileToSaveMap, ".png");
-      theOut = fileToSaveMap == null ? null :
-          new BufferedOutputStream(new FileOutputStream(fileToSaveMap, false));
     }
-    if (theOut != null) {
-      try {
-        IOUtils.write(imageData, theOut);
-      } finally {
-        if (fileToSaveMap != null) {
-          IOUtils.closeQuietly(theOut);
-        }
-      }
-    }
+    writeBytes(out, fileToSaveMap, imageData);
   }
 
   @Override
