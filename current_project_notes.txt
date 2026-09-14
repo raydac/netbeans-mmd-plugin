@@ -19,9 +19,9 @@
 - Added `CreateMindMapFileAction` to `NewGroup` so File | New keeps an explicit SciaReto Mind Map item on both old and new IDEs.
 - New-menu item anchored `after` `NewDir` (Directory), so it sits below File / Scratch File / Directory.
 - Removed `MindMapFileTypeFactory`.
-- Corrected file-template group name to `SciaReto Mind Map.mmd` (matches `fileTemplates/SciaReto Mind Map.mmd.ft`).
-- Latest IDE `getInternalTemplate()` no longer fabricates a dummy template; if the name is missing it calls `getJ2eeTemplate()` and throws `Template not found`. Empty-map template is now also under `fileTemplates/internal/` and `fileTemplates/j2ee/`, registered as `<internalFileTemplate name="SciaReto Mind Map"/>`. Create action resolves across categories and writes default MMD text if none is found.
+- File | New is the JetBrains custom-action pattern: empty-map template only under `fileTemplates/internal/`, `<internalFileTemplate name="SciaReto Mind Map"/>` so it appears in Settings | File and Code Templates, and `CreateMindMapFileAction` in `NewGroup` after Directory. Removed the Files-category `.ft`, the j2ee copy, and `fileTemplateGroup` so the IDE no longer lists a second generic create-from-template item. Create action still resolves internal/Files/Other and writes default MMD text if none is found (`getInternalTemplate()` on latest IDEs throws via `getJ2eeTemplate()` when the name is missing).
 - mind-map-swing-panel: cleaned Swing action/event handling without API changes — title-editor key adapter held as field, dead typed Enter end-edit and unused `lastReleasedEvent` removed, duplicate drag hit-test removed, zoom keyboard path shared via `applyScaleAndRefresh`, popup state listener attached once per menu, `catchEscInParentDialog` wired once per dialog root pane, dead default `doActionForTopic` external branch removed.
+- mind-map-swing-panel Java 11 / Swing quality pass (public signatures kept): `paintComponent` no longer calls `paintChildren`; layout measuring uses a `Graphics2D.create()` copy and never disposes caller graphics; panel listeners registered in the constructor and removed in `dispose()`; print preview paints in `paintComponent`; default print adaptor logs worker failures; exporters write via try-with-resources.
 - scia-reto UI Swing audit (module-only): PlantUML render no longer clears `lastSuccessfullyRenderedText` in finally before EDT success; loader animation unregister moved to EDT completion; `hideTextPanel` no longer re-adds KeyListener; DnDTree null-safe transferable; loading GIF redraw marshaled to EDT; project unload animation unregister on EDT.
 - scia-reto: FlatLaf focus accent on large workspace scroll containers frozen via `UiUtils.disableContainerFocusBorder` (`focusWidth: 0` + `focusedBorderColor` = normal border); regular container borders remain.
 - scia-reto: exit paths unified via `MainFrame.tryCloseApplication` / `shutdownApplication`; `TextFileBackup.finishAndAwait()` drains pending backup/delete jobs then joins the daemon worker so exit neither loses flush nor hangs the process.
@@ -34,10 +34,12 @@
 - Do not put `<fileType>` as a root `<idea-plugin>` child. 222 PluginManager treats that as `Unknown element: fileType` (`XmlReader.readRootElementChild`). It must live under `<extensions defaultExtensionNs="com.intellij">`.
 - `fileType` attributes that exist on 222: `name`, `implementationClass`, `fieldName`, `language`, `extensions`. `name` must match `FileType.getName()`, `language` must match `MMLanguage` id `NBMindMap`.
 - `MindMapFileType` constructor is private; `fieldName="INSTANCE"` is required.
-- Latest IntelliJ New File popup lists file types from the declarative EP. `FileTypeFactory` is deprecated and ignored or unloaded there, so MMD vanished from New while the editor could still open existing files.
-- `CreateFileFromTemplateAction` on 222: constructor `(text, description, icon)`, `buildDialog(Project, PsiDirectory, Builder)`, `getActionName(...)`. `createFile` resolves the template via `getInternalTemplate`, which also falls back to Files-category templates.
+- Latest IntelliJ New File popup lists file types from the declarative EP and Files-category templates. `FileTypeFactory` is deprecated and ignored or unloaded there, so MMD vanished from New while the editor could still open existing files. Do not also ship a Files-category `.ft` when `CreateMindMapFileAction` is in `NewGroup` — that is the duplicate New item (custom dialog vs generic template dialog).
+- `CreateFileFromTemplateAction` on 222: constructor `(text, description, icon)`, `buildDialog(Project, PsiDirectory, Builder)`, `getActionName(...)`. Platform `createFile` uses `getInternalTemplate`; our override uses `findInternalTemplate` / Files / Other and a default MMD body so latest IDEs do not throw `Template not found`.
 - Panel shortcuts are KeyListener + `MindMapPanelConfig` maps, not panel ActionMap/InputMap. Host IDEs must not assume Swing Action registration on the panel.
 - `MindMapPanel` applies first-open root centering synchronously in layout/`setBounds`/`addNotify` when hosted in a `JViewport`. Do not use `invokeLater` after paint — that is the visible jump (and FlatLaf smooth-scroll animates it). Undo/redo `setModel` does not re-request centering; import and first document load call `requestRootCenteringInViewport()`.
+- `MindMapPanel.paintComponent` must not call `paintChildren`; Swing paints children after the component. Overlays (drag ghost, rubber-band, birds-eye) stay in `paintComponent` on a `g.create()` copy so the title editor still paints last. `calculateSizeOfMapInPixels` and layout-from-`getGraphics()` always work on a copy and dispose only that copy.
+- Panel input listeners are registered in the constructor (not `invokeLater`) and removed in `dispose()`. Hosts that constructed a panel and immediately disposed it previously could still receive late listener registration.
 - Title editor Enter end-edit must use keyPressed/keyReleased (`getKeyCode()`); KEY_TYPED has `VK_UNDEFINED` so typed-path end-edit was dead.
 - Shift+Enter next-line intentionally handled in both typed and released for RUS layout under Linux/IDEA.
 - scia-reto: tree model notifications already use `Utils.safeSwingCall`; subtree load mutates `children` off EDT but listeners are notified on EDT via `notifyProjectStateChanged` / `invokeLater` fireNotifySubtreeChanged.
@@ -46,7 +48,6 @@
 - mind-map-model `Topic.parse` is a private `TopicParser`; extras passed to the `Topic` constructor now follow the same attach lifecycle as `setExtra`.
 
 ## 3. Technical Debt & Refactoring
-- Files-category template plus `NewGroup` action can show two "SciaReto Mind Map" entries on older File | New menus. Prefer keeping both over missing the item on the new New File popup.
 - No unit tests under `idea-mindmap`.
 - `IdeaUtils` still uses reflection for Maven, TransactionGuard, and HTMLEditorProvider to stay on 222.
 - Plugin menu wiring (`AbstractExporter`/`AbstractImporter`/`ChangeColorPlugin`/`OptionsPlugin`) still duplicates ExternallyExecutedPlugin listener boilerplate; consolidate later via protected helper on `AbstractPopupMenuItem` without changing public plugin APIs.
@@ -59,12 +60,12 @@
 ## 4. Current Work In Progress
 - Print quality: vector/high-DPI raster path is in; extra/emoticon/topic images keep source pixels; multi-page print lays out once in paper space, clips each tile in page space before translate so later pages stay inked and preview cannot draw topics outside the sheet. Preview zoom is view-only. Print options now include Fit to pages (both width and height, e.g. 2×2).
 - Development version **1.8.0-SNAPSHOT** (13-sep-2026): all `pom.xml`, changelog/README `__1.8.0 (SNAPSHOT)__`, IJ `plugin.xml`, mac Info.plist `1.8.0`, win `versioninfo.json`, `IDE_VERSION` 1.8.0, AP fallback `1.8.0`. Replaced unreleased 1.7.1 because the Java 11 minimum belongs on a minor bump.
-- scia-reto Java quality pass applied (convert CLI, large-file open, folder extras, macOS Open With, load-cancel spinner, browse ProcessBuilder, UUID/history/backup hardening).
+- mind-map-swing-panel Java 11 / Swing quality pass applied (API kept): paint pipeline, graphics ownership, dispose/listeners, print preview, exporters/resources.
 - Newly opened maps center the root topic in the swing panel before first paint.
 - MMD format spec moved into `skills/mmd/MMD_Format.MD` so skill copies include the full description.
 - MMD skill scripts reviewed and hardened (password argv removed, atomic writes, Java-matching extras/HTML).
 - mind-map-model internal quality pass (API kept): parser DSL, shared search/file helpers, extra attach on construct, ConcurrentHashMap logger cache.
-- Verify File | New create on latest IntelliJ after reinstall; New menu order after Directory.
+- Verify File | New on latest IntelliJ after reinstall: a single SciaReto Mind Map item after Directory, custom create dialog, no second item at the end of the list.
 - Verify opening an existing MMD file after the blank-editor fix.
 - Verify FlatLaf editor/explorer containers keep normal border (no focus-accent color change).
 - Verify scia-reto exits cleanly via window close, File | Exit, and platform Quit after editing text files.
@@ -77,7 +78,7 @@
 - AppImage: Linux `Taskbar API is not supported` at start is expected and does not block the GUI; packaging (AppRun/desktop/JRE/`libawt_xawt`) is fine for GUI. Early console is quiet because JUL starts at WARNING until after splash. `StartupWMClass=scia.reto.editor` does not match real WM_CLASS `SciaReto`.
 
 ## 6. Open Questions & Pending Decisions
-- Whether to hide the Files-category auto-template (move to `fileTemplates/internal/`) if older IDEs show a duplicate New item.
+- None.
 
 ## 7. Useful References
 - MMD format spec: `skills/mmd/MMD_Format.MD` (derived from `mind-map-model` parser + tests).

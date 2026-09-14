@@ -15,6 +15,7 @@
         <p>1.8.0 (SNAPSHOT)</p>
         <ul>
             <li>Minimum Java version lifted from 8 to 11</li>
+            <li>File | New lists SciaReto Mind Map once, after Directory</li>
             <li>Newly opened mind maps show the root topic centered without a visible jump</li>
             <li>Printing keeps printer resolution instead of a low-DPI bitmap, so small map details, topic icons, and images stay readable; topic frames stay around the text when printing to PDF or PostScript; a large map printed across several pages keeps every tile, including 2×2 fit and when preview zoom is not 100%; print preview keeps topics inside the page instead of drawing them around the sheet</li>
             <li>Mind map panel painting and print preview follow Swing paint rules, so the title editor no longer paints twice and a failed print job no longer crashes the default print worker</li>
@@ -294,8 +295,6 @@
                   language="NBMindMap"
                   extensions="mmd"/>
         <internalFileTemplate name="SciaReto Mind Map"/>
-        <fileTemplateGroup
-                implementation="com.igormaznitsa.ideamindmap.filetemplate.MindMapTemplateGroupDescriptionFactory"/>
         <facetType implementation="com.igormaznitsa.ideamindmap.facet.MindMapFacetType"/>
         <framework.detector implementation="com.igormaznitsa.ideamindmap.facet.MindMapFacetDetector"/>
         <applicationConfigurable instance="com.igormaznitsa.ideamindmap.settings.MindMapSettingsComponent"/>
