@@ -100,7 +100,12 @@ const viewer = MmdViewer.attach(element, {
     icons: true,
     iconsUrl: "mmd-icons.png",
     iconsMetaUrl: "mmd-icons.json",
-    config: { /* MindMapPanelConfig-like colors and spacing */}
+    config: {
+        fontFamily: '"JetBrains Mono", ui-monospace, monospace',
+        selectLineColor: "#FFA500",
+        selectLineWidth: 3,
+        selectLineGap: 5
+    }
 });
 
 viewer.loadText(mmdSource);
@@ -125,7 +130,7 @@ Enabled only when the matching option is on.
 | Pan                        | Drag anywhere. A short click still selects a topic                                                                                                                                                                                                                                                                    |
 | Zoom                       | Mouse wheel, toolbar, pinch, or Ctrl/Cmd +/-                                                                                                                                                                                                                                                                          |
 | Fit                        | Fit button or Ctrl/Cmd 0                                                                                                                                                                                                                                                                                              |
-| Select                     | Click a topic; a clipped topic is scrolled fully into view                                                                                                                                                                                                                                                            |
+| Select                     | Click a topic; a clipped topic is scrolled fully into view. Focus is a bold dashed orange frame around the topic, same as the Java editor (`config.selectLineColor`, `selectLineWidth`, `selectLineGap`)                                                                                                              |
 | Fold / unfold              | Click the circle on a topic, or `-` / `+`                                                                                                                                                                                                                                                                             |
 | Move                       | Arrow keys follow the Java editor: from the root, left/right enter that side of the map; up/down stay among siblings. Home selects the root                                                                                                                                                                           |
 | Notes                      | Notes button, or double-click a topic (double-tap on touch). Click and drag never open the panel. `notesLayout` is `auto` (side column on a wide screen, bottom sheet in portrait, right overlay in landscape), `landscape`, `portrait`, or `modal` (centered dialog; click the dimmed area or press Escape to close) |

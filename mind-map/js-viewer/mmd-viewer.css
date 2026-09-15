@@ -167,13 +167,9 @@
     cursor: default;
 }
 
-.mmd-topic.is-selected .mmd-topic__shape {
-    stroke: var(--mmd-select);
-    stroke-width: 3;
-}
-
 .mmd-connectors,
 .mmd-jumps,
+.mmd-selection,
 .mmd-topic__shadow,
 .mmd-paper {
     pointer-events: none;

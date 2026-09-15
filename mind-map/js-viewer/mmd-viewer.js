@@ -92,6 +92,8 @@
         collapsatorBorderColor: "#404040",
         collapsatorBackgroundColor: "#FFFFFF",
         selectLineColor: "#FFA500",
+        selectLineWidth: 3,
+        selectLineGap: 5,
         jumpLinkColor: "#00FFFF",
         minScale: 0.2,
         maxScale: 4
@@ -1906,6 +1908,23 @@
         });
     }
 
+    function selectFrameAttrs(bounds, cfg) {
+        var gap = cfg.selectLineGap == null ? 5 : cfg.selectLineGap;
+        var width = cfg.selectLineWidth == null ? 3 : cfg.selectLineWidth;
+        return {
+            class: "mmd-topic__select",
+            x: bounds.x - gap,
+            y: bounds.y - gap,
+            width: bounds.w + gap * 2,
+            height: bounds.h + gap * 2,
+            fill: "none",
+            stroke: cfg.selectLineColor,
+            "stroke-width": width,
+            "stroke-dasharray": (width * 3) + " " + width,
+            "stroke-linecap": "butt"
+        };
+    }
+
     function paintTopic(parentEl, topic, cfg, selectedId) {
         var selected = cfg.showSelection !== false && topic.id === selectedId;
         var group = svgEl("g", {
@@ -1934,7 +1953,7 @@
             rx: rx,
             fill: topicFill(topic, cfg),
             stroke: topicBorder(topic, cfg),
-            "stroke-width": selected ? 3 : cfg.elementBorderWidth
+            "stroke-width": cfg.elementBorderWidth
         }));
         var pad = cfg.textMargins + cfg.elementBorderWidth;
         var gap = cfg.horizontalBlockGap;
@@ -2814,7 +2833,9 @@
         this.world.appendChild(jumps);
         this.world.appendChild(connectors);
         this.world.appendChild(topics);
+        this.world.appendChild(svgEl("g", {class: "mmd-selection"}));
         this.svg.appendChild(this.world);
+        this.paintSelectFrame();
         this.applyView();
     };
 
@@ -2839,18 +2860,29 @@
         return this;
     };
 
+    Viewer.prototype.paintSelectFrame = function () {
+        var layer = this.world && this.world.querySelector(".mmd-selection");
+        if (!layer) {
+            return;
+        }
+        while (layer.firstChild) {
+            layer.removeChild(layer.firstChild);
+        }
+        var topic = this.selected();
+        var width = this.cfg.selectLineWidth == null ? 3 : this.cfg.selectLineWidth;
+        if (!topic || !topic.bounds || this.cfg.showSelection === false || width <= 0) {
+            return;
+        }
+        layer.appendChild(svgEl("rect", selectFrameAttrs(topic.bounds, this.cfg)));
+    };
+
     Viewer.prototype.paintSelection = function () {
         var selectedId = this.selectedId;
         var show = this.cfg.showSelection !== false;
-        var width = this.cfg.elementBorderWidth;
         forEachNode(this.svg.querySelectorAll("[data-topic-id]"), function (node) {
-            var selected = show && Number(node.getAttribute("data-topic-id")) === selectedId;
-            toggleClass(node, "is-selected", selected);
-            var shape = node.querySelector(".mmd-topic__shape");
-            if (shape) {
-                shape.setAttribute("stroke-width", selected ? 3 : width);
-            }
+            toggleClass(node, "is-selected", show && Number(node.getAttribute("data-topic-id")) === selectedId);
         });
+        this.paintSelectFrame();
     };
 
     Viewer.prototype.selected = function () {
