@@ -1,0 +1,123 @@
+[Scia Reto](https://sciareto.org) mind map   
+> __version__=`1.1`,showJumps=`true`
+---
+
+# MMD JS Viewer
+> fillColor=`#031A31`,mmd.emoticon=`plugin`,textColor=`#FFFFFF`,topicLinkUID=`rootTopic`
+
+
+- NOTE
+<pre>This page is a browser viewer for Scia Reto MMD mind maps.
+
+Drag the canvas to pan, use the mouse wheel to zoom, and double-click a topic to read its note.</pre>
+
+## Navigation
+> fillColor=`#B1BFCC`,leftSide=`true`,mmd.emoticon=`compass`
+
+
+### Pan and zoom
+> fillColor=`#FDFDFD`
+
+- NOTE
+<pre>Drag the map to pan, including from a topic.
+A short click still selects.
+Mouse wheel zooms toward the cursor.
+Toolbar Fit recenters the whole map.
+Pinch-zoom works on touch screens.</pre>
+
+
+### Keyboard
+> fillColor=`#FDFDFD`
+
+- NOTE
+<pre>Arrow keys move among visible topics.
+Home selects the root.
+- folds a branch, + unfolds it.
+Alt+- / Alt+= fold or unfold all descendants.
+Ctrl/Cmd +/- zoom, Ctrl/Cmd 0 fits.</pre>
+
+
+### Collapse
+> collapsed=`true`,fillColor=`#FDFDFD`,mmd.emoticon=`lock`
+
+- NOTE
+<pre>Click the small circle on a topic to hide or show children. This branch starts folded.</pre>
+
+
+#### Hidden child
+> fillColor=`#99FFCC`
+
+- NOTE
+<pre>Unfold the parent to see this topic again.</pre>
+
+
+## Notes and extras
+> fillColor=`#7AA3E5`,mmd.emoticon=`legend`
+
+
+### Plain note
+> fillColor=`#99FFCC`
+
+- NOTE
+<pre>Topic notes are stored as extra NOTE blocks in the MMD file.
+
+They can be several lines
+and still round-trip through the Java editors.</pre>
+
+
+### Encrypted note
+> extras.note.encrypted=`true`,extras.note.encrypted.hint=`interop vector`,fillColor=`#FF9999`,mmd.emoticon=`key`
+
+- NOTE
+<pre>gJLc5oWXTyeLeu24WhyqdlDFoGMgvuTvTzOx4hdCRx8JYjXMUoziQFR+fyiO3/rtRiiy2BVXTM04CUbp8dkb5A==</pre>
+
+
+### External link
+> fillColor=`#FFFF99`,mmd.emoticon=`world`
+
+- LINK
+<pre>https://sciareto.org</pre>
+
+
+### File extra
+> fillColor=`#CCCCFF`,mmd.emoticon=`page`
+
+- FILE
+<pre>README.md</pre>
+
+
+### Embedded image
+> fillColor=`#FDFDFD`,mmd.emoticon=`photo`,mmd.image=`iVBORw0KGgoAAAANSUhEUgAAADAAAAAgCAIAAADbtmxLAAAAaElEQVR42mMQsioYVIhhkDpIK23XgKNRB406aBA46P8RA6xoAByEyymUOIt8BxHjGjLcRKaDiHcNqW4aFg4i1TUkuWnUQaMOGnXQqINGS+phWrkOxubHYGygjbapRx006B00OvqBEwEAV+fJ/uCrFqUAAAAASUVORK5CYII=`,mmd.image.name=`sample`,mmd.image.uri=`https://sciareto.org`
+
+- NOTE
+<pre>Java editors attach a PNG to a topic as mmd.image. This viewer draws that picture on the topic. Double-click the picture to open the stored URI.</pre>
+
+
+### Jump to root
+> fillColor=`#99FF99`,mmd.emoticon=`connect`
+
+- TOPIC
+<pre>rootTopic</pre>
+- NOTE
+<pre>Double-click this topic, or use JUMP in the notes panel, to follow the internal link.</pre>
+```Java
+System.out.println("Hello from an MMD snippet");
+```
+
+
+## Attach to a page
+> fillColor=`#B1BFCC`,leftSide=`true`,mmd.emoticon=`application`
+
+
+### Script tag
+> fillColor=`#FDFDFD`,mmd.emoticon=`code`
+
+- NOTE
+<pre>Include mmd-viewer.css and mmd-viewer.js, then call MmdViewer.attach(element, { src: "map.mmd" }).</pre>
+
+
+### Auto mount
+> fillColor=`#FDFDFD`
+
+- NOTE
+<pre>Place data-mmd-viewer and data-mmd-src on any element. The library mounts on DOMContentLoaded.</pre>

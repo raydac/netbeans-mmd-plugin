@@ -1,4 +1,5 @@
 ## 1. Implementation Progress
+- Browser MMD viewer added at `mind-map/js-viewer/`: vanilla `mmd-viewer.js` + CSS, example `index.html`, sample `examples/demo.mmd`. Attach with `MmdViewer.attach(el, { src, preset })` or `data-mmd-*` attributes. Feature flags and presets (`full`, `embed`, `map`, `picture`, `reader`) turn toolbar, notes, jumps, icons, images, and pan/zoom on or off. Pan/zoom/fold, notes panel, encrypted-note unlock (same AES-256-ECB + SHA-256 prefix as `CryptoUtils`; demo password `hello`). Topic emoticons and extras use sprite `mmd-icons.png` packed from Java `miscicons/icon.lst` plus extra icons. `python3 pack-js.py` writes `mmd-viewer.min.js` with a compacted `mmd-icons.json` inlined (`EMBEDDED_ATLAS`); the PNG still loads beside the script. Embedded topic pictures (`mmd.image` / `mmd.image.uri` / `mmd.image.name`) draw on the topic at native size, same left-of-title placement as Swing `ImageVisualAttributePlugin`.
 - Removed stray `mind-map/com/` (accidental FlatLaf `FlatClientProperties.java` from an IDE source extract) and gitignored `/mind-map/com/` so library dumps under the Maven parent are not committed again.
 - Print path no longer rasterizes mind maps/images at Java’s 72-DPI page units. Vector print lays out once in paper space, then draws; printer/preview zoom only transforms that layout (so 200% preview or 300 DPI does not reflow topics off the page grid). Images keep the original pixels via affine scale; topic extras/emoticons/attached images draw their source bitmaps into the destination size instead of a 16px/logical pre-scale; “draw as image” rasterizes per page at device DPI (capped at 300). Page count uses ceil. Fit-to-page stays vector. Print uses PrintQuality.HIGH, fractional metrics, pure strokes, and clips to the imageable area. Tiles clip the sheet in page space before translate (no post-translate `setClip`), so IntelliJ print preview cannot draw topics outside the page.
 - Mind map panel now centers the root topic in its `JViewport` during layout, before the first paint, so newly opened maps do not jump after load (Scia Reto) or start in the top-left corner (IntelliJ).
@@ -44,7 +45,8 @@
 - Shift+Enter next-line intentionally handled in both typed and released for RUS layout under Linux/IDEA.
 - scia-reto: tree model notifications already use `Utils.safeSwingCall`; subtree load mutates `children` off EDT but listeners are notified on EDT via `notifyProjectStateChanged` / `invokeLater` fireNotifySubtreeChanged.
 - scia-reto: `MindMapPanelConfig.getScaleModifiers()` still uses old `KeyEvent.CTRL_MASK` style — keep `getModifiers()` when matching wheel/scale shortcuts against that config.
-- Encrypted MMD notes live in the model as ciphertext + `extras.note.encrypted`; AES is only in Swing `CryptoUtils` (AES-256-ECB PKCS5, SHA-256 prefix). The skill `crypto.py` reimplements that in stdlib Python so agents can decrypt after asking the user for the password.
+- Encrypted MMD notes live in the model as ciphertext + `extras.note.encrypted`; AES is only in Swing `CryptoUtils` (AES-256-ECB PKCS5, SHA-256 prefix). The skill `crypto.py` and `js-viewer/mmd-viewer.js` reimplement that so agents/browsers can decrypt after the user supplies the password.
+- `js-viewer` layout follows the Swing panel: root children with `leftSide=true` go left, others right; first-level connectors are cubic curves; deeper connectors are orthogonal via the collapsator; collapse is view-only (not written back). Topic text, emoticons, extra icons, and embedded `mmd.image` pictures share one vertical midline (picture sits after the emoticon, before the title). Keyboard focus matches the Swing panel: from the root, left/right select the first child on that side; on a branch, left/right move toward the root or into the first child (unfolding if needed), and up/down stay among siblings (same side at the first level). Selection pans using layout bounds, not SVG getBoundingClientRect (icon sprites overflow their tile). Click, drag, and keyboard focus do not open the notes panel. Double-click is detected from two still clicks on the same topic (native `dblclick` is unreliable after `setPointerCapture` for pan). Double-click a topic opens notes in every `notesLayout`; double-click a LINK/FILE/TOPIC/IMAGE extra still follows that extra. Jump links are a dashed line from the source center to a filled arrowhead on the destination edge (`drawArrowToDestination`). Extra URL/path hints overlay the stage so they do not resize the toolbar. File extras open only as http(s) resolved against the map or page (browsers cannot open arbitrary local paths). Pointer Events drive pan/pinch when present; otherwise mouse and touch. Avoid CSS flex `gap` (older iOS Safari ignores it on flex). Drag past a small threshold pans even if the press started on a topic; a still click still selects. Notes layout is `notesLayout`: `auto` (wide side column; ≤720px portrait bottom sheet / landscape right overlay), `landscape`, `portrait`, or `modal` (centered dialog, backdrop click or Escape closes). Docked notes use `flex: 0 0 auto` so the auto/landscape column is not squeezed to nothing.
 - mind-map-model `Topic.parse` is a private `TopicParser`; extras passed to the `Topic` constructor now follow the same attach lifecycle as `setExtra`.
 
 ## 3. Technical Debt & Refactoring
@@ -58,6 +60,7 @@
 - mind-map-model `MindMapLexer.advance` remains a large token state machine; leave it unless parse bugs appear.
 
 ## 4. Current Work In Progress
+- Browser MMD viewer in `mind-map/js-viewer` (library + example page). Viewer-only: no edit/save. Embedded topic images (`mmd.image`) draw on the topic like Swing `ImageVisualAttributePlugin`; add/remove stays in the Java editors. Hosts configure chrome/interaction via options, `data-mmd-*`, `configure()`, and presets.
 - Print quality: vector/high-DPI raster path is in; extra/emoticon/topic images keep source pixels; multi-page print lays out once in paper space, clips each tile in page space before translate so later pages stay inked and preview cannot draw topics outside the sheet. Preview zoom is view-only. Print options now include Fit to pages (both width and height, e.g. 2×2).
 - Development version **1.8.0-SNAPSHOT** (13-sep-2026): all `pom.xml`, changelog/README `__1.8.0 (SNAPSHOT)__`, IJ `plugin.xml`, mac Info.plist `1.8.0`, win `versioninfo.json`, `IDE_VERSION` 1.8.0, AP fallback `1.8.0`. Replaced unreleased 1.7.1 because the Java 11 minimum belongs on a minor bump.
 - mind-map-swing-panel Java 11 / Swing quality pass applied (API kept): paint pipeline, graphics ownership, dispose/listeners, print preview, exporters/resources.
@@ -71,6 +74,7 @@
 - Verify scia-reto exits cleanly via window close, File | Exit, and platform Quit after editing text files.
 
 ## 5. Known Issues & Limitations
+- js-viewer is read-only: collapse/zoom are session-only; topic images are displayed but cannot be added or removed.
 - Sandbox/build target remains `IC-222.4554.10`; latest-IDE New File UI cannot be verified in that sandbox.
 - `MindMapPanel.getModel()` throws if no model has been set; IJ editor now installs a default empty map immediately after construction.
 - `processPopUpForShortcut` with empty selection only selects root and does not open the menu; `VK_CONTEXT_MENU` always opens — intentional difference, leave unless UX change is requested.
@@ -82,6 +86,7 @@
 
 ## 7. Useful References
 - MMD format spec: `skills/mmd/MMD_Format.MD` (derived from `mind-map-model` parser + tests).
+- Browser MMD viewer: `mind-map/js-viewer/` (`python3 -m http.server` then open `/index.html`). API: `MmdViewer.attach(el, { src | text, preset, … })`, `viewer.configure({ … })`, `data-mmd-*` flags. Packed script: `python3 pack-js.py` → `mmd-viewer.min.js`.
 - MMD agent skill (copy the whole folder): `skills/mmd/` (`SKILL.md`, `MMD_Format.MD`, `reference.md`, `python3 scripts/parse.py|write.py|validate.py|crypto.py`). Encrypted notes use `crypto.py` (AES-256-ECB matching `CryptoUtils`); ask the user for the password, never guess. Install notes: `skills/README.md`.
 - Register file type: https://plugins.jetbrains.com/docs/intellij/registering-file-type.html
 - File templates / New menu: https://plugins.jetbrains.com/docs/intellij/using-file-templates.html
@@ -94,6 +99,7 @@
 - Do not break public APIs of mind-map-swing-panel when cleaning internal Swing action handling.
 - Do not break public APIs of mind-map-model (signatures, Serializable UIDs, logger SPI) when fixing internals.
 - Restrict scia-reto Swing audits/fixes to the `scia-reto` submodule unless the user widens scope.
+- js-viewer notes panel: user asked for double-click (not click/focus/drag) to open notes so selecting and panning stay unobstructed. Extra icons still activate on double-click of the icon itself.
 - For user-facing fixes and changes, update both root `README.md` (Changelog section) and `changelog.txt`.
 - When a common change affects the shared mind-map panel and therefore the IDE plugins (changelog `ALL:` items), also update IntelliJ IDEA `mind-map/idea-mindmap/resources/META-INF/plugin.xml` `<change-notes>` for the current SNAPSHOT/unreleased version. That is the marketplace changelog IDEA users see; do not leave it empty when README/`changelog.txt` already list shared panel/plugin behavior.
 - When an encrypted MMD note is needed for work, ask the user for the password and decrypt with the skill `crypto.py` scripts; do not guess the password or treat ciphertext as text.

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <title>Scia Reto MMD viewer</title>
+    <link href="mmd-viewer.css" rel="stylesheet">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            background: #0f1a24;
+            color: #e8eef4;
+            font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+        }
+
+        .page-head {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            padding: 10px 16px;
+            background: #152433;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .page-head > * {
+            margin: 6px 12px 6px 0;
+        }
+
+        .page-head h1 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .page-head p {
+            margin: 0;
+            color: #9aafc2;
+            font-size: 12px;
+        }
+
+        .page-head a {
+            color: #7aa3e5;
+        }
+
+        .page-config {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            padding: 8px 16px;
+            background: #101c28;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            font-size: 12px;
+            color: #c5d4e2;
+        }
+
+        .page-config > * {
+            margin: 4px 12px 4px 0;
+        }
+
+        .page-config label {
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .page-config label input {
+            margin-right: 6px;
+        }
+
+        .page-config select,
+        .page-config button {
+            color: inherit;
+            background: #2c3f52;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 4px;
+            font: inherit;
+            padding: 4px 8px;
+        }
+
+        .page-config button {
+            cursor: pointer;
+        }
+
+        #viewer {
+            flex: 1 1 auto;
+            min-height: 0;
+        }
+    </style>
+</head>
+<body>
+<header class="page-head">
+    <h1>Scia Reto MMD viewer</h1>
+    <p>
+        Attach <code>mmd-viewer.js</code> to a page, then turn features on or off for that layout.
+        Encrypted sample note password: <code>hello</code>.
+        <a href="README.md">Usage</a>
+    </p>
+</header>
+<div class="page-config">
+    <label>
+        Preset
+        <select id="preset">
+            <option value="full">Full reader</option>
+            <option value="embed">Embed (notes on double-click)</option>
+            <option value="map">Map only</option>
+            <option value="picture">Static picture</option>
+            <option value="reader">Notes reader</option>
+        </select>
+    </label>
+    <label><input checked data-opt="toolbar" type="checkbox"> Toolbar</label>
+    <label><input checked data-opt="notes" type="checkbox"> Notes</label>
+    <label><input data-opt="notesOpen" type="checkbox"> Notes open</label>
+    <label>
+        Notes layout
+        <select id="notes-layout">
+            <option value="auto">Auto</option>
+            <option value="landscape">Landscape</option>
+            <option value="portrait">Portrait</option>
+            <option value="modal">Modal</option>
+        </select>
+    </label>
+    <label><input checked data-opt="grid" type="checkbox"> Grid</label>
+    <label><input checked data-opt="emoticons" type="checkbox"> Emoticons</label>
+    <label><input checked data-opt="extras" type="checkbox"> Extra icons</label>
+    <label><input checked data-opt="images" type="checkbox"> Images</label>
+    <label><input checked data-opt="collapsators" type="checkbox"> Fold handles</label>
+    <label><input checked data-opt="pan" type="checkbox"> Pan</label>
+    <label><input checked data-opt="wheelZoom" type="checkbox"> Wheel zoom</label>
+    <label><input checked data-opt="fold" type="checkbox"> Fold</label>
+    <label><input checked data-opt="selection" type="checkbox"> Selection</label>
+    <button id="jumps" type="button">Jumps: auto</button>
+</div>
+<div id="viewer"></div>
+<script src="mmd-viewer.js"></script>
+<script>
+    var viewer = MmdViewer.attach("#viewer", {src: "examples/demo.mmd"});
+    var presetSelect = document.getElementById("preset");
+    var notesLayoutSelect = document.getElementById("notes-layout");
+    var jumpButton = document.getElementById("jumps");
+
+    function syncForm() {
+        var options = viewer.getOptions();
+        presetSelect.value = options.preset && MmdViewer.presets[options.preset] ? options.preset : "full";
+        notesLayoutSelect.value = options.notesLayout || "auto";
+        document.querySelectorAll("[data-opt]").forEach(function (input) {
+            input.checked = !!options[input.getAttribute("data-opt")];
+        });
+        jumpButton.textContent = "Jumps: " + String(options.jumps);
+    }
+
+    presetSelect.addEventListener("change", function () {
+        viewer.configure({preset: presetSelect.value});
+        syncForm();
+    });
+    notesLayoutSelect.addEventListener("change", function () {
+        viewer.configure({notesLayout: notesLayoutSelect.value});
+        syncForm();
+    });
+    document.querySelectorAll("[data-opt]").forEach(function (input) {
+        input.addEventListener("change", function () {
+            var patch = {};
+            patch[input.getAttribute("data-opt")] = input.checked;
+            viewer.configure(patch);
+            syncForm();
+        });
+    });
+    jumpButton.addEventListener("click", function () {
+        var order = ["auto", true, false];
+        var current = viewer.getOptions().jumps;
+        var index = order.indexOf(current);
+        viewer.configure({jumps: order[(index + 1) % order.length]});
+        syncForm();
+    });
+    syncForm();
+</script>
+</body>
+</html>

@@ -17,6 +17,7 @@ Initially I developed a plugin for NetBeans IDE then the IntellijIDEA plugin was
 __1.8.0 (SNAPSHOT)__
 
 - ALL: minimum Java version lifted from 8 to 11
+- WEB: embeddable JavaScript viewer for MMD files (pan, zoom, fold, topic notes, and the same topic icons as the Java editors via `mmd-icons.png` / `mmd-icons.json`); a packed `mmd-viewer.min.js` (built with `python3 pack-js.py`) inlines a compacted icon index so hosts can ship one script plus the PNG; hosts can turn toolbar, notes, jumps, icons, and pan/zoom on or off so the map matches the page; the notes panel layout can be auto, landscape, portrait, or a modal dialog; click or drag a topic to select or pan without opening notes; double-click (or double-tap) a topic to open notes, and double-click a link, file, jump, or picture extra to follow it; topic titles and icons sit on the same vertical midline inside each topic; focusing a topic with arrow keys or a click scrolls the map just enough to keep that topic in view; from the root, left and right arrows enter the matching side of the map; dashed jump lines end with an arrow at the target topic; extra URLs overlay the map without shifting the toolbar; attached topic pictures (`mmd.image`) draw on the topic; pan, pinch, and extras work on phones and tablets; drag the map from a topic as well as from empty paper
 - IJ:  File | New lists SciaReto Mind Map once, after Directory
 - ALL: newly opened mind maps show the root topic centered without a visible jump
 - ALL: printing keeps printer resolution instead of a low-DPI bitmap, so small map details, topic icons, and images stay readable; topic frames stay around the text when printing to PDF or PostScript; a large map printed across several pages keeps every tile, including 2×2 fit and when preview zoom is not 100%; print preview keeps topics inside the page instead of drawing them on the dialog around the sheet
@@ -45,13 +46,16 @@ __1.6.9 (19-okt-2025)__
 
 # Implementation
 
-All parts of the application are written in Java and it needs Java 11+ for work.   
+All Java parts of the application need Java 11+ to work. 
 
-The editor has three implementations
+The editor has three Java implementations
 - standalone editor (including also [PlantUML](http://plantuml.com/) support) [Scia Reto](https://sciareto.org)
 - [NetBeans plug-in](https://plugins.netbeans.apache.org/catalogue/?id=56)
-- [Intellij IDEA plug-in](https://plugins.jetbrains.com/plugin/8045-idea-mind-map)   
+- [Intellij IDEA plug-in](https://plugins.jetbrains.com/plugin/8045-idea-mind-map)
+
 The standalone version is a Java application but it contains embedded JRE so that a user should not have pre-installed Java on computer. But [Graphviz](https://www.graphviz.org/download/) may be required for some PlantUML diagrams.
+
+A browser viewer lives in [`mind-map/js-viewer`](mind-map/js-viewer): attach `mmd-viewer.js` to a web page to pan, zoom, and read notes in an MMD map. Open `mind-map/js-viewer/index.html` over HTTP to try it.
 
 # How to use?
 
