@@ -20,7 +20,6 @@ import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.nbmindmap.nb.refactoring.MindMapLink;
 import java.io.File;
-import org.openide.ErrorManager;
 
 public class RenameElement extends AbstractElement {
 
@@ -43,20 +42,17 @@ public class RenameElement extends AbstractElement {
   @Override
   public void performChange() {
     super.performChange();
-    try {
-      if (this.newFile != null) {
-        final MindMap parsed = this.mindMapFile.asMindMap();
-        if (parsed.replaceAllLinksToFile(this.projectFolder, this.processedFile, this.newFile)) {
-          this.mindMapFile.writeMindMap();
-        }
-      } else {
+    this.rewriteLinks(() -> {
+      if (this.newFile == null) {
         LOGGER.warn("Detected null as new file uri for rename refactoring"); //NOI18N
+        return;
       }
-    } catch (Exception ex) {
-      LOGGER.error("Error during mind map refactoring", ex); //NOI18N
-      ErrorManager.getDefault()
-          .log(ErrorManager.EXCEPTION, "Can't process mind map and remove file link"); //NOI18N
-    }
+
+      final MindMap parsed = this.mindMapFile.asMindMap();
+      if (parsed.replaceAllLinksToFile(this.projectFolder, this.processedFile, this.newFile)) {
+        this.mindMapFile.writeMindMap();
+      }
+    });
   }
 
 }

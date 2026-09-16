@@ -16,11 +16,15 @@
 
 package com.igormaznitsa.nbmindmap.nb.refactoring.elements;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Objects.requireNonNull;
+
 import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.nbmindmap.nb.refactoring.CannotUndoMindMapException;
+import com.igormaznitsa.nbmindmap.nb.refactoring.FileObjectLocks;
 import com.igormaznitsa.nbmindmap.nb.refactoring.MindMapLink;
 import java.io.File;
 import java.io.IOException;
@@ -29,8 +33,6 @@ import java.util.ResourceBundle;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.netbeans.modules.refactoring.spi.SimpleRefactoringElementImplementation;
-import org.openide.ErrorManager;
-import org.openide.filesystems.FileAlreadyLockedException;
 import org.openide.filesystems.FileLock;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
@@ -56,62 +58,63 @@ public abstract class AbstractElement extends SimpleRefactoringElementImplementa
     this.mindMapFile = mindMap;
   }
 
-  private static void delay(final long delay) throws IOException {
-    try {
-      Thread.sleep(delay);
-    } catch (final InterruptedException ex) {
-      Thread.currentThread().interrupt();
-      throw new IOException("Interrupted", ex); //NOI18N
+  protected static void writeMindMap(final File file, final MindMap map) throws IOException {
+    requireNonNull(file, "file");
+    requireNonNull(map, "map");
+
+    final FileObject fileObject = FileUtil.toFileObject(file);
+    if (fileObject == null) {
+      throw new IOException("Can't find file object for " + file);
+    }
+
+    final FileLock lock = FileObjectLocks.lock(fileObject);
+    try (OutputStream out = fileObject.getOutputStream(lock)) {
+      IOUtils.write(map.asString(), out, UTF_8);
+    } finally {
+      lock.releaseLock();
     }
   }
 
-
-  protected static void writeMindMap(final File file, final MindMap map) throws IOException {
-    final FileObject fileObject = FileUtil.toFileObject(file);
-    FileLock lock = null;
-    while (true) {
-      try {
-        lock = fileObject.lock();
-        break;
-      } catch (FileAlreadyLockedException ex) {
-        delay(500L);
-      }
-    }
+  protected final void rewriteLinks(final MindMapChange change) {
     try {
-      final OutputStream out = fileObject.getOutputStream(lock);
-      try {
-        IOUtils.write(map.asString(), out, "UTF-8"); //NOI18N
-      } finally {
-        IOUtils.closeQuietly(out);
-      }
-    } finally {
-      if (lock != null) {
-        lock.releaseLock();
-      }
+      change.apply();
+    } catch (final RuntimeException ex) {
+      this.mindMapFile.discardModel();
+      throw ex;
+    } catch (final Exception ex) {
+      this.mindMapFile.discardModel();
+      LOGGER.error("Error during mind map refactoring", ex); //NOI18N
+      throw new IllegalStateException("Can't process mind map during refactoring", ex);
     }
   }
 
   @Override
   public void performChange() {
+    final File snapshotFile = this.mindMapFile.asFile();
+    if (snapshotFile == null) {
+      throw new IllegalStateException("Mind map file is not a local file");
+    }
+
     try {
-      this.oldMindMapText = FileUtils.readFileToString(this.mindMapFile.asFile(), "UTF-8"); //NOI18N
-    } catch (IOException ex) {
+      this.oldMindMapText = FileUtils.readFileToString(snapshotFile, UTF_8);
+    } catch (final IOException ex) {
       LOGGER.error("Can't load mind map file", ex); //NOI18N
-      ErrorManager.getDefault()
-          .log(ErrorManager.ERROR, "Can't load mind map file during refactoring"); //NOI18N
+      throw new IllegalStateException("Can't load mind map file during refactoring", ex);
     }
   }
 
   @Override
   public void undoChange() {
-    if (this.oldMindMapText != null) {
-      try {
-        FileUtils.writeStringToFile(this.mindMapFile.asFile(), this.oldMindMapText,
-            "UTF-8"); //NOI18N
-      } catch (IOException ex) {
-        LOGGER.error("Can't undo old mind map text", ex); //NOI18N
-        throw new CannotUndoMindMapException(this.mindMapFile.asFile());
-      }
+    if (this.oldMindMapText == null) {
+      return;
+    }
+
+    final File snapshotFile = this.mindMapFile.asFile();
+    try {
+      FileUtils.writeStringToFile(snapshotFile, this.oldMindMapText, UTF_8);
+    } catch (final IOException ex) {
+      LOGGER.error("Can't undo old mind map text", ex); //NOI18N
+      throw new CannotUndoMindMapException(snapshotFile);
     }
   }
 
@@ -133,6 +136,11 @@ public abstract class AbstractElement extends SimpleRefactoringElementImplementa
   @Override
   public PositionBounds getPosition() {
     return null;
+  }
+
+  @FunctionalInterface
+  protected interface MindMapChange {
+    void apply() throws Exception;
   }
 
 }

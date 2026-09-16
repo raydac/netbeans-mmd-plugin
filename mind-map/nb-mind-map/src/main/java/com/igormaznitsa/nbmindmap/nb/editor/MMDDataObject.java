@@ -33,8 +33,11 @@ import org.openide.nodes.CookieSet;
 import org.openide.nodes.Node;
 import org.openide.util.Lookup;
 
-@MIMEResolver.ExtensionRegistration(displayName = "#MMDDataObject.extensionDisplayName", mimeType = MMDDataObject.MIME, extension = {
-    MMDDataObject.MMD_EXT})
+@MIMEResolver.ExtensionRegistration(
+    displayName = "#MMDDataObject.extensionDisplayName",
+    mimeType = MMDDataObject.MIME,
+    extension = {MMDDataObject.MMD_EXT},
+    position = 1470)
 @DataObject.Registration(iconBase = "com/igormaznitsa/nbmindmap/icons/logo/logo16.png", displayName = "#MMDDataObject.displayName", mimeType = MMDDataObject.MIME)
 public class MMDDataObject extends MultiDataObject implements CookieSet.Factory {
 
@@ -67,7 +70,7 @@ public class MMDDataObject extends MultiDataObject implements CookieSet.Factory 
   }
 
   public void firePrimaryFileChanged() {
-    super.firePropertyChange(PROP_PRIMARY_FILE, getPrimaryFile(), getPrimaryFile());
+    super.firePropertyChange(PROP_PRIMARY_FILE, null, this.getPrimaryFile());
   }
 
   @Override

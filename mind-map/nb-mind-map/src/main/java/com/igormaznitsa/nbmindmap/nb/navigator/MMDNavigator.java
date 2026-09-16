@@ -41,7 +41,9 @@ import org.netbeans.spi.navigator.NavigatorPanel;
 import org.openide.filesystems.FileAttributeEvent;
 import org.openide.filesystems.FileChangeListener;
 import org.openide.filesystems.FileEvent;
+import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileRenameEvent;
+import org.openide.loaders.DataObject;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
@@ -114,10 +116,10 @@ public final class MMDNavigator extends JScrollPane
 
   private void extractDataFromContextAndUpdate() {
     final Lookup.Result<? extends MMDEditorSupport> ctx = this.context;
+    final MMDEditorSupport previousSupport = this.currentSupport;
+    MMDEditorSupport nextSupport = null;
 
-    if (ctx == null) {
-      this.currentSupport = null;
-    } else {
+    if (ctx != null) {
       Collection<? extends MMDEditorSupport> clct = ctx.allInstances();
 
       if (clct.isEmpty()) {
@@ -127,17 +129,41 @@ public final class MMDNavigator extends JScrollPane
         }
       }
 
-      if (clct.isEmpty()) {
-        this.currentSupport = null;
-      } else {
-        this.currentSupport = clct.iterator().next();
-        if (this.currentSupport != null) {
-          this.currentSupport.getDataObject().getPrimaryFile().removeFileChangeListener(this);
-          this.currentSupport.getDataObject().getPrimaryFile().addFileChangeListener(this);
-        }
+      if (!clct.isEmpty()) {
+        nextSupport = clct.iterator().next();
       }
     }
-    updateContent();
+
+    if (previousSupport != nextSupport) {
+      this.detachFileListener(previousSupport);
+      this.attachFileListener(nextSupport);
+      this.currentSupport = nextSupport;
+    }
+
+    this.updateContent();
+  }
+
+  private void attachFileListener(final MMDEditorSupport support) {
+    final FileObject file = this.primaryFileOf(support);
+    if (file != null) {
+      file.removeFileChangeListener(this);
+      file.addFileChangeListener(this);
+    }
+  }
+
+  private void detachFileListener(final MMDEditorSupport support) {
+    final FileObject file = this.primaryFileOf(support);
+    if (file != null) {
+      file.removeFileChangeListener(this);
+    }
+  }
+
+  private FileObject primaryFileOf(final MMDEditorSupport support) {
+    if (support == null) {
+      return null;
+    }
+    final DataObject dataObject = support.getDataObject();
+    return dataObject == null ? null : dataObject.getPrimaryFile();
   }
 
   private String getDocumentText() {
@@ -176,7 +202,7 @@ public final class MMDNavigator extends JScrollPane
     }
 
     if (this.currentSupport != null) {
-      this.currentSupport.getDataObject().getPrimaryFile().removeFileChangeListener(this);
+      this.detachFileListener(this.currentSupport);
     }
 
     if (this.treeModel != null) {

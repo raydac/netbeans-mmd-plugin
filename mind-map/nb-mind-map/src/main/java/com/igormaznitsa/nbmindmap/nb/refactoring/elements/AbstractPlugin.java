@@ -122,8 +122,11 @@ public abstract class AbstractPlugin<T extends AbstractRefactoring> extends Prog
     result.addAll(files);
 
     final Collection<? extends TreePathHandle> treePaths = lookup.lookupAll(TreePathHandle.class);
-    for (final TreePathHandle h : treePaths) {
-      result.add(h.getFileObject());
+    for (final TreePathHandle handle : treePaths) {
+      final FileObject fileObject = handle.getFileObject();
+      if (fileObject != null) {
+        result.add(fileObject);
+      }
     }
 
     return result;

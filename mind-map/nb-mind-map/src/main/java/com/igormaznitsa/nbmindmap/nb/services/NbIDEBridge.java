@@ -144,9 +144,9 @@ public class NbIDEBridge implements IDEBridge {
         if (in == null) {
           throw new IllegalArgumentException("Can't find icon resource : " + path);
         }
-        try {
+        try (in) {
           image = ImageIO.read(in);
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
           throw new IllegalArgumentException("Can't load icon resource : " + path, ex);
         }
         IMAGE_CACHE.put(path, image);

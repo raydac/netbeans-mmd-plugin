@@ -257,6 +257,10 @@ public final class MMDGraphEditor extends CloneableEditor
     this(Lookup.getDefault().lookup(MMDEditorSupport.class));
   }
 
+  public MMDGraphEditor(final Lookup lookup) {
+    this(lookup.lookup(MMDEditorSupport.class));
+  }
+
   public MMDGraphEditor(final MMDEditorSupport support) {
     super(support);
 
@@ -372,19 +376,23 @@ public final class MMDGraphEditor extends CloneableEditor
   public void openFile(@Nonnull final File file, final boolean preferSystemBrowser) {
     if (preferSystemBrowser) {
       NbUtils.openInSystemViewer(this, file);
+      return;
+    }
+
+    Openable openable = null;
+    try {
+      final FileObject fileObject = FileUtil.toFileObject(file);
+      if (fileObject != null) {
+        openable = DataObject.find(fileObject).getLookup().lookup(Openable.class);
+      }
+    } catch (final Exception ex) {
+      LOGGER.error("Can't open file in IDE", ex);
+    }
+
+    if (openable == null) {
+      NbUtils.openInSystemViewer(this, file);
     } else {
-      Openable openable;
-      try {
-        openable = DataObject.find(FileUtil.toFileObject(file)).getLookup().lookup(Openable.class);
-      } catch (Exception ex) {
-        LOGGER.error("Can't open file in IDE", ex);
-        openable = null;
-      }
-      if (openable == null) {
-        NbUtils.openInSystemViewer(this, file);
-      } else {
-        openable.open();
-      }
+      openable.open();
     }
   }
 
@@ -624,6 +632,9 @@ public final class MMDGraphEditor extends CloneableEditor
                 IDEBridgeFactory.findInstance()
                     .getIDEGeneratorId());
             this.mindMapPanel.setModel(map, false);
+            if (this.editorSupport.replaceDocumentText(map.asString())) {
+              this.editorSupport.getDataObject().setModified(true);
+            }
           } else {
             this.mindMapPanel.setModel(new MindMap(new StringReader(text)), false);
           }
@@ -688,8 +699,7 @@ public final class MMDGraphEditor extends CloneableEditor
       final MindMap theMap = this.mindMapPanel.getModel();
       MindMapUtils.removeCollapseAttributeFromTopicsWithoutChildren(theMap);
       theMap.write(writer);
-      if (saveToHistory) {
-        this.editorSupport.replaceDocumentText(writer.toString());
+      if (saveToHistory && this.editorSupport.replaceDocumentText(writer.toString())) {
         this.editorSupport.getDataObject().setModified(true);
       }
     } catch (Exception ex) {
@@ -883,9 +893,13 @@ public final class MMDGraphEditor extends CloneableEditor
                 if (line > 0) {
                   final LineCookie lineCookie = dobj.getCookie(LineCookie.class);
                   if (lineCookie != null) {
-                    final Line theLine = lineCookie.getLineSet().getOriginal(line - 1);
-                    if (theLine != null) {
-                      theLine.show(Line.ShowOpenType.OPEN, Line.ShowVisibilityType.FOCUS);
+                    try {
+                      final Line theLine = lineCookie.getLineSet().getOriginal(line - 1);
+                      if (theLine != null) {
+                        theLine.show(Line.ShowOpenType.OPEN, Line.ShowVisibilityType.FOCUS);
+                      }
+                    } catch (final IndexOutOfBoundsException ex) {
+                      LOGGER.warn("Line " + line + " is out of range for " + theFile);
                     }
                   }
                 }
@@ -1103,40 +1117,57 @@ public final class MMDGraphEditor extends CloneableEditor
   }
 
   private void addFileToElement(final File theFile, final AbstractElement element) {
-    if (element != null) {
-      final Topic topic = element.getModel();
-      final MMapURI theURI;
-
-      if (this.getPanelConfig()
-          .getOptionalProperty(AdditionalPreferences.PROPERTY_MAKE_RELATIVE_PATHS_TO_PROJECT_ROOT,
-              true)) {
-        final File projectFolder = getProjectFolder();
-        if (theFile.equals(projectFolder)) {
-          theURI = new MMapURI(projectFolder, new File("."), null);
-        } else {
-          theURI = new MMapURI(projectFolder, theFile, null);
-        }
-      } else {
-        theURI = new MMapURI(null, theFile, null);
-      }
-
-      if (topic.getExtras().containsKey(Extra.ExtraType.FILE)) {
-        if (!NbUtils.msgConfirmOkCancel(null,
-            BUNDLE.getString("MMDGraphEditor.addDataObjectToElement.confirmTitle"),
-            BUNDLE.getString("MMDGraphEditor.addDataObjectToElement.confirmMsg"))) {
-          return;
-        }
-      }
-
-      topic.setExtra(new ExtraFile(theURI));
-      this.mindMapPanel.invalidate();
-      this.mindMapPanel.repaint();
-      onMindMapModelChanged(this.mindMapPanel, true);
+    if (element == null || theFile == null) {
+      return;
     }
+
+    final Topic topic = element.getModel();
+    final MMapURI theURI;
+
+    if (this.getPanelConfig()
+        .getOptionalProperty(AdditionalPreferences.PROPERTY_MAKE_RELATIVE_PATHS_TO_PROJECT_ROOT,
+            true)) {
+      final File projectFolder = this.getProjectFolder();
+      if (theFile.equals(projectFolder)) {
+        theURI = new MMapURI(projectFolder, new File("."), null);
+      } else {
+        theURI = new MMapURI(projectFolder, theFile, null);
+      }
+    } else {
+      theURI = new MMapURI(null, theFile, null);
+    }
+
+    if (topic.getExtras().containsKey(Extra.ExtraType.FILE)) {
+      if (!NbUtils.msgConfirmOkCancel(null,
+          BUNDLE.getString("MMDGraphEditor.addDataObjectToElement.confirmTitle"),
+          BUNDLE.getString("MMDGraphEditor.addDataObjectToElement.confirmMsg"))) {
+        return;
+      }
+    }
+
+    topic.setExtra(new ExtraFile(theURI));
+    this.mindMapPanel.invalidate();
+    this.mindMapPanel.repaint();
+    this.onMindMapModelChanged(this.mindMapPanel, true);
   }
 
   private void addDataObjectToElement(final DataObject dataObject, final AbstractElement element) {
-    addFileToElement(FileUtil.toFile(dataObject.getPrimaryFile()), element);
+    if (dataObject == null) {
+      return;
+    }
+
+    final FileObject primaryFile = dataObject.getPrimaryFile();
+    if (primaryFile == null) {
+      return;
+    }
+
+    final File file = FileUtil.toFile(primaryFile);
+    if (file == null) {
+      LOGGER.warn("Can't add non-local file to topic: " + primaryFile);
+      return;
+    }
+
+    this.addFileToElement(file, element);
   }
 
   @Nullable
@@ -1213,7 +1244,6 @@ public final class MMDGraphEditor extends CloneableEditor
 
   @Override
   public void drop(final DropTargetDropEvent dtde) {
-
     DataObject detectedDataObject = null;
     File detectedFileObject = null;
     String detectedNote = null;
@@ -1222,16 +1252,15 @@ public final class MMDGraphEditor extends CloneableEditor
     dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
 
     try {
-      final Object dataObjOrFile = extractDataObjectOrFileFromDnD(dtde);
+      final Object dataObjOrFile = this.extractDataObjectOrFileFromDnD(dtde);
       if (dataObjOrFile instanceof DataObject) {
         detectedDataObject = (DataObject) dataObjOrFile;
       } else {
         detectedFileObject = (File) dataObjOrFile;
       }
 
-      final String detectedLink = DnDUtils.extractDropLink(dtde);
       detectedNote = DnDUtils.extractDropNote(dtde);
-
+      final String detectedLink = DnDUtils.extractDropLink(dtde);
       if (detectedLink != null) {
         try {
           decodedLink = new URI(detectedLink);
@@ -1239,38 +1268,39 @@ public final class MMDGraphEditor extends CloneableEditor
           decodedLink = null;
         }
       }
-
-      dtde.dropComplete(true);
     } catch (final Exception ex) {
       LOGGER.error("Can't extract data from DnD", ex);
       dtde.dropComplete(false);
+      return;
     }
 
-    final AbstractElement element = this.mindMapPanel.findTopicUnderPoint(dtde.getLocation());
+    try {
+      final AbstractElement element = this.mindMapPanel.findTopicUnderPoint(dtde.getLocation());
 
-    if (detectedDataObject != null) {
-      addDataObjectToElement(detectedDataObject, element);
-      dtde.dropComplete(true);
-    } else if (detectedFileObject != null) {
-      decodedLink = DnDUtils.extractUrlLinkFromFile(detectedFileObject);
-      if (decodedLink != null) {
-        addURItoElement(decodedLink, element);
-      } else {
-        addFileToElement(detectedFileObject, element);
-      }
-    } else if (decodedLink != null) {
-      addURItoElement(decodedLink, element);
-    } else if (detectedNote != null) {
-      if (DnDUtils.isUriString(detectedNote)) {
-        try {
-          final URI uri = new URI(detectedNote);
-          addURItoElement(uri, element);
-        } catch (URISyntaxException exx) {
-          addNoteToElement(detectedNote, element);
+      if (detectedDataObject != null) {
+        this.addDataObjectToElement(detectedDataObject, element);
+      } else if (detectedFileObject != null) {
+        decodedLink = DnDUtils.extractUrlLinkFromFile(detectedFileObject);
+        if (decodedLink != null) {
+          this.addURItoElement(decodedLink, element);
+        } else {
+          this.addFileToElement(detectedFileObject, element);
         }
-      } else {
-        addNoteToElement(detectedNote, element);
+      } else if (decodedLink != null) {
+        this.addURItoElement(decodedLink, element);
+      } else if (detectedNote != null) {
+        if (DnDUtils.isUriString(detectedNote)) {
+          try {
+            this.addURItoElement(new URI(detectedNote), element);
+          } catch (final URISyntaxException exx) {
+            this.addNoteToElement(detectedNote, element);
+          }
+        } else {
+          this.addNoteToElement(detectedNote, element);
+        }
       }
+    } finally {
+      dtde.dropComplete(true);
     }
   }
 
@@ -1431,30 +1461,37 @@ public final class MMDGraphEditor extends CloneableEditor
       final MindMapTreePanel treePanel =
           new MindMapTreePanel(UIComponentFactoryProvider.findInstance(),
               this.mindMapPanel.getModel(), null, true, null);
-      if (NbUtils.plainMessageOkCancel(null,
-          BUNDLE.getString("MMDGraphEditor.editTopicLinkForTopic.dlgSelectTopicTitle"),
-          treePanel.getPanel())) {
-        final Topic selected = treePanel.getSelectedTopic();
-        treePanel.dispose();
-        if (selected != null) {
-          result = ExtraTopic.makeLinkTo(this.mindMapPanel.getModel(), selected);
-        } else {
-          result = remove;
+      try {
+        if (NbUtils.plainMessageOkCancel(null,
+            BUNDLE.getString("MMDGraphEditor.editTopicLinkForTopic.dlgSelectTopicTitle"),
+            treePanel.getPanel())) {
+          final Topic selected = treePanel.getSelectedTopic();
+          if (selected != null) {
+            result = ExtraTopic.makeLinkTo(this.mindMapPanel.getModel(), selected);
+          } else {
+            result = remove;
+          }
         }
+      } finally {
+        treePanel.dispose();
       }
     } else {
       final MindMapTreePanel panel =
           new MindMapTreePanel(UIComponentFactoryProvider.findInstance(),
               this.mindMapPanel.getModel(), link, true, null);
-      if (NbUtils.plainMessageOkCancel(null,
-          BUNDLE.getString("MMDGraphEditor.editTopicLinkForTopic.dlgEditSelectedTitle"),
-          panel.getPanel())) {
-        final Topic selected = panel.getSelectedTopic();
-        if (selected != null) {
-          result = ExtraTopic.makeLinkTo(this.mindMapPanel.getModel(), selected);
-        } else {
-          result = remove;
+      try {
+        if (NbUtils.plainMessageOkCancel(null,
+            BUNDLE.getString("MMDGraphEditor.editTopicLinkForTopic.dlgEditSelectedTitle"),
+            panel.getPanel())) {
+          final Topic selected = panel.getSelectedTopic();
+          if (selected != null) {
+            result = ExtraTopic.makeLinkTo(this.mindMapPanel.getModel(), selected);
+          } else {
+            result = remove;
+          }
         }
+      } finally {
+        panel.dispose();
       }
     }
 

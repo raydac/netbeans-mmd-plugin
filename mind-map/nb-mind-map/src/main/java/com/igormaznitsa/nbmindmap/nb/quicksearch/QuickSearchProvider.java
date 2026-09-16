@@ -27,7 +27,7 @@ import org.netbeans.spi.quicksearch.*;
 public class QuickSearchProvider implements SearchProvider {
 
   private static final List<SearchedItem> ITEMS =
-      Arrays.asList(new SearchedItem(".*mind.*|.*map.*|.*", "Mind Map", new Runnable() {
+      Arrays.asList(new SearchedItem("mind|map", "Mind Map", new Runnable() {
         @Override
         public void run() {
           SwingUtilities.invokeLater(new Runnable() {
@@ -56,6 +56,10 @@ public class QuickSearchProvider implements SearchProvider {
 
   }
 
+  boolean matchesQuery(final String text) {
+    return ITEMS.stream().anyMatch(item -> item.isSatisfied(text));
+  }
+
   private static class SearchedItem {
 
     private final String displayName;
@@ -77,7 +81,7 @@ public class QuickSearchProvider implements SearchProvider {
     }
 
     public boolean isSatisfied(final String searchText) {
-      return pattern.matcher(searchText).find();
+      return searchText != null && this.pattern.matcher(searchText).find();
     }
   }
 

@@ -20,7 +20,6 @@ import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.nbmindmap.nb.refactoring.MindMapLink;
 import java.io.File;
-import org.openide.ErrorManager;
 
 public class DeleteElement extends AbstractElement {
 
@@ -38,16 +37,12 @@ public class DeleteElement extends AbstractElement {
   @Override
   public void performChange() {
     super.performChange();
-    try {
+    this.rewriteLinks(() -> {
       final MindMap parsed = this.mindMapFile.asMindMap();
       if (parsed.deleteAllLinksToFile(this.projectFolder, this.processedFile)) {
         this.mindMapFile.writeMindMap();
       }
-    } catch (Exception ex) {
-      LOGGER.error("Error during mind map refactoring", ex); //NOI18N
-      ErrorManager.getDefault()
-          .log(ErrorManager.EXCEPTION, "Can't process mind map and remove file link"); //NOI18N
-    }
+    });
   }
 
 }

@@ -194,7 +194,8 @@ public final class MMKnowledgeSources implements NodeList<SourceGroup>, ChangeLi
       return true;
     }
 
-    return !obj.getPrimaryFile().getName().startsWith(".");
+    final FileObject primaryFile = obj == null ? null : obj.getPrimaryFile();
+    return primaryFile != null && !primaryFile.getName().startsWith(".");
   }
 
 }

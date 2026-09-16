@@ -28,6 +28,7 @@ import com.igormaznitsa.nbmindmap.utils.NbUtils;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Image;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -72,7 +73,8 @@ public class PreferencesPanel extends AbstractPreferencesPanel implements Additi
     this.checkboxTrimTopicText.setText(bundle.getString("MMDCfgPanel.checkboxTrimTopicText.text"));
 
     this.checkboxPreferInternalBrowser = uiComponentFactory.makeCheckBox();
-    this.checkboxPreferInternalBrowser.setText("MMDCfgPanel.checkboxUseInsideBrowser.text");
+    this.checkboxPreferInternalBrowser.setText(
+        bundle.getString("MMDCfgPanel.checkboxUseInsideBrowser.text"));
 
     this.checkboxUseRelativePaths = uiComponentFactory.makeCheckBox();
     this.checkboxUseRelativePaths.setText(
@@ -150,10 +152,10 @@ public class PreferencesPanel extends AbstractPreferencesPanel implements Additi
 
   @Nullable
   private Image loadImage(final String icon) {
-    try {
-      return ImageIO.read(
-          requireNonNull(getClass().getResource("/com/igormaznitsa/nbmindmap/icons/" + icon)));
-    } catch (Exception ex) {
+    try (InputStream in = requireNonNull(
+        this.getClass().getResourceAsStream("/com/igormaznitsa/nbmindmap/icons/" + icon))) {
+      return ImageIO.read(in);
+    } catch (final Exception ex) {
       LOGGER.error("Error during load image: " + icon, ex);
       return null;
     }

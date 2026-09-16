@@ -33,7 +33,6 @@ import javax.swing.event.ChangeListener;
 import javax.swing.text.StyledDocument;
 import org.netbeans.api.project.FileOwnerQuery;
 import org.netbeans.api.project.Project;
-import org.netbeans.editor.GuardedDocument;
 import org.openide.awt.UndoRedo;
 import org.openide.cookies.EditCookie;
 import org.openide.cookies.EditorCookie;
@@ -44,6 +43,7 @@ import org.openide.filesystems.FileUtil;
 import org.openide.loaders.DataObject;
 import org.openide.text.CloneableEditor;
 import org.openide.text.DataEditorSupport;
+import org.openide.text.NbDocument;
 import org.openide.windows.CloneableTopComponent;
 
 public class MMDEditorSupport extends DataEditorSupport
@@ -53,6 +53,7 @@ public class MMDEditorSupport extends DataEditorSupport
   private static final long serialVersionUID = 3419821892803816299L;
   private static final Logger LOGGER = LoggerFactory.getLogger(MMDEditorSupport.class);
   private final List<WeakReference<MMDGraphEditor>> listeners = new CopyOnWriteArrayList<>();
+  private transient UndoRedo.Manager undoRedoManager;
 
   public MMDEditorSupport(final MMDDataObject obj) {
     super(obj, new MMDDataEnv(obj));
@@ -115,9 +116,18 @@ public class MMDEditorSupport extends DataEditorSupport
 
   @Override
   protected UndoRedo.Manager createUndoRedoManager() {
-    final UndoRedo.Manager result = super.createUndoRedoManager();
-    result.addChangeListener(this);
-    return result;
+    this.undoRedoManager = super.createUndoRedoManager();
+    this.undoRedoManager.addChangeListener(this);
+    return this.undoRedoManager;
+  }
+
+  @Override
+  protected void notifyClosed() {
+    if (this.undoRedoManager != null) {
+      this.undoRedoManager.removeChangeListener(this);
+      this.undoRedoManager = null;
+    }
+    super.notifyClosed();
   }
 
   public void onEditorActivated() {
@@ -142,24 +152,22 @@ public class MMDEditorSupport extends DataEditorSupport
     return super.messageToolTip();
   }
 
-  public void replaceDocumentText(final String text) {
+  public boolean replaceDocumentText(final String text) {
     try {
-      final GuardedDocument doc = (GuardedDocument) this.openDocument();
-      doc.runAtomic(new Runnable() {
-        @Override
-        public void run() {
-          try {
-            doc.remove(0, doc.getLength());
-            doc.insertString(0, text, null);
-          } catch (Exception ex) {
-            LOGGER.error("Can't replace text", ex); //NOI18N
-          }
+      final StyledDocument document = this.openDocument();
+      NbDocument.runAtomic(document, () -> {
+        try {
+          document.remove(0, document.getLength());
+          document.insertString(0, text, null);
+        } catch (final Exception ex) {
+          throw new IllegalStateException("Can't replace text", ex); //NOI18N
         }
       });
-    } catch (Exception ex) {
+      return true;
+    } catch (final Exception ex) {
       LOGGER.error("Can't open document to replace text", ex); //NOI18N
+      return false;
     }
-
   }
 
   @Override

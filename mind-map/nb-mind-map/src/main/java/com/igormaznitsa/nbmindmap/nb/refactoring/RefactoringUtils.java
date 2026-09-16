@@ -151,8 +151,11 @@ public final class RefactoringUtils {
   }
 
   public static boolean isFileInOpenProject(final FileObject fo) {
-    final Project p = FileOwnerQuery.getOwner(fo);
-    return OpenProjects.getDefault().isProjectOpen(p);
+    if (fo == null) {
+      return false;
+    }
+    final Project project = FileOwnerQuery.getOwner(fo);
+    return project != null && OpenProjects.getDefault().isProjectOpen(project);
   }
 
   public static boolean isMMD(final FileObject fo) {

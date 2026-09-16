@@ -16,6 +16,8 @@
 
 package com.igormaznitsa.nbmindmap.nb.refactoring;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
@@ -25,7 +27,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
 import org.apache.commons.io.IOUtils;
-import org.openide.filesystems.FileAlreadyLockedException;
 import org.openide.filesystems.FileLock;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
@@ -43,73 +44,47 @@ public class MindMapLink {
 
   public MindMapLink(final FileObject file) {
     this.theFile = file;
-    this.dataObject = findDataObject(file);
+    this.dataObject = MindMapLink.findDataObject(file);
   }
 
   private static DataObject findDataObject(final FileObject fileObj) {
-    DataObject doj = null;
-    if (fileObj != null) {
-      try {
-        doj = DataObject.find(fileObj);
-      } catch (DataObjectNotFoundException ex) {
-        LOGGER.warn("Can't find data object for file " + fileObj);
-      }
+    if (fileObj == null) {
+      return null;
     }
-    return doj;
-  }
 
-  public FileObject getFile() {
-    DataObject doj = this.dataObject == null ? findDataObject(this.theFile) : this.dataObject;
-    return doj == null ? this.theFile : doj.getPrimaryFile();
-  }
-
-  public File asFile() {
-    File result = null;
-    final FileObject fo = getFile();
-    if (fo != null) {
-      result = FileUtil.toFile(fo);
-    } else {
-      LOGGER.warn("Can't find file object [" + this.dataObject + "; " + this.theFile + ']');
-    }
-    return result;
-  }
-
-  private void delay(final long time) {
     try {
-      Thread.sleep(time);
-    } catch (InterruptedException ex) {
-      LOGGER.warn("Delay has been interrupted");
-      Thread.currentThread().interrupt();
-    }
-  }
-
-  private FileLock lock(final FileObject fo) throws IOException {
-    if (fo != null) {
-      FileLock lock = null;
-      while (!Thread.currentThread().isInterrupted()) {
-        try {
-          lock = fo.lock();
-          break;
-        } catch (FileAlreadyLockedException ex) {
-          delay(500L);
-        }
-      }
-      return lock;
-    } else {
+      return DataObject.find(fileObj);
+    } catch (final DataObjectNotFoundException ex) {
+      LOGGER.warn("Can't find data object for file " + fileObj);
       return null;
     }
   }
 
+  public FileObject getFile() {
+    final DataObject doj = this.dataObject == null
+        ? MindMapLink.findDataObject(this.theFile)
+        : this.dataObject;
+    return doj == null ? this.theFile : doj.getPrimaryFile();
+  }
+
+  public File asFile() {
+    final FileObject fo = this.getFile();
+    if (fo == null) {
+      LOGGER.warn("Can't find file object [" + this.dataObject + "; " + this.theFile + ']');
+      return null;
+    }
+    return FileUtil.toFile(fo);
+  }
+
   public void writeUTF8Text(final String text) throws IOException {
-    final FileObject foj = getFile();
-    final FileLock flock = lock(foj);
-    try {
-      final OutputStream out = foj.getOutputStream(flock);
-      try {
-        IOUtils.write(text, out, "UTF-8");
-      } finally {
-        IOUtils.closeQuietly(out);
-      }
+    final FileObject foj = this.getFile();
+    if (foj == null) {
+      throw new IOException("Mind map file is missing");
+    }
+
+    final FileLock flock = FileObjectLocks.lock(foj);
+    try (OutputStream out = foj.getOutputStream(flock)) {
+      IOUtils.write(text, out, UTF_8);
     } finally {
       flock.releaseLock();
     }
@@ -122,10 +97,14 @@ public class MindMapLink {
   }
 
   public String readUTF8Text() throws IOException {
-    final FileObject foj = getFile();
-    final FileLock flock = lock(foj);
+    final FileObject foj = this.getFile();
+    if (foj == null) {
+      throw new IOException("Mind map file is missing");
+    }
+
+    final FileLock flock = FileObjectLocks.lock(foj);
     try {
-      return foj.asText("UTF-8");
+      return foj.asText(UTF_8.name());
     } finally {
       flock.releaseLock();
     }
@@ -133,15 +112,19 @@ public class MindMapLink {
 
   public synchronized MindMap asMindMap() throws IOException {
     if (this.model == null) {
-      this.model = new MindMap(new StringReader(readUTF8Text()));
+      this.model = new MindMap(new StringReader(this.readUTF8Text()));
     }
     return this.model;
   }
 
   public synchronized void writeMindMap() throws IOException {
     if (this.model != null) {
-      writeUTF8Text(this.model.asString());
+      this.writeUTF8Text(this.model.asString());
     }
+  }
+
+  public synchronized void discardModel() {
+    this.model = null;
   }
 
 }
