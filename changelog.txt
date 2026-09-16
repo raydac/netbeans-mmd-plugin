@@ -9,6 +9,7 @@ __1.8.0 (SNAPSHOT)__
 - SR:  convert CLI fails instead of writing an empty map when files or import are missing; declining a very large file is treated as cancel; folder file-links open as projects; macOS Finder Open With opens the document; cancelling project load no longer leaves the spinner stuck
 - NB:  mind map files open in the mind-map editor again after the plugin is deactivated and then activated [#124](https://github.com/raydac/netbeans-mmd-plugin/issues/124)
 - NB:  file rename/move/delete updates mind-map links or reports failure instead of leaving stale paths; Options shows the internal-browser label; Quick Search lists Mind Map only for mind/map queries; empty maps stay savable; reclaiming .mmd files no longer freezes the UI on unrelated editor close
+- SR:  updated embedded JDK to 27+36
 
 __1.7.0 (06-sep-2026)__
 
