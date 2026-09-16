@@ -1,13 +1,13 @@
 ---
 name: mmd
-description: Parse, create, edit, and validate Scia Reto MMD mind maps (.mmd). Decrypt encrypted topic notes after asking the user for the password. Use when the user asks about MMD files, mind maps, Scia Reto maps, topic extras, encrypted notes, emoticons, or converting a map to or from JSON.
+description: Parse, create, edit, and validate Scia Reto MMD mind maps (.mmd). Decrypt encrypted topic notes after asking the user for the password. Use when the user asks about MMD files, mind maps, Scia Reto maps, topic extras, encrypted notes, emoticons, converting a map to or from JSON, or runs /mmd:read, /mmd:edit, /mmd:new, /mmd:validate, or /mmd:decrypt.
 ---
 
 # MMD mind maps
 
 Work with `.mmd` files through the scripts in this skill. Do **not** freehand-write MMD except a trivial empty map, then still run `validate.py`.
 
-This folder is self-contained: `SKILL.md`, [reference.md](reference.md), [MMD_Format.MD](MMD_Format.MD), and `scripts/`. Copy the whole folder.
+This folder is self-contained: `SKILL.md`, [reference.md](reference.md), [MMD_Format.MD](MMD_Format.MD), `scripts/`, and `commands/`. Copy the whole folder.
 
 Scripts are stdlib Python 3. Run them from this skill directory, or pass the script path from the workspace root.
 
@@ -23,6 +23,22 @@ From this repository (before copying the skill elsewhere):
 ```bash
 python3 skills/mmd/scripts/parse.py path.mmd
 ```
+
+## Commands
+
+After this folder is installed as a Cursor skill, these slash commands run the same workflows:
+
+| Command | Does |
+|---------|------|
+| `/mmd:read` | Parse maps as knowledge (no write) |
+| `/mmd:edit` | Parse → JSON → write → validate |
+| `/mmd:new` | Create a map from JSON |
+| `/mmd:validate` | Run `validate.py` |
+| `/mmd:decrypt` | List encrypted notes; ask for the password; decrypt on stdin |
+
+Other agents: name the command or paste `commands/<name>.md`. Extra words after the command are the file/scope.
+
+To **generate** maps from Java instead of editing `.mmd` by hand, use the sibling skill [`mmd-annotations`](../mmd-annotations/SKILL.md) (`/mmd-annotations:setup`, `/mmd-annotations:mark`).
 
 ## Workflow
 

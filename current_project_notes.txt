@@ -5,7 +5,7 @@
 - Mind map panel now centers the root topic in its `JViewport` during layout, before the first paint, so newly opened maps do not jump after load (Scia Reto) or start in the top-left corner (IntelliJ).
 - Hardened `skills/mmd/scripts`: no `--password` argv leak, atomic `.mmd` writes, Java-like URI/HTML/whitespace parsing, JSON tree type checks, crypto `hmac.compare_digest`, UTF-8 BOM reads.
 - `mind-map-model` read/write round-trips CJK and emoji (titles, notes, snippets, attributes, file extras); covered by `MindMapTest` / `ModelUtilsTest`.
-- Agent skills to copy into a user’s agent live in repo `skills/` (see `skills/README.md`). The MMD skill (`skills/mmd/`) is self-contained: `SKILL.md`, `reference.md`, `MMD_Format.MD`, and stdlib Python scripts (parse/write/validate/crypto matching Swing `CryptoUtils`).
+- Agent skills for users live in repo `skills/` (see `skills/README.md`). `mmd/`: parse/edit/validate/crypto plus commands `read`, `edit`, `new`, `validate`, `decrypt`. `mmd-annotations/`: wire processor + mark Java; commands `setup`, `mark`. Copy the whole skill folder into `.cursor/skills/` (or `~/.cursor/skills/`) so `/skill:command` works. This repo also has `/mmd-annotate` under `.cursor/commands/` as a local shortcut.
 - Default Maven `compiler.source`/`compiler.target` lifted from 1.8 to **11** (parent `mind-map/pom.xml`); bytecode enforcer `max.jdk.version` matched to 11. SciaReto stays on 21; IDEA plugin and a few helper modules still override lower. Changelog records the user-facing Java 11 minimum.
 - Version set to **1.8.0-SNAPSHOT** for continued development: root + all module `pom.xml`, IntelliJ `plugin.xml`, changelog/README SNAPSHOT headers, mac `Info.plist` `1.8.0`, win-launcher `versioninfo.json`, `SciaRetoStarter.IDE_VERSION`, AP fallback. Bumped from 1.7.1 because the Java 11 minimum is a minor-version change.
 - Release **1.7.0** prepared (2026-09-06): root + all module `pom.xml`, IntelliJ `plugin.xml`, changelog/README headers, mac `Info.plist`, annotation-processor fallback.
@@ -71,6 +71,7 @@
 - mind-map-swing-panel Java 11 / Swing quality pass applied (API kept): paint pipeline, graphics ownership, dispose/listeners, print preview, exporters/resources.
 - Newly opened maps center the root topic in the swing panel before first paint.
 - MMD format spec moved into `skills/mmd/MMD_Format.MD` so skill copies include the full description.
+- Annotation-marking skill added at `skills/mmd-annotations/` (command `/mmd-annotate`).
 - MMD skill scripts reviewed and hardened (password argv removed, atomic writes, Java-matching extras/HTML).
 - mind-map-model internal quality pass (API kept): parser DSL, shared search/file helpers, extra attach on construct, ConcurrentHashMap logger cache.
 - Verify File | New on latest IntelliJ after reinstall: a single SciaReto Mind Map item after Directory, custom create dialog, no second item at the end of the list.
@@ -95,7 +96,8 @@
 ## 7. Useful References
 - MMD format spec: `skills/mmd/MMD_Format.MD` (derived from `mind-map-model` parser + tests).
 - Browser MMD viewer: `mind-map/js-viewer/` (`python3 -m http.server` then open `/index.html`). API: `MmdViewer.attach(el, { src | text, preset, … })`, `viewer.configure({ … })`, `data-mmd-*` flags. Packed script: `python3 pack-js.py` → `mmd-viewer.min.js`.
-- MMD agent skill (copy the whole folder): `skills/mmd/` (`SKILL.md`, `MMD_Format.MD`, `reference.md`, `python3 scripts/parse.py|write.py|validate.py|crypto.py`). Encrypted notes use `crypto.py` (AES-256-ECB matching `CryptoUtils`); ask the user for the password, never guess. Install notes: `skills/README.md`.
+- MMD agent skill (copy the whole folder): `skills/mmd/` (`SKILL.md`, `MMD_Format.MD`, `reference.md`, `commands/`, `python3 scripts/parse.py|write.py|validate.py|crypto.py`). Encrypted notes use `crypto.py`; ask the user for the password, never guess. Commands after copy: `/mmd:read`, `/mmd:edit`, `/mmd:new`, `/mmd:validate`, `/mmd:decrypt`. Install: `skills/README.md`.
+- MMD annotation skill: `skills/mmd-annotations/` (`/mmd-annotations:setup`, `/mmd-annotations:mark`). Attach artifacts and audit compiler options before marking. Fixtures: `mind-map-annotation-processor-it`.
 - Register file type: https://plugins.jetbrains.com/docs/intellij/registering-file-type.html
 - File templates / New menu: https://plugins.jetbrains.com/docs/intellij/using-file-templates.html
 - Build plugin: `mvn22 -pl idea-mindmap -am package` from `mind-map/` (Gradle is invoked as `gradle8`).
@@ -113,4 +115,5 @@
 - Keep changelog messages short: one brief user-facing line per change, not long explanations.
 - When a common change affects the shared mind-map panel and therefore the IDE plugins (changelog `ALL:` items), also update IntelliJ IDEA `mind-map/idea-mindmap/resources/META-INF/plugin.xml` `<change-notes>` for the current SNAPSHOT/unreleased version. That is the marketplace changelog IDEA users see; do not leave it empty when README/`changelog.txt` already list shared panel/plugin behavior.
 - When an encrypted MMD note is needed for work, ask the user for the password and decrypt with the skill `crypto.py` scripts; do not guess the password or treat ciphertext as text.
-- Ship agent skills in repo `skills/` for users to copy; do not keep them only under `.cursor/skills/`.
+- Ship agent skills in repo `skills/` for users to copy; do not keep them only under `.cursor/skills/`. Project slash commands that activate those skills may live in `.cursor/commands/`.
+- When documenting Java architecture for later agents, mark sources with `@MmdFile` / `@MmdTopic` (`skills/mmd-annotations`, `/mmd-annotations:setup` then `/mmd-annotations:mark`) and let the processor generate maps; do not freehand those `.mmd` files. The skill must first attach the annotation artifacts to the user’s module and audit compiler options (`-proc:none`, processor path, `-Ammd.*`).
