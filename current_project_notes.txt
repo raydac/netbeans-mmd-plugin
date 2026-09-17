@@ -7,6 +7,7 @@
 - `mind-map-model` read/write round-trips CJK and emoji (titles, notes, snippets, attributes, file extras); covered by `MindMapTest` / `ModelUtilsTest`.
 - Agent skills for users live in repo `skills/` (see `skills/README.md`). `mmd/`: parse/edit/validate/crypto plus commands `read`, `edit`, `new`, `validate`, `decrypt`. `mmd-annotations/`: wire processor + mark Java; commands `setup`, `mark`. Copy the whole skill folder into `.cursor/skills/` (or `~/.cursor/skills/`) so `/skill:command` works. This repo also has `/mmd-annotate` under `.cursor/commands/` as a local shortcut.
 - IJ 1.8.0: remaining compile-time deprecations replaced (`Project.getBaseDir` → `ProjectUtil.guessProjectDir`, facet `PersistentStateComponent`, `java.util.Base64`, `MessageDialogBuilder`, `AnnotationHolder.newAnnotation`, `HashMap` instead of Trove, `spaceExistenceTypeBetweenTokens`).
+- IJ 1.8.0: dropped version-compatibility reflection now that min IDE is 2024.2 — direct `ProjectUtil.guessModuleDir`, `ScratchFileService`, `FilteredNamedScope` 5-arg ctor, `ApplicationInfo.getMicroVersion`, `Application.invokeLater` instead of deprecated `TransactionGuard`. Maven lookup still uses `Class.forName` (optional Maven plugin, not on compile classpath). IDE HTML browser still uses reflection on internal `HTMLEditorProvider` (marketplace verifier) but now the 4-arg URL overload so a URI opens as a page, not as HTML text.
 - Version set to **1.8.0-SNAPSHOT** for continued development: root + all module `pom.xml`, IntelliJ `plugin.xml`, changelog/README SNAPSHOT headers, mac `Info.plist` `1.8.0`, win-launcher `versioninfo.json`, `SciaRetoStarter.IDE_VERSION`, AP fallback. Bumped from 1.7.1 because the Java 11 minimum is a minor-version change.
 - Release **1.7.0** prepared (2026-09-06): root + all module `pom.xml`, IntelliJ `plugin.xml`, changelog/README headers, mac `Info.plist`, annotation-processor fallback.
 - scia-reto: embedded JRE bumped to **27+36** (`jre.version` in `scia-reto/pom.xml`); changelog/README SNAPSHOT note added.
@@ -60,7 +61,7 @@
 
 ## 3. Technical Debt & Refactoring
 - No unit tests under `idea-mindmap`.
-- `IdeaUtils` still uses reflection for Maven, TransactionGuard, and HTMLEditorProvider (optional Maven / API drift). Direct calls can wait until a later 242+ cleanup.
+- `IdeaUtils` still uses reflection for optional Maven (`MavenProjectsManager` is not a compile dependency) and internal `HTMLEditorProvider` (`.impl` package; marketplace verifier). Do not replace those with compile-time imports.
 - Plugin menu wiring (`AbstractExporter`/`AbstractImporter`/`ChangeColorPlugin`/`OptionsPlugin`) still duplicates ExternallyExecutedPlugin listener boilerplate; consolidate later via protected helper on `AbstractPopupMenuItem` without changing public plugin APIs.
 - `Utils.isKeyStrokeEvent` is public and unused; keep for API stability (deprecate later if desired).
 - scia-reto: `MetricsService` still only stamps last-send time (PROJECT_TOKEN unused); leave until a real send path is restored.
@@ -78,7 +79,7 @@
 - Annotation-marking skill added at `skills/mmd-annotations/` (command `/mmd-annotate`).
 - MMD skill scripts reviewed and hardened (password argv removed, atomic writes, Java-matching extras/HTML).
 - mind-map-model internal quality pass (API kept): parser DSL, shared search/file helpers, extra attach on construct, ConcurrentHashMap logger cache.
-- IJ Marketplace verifier cleanup for 1.8.0: scheduled-for-removal APIs and internal `PluginManager.getPlugin` replaced; min IntelliJ is 2024.2.
+- IJ Marketplace verifier cleanup for 1.8.0: scheduled-for-removal APIs and internal `PluginManager.getPlugin` replaced; min IntelliJ is 2024.2; leftover 2024.2-compatible reflection shims removed.
 - IJ plugin Gradle build migrated to IntelliJ Platform Gradle Plugin 2.19.0 + Gradle 9 (`gradle9`).
 - Verify File | New on latest IntelliJ after reinstall: a single SciaReto Mind Map item after Directory, custom create dialog, no second item at the end of the list.
 - Verify opening an existing MMD file after the blank-editor fix.

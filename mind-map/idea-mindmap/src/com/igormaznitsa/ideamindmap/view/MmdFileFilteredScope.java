@@ -16,13 +16,10 @@
 
 package com.igormaznitsa.ideamindmap.view;
 
-import com.intellij.openapi.vfs.VirtualFileFilter;
 import com.igormaznitsa.ideamindmap.utils.AllIcons;
+import com.intellij.openapi.vfs.VirtualFileFilter;
 import com.intellij.psi.search.scope.packageSet.FilteredNamedScope;
-import java.lang.reflect.Constructor;
-import java.util.List;
 import java.util.Locale;
-import java.util.function.Supplier;
 
 public final class MmdFileFilteredScope {
 
@@ -33,29 +30,9 @@ public final class MmdFileFilteredScope {
       && virtualFile.getName().toLowerCase(Locale.ENGLISH).endsWith(".mmd");
 
   private MmdFileFilteredScope() {
-
   }
 
-  public static FilteredNamedScope makeInstance() throws Exception {
-    final List<Constructor<?>> constructorList =
-        List.of(FilteredNamedScope.class.getConstructors());
-    final Constructor<?> constructor = constructorList
-        .stream()
-        .filter(x -> x.getParameterCount() == 4 || x.getParameterCount() == 5)
-        .findFirst()
-        .orElseThrow(() -> new IllegalStateException(
-            "Can't find FilteredNamedScope constructor with either 4 or 5 parameters"));
-
-    if (constructor.getParameterCount() == 4) {
-      return (FilteredNamedScope) constructor.newInstance(TITLE, AllIcons.Logo.MINDMAP, PRIORITY,
-          MMD_FILE_FILTER);
-    } else {
-      return (FilteredNamedScope) constructor.newInstance(TITLE, new Supplier<String>() {
-        @Override
-        public String get() {
-          return TITLE;
-        }
-      }, AllIcons.Logo.MINDMAP, PRIORITY, MMD_FILE_FILTER);
-    }
+  public static FilteredNamedScope makeInstance() {
+    return new FilteredNamedScope(TITLE, () -> TITLE, AllIcons.Logo.MINDMAP, PRIORITY, MMD_FILE_FILTER);
   }
 }

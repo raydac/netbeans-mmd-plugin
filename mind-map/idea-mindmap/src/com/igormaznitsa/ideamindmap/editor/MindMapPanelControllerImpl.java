@@ -63,6 +63,7 @@ import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
 import com.igormaznitsa.mindmap.swing.panel.ui.PasswordPanel;
 import com.igormaznitsa.mindmap.swing.panel.utils.CryptoUtils;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -75,7 +76,6 @@ import java.util.ResourceBundle;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.JPopupMenu;
-import javax.swing.SwingUtilities;
 import com.igormaznitsa.mindmap.swing.i18n.MmdI18n;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import java.awt.Insets;
@@ -243,11 +243,9 @@ public class MindMapPanelControllerImpl implements MindMapPanelController, MindM
   }
 
   private void startOptionsEdit() {
-    final Runnable action = () -> ShowSettingsUtil.getInstance().showSettingsDialog(this.editor.getProject(), MindMapSettingsComponent.DISPLAY_NAME);
-
-    if (!IdeaUtils.submitTransactionLater(action)) {
-      SwingUtilities.invokeLater(action);
-    }
+    ApplicationManager.getApplication().invokeLater(
+        () -> ShowSettingsUtil.getInstance()
+            .showSettingsDialog(this.editor.getProject(), MindMapSettingsComponent.DISPLAY_NAME));
   }
 
   public void editLinkForTopic(final Topic topic) {

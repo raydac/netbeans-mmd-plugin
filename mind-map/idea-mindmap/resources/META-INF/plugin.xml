@@ -15,7 +15,8 @@
         <p>1.8.0 (SNAPSHOT)</p>
         <ul>
             <li>Minimum Java version lifted from 8 to 11</li>
-            <li>Minimum IntelliJ IDEA version lifted to 2024.2</li>
+            <li>Minimum IntelliJ IDEA version lifted to 2024.2; uses current platform APIs</li>
+            <li>Opening a URI in the IDE browser loads the page instead of showing the address as HTML</li>
             <li>File | New lists SciaReto Mind Map once, after Directory</li>
             <li>Newly opened mind maps show the root topic centered without a visible jump</li>
             <li>The Structure tool window shows the topic tree of the open mind map; click a topic to focus it on the map</li>

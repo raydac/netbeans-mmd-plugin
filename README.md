@@ -17,7 +17,7 @@ Initially I developed a plugin for NetBeans IDE then the IntellijIDEA plugin was
 __1.8.0 (SNAPSHOT)__
 
 - ALL: minimum Java version lifted from 8 to 11
-- IJ:  minimum IntelliJ IDEA version lifted to 2024.2
+- IJ:  minimum IntelliJ IDEA version lifted to 2024.2; uses current platform APIs; IDE browser opens URI pages
 - WEB: embeddable JavaScript viewer for MMD files (pan, zoom, notes, icons; packed `mmd-viewer.min.js`)
 - IJ:  File | New lists SciaReto Mind Map once, after Directory
 - ALL: newly opened mind maps show the root topic centered without a visible jump

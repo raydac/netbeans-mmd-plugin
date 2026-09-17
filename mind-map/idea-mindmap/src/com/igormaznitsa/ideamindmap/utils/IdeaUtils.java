@@ -26,7 +26,6 @@ import com.igormaznitsa.ideamindmap.editor.MindMapDocumentEditor;
 import com.igormaznitsa.ideamindmap.facet.MindMapFacet;
 import com.igormaznitsa.ideamindmap.swing.FileEditPanel;
 import com.igormaznitsa.ideamindmap.swing.UriEditPanel;
-import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.ide.commons.editors.AbstractNoteEditor;
 import com.igormaznitsa.mindmap.ide.commons.editors.AbstractNoteEditorData;
 import com.igormaznitsa.mindmap.ide.commons.preferences.ColorSelectButton;
@@ -39,7 +38,6 @@ import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.igormaznitsa.mindmap.swing.services.UIComponentFactoryProvider;
 import com.intellij.CommonBundle;
 import com.intellij.ide.BrowserUtil;
-import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.editor.Document;
@@ -74,9 +72,7 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -100,7 +96,6 @@ public final class IdeaUtils {
   public static final String PROJECT_KNOWLEDGE_FOLDER_NAME = ".projectKnowledge";
   private static final Logger LOGGER = getLogger(IdeaUtils.class);
   private static final ResourceBundle BUNDLE = getBundle("i18n/Bundle");
-  private static final boolean ALLOWS_TRANSACTION_GUARD = true;
 
   static {
     try {
@@ -113,38 +108,31 @@ public final class IdeaUtils {
   @Nullable
   public static VirtualFile findMavenProjectRootForFile(@Nonnull final Project mainProject,
                                                         @Nonnull final VirtualFile targetFile) {
-    VirtualFile result = null;
     try {
       final Class<?> mavenProjectsManagerClass =
           Class.forName("org.jetbrains.idea.maven.project.MavenProjectsManager");
       final Object mavenProjectsManagerInstance =
           mavenProjectsManagerClass.getMethod("getInstance", Project.class)
               .invoke(null, mainProject);
-
       final Method methodGetDirectoryFile =
           Class.forName("org.jetbrains.idea.maven.project.MavenProject")
               .getMethod("getDirectoryFile");
-      final List<?> listOfRootMaveProjects =
+      final List<?> rootMavenProjects =
           (List<?>) mavenProjectsManagerClass.getMethod("getRootProjects")
               .invoke(mavenProjectsManagerInstance);
 
-      for (final Object mavenProject : listOfRootMaveProjects) {
+      for (final Object mavenProject : rootMavenProjects) {
         final VirtualFile directory = (VirtualFile) methodGetDirectoryFile.invoke(mavenProject);
         if (VfsUtil.isAncestor(directory, targetFile, false)) {
-          result = directory;
-          break;
+          return directory;
         }
       }
-    } catch (ClassNotFoundException ex) {
-      LOGGER.info(
-          "can't find org...maven.project.MavenProjectsManager or org...maven.project.MavenProject in findMavenProjectRootForFile : " +
-              ex.getMessage());
-    } catch (NoSuchMethodException ex) {
-      LOGGER.error("NoSuchMethodException in findMavenProjectRootForFile", ex);
-    } catch (Exception ex) {
+    } catch (final ClassNotFoundException ex) {
+      LOGGER.info("Maven plugin is not loaded, skip Maven project root lookup");
+    } catch (final Exception ex) {
       LOGGER.error("Error in findMavenProjectRootForFile", ex);
     }
-    return result;
+    return null;
   }
 
   @Nullable
@@ -173,23 +161,7 @@ public final class IdeaUtils {
 
   @Nullable
   private static VirtualFile findModuleRoot(@Nullable final Module module) {
-    if (module == null) {
-      return null;
-    }
-    try {
-      final Class<?> projectUtil = Class.forName("com.intellij.openapi.project.ProjectUtil");
-      return (VirtualFile) projectUtil.getMethod("guessModuleDir", Module.class)
-          .invoke(null, module);
-    } catch (Exception ex) {
-      try {
-        return (VirtualFile) Module.class.getMethod("getModuleFile").invoke(module);
-      } catch (Exception exx) {
-        LOGGER.error(
-            "Can't get module folder for API calls: ProjectUtils returns " + ex.getMessage() +
-                ", Module returns " + exx.getMessage(), ex);
-        return null;
-      }
-    }
+    return module == null ? null : ProjectUtil.guessModuleDir(module);
   }
 
   @Nullable
@@ -204,131 +176,30 @@ public final class IdeaUtils {
     return moduleRoot;
   }
 
-  @Nullable
-  public static Class<?> findClass(@Nonnull final String className) {
-    try {
-      return Class.forName(className);
-    } catch (ClassNotFoundException ex) {
-      return null;
-    }
-  }
-
-  @Nullable
-  public static Object callGetInstance(@Nullable final Class<?> classRef) {
-    Object result = null;
-    if (classRef != null) {
-      try {
-        final Method instanceMethod = classRef.getMethod("getInstance");
-        if (Modifier.isStatic(instanceMethod.getModifiers())) {
-          result = instanceMethod.invoke(null);
-        }
-      } catch (InvocationTargetException ex) {
-        LOGGER.error("Error during dynamic getInstance() call", ex);
-      } catch (Exception ex) {
-        result = null;
-      }
-    }
-    return result;
-  }
-
-  public static boolean submitTransactionLater(@Nonnull final Runnable runnable) {
-    final Class<?> transactionGuardClass = findClass("com.intellij.openapi.application.TransactionGuard");
-    final Object transactionGuardInstance = callGetInstance(transactionGuardClass);
-
-    boolean result = false;
-    if (transactionGuardInstance != null) {
-      result = safeInvokeMethodNoResult(transactionGuardClass, transactionGuardInstance,
-          "submitTransactionLater",
-          new Class<?>[] {Disposable.class, Runnable.class}, new Object[] {(Disposable) () -> {
-          }, runnable});
-    }
-
-    return result;
-  }
-
   public static void executeWriteAction(@Nullable final Project project,
                                         @Nullable final Document document,
                                         @Nonnull final Runnable action) {
-    final Runnable wrapper = () -> CommandProcessor.getInstance()
-        .executeCommand(project, () -> ApplicationManager.getApplication().runWriteAction(action),
-            "MMD.executeWriteAction", null, document);
-
-    if (ALLOWS_TRANSACTION_GUARD && submitTransactionLater(wrapper::run)) {
-      LOGGER.info("Using TransactionGuard for write action");
-    } else {
-      LOGGER.info("Using CommandProcessor for write action");
-      wrapper.run();
-    }
+    ApplicationManager.getApplication().invokeLater(() -> {
+      if (project != null && project.isDisposed()) {
+        return;
+      }
+      CommandProcessor.getInstance().executeCommand(
+          project,
+          () -> ApplicationManager.getApplication().runWriteAction(action),
+          "MMD.executeWriteAction",
+          null,
+          document);
+    });
   }
 
   public static void executeReadAction(@Nullable final Project project,
-                                       @Nullable final Document document,
                                        @Nonnull final Runnable action) {
-    final Runnable wrapper = () -> CommandProcessor.getInstance()
-        .executeCommand(project, () -> ApplicationManager.getApplication().runReadAction(action),
-            "MMD>executeReadAction", null, document);
-
-    if (ALLOWS_TRANSACTION_GUARD && submitTransactionLater(wrapper::run)) {
-      LOGGER.info("Using TransactionGuard for read action");
-    } else {
-      LOGGER.info("Using CommandProcessor for read action");
-      wrapper.run();
-    }
-  }
-
-  @SuppressWarnings("unchecked")
-  @Nullable
-  public static <T> T safeInvokeMethodForResult(
-                                                @Nonnull final Class<?> instanceClass,
-                                                @Nonnull final Object instance,
-                                                @Nonnull final T defaultResult,
-                                                @Nonnull final String methodName,
-                                                @Nonnull @MustNotContainNull
-                                                final Class<?>[] argumentClasses,
-                                                @Nonnull @MustNotContainNull
-                                                final Object[] arguments) {
-    final Method method;
-    try {
-      method = instanceClass.getMethod(methodName, argumentClasses);
-    } catch (NoSuchMethodException ex) {
-      LOGGER.info(
-          "Can't find method '" + methodName + "' in class " + instanceClass.getName());
-      return defaultResult;
-    }
-
-    try {
-      return (T) method.invoke(instance, arguments);
-    } catch (Exception ex) {
-      LOGGER.error("Error during call " + instanceClass.getName() + "." + methodName +
-          ", default result will be returned, error message = " + ex.getMessage());
-    }
-    return defaultResult;
-  }
-
-  public static boolean safeInvokeMethodNoResult(
-                                                 @Nonnull final Class<?> instanceClass,
-                                                 @Nonnull final Object instance,
-                                                 @Nonnull final String methodName,
-                                                 @Nonnull @MustNotContainNull
-                                                 final Class<?>[] argumentClasses,
-                                                 @Nonnull @MustNotContainNull
-                                                 final Object[] arguments) {
-    final Method method;
-    try {
-      method = instanceClass.getMethod(methodName, argumentClasses);
-    } catch (NoSuchMethodException ex) {
-      LOGGER.info(
-          "Can't find method '" + methodName + "' in class " + instanceClass.getName());
-      return false;
-    }
-
-    try {
-      method.invoke(instance, arguments);
-      return true;
-    } catch (Exception ex) {
-      LOGGER.error("Error during call " + instanceClass.getName() + "." + methodName + ", error message = " + ex.getMessage());
-    }
-    return false;
+    ApplicationManager.getApplication().invokeLater(() -> {
+      if (project != null && project.isDisposed()) {
+        return;
+      }
+      ApplicationManager.getApplication().runReadAction(action);
+    });
   }
 
   @Nullable
@@ -385,17 +256,12 @@ public final class IdeaUtils {
   }
 
   private static boolean openInIdeBrowser(@Nonnull final Project project, @Nonnull final URI uri) {
-    final Class<?> htmlEditorProvider = findClass("com.intellij.openapi.fileEditor.impl.HTMLEditorProvider");
-    if (htmlEditorProvider == null) {
-      return false;
-    }
-
     try {
-      htmlEditorProvider
-          .getMethod("openEditor", Project.class, String.class, String.class)
-          .invoke(null, project, uri.toString(), uri.toString());
+      Class.forName("com.intellij.openapi.fileEditor.impl.HTMLEditorProvider")
+          .getMethod("openEditor", Project.class, String.class, String.class, String.class)
+          .invoke(null, project, uri.toString(), uri.toString(), null);
       return true;
-    } catch (Exception ex) {
+    } catch (final ReflectiveOperationException ex) {
       LOGGER.error("Can't open URI in IDE browser, falling back to system browser: " + uri, ex);
       return false;
     }

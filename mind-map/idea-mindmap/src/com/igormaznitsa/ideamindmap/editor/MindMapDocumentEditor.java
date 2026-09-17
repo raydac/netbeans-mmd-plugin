@@ -309,7 +309,6 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
 
       IdeaUtils.executeReadAction(
           this.getProject(),
-          document,
           () -> safeSwing(this.makeRunnableSetDocumentTextAction(document.getText())));
     });
   }

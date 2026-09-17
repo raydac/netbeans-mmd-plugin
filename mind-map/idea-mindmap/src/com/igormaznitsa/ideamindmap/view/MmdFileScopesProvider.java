@@ -16,32 +16,23 @@
 
 package com.igormaznitsa.ideamindmap.view;
 
-import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.project.Project;
 import com.intellij.psi.search.scope.packageSet.CustomScopesProviderEx;
 import com.intellij.psi.search.scope.packageSet.NamedScope;
 import java.util.List;
-import com.intellij.openapi.project.Project;
-import java.util.Collections;
 
 public class MmdFileScopesProvider extends CustomScopesProviderEx {
 
-  private static final Logger LOGGER = Logger.getInstance(MmdFileScopesProvider.class);
-
-  public MmdFileScopesProvider(Project project) {
-    // do nothing
+  public MmdFileScopesProvider(final Project project) {
   }
 
-  public static MmdFileScopesProvider getInstance(Project project) {
+  public static MmdFileScopesProvider getInstance(final Project project) {
     return CUSTOM_SCOPES_PROVIDER.findExtension(MmdFileScopesProvider.class, project);
   }
 
+  @Override
   public List<NamedScope> getCustomScopes() {
-    try {
-      return Collections.singletonList(MmdFileFilteredScope.makeInstance());
-    } catch (Exception ex) {
-      LOGGER.warn("Error during custom scope create", ex);
-      return Collections.emptyList();
-    }
+    return List.of(MmdFileFilteredScope.makeInstance());
   }
 
 }
