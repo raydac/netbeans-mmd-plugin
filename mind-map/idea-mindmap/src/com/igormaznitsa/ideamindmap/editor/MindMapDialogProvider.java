@@ -21,6 +21,7 @@ import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.mindmap.swing.panel.DialogProvider;
 import com.igormaznitsa.mindmap.swing.panel.utils.PathStore;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.MessageDialogBuilder;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.wm.WindowManager;
 import java.awt.Component;
@@ -59,7 +60,9 @@ public class MindMapDialogProvider implements DialogProvider {
 
   @Override
   public boolean msgConfirmOkCancel(@Nullable final Component parentComponent, @Nonnull final String title, @Nonnull final String text) {
-    return Messages.showOkCancelDialog(this.project, text, title, Messages.getQuestionIcon()) == Messages.OK;
+    return MessageDialogBuilder.okCancel(title, text)
+            .icon(Messages.getQuestionIcon())
+            .ask(this.project);
   }
 
   @Override

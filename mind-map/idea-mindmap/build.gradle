@@ -1,7 +1,7 @@
 plugins {
     id "java"
     id "idea"
-    id "org.jetbrains.intellij" version "1.17.3"
+    id "org.jetbrains.intellij" version "1.17.4"
 }
 
 repositories {
@@ -12,7 +12,7 @@ repositories {
 version = project.getProperty('maven_project_version')
 
 intellij {
-    version = "IC-222.4554.10"
+    version = "2024.2.5"
     type = "IC"
     downloadSources = false
     updateSinceUntilBuild = false
@@ -22,8 +22,12 @@ def jsoupVersion = project.getProperty('jsoup_version')
 def jsonVersion = project.getProperty('json_version')
 def metaVersion = project.getProperty('meta_version')
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 17
+targetCompatibility = 17
+
+tasks.withType(JavaCompile).configureEach {
+    options.deprecation = project.findProperty('javac.deprecation')?.toString() != 'false'
+}
 
 defaultTasks 'clean', 'build'
 

@@ -48,6 +48,7 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectUtil;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.MessageType;
@@ -61,8 +62,8 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.WindowManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.ui.JBColor;
 import com.intellij.ui.awt.RelativePoint;
-import com.intellij.util.ui.UIUtil;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Desktop;
@@ -159,7 +160,7 @@ public final class IdeaUtils {
     final boolean useProjectBaseFolder = facet == null || facet.getConfiguration().isUseProjectBaseFolderAsRoot();
 
     if (module == null || useProjectBaseFolder) {
-      final VirtualFile baseDir = project.getBaseDir();
+      final VirtualFile baseDir = ProjectUtil.guessProjectDir(project);
       if (module == null) {
         return baseDir;
       }
@@ -438,7 +439,7 @@ public final class IdeaUtils {
   }
 
   public static boolean isDarkTheme() {
-    return UIUtil.isUnderDarcula();
+    return !JBColor.isBright();
   }
 
   public static File chooseFile(final Component parent, final boolean filesOnly, final String title,
@@ -657,7 +658,7 @@ public final class IdeaUtils {
     if (project == null) {
       return null;
     }
-    return IdeaUtils.vfile2iofile(project.getBaseDir());
+    return IdeaUtils.vfile2iofile(ProjectUtil.guessProjectDir(project));
   }
 
   @Nullable

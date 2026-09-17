@@ -164,7 +164,7 @@ public class MMParserDefinition implements ParserDefinition {
   }
 
   @Override
-  public SpaceRequirements spaceExistanceTypeBetweenTokens(ASTNode astNode, ASTNode astNode2) {
+  public SpaceRequirements spaceExistenceTypeBetweenTokens(final ASTNode left, final ASTNode right) {
     return SpaceRequirements.MAY;
   }
 }

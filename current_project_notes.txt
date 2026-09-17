@@ -6,7 +6,7 @@
 - Hardened `skills/mmd/scripts`: no `--password` argv leak, atomic `.mmd` writes, Java-like URI/HTML/whitespace parsing, JSON tree type checks, crypto `hmac.compare_digest`, UTF-8 BOM reads.
 - `mind-map-model` read/write round-trips CJK and emoji (titles, notes, snippets, attributes, file extras); covered by `MindMapTest` / `ModelUtilsTest`.
 - Agent skills for users live in repo `skills/` (see `skills/README.md`). `mmd/`: parse/edit/validate/crypto plus commands `read`, `edit`, `new`, `validate`, `decrypt`. `mmd-annotations/`: wire processor + mark Java; commands `setup`, `mark`. Copy the whole skill folder into `.cursor/skills/` (or `~/.cursor/skills/`) so `/skill:command` works. This repo also has `/mmd-annotate` under `.cursor/commands/` as a local shortcut.
-- Default Maven `compiler.source`/`compiler.target` lifted from 1.8 to **11** (parent `mind-map/pom.xml`); bytecode enforcer `max.jdk.version` matched to 11. SciaReto stays on 21; IDEA plugin and a few helper modules still override lower. Changelog records the user-facing Java 11 minimum.
+- IJ 1.8.0: remaining compile-time deprecations replaced (`Project.getBaseDir` → `ProjectUtil.guessProjectDir`, facet `PersistentStateComponent`, `java.util.Base64`, `MessageDialogBuilder`, `AnnotationHolder.newAnnotation`, `HashMap` instead of Trove, `spaceExistenceTypeBetweenTokens`).
 - Version set to **1.8.0-SNAPSHOT** for continued development: root + all module `pom.xml`, IntelliJ `plugin.xml`, changelog/README SNAPSHOT headers, mac `Info.plist` `1.8.0`, win-launcher `versioninfo.json`, `SciaRetoStarter.IDE_VERSION`, AP fallback. Bumped from 1.7.1 because the Java 11 minimum is a minor-version change.
 - Release **1.7.0** prepared (2026-09-06): root + all module `pom.xml`, IntelliJ `plugin.xml`, changelog/README headers, mac `Info.plist`, annotation-processor fallback.
 - scia-reto: embedded JRE bumped to **27+36** (`jre.version` in `scia-reto/pom.xml`); changelog/README SNAPSHOT note added.
@@ -56,7 +56,7 @@
 
 ## 3. Technical Debt & Refactoring
 - No unit tests under `idea-mindmap`.
-- `IdeaUtils` still uses reflection for Maven, TransactionGuard, and HTMLEditorProvider to stay on 222.
+- `IdeaUtils` still uses reflection for Maven, TransactionGuard, and HTMLEditorProvider (optional Maven / API drift). Direct calls can wait until a later 242+ cleanup.
 - Plugin menu wiring (`AbstractExporter`/`AbstractImporter`/`ChangeColorPlugin`/`OptionsPlugin`) still duplicates ExternallyExecutedPlugin listener boilerplate; consolidate later via protected helper on `AbstractPopupMenuItem` without changing public plugin APIs.
 - `Utils.isKeyStrokeEvent` is public and unused; keep for API stability (deprecate later if desired).
 - scia-reto: `MetricsService` still only stamps last-send time (PROJECT_TOKEN unused); leave until a real send path is restored.
@@ -74,6 +74,7 @@
 - Annotation-marking skill added at `skills/mmd-annotations/` (command `/mmd-annotate`).
 - MMD skill scripts reviewed and hardened (password argv removed, atomic writes, Java-matching extras/HTML).
 - mind-map-model internal quality pass (API kept): parser DSL, shared search/file helpers, extra attach on construct, ConcurrentHashMap logger cache.
+- IJ Marketplace verifier cleanup for 1.8.0: scheduled-for-removal APIs and internal `PluginManager.getPlugin` replaced; min IntelliJ is 2024.2.
 - Verify File | New on latest IntelliJ after reinstall: a single SciaReto Mind Map item after Directory, custom create dialog, no second item at the end of the list.
 - Verify opening an existing MMD file after the blank-editor fix.
 - Verify FlatLaf editor/explorer containers keep normal border (no focus-accent color change).
@@ -83,7 +84,7 @@
 
 ## 5. Known Issues & Limitations
 - js-viewer is read-only: collapse/zoom are session-only; topic images are displayed but cannot be added or removed.
-- Sandbox/build target remains `IC-222.4554.10`; latest-IDE New File UI cannot be verified in that sandbox.
+- Sandbox/build target is `IC-2024.2.5` (`since-build` 242.20224.159). Latest-IDE New File UI still wants a smoke check after install.
 - `MindMapPanel.getModel()` throws if no model has been set; IJ editor now installs a default empty map immediately after construction.
 - `processPopUpForShortcut` with empty selection only selects root and does not open the menu; `VK_CONTEXT_MENU` always opens — intentional difference, leave unless UX change is requested.
 - scia-reto assembly (non-script): all descriptors still share `<id>withjre_windows</id>`; `mac-nojre.xml` exclude typo `icon.svgicns`; linux fileSets omit explicit `fileMode` 0755; `mac-aarch64/` tree unused (packs from `mac/`).
@@ -100,20 +101,21 @@
 - MMD annotation skill: `skills/mmd-annotations/` (`/mmd-annotations:setup`, `/mmd-annotations:mark`). Attach artifacts and audit compiler options before marking. Fixtures: `mind-map-annotation-processor-it`.
 - Register file type: https://plugins.jetbrains.com/docs/intellij/registering-file-type.html
 - File templates / New menu: https://plugins.jetbrains.com/docs/intellij/using-file-templates.html
-- Build plugin: `mvn22 -pl idea-mindmap -am package` from `mind-map/` (Gradle is invoked as `gradle8`).
+- Build plugin: `mvn22 -Ppublish -pl idea-mindmap -am package` from `mind-map/` (Gradle is invoked as `gradle8`). Maven starts Gradle without `-q`, with `--warning-mode all` and `-Pjavac.deprecation=true` so `JavaCompile` uses `-Xlint:deprecation`.
 - Swing panel compile: `mvn22 -pl mind-map-swing-panel -am compile` from `mind-map/`.
 - scia-reto compile: `mvn22 -pl scia-reto -am compile` from `mind-map/`.
 - NetBeans plugin: `mvn22 -Ppublish -pl nb-mind-map -am test` from `mind-map/`.
 
 ## 8. User Advice and Recommendations
-- Keep File | New compatibility with latest IntelliJ and with previous versions back to 2022.2.5 (222.4554.10).
+- Keep File | New compatibility with latest IntelliJ and with previous versions back to 2024.2 (242.20224.159).
 - Do not break public APIs of mind-map-swing-panel when cleaning internal Swing action handling.
 - Do not break public APIs of mind-map-model (signatures, Serializable UIDs, logger SPI) when fixing internals.
 - Restrict scia-reto Swing audits/fixes to the `scia-reto` submodule unless the user widens scope.
 - js-viewer notes panel: user asked for double-click (not click/focus/drag) to open notes so selecting and panning stay unobstructed. Extra icons still activate on double-click of the icon itself.
 - For user-facing fixes and changes, update both root `README.md` (Changelog section) and `changelog.txt`.
-- Keep changelog messages short: one brief user-facing line per change, not long explanations.
-- When a common change affects the shared mind-map panel and therefore the IDE plugins (changelog `ALL:` items), also update IntelliJ IDEA `mind-map/idea-mindmap/resources/META-INF/plugin.xml` `<change-notes>` for the current SNAPSHOT/unreleased version. That is the marketplace changelog IDEA users see; do not leave it empty when README/`changelog.txt` already list shared panel/plugin behavior.
+- **README.md changelog:** keep it short — **one or two lines per change**, a headline a user can scan. Rephrase long bullets; do not paste the full technical story there.
+- **changelog.txt:** the full change description lives here (details, edge cases, issue numbers, how it behaves). README can point at it; do not duplicate the long form in README.
+- When a common change affects the shared mind-map panel and therefore the IDE plugins (changelog `ALL:` items), also update IntelliJ IDEA `mind-map/idea-mindmap/resources/META-INF/plugin.xml` `<change-notes>` for the current SNAPSHOT/unreleased version. That is the marketplace changelog IDEA users see; keep it closer to the short README form than to `changelog.txt`.
 - When an encrypted MMD note is needed for work, ask the user for the password and decrypt with the skill `crypto.py` scripts; do not guess the password or treat ciphertext as text.
 - Ship agent skills in repo `skills/` for users to copy; do not keep them only under `.cursor/skills/`. Project slash commands that activate those skills may live in `.cursor/commands/`.
 - When documenting Java architecture for later agents, mark sources with `@MmdFile` / `@MmdTopic` (`skills/mmd-annotations`, `/mmd-annotations:setup` then `/mmd-annotations:mark`) and let the processor generate maps; do not freehand those `.mmd` files. The skill must first attach the annotation artifacts to the user’s module and audit compiler options (`-proc:none`, processor path, `-Ammd.*`).

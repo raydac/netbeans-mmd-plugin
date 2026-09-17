@@ -22,7 +22,6 @@ import com.igormaznitsa.mindmap.model.MMapURI;
 import com.igormaznitsa.mindmap.model.MindMap;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.FileContentUtil;
@@ -46,9 +45,14 @@ public final class RefactoringUtils {
       throw new NullPointerException("Project folder is not found for " + project);
     }
 
-    URI baseURI = VfsUtil.toUri(IdeaUtils.vfile2iofile(newFile));
+    final File newIoFile = IdeaUtils.vfile2iofile(newFile);
+    if (newIoFile == null) {
+      throw new NullPointerException("IO file is not found for " + newFile);
+    }
+
+    URI baseURI = newIoFile.toPath().toUri();
     if (baseURI.isAbsolute()) {
-      final URI projectURI = VfsUtil.toUri(projectFolder);
+      final URI projectURI = projectFolder.toPath().toUri();
       baseURI = projectURI.relativize(baseURI);
     }
 

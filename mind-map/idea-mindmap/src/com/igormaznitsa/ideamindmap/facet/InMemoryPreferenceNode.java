@@ -17,8 +17,8 @@
 package com.igormaznitsa.ideamindmap.facet;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-
-import com.intellij.util.Base64;
+import static java.util.Base64.getDecoder;
+import static java.util.Base64.getEncoder;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -147,15 +147,15 @@ public class InMemoryPreferenceNode extends Preferences {
   }
 
   @Override
-  public void putByteArray(String key, byte[] value) {
-    this.put(key, Base64.encode(value));
+  public void putByteArray(final String key, final byte[] value) {
+    this.put(key, getEncoder().encodeToString(value));
   }
 
   @Override
-  public byte[] getByteArray(String key, byte[] def) {
+  public byte[] getByteArray(final String key, final byte[] def) {
     final String value = this.get(key, null);
     try {
-      return Base64.decode(value);
+      return getDecoder().decode(value);
     } catch (Exception ex) {
       return def;
     }

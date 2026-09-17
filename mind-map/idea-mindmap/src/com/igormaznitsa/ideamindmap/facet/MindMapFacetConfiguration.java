@@ -20,12 +20,10 @@ import com.intellij.facet.FacetConfiguration;
 import com.intellij.facet.ui.FacetEditorContext;
 import com.intellij.facet.ui.FacetEditorTab;
 import com.intellij.facet.ui.FacetValidatorsManager;
-import com.intellij.openapi.util.InvalidDataException;
-import com.intellij.openapi.util.WriteExternalException;
-import java.util.List;
-import org.jdom.Element;
+import com.intellij.openapi.components.PersistentStateComponent;
+import org.jetbrains.annotations.NotNull;
 
-public class MindMapFacetConfiguration implements FacetConfiguration {
+public class MindMapFacetConfiguration implements FacetConfiguration, PersistentStateComponent<MindMapFacetConfiguration.State> {
 
   private static final String KEY_USE_INSIDE_BROWSER = "useInsideBrowser";
   private static final String KEY_USE_PROJECT_BASE_FOLDER_AS_ROOT = "useProjectBaseFolderAsRoot";
@@ -36,41 +34,43 @@ public class MindMapFacetConfiguration implements FacetConfiguration {
   private static final String KEY_DISABLE_PROJECT_KNOWLEDGE_AUTOCTREATION = "disableAutocreateProjectKnowledgeFolder";
   private final InMemoryPreferenceNode preferences = new InMemoryPreferenceNode();
 
-  public MindMapFacetConfiguration() {
+  public static final class State {
+    public boolean useInsideBrowser;
+    public boolean useProjectBaseFolderAsRoot;
+    public boolean makeRelativePath = true;
+    public boolean trimTopicText;
+    public boolean copyParentColorInfoInNew = true;
+    public boolean unfoldCollapsedTopicInDrop = true;
+    public boolean disableAutocreateProjectKnowledgeFolder = true;
   }
 
   @Override
-  public FacetEditorTab[] createEditorTabs(FacetEditorContext editorContext, FacetValidatorsManager validatorsManager) {
+  public FacetEditorTab[] createEditorTabs(final FacetEditorContext editorContext, final FacetValidatorsManager validatorsManager) {
     return new FacetEditorTab[] {new MindMapFacetEditorTab(this)};
   }
 
   @Override
-  public void readExternal(final Element element) throws InvalidDataException {
-    final List<Element> elements = element.getChildren();
-    try {
-      this.preferences.clear();
-      for (final Element e : elements) {
-        this.preferences.put(e.getName(), e.getText());
-      }
-    } catch (Exception ex) {
-      throw new InvalidDataException("Can't read preferences", ex);
-    }
+  public State getState() {
+    final State state = new State();
+    state.useInsideBrowser = this.isUseInsideBrowser();
+    state.useProjectBaseFolderAsRoot = this.isUseProjectBaseFolderAsRoot();
+    state.makeRelativePath = this.isMakeRelativePath();
+    state.trimTopicText = this.isTrimTopicTextBeforeSet();
+    state.copyParentColorInfoInNew = this.isCopyColorInformationFromParent();
+    state.unfoldCollapsedTopicInDrop = this.isUnfoldTopicWhenItIsDropTarget();
+    state.disableAutocreateProjectKnowledgeFolder = this.isDisableAutoCreateProjectKnowledgeFolder();
+    return state;
   }
 
   @Override
-  public void writeExternal(final Element element) throws WriteExternalException {
-    try {
-      for (final String key : this.preferences.keys()) {
-        Element el = element.getChild(key);
-        if (el == null) {
-          el = new Element(key);
-          element.addContent(el);
-        }
-        el.setText(this.preferences.get(key, null));
-      }
-    } catch (Exception ex) {
-      throw new WriteExternalException("Can't write preferences", ex);
-    }
+  public void loadState(@NotNull final State state) {
+    this.setUseInsideBrowser(state.useInsideBrowser);
+    this.setUseProjectBaseFolderAsRoot(state.useProjectBaseFolderAsRoot);
+    this.setMakeRelativePath(state.makeRelativePath);
+    this.setTrimTopicTextBeforeSet(state.trimTopicText);
+    this.setCopyColorInformationFromParent(state.copyParentColorInfoInNew);
+    this.setUnfoldTopicWhenItIsDropTarget(state.unfoldCollapsedTopicInDrop);
+    this.setDisableAutoCreateProjectKnowledgeFolder(state.disableAutocreateProjectKnowledgeFolder);
   }
 
   public boolean isTrimTopicTextBeforeSet() {

@@ -3,7 +3,7 @@
 [![License Apache 2.0](https://img.shields.io/badge/license-Apache%20License%202.0-green.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 [![Java 21+](https://img.shields.io/badge/java-21%2b-green.svg)](https://bell-sw.com/pages/downloads/)
 [![NetBeans](https://img.shields.io/badge/netbeans-9.0%2b-green.svg)](http://plugins.netbeans.org/plugin/60188/nb-mindmap-editor)
-[![Intellij IDEA](https://img.shields.io/badge/idea-2022.2%2b-green.svg)](https://plugins.jetbrains.com/plugin/8045)   
+[![Intellij IDEA](https://img.shields.io/badge/idea-2024.2%2b-green.svg)](https://plugins.jetbrains.com/plugin/8045)   
 [![Arthur's acres sanctuary donation](assets/arthur_sanctuary_banner.png)](https://www.arthursacresanimalsanctuary.org/donate)
 
 # Introduction
@@ -17,16 +17,17 @@ Initially I developed a plugin for NetBeans IDE then the IntellijIDEA plugin was
 __1.8.0 (SNAPSHOT)__
 
 - ALL: minimum Java version lifted from 8 to 11
-- WEB: embeddable JavaScript viewer for MMD files (pan, zoom, fold, topic notes, and the same topic icons as the Java editors via `mmd-icons.png` / `mmd-icons.json`); a packed `mmd-viewer.min.js` (built with `python3 pack-js.py`) inlines a compacted icon index so hosts can ship one script plus the PNG; hosts can turn toolbar, notes, jumps, icons, and pan/zoom on or off so the map matches the page; the notes panel layout can be auto, landscape, portrait, or a modal dialog; click or drag a topic to select or pan without opening notes; double-click (or double-tap) a topic to open notes, and double-click a link, file, jump, or picture extra to follow it; topic titles and icons sit on the same vertical midline inside each topic; focusing a topic with arrow keys or a click scrolls the map just enough to keep that topic in view and draws a bold dashed orange frame around it like the Java editor; from the root, left and right arrows enter the matching side of the map; dashed jump lines end with an arrow at the target topic; extra URLs overlay the map without shifting the toolbar; attached topic pictures (`mmd.image`) draw on the topic; pan, pinch, and extras work on phones and tablets; drag the map from a topic as well as from empty paper
+- IJ:  minimum IntelliJ IDEA version lifted to 2024.2
+- WEB: embeddable JavaScript viewer for MMD files (pan, zoom, notes, icons; packed `mmd-viewer.min.js`)
 - IJ:  File | New lists SciaReto Mind Map once, after Directory
 - ALL: newly opened mind maps show the root topic centered without a visible jump
-- ALL: printing keeps printer resolution instead of a low-DPI bitmap, so small map details, topic icons, and images stay readable; topic frames stay around the text when printing to PDF or PostScript; a large map printed across several pages keeps every tile, including 2×2 fit and when preview zoom is not 100%; print preview keeps topics inside the page instead of drawing them on the dialog around the sheet
-- ALL: mind map panel painting and print preview follow Swing paint rules, so the title editor no longer paints twice and a failed print job no longer crashes the default print worker
-- SR:  convert CLI fails instead of writing an empty map when files or import are missing; declining a very large file is treated as cancel; folder file-links open as projects; macOS Finder Open With opens the document; cancelling project load no longer leaves the spinner stuck
-- NB:  mind map files open in the mind-map editor again after the plugin is deactivated and then activated [#124](https://github.com/raydac/netbeans-mmd-plugin/issues/124)
-- NB:  file rename/move/delete updates mind-map links or reports failure instead of leaving stale paths; Options shows the internal-browser label; Quick Search lists Mind Map only for mind/map queries; empty maps stay savable; reclaiming .mmd files no longer freezes the UI on unrelated editor close
+- ALL: printing keeps printer resolution; multi-page and preview keep topics on the page
+- ALL: mind map panel painting follows Swing paint rules (title editor, print worker)
+- SR:  convert CLI, Open With, folder links, and project-load cancel behave reliably
+- NB:  mind map files open in the editor again after deactivate/activate [#124](https://github.com/raydac/netbeans-mmd-plugin/issues/124)
+- NB:  file refactoring updates links; Options, Quick Search, and empty-map save fixes
 - SR:  updated embedded JDK to 27+36
-- ALL: agent skills to work with MMD maps and generate them from Java (`skills/`; slash commands after copy)
+- ALL: agent skills to work with MMD maps and generate them from Java (`skills/`)
 
 __1.7.0 (06-sep-2026)__
 

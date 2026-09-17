@@ -57,7 +57,6 @@ import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
 import com.intellij.codeHighlighting.BackgroundEditorHighlighter;
 import com.intellij.ide.CopyProvider;
 import com.intellij.ide.CutProvider;
-import com.intellij.ide.DataManager;
 import com.intellij.ide.PasteProvider;
 import com.intellij.ide.dnd.DnDDragStartBean;
 import com.intellij.ide.dnd.TransferableWrapper;
@@ -114,10 +113,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
-public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEditor, MindMapListener, DropTargetListener, Committable, DataProvider, CopyProvider, CutProvider, PasteProvider {
+public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEditor, MindMapListener, DropTargetListener, Committable, CopyProvider, CutProvider, PasteProvider {
   private static final long serialVersionUID = -8185230144865144686L;
 
   private final UserDataHolderBase userDataHolder = new UserDataHolderBase();
@@ -186,14 +184,12 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
     };
     this.getDocument().addDocumentListener(this.documentListener);
 
-    DataManager.registerDataProvider(this.mainScrollPane, this);
-
     this.findTextPanel = new FindTextPanel(this);
 
     this.mainScrollPane.getHorizontalScrollBar().addAdjustmentListener(this);
     this.mainScrollPane.getVerticalScrollBar().addAdjustmentListener(this);
 
-    this.mainPanel = new JBPanel<>(new BorderLayout());
+    this.mainPanel = new EditorRootPanel();
     this.mainPanel.add(this.mainScrollPane, BorderLayout.CENTER);
     this.mainPanel.add(this.findTextPanel, BorderLayout.NORTH);
   }
@@ -413,7 +409,6 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
       if (document != null) {
         document.removeDocumentListener(this.documentListener);
       }
-      DataManager.removeDataProvider(this.mainScrollPane);
     }
   }
 
@@ -972,15 +967,13 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
     }
   }
 
-  @Override
-  public Object getData(@NonNls String s) {
-    Object result = null;
-    if (PlatformDataKeys.CONTEXT_MENU_POINT.is(s)) {
-      result = this.mindMapPanel.findBestPointForContextMenu(false).map(Pair::getRight).orElse(null);
-    } else if (PlatformDataKeys.COPY_PROVIDER.is(s) || PlatformDataKeys.CUT_PROVIDER.is(s) || PlatformDataKeys.PASTE_PROVIDER.is(s)) {
-      result = this;
-    }
-    return result;
+  private void publishEditorData(@NotNull final DataSink sink) {
+    this.mindMapPanel.findBestPointForContextMenu(false)
+            .map(Pair::getRight)
+            .ifPresent(point -> sink.set(PlatformDataKeys.CONTEXT_MENU_POINT, point));
+    sink.set(PlatformDataKeys.COPY_PROVIDER, this);
+    sink.set(PlatformDataKeys.CUT_PROVIDER, this);
+    sink.set(PlatformDataKeys.PASTE_PROVIDER, this);
   }
 
   @Override
@@ -1040,5 +1033,16 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
   @Override
   public void onQuickNoteEvent(@Nonnull MindMapPanel source, boolean activate) {
 
+  }
+
+  private final class EditorRootPanel extends JBPanel<EditorRootPanel> implements UiDataProvider {
+    private EditorRootPanel() {
+      super(new BorderLayout());
+    }
+
+    @Override
+    public void uiDataSnapshot(@NotNull final DataSink sink) {
+      publishEditorData(sink);
+    }
   }
 }

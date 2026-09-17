@@ -23,8 +23,6 @@ import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.swing.ide.IDEBridge;
 import com.igormaznitsa.mindmap.swing.ide.NotificationType;
 import com.intellij.notification.Notification;
-import com.intellij.notification.NotificationDisplayType;
-import com.intellij.notification.NotificationGroup;
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationInfo;
@@ -38,7 +36,7 @@ import org.jetbrains.annotations.Nullable;
 public class IdeaIDEBridge implements IDEBridge {
 
   private static final Logger LOGGER = getLogger(IdeaIDEBridge.class);
-  private static final NotificationGroup MMD_GROUP = new NotificationGroup("IDEA MindMap", NotificationDisplayType.BALLOON, true);
+  private static final String MMD_NOTIFICATION_GROUP = "IDEA MindMap";
   private final Version ideVersion;
 
   public IdeaIDEBridge() {
@@ -106,7 +104,7 @@ public class IdeaIDEBridge implements IDEBridge {
 
     ApplicationManager.getApplication().invokeLater(() -> {
       final long timestamp = System.currentTimeMillis();
-      final Notification notification = new Notification(MMD_GROUP.getDisplayId(), StringEscapeUtils.escapeHtml3(title), StringEscapeUtils.escapeHtml3(text), ideType) {
+      final Notification notification = new Notification(MMD_NOTIFICATION_GROUP, StringEscapeUtils.escapeHtml3(title), StringEscapeUtils.escapeHtml3(text), ideType) {
         @Nullable
         @Override
         public Icon getIcon() {

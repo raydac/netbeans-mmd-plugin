@@ -17,19 +17,21 @@
 package com.igormaznitsa.ideamindmap.swing;
 
 import static com.igormaznitsa.mindmap.model.logger.LoggerFactory.getLogger;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.ResourceBundle.getBundle;
 
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
 import com.igormaznitsa.mindmap.model.logger.Logger;
-import com.intellij.ide.plugins.IdeaPluginDescriptor;
-import com.intellij.ide.plugins.PluginManager;
-import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.Action;
@@ -39,12 +41,12 @@ import javax.swing.JPanel;
 public class AboutForm {
   private static final Logger LOGGER = getLogger(AboutForm.class);
   private static final ResourceBundle BUNDLE = getBundle("i18n/Bundle");
+  private static final Pattern PLUGIN_VERSION = Pattern.compile("<version>([^<]+)</version>");
   private JPanel mainPanel;
   private JHtmlLabel htmlLabelText;
 
   public AboutForm() {
-    final IdeaPluginDescriptor descriptor = PluginManager.getPlugin(PluginId.getId("nb-mind-map-idea"));
-    this.htmlLabelText.setText(BUNDLE.getString("AboutText").replace("${version}", descriptor == null ? "<unknown>" : descriptor.getVersion()));
+    this.htmlLabelText.setText(BUNDLE.getString("AboutText").replace("${version}", readPluginVersion()));
     this.htmlLabelText.addLinkListener((JHtmlLabel.LinkListener) (source, link) -> {
       try {
         IdeaUtils.browseURI(URI.create(link), false);
@@ -61,6 +63,19 @@ public class AboutForm {
 
   public static void show(final Project project) {
     new DialogComponent(project, "About", new AboutForm().mainPanel).show();
+  }
+
+  private static String readPluginVersion() {
+    try (final InputStream stream = AboutForm.class.getResourceAsStream("/META-INF/plugin.xml")) {
+      if (stream == null) {
+        return "<unknown>";
+      }
+      final Matcher matcher = PLUGIN_VERSION.matcher(new String(stream.readAllBytes(), UTF_8));
+      return matcher.find() ? matcher.group(1) : "<unknown>";
+    } catch (final IOException ex) {
+      LOGGER.error("Can't read plugin version from plugin.xml", ex);
+      return "<unknown>";
+    }
   }
 
   private static class DialogComponent extends DialogWrapper {

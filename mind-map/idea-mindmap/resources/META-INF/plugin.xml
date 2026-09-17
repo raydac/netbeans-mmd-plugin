@@ -15,6 +15,7 @@
         <p>1.8.0 (SNAPSHOT)</p>
         <ul>
             <li>Minimum Java version lifted from 8 to 11</li>
+            <li>Minimum IntelliJ IDEA version lifted to 2024.2</li>
             <li>File | New lists SciaReto Mind Map once, after Directory</li>
             <li>Newly opened mind maps show the root topic centered without a visible jump</li>
             <li>Printing keeps printer resolution instead of a low-DPI bitmap, so small map details, topic icons, and images stay readable; topic frames stay around the text when printing to PDF or PostScript; a large map printed across several pages keeps every tile, including 2×2 fit and when preview zoom is not 100%; print preview keeps topics inside the page instead of drawing them around the sheet</li>
@@ -281,7 +282,7 @@
     </change-notes>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-    <idea-version since-build="222.4554.10"/>
+    <idea-version since-build="242.20224.159"/>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html on how to target different products -->
     <depends>com.intellij.modules.lang</depends>
@@ -313,6 +314,7 @@
         <customScopesProvider implementation="com.igormaznitsa.ideamindmap.view.MmdFileScopesProvider"/>
         <applicationService
                 serviceImplementation="com.igormaznitsa.ideamindmap.settings.MindMapApplicationSettings"/>
+        <notificationGroup id="IDEA MindMap" displayType="BALLOON" isLogByDefault="true"/>
     </extensions>
 
     <actions>
