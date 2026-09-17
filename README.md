@@ -21,6 +21,7 @@ __1.8.0 (SNAPSHOT)__
 - WEB: embeddable JavaScript viewer for MMD files (pan, zoom, notes, icons; packed `mmd-viewer.min.js`)
 - IJ:  File | New lists SciaReto Mind Map once, after Directory
 - ALL: newly opened mind maps show the root topic centered without a visible jump
+- IJ:  Structure tool window shows the open mind map as a topic tree
 - ALL: printing keeps printer resolution; multi-page and preview keep topics on the page
 - ALL: mind map panel painting follows Swing paint rules (title editor, print worker)
 - SR:  convert CLI, Open With, folder links, and project-load cancel behave reliably

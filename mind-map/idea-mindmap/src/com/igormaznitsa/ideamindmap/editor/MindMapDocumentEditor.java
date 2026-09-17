@@ -25,6 +25,7 @@ import static java.util.ResourceBundle.getBundle;
 import com.igormaznitsa.ideamindmap.facet.MindMapFacet;
 import com.igormaznitsa.ideamindmap.findtext.FindTextPanel;
 import com.igormaznitsa.ideamindmap.findtext.FindTextScopeProvider;
+import com.igormaznitsa.ideamindmap.lang.structure.MindMapStructureViewFactory;
 import com.igormaznitsa.ideamindmap.utils.IdeaUtils;
 import com.igormaznitsa.ideamindmap.utils.SelectIn;
 import com.igormaznitsa.ideamindmap.utils.SwingUtils;
@@ -396,7 +397,7 @@ public class MindMapDocumentEditor implements AdjustmentListener, DocumentsEdito
   @Nullable
   @Override
   public StructureViewBuilder getStructureViewBuilder() {
-    return null;
+    return MindMapStructureViewFactory.forEditor(this);
   }
 
   @Override

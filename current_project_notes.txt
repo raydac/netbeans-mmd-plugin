@@ -30,6 +30,8 @@
 - scia-reto quality pass (module-only): convert CLI no longer treats missing params as success or exports an empty map after failed import; declining a >2MB file returns false; MMD folder extras call `openProject`; macOS `OPEN_FILE`/`PRINT_FILE` registered; project-load cancel uses `doFinally` so the spinner clears; URI browse uses `ProcessBuilder`; UUID/history/backup restore no longer crash the session.
 - NB plugin [#124](https://github.com/raydac/netbeans-mmd-plugin/issues/124): `.mmd` files stuck as `text/plain` after deactivate/activate. MIME resolver now has position `1470`; `MmdFileTypeReclaimer` reclaims the user-dir mapping on `@OnStart` and invalidates default DataObjects (retry the closed text editor; project scan runs in the background).
 - NB plugin quality pass (`nb-mind-map`): refactoring writes fail instead of silently leaving stale file links; file locks time out instead of hanging/NPE; empty maps are written into the document; navigator file listeners are removed on context switch; Options/Quick Search labels and matching fixed.
+- IJ Structure tool window (Alt+7 / File Structure) now shows the topic tree of the open `.mmd` map. `MindMapDocumentEditor.getStructureViewBuilder()` had returned null, which is why the pane showed "No structure". Builder lives in `idea-mindmap/.../lang/structure/`; click a topic to `focusTo` it on the visual editor.
+- IJ `idea-mindmap` Gradle build uses IntelliJ Platform Gradle Plugin 2.19.0 and `gradle9` (was 1.17.4 + `gradle8`).
 
 ## 2. Architecture & Technical Discoveries
 - Java `Printable` user space is 1/72 inch. Printer `Graphics2D` already includes a DPI scale (often 300/72). Pre-rendering a `BufferedImage` at `PageFormat.getImageableWidth()` pixels is ~72 DPI and looks soft when the driver upscales it. Draw vectors (or the original image with `AffineTransform`) in that user space so the printer samples at device resolution.
@@ -53,6 +55,8 @@
 - mind-map-model `Topic.parse` is a private `TopicParser`; extras passed to the `Topic` constructor now follow the same attach lifecycle as `setExtra`.
 - NetBeans user-dir MIME resolver (`FileUtil.setMIMEType`) has highest priority. After the plugin is disabled, opening `.mmd` can persist `mmd → text/plain`; the declarative `@MIMEResolver.ExtensionRegistration` without `position` sits at `Integer.MAX_VALUE` and loses. Reclaim with `FileUtil.setMIMEType("mmd", MIME)` on start, `DataLoaderPool.setPreferredLoader(fo, null)` + `DataObject.setValid(false)` for stuck objects, and retry the closed text editor if it vetoes invalidation. Do not walk every open project on unrelated TopComponent close (EDT freeze). Clear the user mapping on `@OnStop` if it still lists `.mmd` for our MIME.
 - NB refactoring file I/O: wait for `FileObject.lock()` with a bounded retry (`FileObjectLocks`, 20 × 500 ms) and throw on interrupt/timeout. A failed link rewrite discards the cached `MindMap` so undo uses the snapshot, not a half-mutated model.
+- IJ Structure view: custom `FileEditor` with `HIDE_DEFAULT_EDITOR` only shows Structure if `FileEditor.getStructureViewBuilder()` or `lang.psiStructureViewFactory` is set. Tree is the live `MindMap` topic graph (position paths as node ids), not PSI `PsiTopic` (whose `getName()` is the whole subtree text). Extra `MindMapListener` on the panel must return `true` from `allowedRemovingOfTopics` (listeners are ANDed). Do not `removeMindMapListener` after `MindMapPanel.dispose()` (`assertNotDisposed`). `setModel(map)` does not notify listeners — PSI tree changes cover document reloads.
+- IJ Gradle 2.x: `org.jetbrains.intellij` 1.x cannot resolve the 2024.2+ module layout. `idea-mindmap` now uses `org.jetbrains.intellij.platform` 2.19.0 with Gradle 9 (`gradle9` in `idea-mindmap/pom.xml`). Platform is `intellijIdeaCommunity('2024.2.5')` with `useInstaller = false` (multi-OS archive, like 1.x). `untilBuild = provider { null }` keeps no upper IDE cap. `build` depends on `buildPlugin` so Maven `build` still produces `build/distributions/*.zip`. Compile language level is 21 (2024.2 JBR). Gradle 9 needs `settings.gradle`.
 
 ## 3. Technical Debt & Refactoring
 - No unit tests under `idea-mindmap`.
@@ -75,11 +79,13 @@
 - MMD skill scripts reviewed and hardened (password argv removed, atomic writes, Java-matching extras/HTML).
 - mind-map-model internal quality pass (API kept): parser DSL, shared search/file helpers, extra attach on construct, ConcurrentHashMap logger cache.
 - IJ Marketplace verifier cleanup for 1.8.0: scheduled-for-removal APIs and internal `PluginManager.getPlugin` replaced; min IntelliJ is 2024.2.
+- IJ plugin Gradle build migrated to IntelliJ Platform Gradle Plugin 2.19.0 + Gradle 9 (`gradle9`).
 - Verify File | New on latest IntelliJ after reinstall: a single SciaReto Mind Map item after Directory, custom create dialog, no second item at the end of the list.
 - Verify opening an existing MMD file after the blank-editor fix.
 - Verify FlatLaf editor/explorer containers keep normal border (no focus-accent color change).
 - Verify scia-reto exits cleanly via window close, File | Exit, and platform Quit after editing text files.
 - Verify NB [#124] on NetBeans 23: deactivate + restart, open `.mmd` as text, activate without restart, close, reopen in the mind-map editor; also open from Projects after activation.
+- Verify IJ Structure tool window on an open `.mmd`: topic tree, click-to-focus, updates after edit/selection.
 - NB `nb-mind-map` quality pass applied: refactoring I/O, navigator listeners, empty-map persist, Options/Quick Search, MIME reclaim off the EDT for project walks.
 
 ## 5. Known Issues & Limitations
@@ -101,7 +107,8 @@
 - MMD annotation skill: `skills/mmd-annotations/` (`/mmd-annotations:setup`, `/mmd-annotations:mark`). Attach artifacts and audit compiler options before marking. Fixtures: `mind-map-annotation-processor-it`.
 - Register file type: https://plugins.jetbrains.com/docs/intellij/registering-file-type.html
 - File templates / New menu: https://plugins.jetbrains.com/docs/intellij/using-file-templates.html
-- Build plugin: `mvn22 -Ppublish -pl idea-mindmap -am package` from `mind-map/` (Gradle is invoked as `gradle8`). Maven starts Gradle without `-q`, with `--warning-mode all` and `-Pjavac.deprecation=true` so `JavaCompile` uses `-Xlint:deprecation`.
+- Build plugin: `mvn22 -Ppublish -pl idea-mindmap -am package` from `mind-map/` (Gradle is invoked as `gradle9`). Maven starts Gradle without `-q`, with `--warning-mode all` and `-Pjavac.deprecation=true` so `JavaCompile` uses `-Xlint:deprecation`.
+- IJ Structure view sources: `mind-map/idea-mindmap/src/com/igormaznitsa/ideamindmap/lang/structure/`.
 - Swing panel compile: `mvn22 -pl mind-map-swing-panel -am compile` from `mind-map/`.
 - scia-reto compile: `mvn22 -pl scia-reto -am compile` from `mind-map/`.
 - NetBeans plugin: `mvn22 -Ppublish -pl nb-mind-map -am test` from `mind-map/`.

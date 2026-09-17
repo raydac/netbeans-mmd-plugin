@@ -58,3 +58,4 @@ resource.syso
 resource_windows.syso
 jkslink
 .build
+.intellijPlatform/

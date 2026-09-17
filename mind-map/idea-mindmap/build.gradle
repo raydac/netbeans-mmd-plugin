@@ -1,29 +1,27 @@
 plugins {
-    id "java"
-    id "idea"
-    id "org.jetbrains.intellij" version "1.17.4"
+    id 'java'
+    id 'idea'
+    id 'org.jetbrains.intellij.platform' version '2.19.0'
 }
 
 repositories {
     mavenLocal()
     mavenCentral()
+    intellijPlatform {
+        defaultRepositories()
+    }
 }
 
 version = project.getProperty('maven_project_version')
-
-intellij {
-    version = "2024.2.5"
-    type = "IC"
-    downloadSources = false
-    updateSinceUntilBuild = false
-}
 
 def jsoupVersion = project.getProperty('jsoup_version')
 def jsonVersion = project.getProperty('json_version')
 def metaVersion = project.getProperty('meta_version')
 
-sourceCompatibility = 17
-targetCompatibility = 17
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
 
 tasks.withType(JavaCompile).configureEach {
     options.deprecation = project.findProperty('javac.deprecation')?.toString() != 'false'
@@ -31,7 +29,26 @@ tasks.withType(JavaCompile).configureEach {
 
 defaultTasks 'clean', 'build'
 
+tasks.named('build') {
+    dependsOn 'buildPlugin'
+}
+
+intellijPlatform {
+    pluginConfiguration {
+        ideaVersion {
+            sinceBuild = '242.20224.159'
+            untilBuild = provider { null }
+        }
+    }
+}
+
 dependencies {
+    intellijPlatform {
+        intellijIdeaCommunity('2024.2.5') {
+            useInstaller = false
+        }
+    }
+
     implementation('com.igormaznitsa:commons-version:1.0.0')
     implementation('com.igormaznitsa:meta-annotations:' + metaVersion)
     implementation('com.igormaznitsa:meta-utils:' + metaVersion)

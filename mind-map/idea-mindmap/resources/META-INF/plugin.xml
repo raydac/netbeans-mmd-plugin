@@ -18,6 +18,7 @@
             <li>Minimum IntelliJ IDEA version lifted to 2024.2</li>
             <li>File | New lists SciaReto Mind Map once, after Directory</li>
             <li>Newly opened mind maps show the root topic centered without a visible jump</li>
+            <li>The Structure tool window shows the topic tree of the open mind map; click a topic to focus it on the map</li>
             <li>Printing keeps printer resolution instead of a low-DPI bitmap, so small map details, topic icons, and images stay readable; topic frames stay around the text when printing to PDF or PostScript; a large map printed across several pages keeps every tile, including 2×2 fit and when preview zoom is not 100%; print preview keeps topics inside the page instead of drawing them around the sheet</li>
             <li>Mind map panel painting and print preview follow Swing paint rules, so the title editor no longer paints twice and a failed print job no longer crashes the default print worker</li>
         </ul>
@@ -306,6 +307,8 @@
                                        key="mmd"/>
         <lang.parserDefinition language="NBMindMap"
                                implementationClass="com.igormaznitsa.ideamindmap.lang.MMParserDefinition"/>
+        <lang.psiStructureViewFactory language="NBMindMap"
+                                      implementationClass="com.igormaznitsa.ideamindmap.lang.structure.MindMapStructureViewFactory"/>
         <psi.referenceContributor language="NBMindMap"
                                   implementation="com.igormaznitsa.ideamindmap.lang.refactoring.references.MMReferenceContributor"/>
         <lang.elementManipulator forClass="com.igormaznitsa.ideamindmap.lang.psi.PsiExtraFile"
