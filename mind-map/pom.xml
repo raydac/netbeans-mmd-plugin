@@ -42,7 +42,7 @@
         </developer>
     </developers>
 
-    <url>http://www.sciareto.org</url>
+    <url>https://www.sciareto.org</url>
 
     <issueManagement>
         <system>GitHub Issues</system>
@@ -61,7 +61,7 @@
 
     <organization>
         <name>Igor Maznitsa</name>
-        <url>http://www.igormaznitsa.com</url>
+        <url>https://www.igormaznitsa.com</url>
     </organization>
 
     <licenses>
@@ -232,7 +232,7 @@
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
-                <version>5.23.0</version>
+                <version>5.24.0</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>
@@ -253,7 +253,7 @@
                 <plugin>
                     <groupId>de.perdian.maven.plugins</groupId>
                     <artifactId>macosappbundler-maven-plugin</artifactId>
-                    <version>1.21.2</version>
+                    <version>1.21.3</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -340,7 +340,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.5.5</version>
+                    <version>3.6.0</version>
                     <configuration>
                         <argLine>
                             --add-opens=java.base/java.net=ALL-UNNAMED
