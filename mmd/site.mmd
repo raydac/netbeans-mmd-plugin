@@ -1,0 +1,293 @@
+[Scia Reto](https://sciareto.org) mind map   
+> __version__=`1.1`
+---
+
+# Scia Reto
+> borderColor=`#FFA500`,fillColor=`#031A31`,mmd.emoticon=`brain`,textColor=`#FFFFFF`
+
+- NOTE
+<pre>Free open-source mind map editor for Linux, Windows, and macOS, with plugins for IntelliJ IDEA and NetBeans.
+
+Double-click a topic to read its note. Double-click a link icon to open that page. Drag to pan, and use the wheel or the toolbar to zoom.</pre>
+
+## About
+> fillColor=`#F8E8C8`,leftSide=`true`,mmd.emoticon=`book`,topicLinkUID=`about`
+
+- NOTE
+<pre>It has become increasingly common to encounter projects lacking proper documentation, or to hear phrases like &quot;our documentation is somewhere in Confluence, but it's out of sync.&quot; After facing this challenge in several projects, I found it frustrating to work without reliable references. In 2015, I realized that mind mapping could be a useful approach for software documentation. As a result, I created a small plugin for NetBeans IDE, which was my primary tool at the time. This solution enabled me to maintain and organize documentation directly within project files, keeping everything reasonably in sync. In 2016, I developed a similar plugin for IntelliJ IDEA. Later, when some of my non-Java colleagues expressed interest, I created a standalone version of the tool and named it Scia Reto, which means &quot;Knowledge Network&quot; in Esperanto.</pre>
+
+### Knowledge belongs in the project
+> mmd.emoticon=`lightbulb`
+
+- NOTE
+<pre>The most critical aspect of any project is not just its implementation but the knowledge generated throughout the process. In today's business environment, knowledge is a key asset, and it is crucial to elevate this knowledge from an informal to a formal level to prevent its loss. Additionally, it is essential to minimize the gap between projects and the knowledge produced, with the ideal approach being to integrate formalized knowledge directly within the project artifacts.
+
+Igor Maznitsa, a very lazy coder.</pre>
+
+### NetBeans plugin, 2015
+> mmd.emoticon=`compile`
+
+- NOTE
+<pre>The first version was a NetBeans plugin, so documentation could live in the project files and stay in sync with the code.</pre>
+
+### IntelliJ IDEA plugin, 2016
+> mmd.emoticon=`plugin`
+
+- NOTE
+<pre>A matching plugin for IntelliJ IDEA followed in 2016.</pre>
+
+### Standalone editor
+> mmd.emoticon=`application`
+
+- NOTE
+<pre>Colleagues outside Java wanted the same tool, so the editor became a standalone application named Scia Reto: &quot;Knowledge Network&quot; in Esperanto.</pre>
+
+### Igor Maznitsa
+> mmd.emoticon=`pencil`
+
+- LINK
+<pre>https://www.linkedin.com/in/igormaznitsa/</pre>
+- NOTE
+<pre>Author of Scia Reto.</pre>
+
+## Features
+> fillColor=`#D6EAF8`,leftSide=`true`,mmd.emoticon=`star`,topicLinkUID=`features`
+
+- NOTE
+<pre>Mind maps are a visual tool used to organize information, ideas, or tasks in a hierarchical structure. They help users brainstorm, plan, and understand complex topics by representing them as interconnected nodes branching from a central idea. Mind maps are widely used for project planning, knowledge management, problem-solving, and learning.
+
+This editor enables the creation of mind maps as single-rooted trees. Unlike many other editors, it uses a Markdown-based format, making the files highly compatible with version control systems, which simplifies collaboration and change tracking. It supports only single-rooted, hierarchical structures, ensuring clear and organized maps. Each node can be enhanced with a title, icons, notes, file links, and cross-references to other topics. The editor provides a rich collection of icons and supports custom images. It allows for exporting in various document formats, enabling seamless integration with other tools, and offers visualization of Kafka Streams topologies. Starting with version 1.4.10, AES-256 encryption is available for password-protected notes, ensuring security for sensitive information.</pre>
+
+### Single\-rooted trees
+> mmd.emoticon=`tree`
+
+- NOTE
+<pre>Every map is one hierarchy with a single root, so the structure stays clear.</pre>
+
+### Markdown \.mmd files
+> mmd.emoticon=`code`
+
+- LINK
+<pre>https://www.markdownguide.org/basic-syntax/</pre>
+- NOTE
+<pre>The editor stores everything in one human-readable UTF-8 text file. The structure is compatible with Markdown and uses the .mmd extension, so the maps work well in version control.</pre>
+
+### Icons, notes, files, and jumps
+> mmd.emoticon=`comment`
+
+- NOTE
+<pre>Each topic can carry a title, icons, a text note, file links, and cross-references to other topics.</pre>
+
+### IntelliJ IDEA and NetBeans
+> mmd.emoticon=`plugin`
+
+- NOTE
+<pre>The same maps open in the standalone editor and in the IntelliJ IDEA and Apache NetBeans plugins.</pre>
+
+### PlantUML
+> mmd.emoticon=`plant`
+
+- NOTE
+<pre>PlantUML is integrated directly into the standalone editor.</pre>
+
+### Kafka Streams topologies
+> mmd.emoticon=`connect`
+
+- NOTE
+<pre>The standalone editor can visualize Kafka Streams topologies.</pre>
+
+### Emoticons
+> mmd.emoticon=`emotion_bigsmile`
+
+- NOTE
+<pre>A large collection of emoticons is available to label topics.</pre>
+
+### Custom images
+> mmd.emoticon=`photo`
+
+- NOTE
+<pre>Topics can also carry custom images.</pre>
+
+### AES\-256 notes
+> mmd.emoticon=`lock`
+
+- NOTE
+<pre>Since version 1.4.10, a text note on a topic can be encrypted with AES-256.</pre>
+
+### Import
+> collapsed=`true`,fillColor=`#E8F6EF`,mmd.emoticon=`box`
+
+- NOTE
+<pre>The editor can import these formats and turn them into a tree-structured mind map.</pre>
+
+#### Tab\-formatted text
+> mmd.emoticon=`text`
+
+
+#### MindMup
+> mmd.emoticon=`map`
+
+
+#### FreeMind
+> mmd.emoticon=`map`
+
+
+#### XMind
+> mmd.emoticon=`map`
+
+
+#### Coggle
+> mmd.emoticon=`map`
+
+
+#### NovaMind
+> mmd.emoticon=`map`
+
+
+### Export
+> collapsed=`true`,fillColor=`#FCF3CF`,mmd.emoticon=`page`
+
+- NOTE
+<pre>Mind maps can be exported in these formats.</pre>
+
+#### FreeMind
+> mmd.emoticon=`map`
+
+
+#### MindMup
+> mmd.emoticon=`map`
+
+
+#### Markdown
+> mmd.emoticon=`text`
+
+
+#### PNG image
+> mmd.emoticon=`photo`
+
+
+#### SVG image
+> mmd.emoticon=`photo`
+
+
+#### Plain text
+> mmd.emoticon=`text`
+
+
+#### Org mode
+> mmd.emoticon=`text`
+
+
+#### AsciiDoc
+> mmd.emoticon=`text`
+
+
+## Download
+> fillColor=`#D5F5E3`,mmd.emoticon=`flashdisk`,topicLinkUID=`download`
+
+- NOTE
+<pre>Release 1.7.0 of the standalone editor and of the IDE plugins. Double-click a link icon to download.</pre>
+
+### Scia Reto
+> fillColor=`#C5E0F5`,mmd.emoticon=`application`
+
+- NOTE
+<pre>Standalone editor for Windows, macOS, and Linux. Release 1.7.0.</pre>
+
+#### Windows \(x64 ZIP\)
+> mmd.emoticon=`computer`
+
+- LINK
+<pre>https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.7.0/sciareto-1.7.0-windows-jdk-amd64.zip</pre>
+
+#### macOS \(x64 ZIP\)
+> mmd.emoticon=`apple`
+
+- LINK
+<pre>https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.7.0/sciareto-1.7.0-macos-jdk-amd64.zip</pre>
+
+#### macOS \(arm64 ZIP\)
+> mmd.emoticon=`apple`
+
+- LINK
+<pre>https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.7.0/sciareto-1.7.0-macos-jdk-aarch64.zip</pre>
+
+#### macOS \(DMG\)
+> mmd.emoticon=`apple`
+
+- LINK
+<pre>https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.7.0/sciareto-1.7.0-macos.dmg</pre>
+
+#### Linux \(x64 AppImage\)
+> mmd.emoticon=`tux`
+
+- LINK
+<pre>https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.7.0/sciareto-1.7.0-x86_64.AppImage</pre>
+
+#### Linux \(x64 TAR\.GZ\)
+> mmd.emoticon=`tux`
+
+- LINK
+<pre>https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.7.0/sciareto-1.7.0-linux-jdk-amd64.tar.gz</pre>
+
+### IntelliJ IDEA
+> fillColor=`#F5CBA7`,mmd.emoticon=`lightbulb`
+
+- NOTE
+<pre>Plugin for IntelliJ IDEA. Release 1.7.0, also listed on the JetBrains Marketplace.</pre>
+
+#### Plugin release
+> mmd.emoticon=`box`
+
+- LINK
+<pre>https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.7.0/idea-mindmap-1.7.0.zip</pre>
+
+#### JetBrains Marketplace
+> mmd.emoticon=`world`
+
+- LINK
+<pre>https://plugins.jetbrains.com/plugin/8045-idea-mind-map</pre>
+
+### NetBeans
+> fillColor=`#F5B7B1`,mmd.emoticon=`compile`
+
+- NOTE
+<pre>Plugin for Apache NetBeans. Release 1.7.0, also listed on the NetBeans plugin portal.</pre>
+
+#### Plugin release
+> mmd.emoticon=`box`
+
+- LINK
+<pre>https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.7.0/nb-mind-map-1.7.0.nbm</pre>
+
+#### NetBeans plugin portal
+> mmd.emoticon=`world`
+
+- LINK
+<pre>https://plugins.netbeans.apache.org/catalogue/?id=56</pre>
+
+## Sources
+> fillColor=`#E8DAEF`,mmd.emoticon=`world`,topicLinkUID=`sources`
+
+- LINK
+<pre>https://github.com/raydac/netbeans-mmd-plugin</pre>
+- NOTE
+<pre>Source code for the standalone editor and for the IntelliJ IDEA and NetBeans plugins.</pre>
+
+## Donate
+> fillColor=`#FADBD8`,mmd.emoticon=`heart`,topicLinkUID=`donate`
+
+- NOTE
+<pre>This is a completely free and open-source project, so it does not generate any revenue for its developer. You can show your appreciation through financial support. There are two ways to do this.</pre>
+
+### PayPal, $10
+> mmd.emoticon=`money`
+
+- LINK
+<pre>https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=AHWJHJFBAWGL2</pre>
+
+### YooMoney, ₽100
+> mmd.emoticon=`coins`
+
+- LINK
+<pre>https://yoomoney.ru/to/41001158080699</pre>

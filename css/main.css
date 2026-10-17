@@ -159,3 +159,56 @@ body {
     z-index: 1;
     border: 3px solid #95b0cc;
 }
+
+.site-map-wrap {
+    padding-top: 1.5rem;
+    padding-bottom: 2.5rem;
+}
+
+.site-map-wrap h1 {
+    color: orange;
+    font-weight: bolder;
+    text-align: center;
+    margin-bottom: 0.4rem;
+}
+
+.map-lead {
+    color: whitesmoke;
+    text-align: center;
+    max-width: 46rem;
+    margin: 0 auto 1rem;
+}
+
+#map,
+#download,
+#donate {
+    scroll-margin-top: 12px;
+}
+
+#site-map {
+    height: 78vh;
+    min-height: 520px;
+    border: 3px solid #c8e3ff;
+    border-radius: 4px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .2);
+}
+
+.map-fallback {
+    max-width: 40rem;
+    margin: 0 auto 2rem;
+}
+
+.map-fallback a {
+    color: cyan;
+}
+
+.map-fallback a:hover {
+    color: yellow;
+}
+
+@media (max-width: 720px) {
+    #site-map {
+        height: 70vh;
+        min-height: 420px;
+    }
+}

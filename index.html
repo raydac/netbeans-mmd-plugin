@@ -15,7 +15,7 @@
 
   <meta property="og:locale" content="en_US" />
   <meta property="og:type" content="article" />
-  <meta property="og:article:modified_time" content="2020-12-27T13:19:11+00:00" />
+  <meta property="og:article:modified_time" content="2026-10-17T18:00:00+00:00" />
   <meta property="og:article:author" content="Igor Maznitsa" />
   <meta property="og:title" content="Scia-Reto, free mind-map editor" />
   <meta property="og:description"
@@ -36,6 +36,7 @@
   <link href="https://fonts.googleapis.com/css?family=Chivo:900" rel="stylesheet" type="text/css">
   <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
   <link rel="stylesheet" type="text/css" href="css/main.css">
+  <link rel="stylesheet" type="text/css" href="mmd/mmd-viewer.css">
   <link rel="stylesheet" type="text/css" href="css/font-awesome.min.css">
   <link rel="icon" href="img/favicon.svg">
   <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
@@ -67,8 +68,8 @@
         <div class="col-lg-9">
           <div class="collapse navbar-collapse" id="topMenu">
             <ul class="navbar-nav ml-auto">
-              <li class="nav-item"><a href="#about" class="nav-link">ABOUT</a></li>
-              <li class="nav-item"><a href="#features" class="nav-link">FEATURES</a></li>
+              <li class="nav-item"><a href="#about" class="nav-link" data-map-topic="about">ABOUT</a></li>
+              <li class="nav-item"><a href="#features" class="nav-link" data-map-topic="features">FEATURES</a></li>
               <li class="nav-item"><a href="#download" class="nav-link">DOWNLOAD</a></li>
               <li class="nav-item"><a target="_blank" href="https://github.com/raydac/netbeans-mmd-plugin"
                   class="nav-link">SOURCES</a></li>
@@ -167,76 +168,18 @@
       </div>
     </div>
 
-    <div class="row">
-      <div class="col-lg-2 col-md-2 col-sm-0"></div>
-      <div id="about" class="info-block col-lg-8 col-md-8 col-sm-12">
-        <h1>About</h1>
-        <p>It has become increasingly common to encounter projects lacking proper documentation, or to hear phrases like
-          "our documentation is somewhere in Confluence, but it's out of sync." After facing this challenge in several
-          projects, I found it frustrating to work without reliable references. In 2015, I realized that mind mapping
-          could be a
-          useful approach for software documentation. As a result, I created a small plugin for NetBeans IDE, which was
-          my
-          primary tool at the time. This solution enabled me to maintain and organize documentation directly within
-          project files,
-          keeping everything reasonably in sync. In 2016, I developed a similar plugin for IntelliJ IDEA. Later, when
-          some of my
-          non-Java colleagues expressed interest, I created a standalone version of the tool and named it Scia Reto,
-          which means
-          "Knowledge Network" in Esperanto.</p>
+    <div class="row" id="map">
+      <div class="col-lg-11 mx-auto site-map-wrap">
+        <h1>Scia Reto</h1>
+        <p class="map-lead">About, features, downloads, and donations are on this map. Drag to move it, scroll to zoom,
+          and double-click a topic to read it. The same downloads and donations are linked again below.</p>
+        <div id="site-map"></div>
+        <noscript>
+          <p class="map-lead">The map needs JavaScript. The download and donation links below do not.</p>
+        </noscript>
       </div>
     </div>
-    <div class="row">
-      <div class="col-lg-2 col-md-2 col-sm-0"></div>
-      <div id="features" class="info-block col-lg-8 col-md-8 col-sm-12">
-        <h1>Features</h1>
-        <p>
-          Mind maps are a visual tool used to organize information, ideas, or tasks in a hierarchical structure. They
-          help users brainstorm, plan, and understand complex topics by representing them as interconnected nodes
-          branching from a central idea. Mind maps are widely used for project planning, knowledge management,
-          problem-solving, and learning.
-        </p>
-        <p>
-          This editor enables the creation of mind maps as single-rooted trees. Unlike many other editors, it uses a
-          Markdown-based format, making the files highly compatible with version control systems (VCS), which simplifies
-          collaboration and change tracking. It supports only single-rooted, hierarchical structures, ensuring clear and
-          organized maps. Each node can be enhanced with a title, icons, notes, file links, and cross-references to
-          other topics. The editor provides a rich collection of icons and supports custom images. It allows for
-          exporting in various document formats, enabling seamless integration with other tools, and offers
-          visualization of Kafka Streams topologies. Starting with version 1.4.10, AES-256 encryption is available for
-          password-protected notes, ensuring security for sensitive information.
-        </p>
-        <h2>Format</h2>
-        <p>As mentioned earlier, the editor stores all information in a single human-readable UTF-8 encoded text file.
-          The file structure is compatible with <a href="https://www.markdownguide.org/basic-syntax/">Markdown</a>
-          format, and uses the ".mmd" extension. </p>
-        <h2>Import</h2>
-        <p>The editor supports the import of various formats, allowing them to be converted into a tree-structured mind
-          map:
-        <ul>
-          <li>Tab formatted text</li>
-          <li>Mindmup mind map</li>
-          <li>Freemind mind map</li>
-          <li>XMind mind map</li>
-          <li>Coggle mind map</li>
-          <li>Novamind mind map</li>
-        </ul>
-        </p>
-        <h2>Export</h2>
-        <p>Mind maps can be exported in the following formats:
-        <ul>
-          <li>Freemind mind map</li>
-          <li>Mindmup mind map</li>
-          <li>Markdown text format</li>
-          <li>PNG image</li>
-          <li>SVG image</li>
-          <li>Plain text</li>
-          <li>ORG mode text</li>
-          <li>AscIIdoc text</li>
-        </ul>
-        </p>
-      </div>
-    </div>
+
     <div class="row">
       <div class="col-lg-2 col-md-2 col-sm-0"></div>
       <div id="download" class="info-block col-lg-8 col-md-8 col-sm-12">
@@ -245,39 +188,30 @@
           <div class="download-item card text-center px-3 mb-4">
             <div class="bg-transparent card-header pt-4 border-0">
               <h5 class="text-center">SciaReto</h5>
-              <img src="img/logos/SciaReto_Logo.svg" height="64" />
+              <img src="img/logos/SciaReto_Logo.svg" height="64" alt="Scia Reto" />
             </div>
             <div class="card-body pt-0 dropdown show">
-              <a class="btn btn-success dropdown-toggle mb-3" href="#" role="button" id="dropdownDownload"
+              <a class="btn btn-success dropdown-toggle mb-3" href="#" role="button" id="dropdownSciaReto"
                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Download</a>
-              <div class="dropdown-menu" aria-labelledby="dropdownDownload">
+              <div class="dropdown-menu" aria-labelledby="dropdownSciaReto">
                 <a class="dd-a dropdown-item"
-                  href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.6.8/sciareto-1.6.8-windows-jdk-amd64.zip">Windows
+                  href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.7.0/sciareto-1.7.0-windows-jdk-amd64.zip">Windows
                   (x64 ZIP)</a>
                 <a class="dd-a dropdown-item"
-                  href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.6.8/sciareto-1.6.8-macos-jdk-amd64.zip">MacOS
+                  href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.7.0/sciareto-1.7.0-macos-jdk-amd64.zip">MacOS
                   (x64 ZIP)</a>
                 <a class="dd-a dropdown-item"
-                  href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.6.8/sciareto-1.6.8-macos-jdk-aarch64.zip">MacOS
+                  href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.7.0/sciareto-1.7.0-macos-jdk-aarch64.zip">MacOS
                   (arm64 ZIP)</a>
                 <a class="dd-a dropdown-item"
-                  href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.6.8/sciareto-1.6.8-macos.dmg">MacOS
+                  href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.7.0/sciareto-1.7.0-macos.dmg">MacOS
                   (DMG)</a>
                 <a class="dd-a dropdown-item"
-                  href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.6.8/sciareto-1.6.8-x86_64.AppImage">Linux
+                  href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.7.0/sciareto-1.7.0-x86_64.AppImage">Linux
                   (x64 AppImage)</a>
                 <a class="dd-a dropdown-item"
-                  href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.6.8/sciareto-1.6.8-linux-jdk-amd64.tar.gz">Linux
-                  (x64 TAR.GZ) </a>
-                <!-- <a class="dd-a dropdown-item"
-                  href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.6.8/sciareto-1.6.8-SNAPSHOT-windows-x64-openjdk.zip">Snapshot
-                  Windows</a>
-                <a class="dd-a dropdown-item"
-                  href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.6.8/sciareto-1.6.8-SNAPSHOT-macos-x64-openjdk.zip">Snapshot
-                  MacOS</a>
-                <a class="dd-a dropdown-item"
-                  href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.6.8/sciareto-1.6.8-SNAPSHOT-linux-x64-openjdk.tar.gz">Snapshot
-                  Linux</a> -->
+                  href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.7.0/sciareto-1.7.0-linux-jdk-amd64.tar.gz">Linux
+                  (x64 TAR.GZ)</a>
               </div>
             </div>
           </div>
@@ -285,16 +219,14 @@
           <div class="download-item card text-center px-3 mb-4">
             <div class="bg-transparent card-header pt-4 border-0">
               <h5 class="text-center">Intellij</h5>
-              <img src="img/logos/IntelliJ_IDEA_Logo.svg" height="64" />
+              <img src="img/logos/IntelliJ_IDEA_Logo.svg" height="64" alt="IntelliJ IDEA" />
             </div>
             <div class="card-body pt-0 dropdown show">
-              <a class="btn btn-success dropdown-toggle mb-3" href="#" role="button" id="dropdownDownload"
+              <a class="btn btn-success dropdown-toggle mb-3" href="#" role="button" id="dropdownIdea"
                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Download</a>
-              <div class="dropdown-menu" aria-labelledby="dropdownDownload">
+              <div class="dropdown-menu" aria-labelledby="dropdownIdea">
                 <a class="dd-a dropdown-item"
-                  href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.6.8/idea-mindmap-1.6.8.zip">Release</a>
-                <!-- <a class="dd-a dropdown-item"
-                  href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.6.8-S/idea-mindmap-1.6.8-SNAPSHOT.zip">Snapshot</a> -->
+                  href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.7.0/idea-mindmap-1.7.0.zip">Release</a>
                 <a class="dd-a dropdown-item" href="https://plugins.jetbrains.com/plugin/8045-idea-mind-map">JetBrains
                   marketplace</a>
               </div>
@@ -304,25 +236,23 @@
           <div class="download-item card text-center px-3 mb-4">
             <div class="bg-transparent card-header pt-4 border-0">
               <h5 class="text-center">NetBeans</h5>
-              <img src="img/logos/Apache NetBeans Logo.svg" height="64" />
+              <img src="img/logos/Apache NetBeans Logo.svg" height="64" alt="Apache NetBeans" />
             </div>
             <div class="card-body pt-0 dropdown show">
-              <a class="btn btn-success dropdown-toggle mb-3" href="#" role="button" id="dropdownDownload"
+              <a class="btn btn-success dropdown-toggle mb-3" href="#" role="button" id="dropdownNetBeans"
                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Download</a>
-              <div class="dropdown-menu" aria-labelledby="dropdownDownload">
+              <div class="dropdown-menu" aria-labelledby="dropdownNetBeans">
                 <a class="dd-a dropdown-item"
-                  href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.6.8/nb-mind-map-1.6.8.nbm">Release</a>
-                <!-- <a class="dd-a dropdown-item"
-                  href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.6.8-S/nb-mind-map-1.6.8-SNAPSHOT.nbm">Snapshot</a> -->
+                  href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.7.0/nb-mind-map-1.7.0.nbm">Release</a>
                 <a class="dd-a dropdown-item" href="https://plugins.netbeans.apache.org/catalogue/?id=56">NetBeans
                   portal</a>
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </div>
+
     <div class="row">
       <div class="col-lg-2 col-md-2 col-sm-0"></div>
       <div id="donate" class="info-block col-lg-8 col-md-8 col-sm-12">
@@ -336,8 +266,7 @@
           <div class="card card-pricing text-center px-3 mb-4">
             <span class="h6 w-60 mx-auto px-4 py-1 rounded-bottom bg-primary text-white shadow-sm">Paypal</span>
             <div class="bg-transparent card-header pt-4 border-0">
-              <h1 class="h1 font-weight-normal text-primary text-center mb-0" data-pricing-value="15">$<span
-                  class="price">10</span></h1>
+              <h1 class="h1 font-weight-normal text-primary text-center mb-0">$<span class="price">10</span></h1>
             </div>
             <div class="card-body pt-0">
               <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=AHWJHJFBAWGL2"
@@ -347,14 +276,12 @@
           <div class="card card-pricing text-center px-3 mb-4">
             <span class="h6 w-60 mx-auto px-4 py-1 rounded-bottom bg-primary text-white shadow-sm">Yoomoney</span>
             <div class="bg-transparent card-header pt-4 border-0">
-              <h1 class="h1 font-weight-normal text-primary text-center mb-0" data-pricing-value="15">₽<span
-                  class="price">100</span></h1>
+              <h1 class="h1 font-weight-normal text-primary text-center mb-0">₽<span class="price">100</span></h1>
             </div>
             <div class="card-body pt-0">
               <a href="https://yoomoney.ru/to/41001158080699" target="_blank" class="btn btn-primary mb-3">Donate</a>
             </div>
           </div>
-
         </div>
       </div>
     </div>
@@ -371,6 +298,97 @@
 <script src="js/jquery-3.5.1.min.js"></script>
 <script src="js/popper.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
+<script src="mmd/mmd-viewer.min.js"></script>
+<script>
+  (function () {
+    var compact = window.matchMedia("(max-width: 720px)").matches;
+    var viewer = MmdViewer.attach("#site-map", {
+      src: "mmd/site.mmd",
+      openFile: false,
+      notesLayout: compact ? "auto" : "modal",
+      fitOnLoad: !compact
+    });
+    var pendingUid = null;
+
+    function topicByUid(uid) {
+      var found = null;
+      var root = viewer.mindMap && viewer.mindMap.root;
+      if (!root) {
+        return null;
+      }
+      root.walk(function (topic) {
+        if (topic.attributes && topic.attributes.topicLinkUID === uid) {
+          found = topic;
+        }
+      });
+      return found;
+    }
+
+    function showTopic(uid) {
+      var topic = topicByUid(uid);
+      if (!topic || !topic.bounds) {
+        pendingUid = uid;
+        return;
+      }
+      pendingUid = null;
+      viewer.select(topic);
+      viewer.centerOn(topic);
+    }
+
+    function whenReady(done) {
+      var tries = 0;
+      (function tick() {
+        var root = viewer.mindMap && viewer.mindMap.root;
+        if (root && root.bounds) {
+          requestAnimationFrame(function () {
+            requestAnimationFrame(done);
+          });
+          return;
+        }
+        if (tries++ < 200) {
+          setTimeout(tick, 50);
+        }
+      })();
+    }
+
+    window.addEventListener("hashchange", function () {
+      var hash = (location.hash || "").replace(/^#/, "");
+      if (hash && document.querySelector('[data-map-topic="' + hash + '"]') && topicByUid(hash)) {
+        document.getElementById("map").scrollIntoView({ behavior: "smooth", block: "start" });
+        showTopic(hash);
+      }
+    });
+
+    document.querySelectorAll("[data-map-topic]").forEach(function (link) {
+      link.addEventListener("click", function (event) {
+        var uid = link.getAttribute("data-map-topic");
+        if (!uid) {
+          return;
+        }
+        event.preventDefault();
+        if (history.pushState) {
+          history.pushState(null, "", "#" + uid);
+        }
+        document.getElementById("map").scrollIntoView({ behavior: "smooth", block: "start" });
+        showTopic(uid);
+      });
+    });
+
+    whenReady(function () {
+      if (compact && viewer.mindMap && viewer.mindMap.root) {
+        viewer.setView(0.55, 0, 0);
+        viewer.centerOn(viewer.mindMap.root);
+      }
+      var hash = (location.hash || "").replace(/^#/, "");
+      if (hash && document.querySelector('[data-map-topic="' + hash + '"]') && topicByUid(hash)) {
+        document.getElementById("map").scrollIntoView({ block: "start" });
+        showTopic(hash);
+      } else if (pendingUid) {
+        showTopic(pendingUid);
+      }
+    });
+  })();
+</script>
 
 <!--[if lt IE 9]>
   <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
