@@ -71,6 +71,7 @@
 
 ## 4. Current Work In Progress
 - Browser MMD viewer in `mind-map/js-viewer` (library + example page). Viewer-only: no edit/save. Embedded topic images (`mmd.image`) draw on the topic like Swing `ImageVisualAttributePlugin`; add/remove stays in the Java editors. Hosts configure chrome/interaction via options, `data-mmd-*`, `configure()`, and presets.
+- sciareto.org (`netbeans-mmd-plugin-pages`) embeds the packed viewer: `mmd/mmd-viewer.min.js`, `mmd/mmd-viewer.css`, `mmd/mmd-icons.png` (PNG must stay beside the script). Page content lives in `mmd/site.mmd` and is rendered in `#site-map`. Menu hashes `#about`, `#features`, `#download`, `#donate` select those topics.
 - Print quality: vector/high-DPI raster path is in; extra/emoticon/topic images keep source pixels; multi-page print lays out once in paper space, clips each tile in page space before translate so later pages stay inked and preview cannot draw topics outside the sheet. Preview zoom is view-only. Print options now include Fit to pages (both width and height, e.g. 2×2).
 - Development version **1.8.0-SNAPSHOT** (13-sep-2026): all `pom.xml`, changelog/README `__1.8.0 (SNAPSHOT)__`, IJ `plugin.xml`, mac Info.plist `1.8.0`, win `versioninfo.json`, `IDE_VERSION` 1.8.0, AP fallback `1.8.0`. Replaced unreleased 1.7.1 because the Java 11 minimum belongs on a minor bump.
 - mind-map-swing-panel Java 11 / Swing quality pass applied (API kept): paint pipeline, graphics ownership, dispose/listeners, print preview, exporters/resources.
@@ -104,6 +105,7 @@
 ## 7. Useful References
 - MMD format spec: `skills/mmd/MMD_Format.MD` (derived from `mind-map-model` parser + tests).
 - Browser MMD viewer: `mind-map/js-viewer/` (`python3 -m http.server` then open `/index.html`). API: `MmdViewer.attach(el, { src | text, preset, … })`, `viewer.configure({ … })`, `data-mmd-*` flags. Packed script: `python3 pack-js.py` → `mmd-viewer.min.js`.
+- Public site: `netbeans-mmd-plugin-pages` (`python3 -m http.server` in that repo, open `/index.html`). Map source: `mmd/site.mmd` (edit via the mmd skill, then revalidate). Copy a new packed viewer from `mind-map/js-viewer` when the library changes: `mmd-viewer.min.js`, `mmd-viewer.css`, `mmd-icons.png`.
 - MMD agent skill (copy the whole folder): `skills/mmd/` (`SKILL.md`, `MMD_Format.MD`, `reference.md`, `commands/`, `python3 scripts/parse.py|write.py|validate.py|crypto.py`). Encrypted notes use `crypto.py`; ask the user for the password, never guess. Commands after copy: `/mmd:read`, `/mmd:edit`, `/mmd:new`, `/mmd:validate`, `/mmd:decrypt`. Install: `skills/README.md`.
 - MMD annotation skill: `skills/mmd-annotations/` (`/mmd-annotations:setup`, `/mmd-annotations:mark`). Attach artifacts and audit compiler options before marking. Fixtures: `mind-map-annotation-processor-it`.
 - Register file type: https://plugins.jetbrains.com/docs/intellij/registering-file-type.html
