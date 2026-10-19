@@ -8,6 +8,16 @@
     font-size: 1.3rem;
 }
 
+.blockquote-footer {
+    display: block;
+    font-size: 80%;
+    color: #6c757d;
+}
+
+.blockquote-footer::before {
+    content: "\2014\00A0";
+}
+
 .blockquote-custom-icon {
     width: 50px;
     height: 50px;
@@ -112,7 +122,8 @@ body {
     text-shadow: 4px 4px 2px #505050;
 }
 
-.carousel-indicators li {
+.carousel-indicators [data-bs-target] {
+    border: 0;
     border-radius: 50%;
     width: 12px;
     height: 12px;

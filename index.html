@@ -55,19 +55,20 @@
   <header id="stickey-menu" class="stickey stickey-shadowed">
     <nav class="navbar navbar-expand-lg main-menu">
       <div class="container">
-        <div class="col-lg-3">
+        <div class="col-12 col-lg-3">
           <div class="navbar-header">
             <a href="/" class="navbar-brand" style="margin:4; padding:4;">
               <img src="img/logo_mono.svg" alt="SciaReto logo" title="Free mind map editor SciaReto" height="32">
             </a>
-            <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#topMenu">
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#topMenu"
+              aria-controls="topMenu" aria-expanded="false" aria-label="Toggle navigation">
               <img src="img/menu-button.svg" alt="Menu toggle button" title="Menu toggle button">
             </button>
           </div>
         </div>
-        <div class="col-lg-9">
+        <div class="col-12 col-lg-9">
           <div class="collapse navbar-collapse" id="topMenu">
-            <ul class="navbar-nav ml-auto">
+            <ul class="navbar-nav ms-auto">
               <li class="nav-item"><a href="#about" class="nav-link" data-map-topic="about">ABOUT</a></li>
               <li class="nav-item"><a href="#features" class="nav-link" data-map-topic="features">FEATURES</a></li>
               <li class="nav-item"><a href="#download" class="nav-link">DOWNLOAD</a></li>
@@ -84,14 +85,14 @@
     <strong>New version is out, check <a href="#download">the download section</a>!</strong>.
   </div> -->
 
-  <div id="scr-carousel" class="carousel slide z-depth-1-half" data-ride="carousel">
+  <div id="scr-carousel" class="carousel slide z-depth-1-half" data-bs-ride="carousel">
     <ul class="carousel-indicators">
-      <li data-target="#scr-carousel" data-slide-to="0" class="active"></li>
-      <li data-target="#scr-carousel" data-slide-to="1"></li>
-      <li data-target="#scr-carousel" data-slide-to="2"></li>
-      <li data-target="#scr-carousel" data-slide-to="3"></li>
-      <li data-target="#scr-carousel" data-slide-to="4"></li>
-      <li data-target="#scr-carousel" data-slide-to="5"></li>
+      <li data-bs-target="#scr-carousel" data-bs-slide-to="0" class="active"></li>
+      <li data-bs-target="#scr-carousel" data-bs-slide-to="1"></li>
+      <li data-bs-target="#scr-carousel" data-bs-slide-to="2"></li>
+      <li data-bs-target="#scr-carousel" data-bs-slide-to="3"></li>
+      <li data-bs-target="#scr-carousel" data-bs-slide-to="4"></li>
+      <li data-bs-target="#scr-carousel" data-bs-slide-to="5"></li>
     </ul>
 
     <div class="carousel-inner">
@@ -139,13 +140,13 @@
       </div>
     </div>
 
-    <a class="carousel-control-prev" href="#scr-carousel" role="button" data-slide="prev">
+    <a class="carousel-control-prev" href="#scr-carousel" role="button" data-bs-slide="prev">
       <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-      <span class="sr-only">Previous</span>
+      <span class="visually-hidden">Previous</span>
     </a>
-    <a class="carousel-control-next" href="#scr-carousel" role="button" data-slide="next">
+    <a class="carousel-control-next" href="#scr-carousel" role="button" data-bs-slide="next">
       <span class="carousel-control-next-icon" aria-hidden="true"></span>
-      <span class="sr-only">Next</span>
+      <span class="visually-hidden">Next</span>
     </a>
   </div>
 
@@ -183,15 +184,15 @@
       <div class="col-lg-2 col-md-2 col-sm-0"></div>
       <div id="download" class="info-block col-lg-8 col-md-8 col-sm-12">
         <h1>Download</h1>
-        <div class="card-deck flex-column flex-md-row mb-3">
-          <div class="download-item card text-center px-3 mb-4">
+        <div class="d-flex flex-column flex-md-row gap-3 mb-3">
+          <div class="download-item card text-center flex-fill px-3 mb-4">
             <div class="bg-transparent card-header pt-4 border-0">
               <h5 class="text-center">SciaReto</h5>
               <img src="img/logos/SciaReto_Logo.svg" height="64" alt="Scia Reto" />
             </div>
-            <div class="card-body pt-0 dropdown show">
+            <div class="card-body pt-0 dropdown">
               <a class="btn btn-success dropdown-toggle mb-3" href="#" role="button" id="dropdownSciaReto"
-                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Download</a>
+                data-bs-toggle="dropdown" aria-expanded="false">Download</a>
               <div class="dropdown-menu" aria-labelledby="dropdownSciaReto">
                 <a class="dd-a dropdown-item"
                   href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.8.0/sciareto-1.8.0-windows-jdk-amd64.zip">Windows
@@ -215,14 +216,14 @@
             </div>
           </div>
 
-          <div class="download-item card text-center px-3 mb-4">
+          <div class="download-item card text-center flex-fill px-3 mb-4">
             <div class="bg-transparent card-header pt-4 border-0">
               <h5 class="text-center">Intellij</h5>
               <img src="img/logos/IntelliJ_IDEA_Logo.svg" height="64" alt="IntelliJ IDEA" />
             </div>
-            <div class="card-body pt-0 dropdown show">
+            <div class="card-body pt-0 dropdown">
               <a class="btn btn-success dropdown-toggle mb-3" href="#" role="button" id="dropdownIdea"
-                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Download</a>
+                data-bs-toggle="dropdown" aria-expanded="false">Download</a>
               <div class="dropdown-menu" aria-labelledby="dropdownIdea">
                 <a class="dd-a dropdown-item"
                   href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.8.0/idea-mindmap-1.8.0.zip">Release</a>
@@ -232,14 +233,14 @@
             </div>
           </div>
 
-          <div class="download-item card text-center px-3 mb-4">
+          <div class="download-item card text-center flex-fill px-3 mb-4">
             <div class="bg-transparent card-header pt-4 border-0">
               <h5 class="text-center">NetBeans</h5>
               <img src="img/logos/Apache NetBeans Logo.svg" height="64" alt="Apache NetBeans" />
             </div>
-            <div class="card-body pt-0 dropdown show">
+            <div class="card-body pt-0 dropdown">
               <a class="btn btn-success dropdown-toggle mb-3" href="#" role="button" id="dropdownNetBeans"
-                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Download</a>
+                data-bs-toggle="dropdown" aria-expanded="false">Download</a>
               <div class="dropdown-menu" aria-labelledby="dropdownNetBeans">
                 <a class="dd-a dropdown-item"
                   href="https://github.com/raydac/netbeans-mmd-plugin/releases/download/1.8.0/nb-mind-map-1.8.0.nbm">Release</a>
@@ -261,21 +262,21 @@
           are two ways to do this:
         </p>
 
-        <div class="pricing card-deck flex-column flex-md-row mb-3">
-          <div class="card card-pricing text-center px-3 mb-4">
+        <div class="pricing d-flex flex-column flex-md-row gap-3 mb-3">
+          <div class="card card-pricing text-center flex-fill px-3 mb-4">
             <span class="h6 w-60 mx-auto px-4 py-1 rounded-bottom bg-primary text-white shadow-sm">Paypal</span>
             <div class="bg-transparent card-header pt-4 border-0">
-              <h1 class="h1 font-weight-normal text-primary text-center mb-0">$<span class="price">10</span></h1>
+              <h1 class="h1 fw-normal text-primary text-center mb-0">$<span class="price">10</span></h1>
             </div>
             <div class="card-body pt-0">
               <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=AHWJHJFBAWGL2"
                 target="_blank" class="btn btn-primary mb-3">Donate</a>
             </div>
           </div>
-          <div class="card card-pricing text-center px-3 mb-4">
+          <div class="card card-pricing text-center flex-fill px-3 mb-4">
             <span class="h6 w-60 mx-auto px-4 py-1 rounded-bottom bg-primary text-white shadow-sm">Yoomoney</span>
             <div class="bg-transparent card-header pt-4 border-0">
-              <h1 class="h1 font-weight-normal text-primary text-center mb-0">₽<span class="price">100</span></h1>
+              <h1 class="h1 fw-normal text-primary text-center mb-0">₽<span class="price">100</span></h1>
             </div>
             <div class="card-body pt-0">
               <a href="https://yoomoney.ru/to/41001158080699" target="_blank" class="btn btn-primary mb-3">Donate</a>
@@ -294,9 +295,7 @@
   </footer>
 </body>
 
-<script src="js/jquery-4.0.0.min.js"></script>
-<script src="js/popper.min.js"></script>
-<script src="js/bootstrap.min.js"></script>
+<script src="js/bootstrap.bundle.min.js"></script>
 <script src="mmd/mmd-viewer.min.js"></script>
 <script>
   (function () {
