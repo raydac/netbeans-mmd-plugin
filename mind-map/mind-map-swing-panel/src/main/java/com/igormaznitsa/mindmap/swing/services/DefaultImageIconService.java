@@ -74,8 +74,8 @@ public class DefaultImageIconService implements ImageIconService {
   }
 
   private static Icon loadIcon(final String name) {
-    try (InputStream in = ScalableIcon.class.getClassLoader()
-        .getResourceAsStream("com/igormaznitsa/mindmap/swing/panel/icons/" + name)) {
+    try (InputStream in = ScalableIcon.class.getResourceAsStream(
+        "/com/igormaznitsa/mindmap/swing/panel/icons/" + name)) {
       if (in == null) {
         throw new Error("Can't find icon " + name);
       }

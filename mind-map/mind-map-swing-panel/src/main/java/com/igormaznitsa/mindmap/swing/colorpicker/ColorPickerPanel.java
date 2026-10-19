@@ -33,7 +33,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
-final class ColorPickerPanel {
+public final class ColorPickerPanel {
 
   private final List<Color> predefinedColors;
   private final List<ColorListener> colorListeners = new ArrayList<>();

@@ -584,7 +584,7 @@ A map with a root and one attribute:
 
 ````text
 [Scia Reto](https://sciareto.org) mind map
-> __version__=`1.1`,generatorId=`com.igormaznitsa:mind-map-annotation-processor:1.7.0`,showJumps=`true`
+> __version__=`1.1`,generatorId=`com.igormaznitsa:mind-map-annotation-processor:1.8.0`,showJumps=`true`
 ---
 
 # Root topic

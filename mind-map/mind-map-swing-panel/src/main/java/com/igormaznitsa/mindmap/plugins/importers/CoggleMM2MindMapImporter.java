@@ -42,6 +42,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
@@ -190,11 +191,8 @@ public class CoggleMM2MindMapImporter extends AbstractImporter {
   private void parseTopic(final MindMap map, final Topic parent,
                           final Topic preGeneratedOne, final Element element) {
     final Topic topicToProcess;
-    if (preGeneratedOne == null) {
-      topicToProcess = requireNonNull(parent).makeChild("", null);
-    } else {
-      topicToProcess = preGeneratedOne;
-    }
+    topicToProcess = Objects.requireNonNullElseGet(preGeneratedOne,
+        () -> requireNonNull(parent).makeChild("", null));
 
     final StringBuilder resultTextBuffer = new StringBuilder();
     final List<String> foundImageURLs =

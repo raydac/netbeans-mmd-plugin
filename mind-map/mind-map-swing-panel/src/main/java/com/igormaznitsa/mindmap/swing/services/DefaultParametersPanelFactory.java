@@ -173,9 +173,8 @@ public class DefaultParametersPanelFactory extends JPanel {
       panelsByImportance.keySet()
           .stream()
           .sorted(Comparator.comparingInt(Enum::ordinal))
-          .forEach(k -> {
-            tabbedPane.add(bundle.getString("Importance." + k.name()), panelsByImportance.get(k));
-          });
+          .forEach(k -> tabbedPane.add(bundle.getString("Importance." + k.name()),
+              panelsByImportance.get(k)));
       return tabbedPane;
     }
   }

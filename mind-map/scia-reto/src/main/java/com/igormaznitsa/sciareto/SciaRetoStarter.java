@@ -49,7 +49,6 @@ import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTMaterialDark
 import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTMaterialPalenightIJTheme;
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
-import com.igormaznitsa.commons.version.Version;
 import com.igormaznitsa.meta.annotation.MustNotContainNull;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.model.MindMap;
@@ -75,6 +74,7 @@ import com.igormaznitsa.mindmap.swing.panel.MindMapPanelController;
 import com.igormaznitsa.mindmap.swing.panel.ui.AbstractElement;
 import com.igormaznitsa.mindmap.swing.panel.ui.ElementPart;
 import com.igormaznitsa.mindmap.swing.panel.utils.PropertiesPreferences;
+import com.igormaznitsa.mindmap.version.Version;
 import com.igormaznitsa.sciareto.metrics.MetricsService;
 import com.igormaznitsa.sciareto.notifications.MessagesService;
 import com.igormaznitsa.sciareto.plugins.services.PrinterPlugin;

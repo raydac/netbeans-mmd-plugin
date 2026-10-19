@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.igormaznitsa</groupId>
         <artifactId>mind-map</artifactId>
-        <version>1.8.0-SNAPSHOT</version>
+        <version>1.8.0</version>
     </parent>
 
     <artifactId>idea-mindmap</artifactId>
@@ -18,66 +18,6 @@
         <meta.version>1.1.3</meta.version>
         <gradle.executable>gradle9</gradle.executable>
     </properties>
-
-    <profiles>
-        <profile>
-            <id>local-idea-libs</id>
-            <properties>
-                <local.idea.lib.path>/home/igorm/Programs/idea-IC-222.3345.118/lib</local.idea.lib.path>
-            </properties>    
-            <dependencies>
-                <dependency>
-                    <groupId>com.intellij</groupId>
-                    <artifactId>idea-app</artifactId>
-                    <version>0-SNAPSHOT</version>
-                    <scope>system</scope>
-                    <systemPath>${local.idea.lib.path}/app.jar</systemPath>
-                </dependency>
-                <dependency>
-                    <groupId>com.intellij</groupId>
-                    <artifactId>idea-3rd-party-rt</artifactId>
-                    <version>0-SNAPSHOT</version>
-                    <scope>system</scope>
-                    <systemPath>${local.idea.lib.path}/3rd-party-rt.jar</systemPath>
-                </dependency>
-                <dependency>
-                    <groupId>com.intellij</groupId>
-                    <artifactId>idea-util</artifactId>
-                    <version>0-SNAPSHOT</version>
-                    <scope>system</scope>
-                    <systemPath>${local.idea.lib.path}/util.jar</systemPath>
-                </dependency>
-                <dependency>
-                    <groupId>com.intellij</groupId>
-                    <artifactId>idea-util-rt</artifactId>
-                    <version>0-SNAPSHOT</version>
-                    <scope>system</scope>
-                    <systemPath>${local.idea.lib.path}/util_rt.jar</systemPath>
-                </dependency>
-                <dependency>
-                    <groupId>com.intellij</groupId>
-                    <artifactId>idea-rt</artifactId>
-                    <version>0-SNAPSHOT</version>
-                    <scope>system</scope>
-                    <systemPath>${local.idea.lib.path}/idea_rt.jar</systemPath>
-                </dependency>
-                <dependency>
-                    <groupId>com.intellij</groupId>
-                    <artifactId>idea-annotations</artifactId>
-                    <version>0-SNAPSHOT</version>
-                    <scope>system</scope>
-                    <systemPath>${local.idea.lib.path}/annotations.jar</systemPath>
-                </dependency>
-                <dependency>
-                    <groupId>com.intellij</groupId>
-                    <artifactId>idea-forms-rt</artifactId>
-                    <version>0-SNAPSHOT</version>
-                    <scope>system</scope>
-                    <systemPath>${local.idea.lib.path}/forms_rt.jar</systemPath>
-                </dependency>
-            </dependencies>
-        </profile>
-    </profiles>
 
     <dependencies>
         <dependency>

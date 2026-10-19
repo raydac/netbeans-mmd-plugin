@@ -16,9 +16,9 @@
 
 package com.igormaznitsa.mindmap.annotations.processor;
 
-import com.igormaznitsa.commons.version.Version;
 import com.igormaznitsa.mindmap.swing.ide.IDEBridge;
 import com.igormaznitsa.mindmap.swing.ide.NotificationType;
+import com.igormaznitsa.mindmap.version.Version;
 import javax.swing.Icon;
 
 public class ProcessorBridge implements IDEBridge {

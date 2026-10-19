@@ -61,7 +61,7 @@ public class DefaultSwingUIComponentService implements UIComponentFactory {
 
   @Override
   public <T> JComboBox<T> makeComboBox(final Class<T> type) {
-    return new JComboBox<T>();
+    return new JComboBox<>();
   }
 
   @Override

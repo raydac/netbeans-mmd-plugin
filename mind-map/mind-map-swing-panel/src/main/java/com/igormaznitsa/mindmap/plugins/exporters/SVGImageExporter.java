@@ -91,7 +91,7 @@ public class SVGImageExporter extends AbstractExporter {
   public static final String LOOKUP_PARAM_REQ_FONT = "mmd.exporter.svg.font";
   public static final String LOOKUP_PARAM_RESP_FONT_DATA = "mmd.exporter.svg.font.data";
   public static final String LOOKUP_PARAM_RESP_FONT_MIME = "mmd.exporter.svg.font.mime";
-  private static final Map<String, String[]> LOCAL_FONT_MAP = new HashMap<String, String[]>() {
+  private static final Map<String, String[]> LOCAL_FONT_MAP = new HashMap<>() {
     {
       put("dialog", new String[] {"sans-serif", "SansSerif"});
       put("dialoginput", new String[] {"monospace", "Monospace"});
@@ -173,7 +173,7 @@ public class SVGImageExporter extends AbstractExporter {
 
   @Override
   public Set<AbstractParameter<?>> makeDefaultParameters() {
-    return new HashSet<AbstractParameter<?>>() {{
+    return new HashSet<>() {{
       add(new BooleanParameter(KEY_PARAMETER_UNFOLD_ALL,
           getResourceBundle().getString("SvgExporter.optionUnfoldAll"),
           getResourceBundle().getString("SvgExporter.optionUnfoldAll.comment"),

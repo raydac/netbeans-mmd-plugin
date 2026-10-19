@@ -101,9 +101,7 @@ public class TextExporter extends AbstractExporter {
 
   private static String generateString(final char chr, final int length) {
     final StringBuilder buffer = new StringBuilder(length);
-    for (int i = 0; i < length; i++) {
-      buffer.append(chr);
-    }
+    buffer.append(String.valueOf(chr).repeat(Math.max(0, length)));
     return buffer.toString();
   }
 

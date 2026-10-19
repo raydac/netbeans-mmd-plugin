@@ -83,9 +83,7 @@ public class MMDTopicsTransferable implements Transferable {
     final String firstIndentString = result.toString();
     result.setLength(0);
 
-    for (int i = 0; i < level; i++) {
-      result.append('|');
-    }
+    result.append("|".repeat(Math.max(0, level)));
     final String otherIndentString = result.toString();
     result.setLength(0);
 

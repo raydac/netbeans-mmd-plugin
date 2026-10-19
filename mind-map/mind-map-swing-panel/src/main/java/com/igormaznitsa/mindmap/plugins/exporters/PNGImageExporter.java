@@ -67,7 +67,7 @@ public final class PNGImageExporter extends AbstractExporter {
 
   @Override
   public Set<AbstractParameter<?>> makeDefaultParameters() {
-    return new HashSet<AbstractParameter<?>>() {{
+    return new HashSet<>() {{
       add(new BooleanParameter(KEY_PARAMETER_UNFOLD_ALL,
           getResourceBundle().getString("PNGImageExporter.optionUnfoldAll"),
           getResourceBundle().getString("PNGImageExporter.optionUnfoldAll.comment"),

@@ -18,13 +18,13 @@
 
 package com.igormaznitsa.sciareto.services;
 
-import com.igormaznitsa.commons.version.Version;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.plugins.exporters.SVGImageExporter;
 import com.igormaznitsa.mindmap.swing.ide.IDEBridge;
 import com.igormaznitsa.mindmap.swing.ide.NotificationType;
+import com.igormaznitsa.mindmap.version.Version;
 import com.igormaznitsa.sciareto.SciaRetoStarter;
 import com.igormaznitsa.sciareto.notifications.NotificationManager;
 import com.igormaznitsa.sciareto.ui.LocalizationController;

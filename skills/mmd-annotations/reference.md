@@ -6,10 +6,19 @@ Sources of truth: `mind-map-annotations` and `MmdAnnotationProcessor`. This file
 
 | Artifact | Role |
 |----------|------|
-| `com.igormaznitsa:mind-map-annotations` | Annotations. Java 8 bytecode. `provided` at compile. |
-| `com.igormaznitsa:mind-map-annotation-processor` | Processor (`MmdAnnotationProcessor`). Java 9+. Discovers via `META-INF/services/javax.annotation.processing.Processor`. |
+| `com.igormaznitsa:mind-map-annotations` | Annotations. Java 11 bytecode. Named module `com.igormaznitsa.mmd.annotations`. `provided` at compile. |
+| `com.igormaznitsa:mind-map-annotation-processor` | Processor (`MmdAnnotationProcessor`). Runs on Java 11+. Named module `com.igormaznitsa.mmd.processor`. `provides javax.annotation.processing.Processor` and also lists the same class in `META-INF/services/javax.annotation.processing.Processor`. |
 
-Version: use the project’s existing version. In this repository that is the parent `mind-map` version.
+Version: use the project’s existing version. In this repository that is the parent `mind-map` version (**1.8.0**). Keep both artifacts on that same version. 1.7.x jars are Java 8 and are not named modules.
+
+## Modules
+
+| Module | Artifact | What the marked application does |
+|--------|----------|----------------------------------|
+| `com.igormaznitsa.mmd.annotations` | `mind-map-annotations` | `requires com.igormaznitsa.mmd.annotations;` when the application has `module-info.java`. |
+| `com.igormaznitsa.mmd.processor` | `mind-map-annotation-processor` | Processor path only. The application does not `requires` it. |
+
+The exported package is still `com.igormaznitsa.mindmap.annotations`. The processor module also requires `com.igormaznitsa.mmd.model`, `com.igormaznitsa.mmd.swing.panel`, and their library modules. Maven `annotationProcessorPaths` and Gradle `annotationProcessor` put that graph on the processor path. A processor path that contains only the processor jar does not resolve.
 
 ## `@MmdFile`
 
@@ -168,14 +177,19 @@ Groovy is the same coordinates on `compileOnly` / `annotationProcessor` and `com
 
 ## javac
 
+Prefer the Maven or Gradle snippets. They place the processor module and every module it `requires` on the processor path.
+
+`mind-map-annotations` must be readable by the compilation: classpath for an unnamed module, or the module path plus `requires com.igormaznitsa.mmd.annotations` when the sources are a named module.
+
+On JDK 23+, classpath discovery does not run the processor. Pass it on `-processorpath` (with its required modules), or pass `-proc:full` when it stays on the classpath.
+
 ```
-javac -processorpath mind-map-annotation-processor.jar \
+javac --processor-module-path <processor-and-its-modules> \
+  --module-path mind-map-annotations.jar \
   -Ammd.file.link.base.folder=/path/to/module \
   -Ammd.folder.create=true \
   … sources …
 ```
-
-`mind-map-annotations` must still be on `-classpath` (or `--class-path`) so the annotations resolve.
 
 ## Live fixtures
 

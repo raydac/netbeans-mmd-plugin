@@ -16,15 +16,13 @@
 
 package com.igormaznitsa.mindmap.swing.panel.ui;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public enum TextAlign {
   LEFT, RIGHT, CENTER;
 
   public static final List<TextAlign> VALUES =
-      Collections.unmodifiableList(Arrays.asList(TextAlign.values()));
+      List.of(TextAlign.values());
 
   public static TextAlign findForName(final String text) {
     if (text == null) {

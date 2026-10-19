@@ -27,17 +27,24 @@ import static org.junit.Assume.assumeTrue;
 import java.io.File;
 import java.net.URI;
 import java.util.Properties;
-import org.apache.commons.lang3.SystemUtils;
 import org.junit.Test;
 
 public class MMapURITest {
 
   private static void assumeWindows() {
-    assumeTrue(SystemUtils.IS_OS_WINDOWS);
+    assumeTrue(isWindows());
   }
 
   private static void assumeNotWindows() {
-    assumeFalse(SystemUtils.IS_OS_WINDOWS);
+    assumeFalse(isWindows());
+  }
+
+  private static boolean isWindows() {
+    return System.getProperty("os.name", "").startsWith("Windows");
+  }
+
+  private static boolean isLinux() {
+    return System.getProperty("os.name", "").startsWith("Linux");
   }
 
   @Test
@@ -409,7 +416,7 @@ public class MMapURITest {
 
   @Test
   public void testAsURI_Linux_CreatedAsFile() throws Exception {
-    if (SystemUtils.IS_OS_LINUX) {
+    if (isLinux()) {
       final Properties props = new Properties();
       props.put("Kõik või", "tere");
 

@@ -850,7 +850,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
 
           final Color gridColor = cfg.getGridColor();
 
-          for (float x = 0.0f; x < maxX; x += scaledGridStep) {
+          for (float x = 0.0f; x < maxX; x = (float) (x + scaledGridStep)) {
             if (x < minX) {
               continue;
             }
@@ -858,7 +858,7 @@ public class MindMapPanel extends JComponent implements ClipboardOwner {
             g.drawLine(roundedX, (int) minY, roundedX, (int) maxY, gridColor);
           }
 
-          for (float y = 0.0f; y < maxY; y += scaledGridStep) {
+          for (float y = 0.0f; y < maxY; y = (float) (y + scaledGridStep)) {
             if (y < minY) {
               continue;
             }

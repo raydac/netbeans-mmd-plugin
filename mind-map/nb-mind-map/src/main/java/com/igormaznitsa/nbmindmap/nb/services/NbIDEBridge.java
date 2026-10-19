@@ -16,13 +16,13 @@
 
 package com.igormaznitsa.nbmindmap.nb.services;
 
-import com.igormaznitsa.commons.version.Version;
 import com.igormaznitsa.meta.common.utils.Assertions;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.ide.IDEBridge;
 import com.igormaznitsa.mindmap.swing.ide.NotificationType;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+import com.igormaznitsa.mindmap.version.Version;
 import java.awt.Image;
 import java.io.IOException;
 import java.io.InputStream;

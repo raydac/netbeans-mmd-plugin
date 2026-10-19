@@ -15,7 +15,7 @@ Mark Java so `mind-map-annotation-processor` **generates** `.mmd` maps. Do **not
 
 This folder is self-contained: `SKILL.md`, [reference.md](reference.md), [examples.md](examples.md), `commands/`. Copy the whole folder.
 
-Package: `com.igormaznitsa.mindmap.annotations`. Retention is `SOURCE` — no runtime cost.
+Package: `com.igormaznitsa.mindmap.annotations`. Module: `com.igormaznitsa.mmd.annotations`. Retention is `SOURCE` — no runtime cost. Java 11+.
 
 ## When to mark
 
@@ -49,7 +49,7 @@ Do **not** edit Java sources until **Project setup** below has passed for every 
 7. If the user wants a sanity check, parse the generated `.mmd` with the `mmd` skill. Commit generated maps only when the user wants them in git (they are regenerated on each compile; overwrite defaults to true).
 
 ```bash
-mvn22 -pl <module> -am compile
+mvn -pl <module> -am compile
 ```
 
 ## Project setup (mandatory)
@@ -67,7 +67,7 @@ For each module in scope (Maven `pom.xml`, Gradle `build.gradle` / `.kts`, or ja
 | `com.igormaznitsa:mind-map-annotations` | Compile classpath, **`provided` / `compileOnly`**. Needed to import `@MmdFile` / `@MmdTopic`. Never `runtime` / shipped in the app. |
 | `com.igormaznitsa:mind-map-annotation-processor` | **Annotation-processor path only** (`annotationProcessorPaths` or Gradle `annotationProcessor`). Do not put it on the app runtime classpath. |
 
-Version: reuse the version already in the project. This repository uses the parent `mind-map` version (`project.version`). Otherwise pick one published `com.igormaznitsa` pair and keep annotations + processor **the same version**.
+Version: reuse the version already in the project. This repository uses the parent `mind-map` version (`project.version`). Otherwise pick one published `com.igormaznitsa` pair and keep annotations + processor **the same version**. This skill matches **1.8.0**: both jars need a Java 11+ compiler, and they are named modules. Do not pair it with 1.7.x jars (those are Java 8 and have no module name).
 
 If the module already depends on `mind-map-annotations` (this repo’s own modules may), keep that; still add or confirm the processor path. Do **not** enable the processor on `mind-map-annotations`, `mind-map-annotation-processor`, or any module that sets `-proc:none` on purpose.
 
@@ -80,6 +80,8 @@ Read the **effective** compile config (module POM plus parent `pluginManagement`
 | Check | Fail if | Fix |
 |-------|---------|-----|
 | Processing is on | `-proc:none`, `options.compilerArgs` contains `-proc:none`, Gradle `options.annotationProcessorPath` empty while processing is disabled, IDE “Enable annotation processing” off for the module they compile in | Remove `-proc:none` from **this** module (do not strip it from the processor/annotations modules themselves). Turn processing on. |
+| JDK 23+ | Compiler is 23 or newer and the processor is only on the compile classpath. Those JDKs skip classpath processors. | Keep the processor on the processor path (`annotationProcessorPaths`, Gradle `annotationProcessor`, or `-processorpath`). Use Maven `<proc>full</proc>` or javac `-proc:full` only when it must stay on the classpath. |
+| Named module | The marked sources have `module-info.java` and it does not `requires com.igormaznitsa.mmd.annotations` | Add that `requires`. The package stays `com.igormaznitsa.mindmap.annotations`. Do not `requires` the processor module. |
 | Processor is selected | Maven `annotationProcessorPaths` is set but does not list `mind-map-annotation-processor` (Maven then **ignores** processors on the compile classpath) | Add the processor path entry, or drop the empty/other-only `annotationProcessorPaths` and use a dedicated path that includes this processor. |
 | Processor is not on the app classpath | Processor listed as a normal `compile`/`implementation` dependency of a shipped module | Move it to processor path; keep annotations `provided`/`compileOnly`. |
 | Versions match | Annotations and processor versions differ | Align both. |

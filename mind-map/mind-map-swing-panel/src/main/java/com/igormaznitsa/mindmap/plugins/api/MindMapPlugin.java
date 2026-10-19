@@ -16,8 +16,8 @@
 
 package com.igormaznitsa.mindmap.plugins.api;
 
-import com.igormaznitsa.commons.version.Version;
 import com.igormaznitsa.mindmap.plugins.MindMapPluginRegistry;
+import com.igormaznitsa.mindmap.version.Version;
 
 /**
  * The Main interface for any plug-in to be provided for mind map panel.

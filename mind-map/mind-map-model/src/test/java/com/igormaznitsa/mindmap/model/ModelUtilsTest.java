@@ -23,11 +23,18 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.net.URI;
 import java.util.Properties;
-import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.junit.Test;
 
 public class ModelUtilsTest {
+
+  private static boolean isWindows() {
+    return System.getProperty("os.name", "").startsWith("Windows");
+  }
+
+  private static boolean isLinux() {
+    return System.getProperty("os.name", "").startsWith("Linux");
+  }
 
   private void assertEscapeUnescapePre(final String text) {
     assertEquals(text, StringEscapeUtils.unescapeHtml3(ModelUtils.escapeTextForPreBlock(text)));
@@ -126,7 +133,7 @@ public class ModelUtilsTest {
     assertEquals(new File((File) null, "/some/folder/temp/").getCanonicalPath(),
         ModelUtils.makeFileForPath("file:///some/folder/temp/").getAbsolutePath());
 
-    if (SystemUtils.IS_OS_LINUX) {
+    if (isLinux()) {
       assertEquals(new File((File) null, "/some/folder/temp/ :<>?").getCanonicalPath(),
           ModelUtils.makeFileForPath("file:///some/folder/temp/ :<>?").getAbsolutePath());
       assertEquals(
@@ -141,7 +148,7 @@ public class ModelUtilsTest {
 
   @Test
   public void testToFile() throws Exception {
-    if (SystemUtils.IS_OS_WINDOWS) {
+    if (isWindows()) {
       assertEquals("P:\\Some text document.txt",
           new MMapURI("file://P:/Some%20text%20document.txt").asFile(null).getAbsolutePath());
     } else {

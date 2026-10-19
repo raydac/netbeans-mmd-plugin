@@ -14,8 +14,10 @@ Initially I developed a plugin for NetBeans IDE then the IntellijIDEA plugin was
 
 # Changelog
 
-__1.8.0 (SNAPSHOT)__
+__1.8.0 (19-oct-2026)__
 
+- NB:  File | New File lists NB Mind Map under Other when the plugin is built on JDK 23+
+- ALL: mind-map libraries are explicit Java modules (`com.igormaznitsa.mmd.model`, `com.igormaznitsa.mmd.swing.panel`, and the annotations, processor, IDE-common, and ks-render modules)
 - ALL: minimum Java version lifted from 8 to 11
 - IJ:  minimum IntelliJ IDEA version lifted to 2024.2; uses current platform APIs; IDE browser opens URI pages
 - WEB: embeddable JavaScript viewer for MMD files (pan, zoom, notes, icons; packed `mmd-viewer.min.js`)

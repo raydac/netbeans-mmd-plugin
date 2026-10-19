@@ -81,6 +81,8 @@ Without `fileUid`, a topic on this type fails with multiple target files.
 
 ## Path, jump, colors
 
+`direction` is `com.igormaznitsa.mindmap.annotations.Direction` (`AUTO`, `LEFT`, `RIGHT`).
+
 ```java
 @MmdFile(
     fileName = "attributes",

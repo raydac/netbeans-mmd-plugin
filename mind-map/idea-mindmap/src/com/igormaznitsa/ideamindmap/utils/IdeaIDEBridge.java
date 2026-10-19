@@ -18,7 +18,7 @@ package com.igormaznitsa.ideamindmap.utils;
 
 import static com.igormaznitsa.mindmap.model.logger.LoggerFactory.getLogger;
 
-import com.igormaznitsa.commons.version.Version;
+import com.igormaznitsa.mindmap.version.Version;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.swing.ide.IDEBridge;
 import com.igormaznitsa.mindmap.swing.ide.NotificationType;

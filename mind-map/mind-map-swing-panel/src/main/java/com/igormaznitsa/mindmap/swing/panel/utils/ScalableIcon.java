@@ -54,8 +54,8 @@ public final class ScalableIcon {
   }
 
   public static Image loadStandardImage(final String name) {
-    try (final InputStream in = ScalableIcon.class.getClassLoader()
-        .getResourceAsStream("com/igormaznitsa/mindmap/swing/panel/icons/" + name)) {
+    try (final InputStream in = ScalableIcon.class.getResourceAsStream(
+        "/com/igormaznitsa/mindmap/swing/panel/icons/" + name)) {
       return ImageIO.read(requireNonNull(in));
     } catch (Exception ex) {
       throw new IllegalStateException("Can't load resource image " + name, ex);

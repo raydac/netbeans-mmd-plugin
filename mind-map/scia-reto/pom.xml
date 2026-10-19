@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.igormaznitsa</groupId>
         <artifactId>mind-map</artifactId>
-        <version>1.8.0-SNAPSHOT</version>
+        <version>1.8.0</version>
     </parent>
 
     <artifactId>scia-reto</artifactId>
@@ -898,7 +898,6 @@
                         </manifest>
                         <manifestEntries>
                             <Application-Name>Scia Reto</Application-Name>
-                            <Automatic-Module-Name>igormaznitsa.sciareto</Automatic-Module-Name>
                         </manifestEntries>
                     </archive>
                 </configuration>
@@ -933,6 +932,8 @@
                                         <exclude>META-INF/LGPL2.1</exclude>
                                         <exclude>META-INF/COPYING</exclude>
                                         <exclude>modeling32.png</exclude>
+                                        <exclude>module-info.class</exclude>
+                                        <exclude>META-INF/versions/**/module-info.class</exclude>
                                     </excludes>
                                 </filter>
                             </filters>

@@ -18,10 +18,10 @@ package com.igormaznitsa.mindmap.swing.ide;
 
 import static java.util.Objects.requireNonNull;
 
-import com.igormaznitsa.commons.version.Version;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
 import com.igormaznitsa.mindmap.swing.panel.utils.Utils;
+import com.igormaznitsa.mindmap.version.Version;
 import java.awt.Image;
 import java.io.IOException;
 import java.io.InputStream;
@@ -97,8 +97,8 @@ class DefaultIDEBridge implements IDEBridge {
     synchronized (IMAGE_CACHE) {
       image = IMAGE_CACHE.get(path);
       if (image == null) {
-        final InputStream in = klazz.getClassLoader().getResourceAsStream(
-            requireNonNull(removeStartSlash(path), "Icon path must not be null"));
+        final InputStream in = klazz.getResourceAsStream(
+            "/" + requireNonNull(removeStartSlash(path), "Icon path must not be null"));
         if (in == null) {
           throw new IllegalArgumentException("Can't find icon resource : " + path);
         }

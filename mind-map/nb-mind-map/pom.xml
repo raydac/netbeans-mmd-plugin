@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.igormaznitsa</groupId>
         <artifactId>mind-map</artifactId>
-        <version>1.8.0-SNAPSHOT</version>
+        <version>1.8.0</version>
     </parent>
 
     <artifactId>nb-mind-map</artifactId>
@@ -130,6 +130,15 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <!-- JDK 23+ skips classpath annotation processors unless proc is explicit.
+                         NetBeans registrations (new-file template, MIME, editor) come from those processors. -->
+                    <proc>full</proc>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
                     <archive>
@@ -197,10 +206,6 @@
             <groupId>com.igormaznitsa</groupId>
             <artifactId>mind-map-swing-panel</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.igormaznitsa</groupId>
-            <artifactId>commons-version</artifactId>
         </dependency>
 
         <dependency>

@@ -88,9 +88,7 @@ public class ASCIIDocExporter extends AbstractExporter {
 
   private static String generateString(final char symbol, final int length) {
     final StringBuilder buffer = new StringBuilder(length);
-    for (int i = 0; i < length; i++) {
-      buffer.append(symbol);
-    }
+    buffer.append(String.valueOf(symbol).repeat(Math.max(0, length)));
     return buffer.toString();
   }
 

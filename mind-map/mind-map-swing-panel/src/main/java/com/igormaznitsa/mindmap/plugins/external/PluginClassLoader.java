@@ -16,10 +16,10 @@
 
 package com.igormaznitsa.mindmap.plugins.external;
 
-import com.igormaznitsa.commons.version.Version;
-import com.igormaznitsa.commons.version.VersionValidator;
 import com.igormaznitsa.mindmap.model.logger.Logger;
 import com.igormaznitsa.mindmap.model.logger.LoggerFactory;
+import com.igormaznitsa.mindmap.version.Version;
+import com.igormaznitsa.mindmap.version.VersionValidator;
 import java.io.File;
 import java.io.IOException;
 import java.net.JarURLConnection;

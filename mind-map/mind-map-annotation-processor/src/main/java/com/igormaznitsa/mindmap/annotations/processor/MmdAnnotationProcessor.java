@@ -26,7 +26,6 @@ import static javax.tools.Diagnostic.Kind.NOTE;
 import static javax.tools.Diagnostic.Kind.WARNING;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
-import com.igormaznitsa.commons.version.Version;
 import com.igormaznitsa.mindmap.annotations.HasMmdMarkedElements;
 import com.igormaznitsa.mindmap.annotations.MmdFile;
 import com.igormaznitsa.mindmap.annotations.MmdFileRef;
@@ -38,6 +37,7 @@ import com.igormaznitsa.mindmap.annotations.processor.builder.AnnotationUtils.Ur
 import com.igormaznitsa.mindmap.annotations.processor.builder.MmdFileBuilder;
 import com.igormaznitsa.mindmap.annotations.processor.builder.exceptions.MmdElementException;
 import com.igormaznitsa.mindmap.annotations.processor.exporters.MmdExporter;
+import com.igormaznitsa.mindmap.version.Version;
 import com.sun.source.util.SourcePositions;
 import com.sun.source.util.Trees;
 import java.io.File;

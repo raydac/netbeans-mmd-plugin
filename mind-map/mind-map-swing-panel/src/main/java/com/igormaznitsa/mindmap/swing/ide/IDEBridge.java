@@ -16,7 +16,7 @@
 
 package com.igormaznitsa.mindmap.swing.ide;
 
-import com.igormaznitsa.commons.version.Version;
+import com.igormaznitsa.mindmap.version.Version;
 import java.awt.Frame;
 import java.awt.Window;
 import java.util.Collections;

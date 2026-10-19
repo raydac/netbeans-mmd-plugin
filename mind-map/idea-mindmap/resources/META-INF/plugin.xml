@@ -12,7 +12,7 @@
     ]]></description>
 
     <change-notes><![CDATA[
-        <p>1.8.0 (SNAPSHOT)</p>
+        <p>1.8.0 (19-oct-2026)</p>
         <ul>
             <li>Minimum Java version lifted from 8 to 11</li>
             <li>Minimum IntelliJ IDEA version lifted to 2024.2; uses current platform APIs</li>

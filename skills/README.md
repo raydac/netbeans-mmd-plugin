@@ -59,7 +59,7 @@ Do not freehand-write `.mmd` except a trivial empty file, then still validate. N
 | `/mmd-annotations:setup` | Add `mind-map-annotations` + processor and fix compiler options |
 | `/mmd-annotations:mark` | Setup, then mark types/methods so compile generates `.mmd` |
 
-The agent must attach the artifacts and audit build options **before** any `@Mmd*` on user sources.
+The agent must attach the artifacts and audit build options **before** any `@Mmd*` on user sources. Release 1.8.0 artifacts are Java 11 named modules (`com.igormaznitsa.mmd.annotations`, `com.igormaznitsa.mmd.processor`). On JDK 23 or newer the processor has to be on the processor path.
 
 ## Typical work
 

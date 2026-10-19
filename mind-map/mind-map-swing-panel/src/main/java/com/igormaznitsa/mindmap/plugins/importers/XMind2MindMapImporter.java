@@ -48,6 +48,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.zip.ZipFile;
 import javax.swing.Icon;
@@ -96,11 +97,8 @@ public class XMind2MindMapImporter extends AbstractImporter {
       final Map<String, String> linksBetweenTopics) {
     final Topic topicToProcess;
 
-    if (pregeneratedOne == null) {
-      topicToProcess = requireNonNull(parent).makeChild("", null);
-    } else {
-      topicToProcess = pregeneratedOne;
-    }
+    topicToProcess = Objects.requireNonNullElseGet(pregeneratedOne,
+        () -> requireNonNull(parent).makeChild("", null));
 
     topicToProcess.setText(extractTopicTitle(topicElement));
 
@@ -285,11 +283,8 @@ public class XMind2MindMapImporter extends AbstractImporter {
                                    final Map<String, String> linksBetweenTopics) {
     final Topic topicToProcess;
 
-    if (preGeneratedOne == null) {
-      topicToProcess = requireNonNull(parent).makeChild("", null);
-    } else {
-      topicToProcess = preGeneratedOne;
-    }
+    topicToProcess = Objects.requireNonNullElseGet(preGeneratedOne,
+        () -> requireNonNull(parent).makeChild("", null));
 
     topicToProcess.setText(topicElement.has("title") ? topicElement.getString("title") : "");
 
