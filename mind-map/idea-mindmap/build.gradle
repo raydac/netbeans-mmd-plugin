@@ -35,6 +35,7 @@ tasks.named('build') {
 
 intellijPlatform {
     pluginConfiguration {
+        version = project.version
         ideaVersion {
             sinceBuild = '242.20224.159'
             untilBuild = provider { null }

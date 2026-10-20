@@ -2,7 +2,7 @@
 <idea-plugin>
     <id>nb-mind-map-idea</id>
     <name>SciaReto Mind Map</name>
-    <version>1.8.1-SNAPSHOT</version>
+    <!-- <version> is written at build time from the Maven project version. -->
     <vendor url="https://www.igormaznitsa.com">Igor Maznitsa</vendor>
 
     <category>Knowledge management</category>
