@@ -123,6 +123,15 @@
     display: none !important;
 }
 
+.mmd-viewer__stage-wrap {
+    position: relative;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+}
+
 .mmd-viewer__stage {
     position: relative;
     flex: 1 1 auto;
@@ -451,6 +460,10 @@
 
 .mmd-viewer__notes-frame {
     position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
     z-index: 6;
     display: flex;
     margin: 0;
@@ -473,7 +486,9 @@
 }
 
 .mmd-viewer .mmd-viewer__notes-frame .mmd-viewer__notes-backdrop {
+    z-index: 0;
     pointer-events: auto;
+    touch-action: auto;
 }
 
 .mmd-viewer .mmd-viewer__notes-frame .mmd-viewer__notes {
@@ -482,11 +497,13 @@
     right: auto;
     bottom: auto;
     left: auto;
+    z-index: 1;
     flex: 0 1 auto;
     margin: 0;
     min-width: 0;
     min-height: 0;
     pointer-events: auto;
+    touch-action: auto;
     -webkit-transform: none;
     transform: none;
 }

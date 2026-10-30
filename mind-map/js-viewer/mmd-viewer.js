@@ -29,7 +29,6 @@
     var ICON_SIZE = 16;
     var EMOTICON_SIZE = 32;
     var LISTENER_NO_PASSIVE = false;
-    var LISTENER_PASSIVE = false;
     var NARROW_QUERY = "(max-width: 720px)";
     var PORTRAIT_QUERY = "(orientation: portrait)";
     if (typeof window !== "undefined") {
@@ -37,7 +36,6 @@
             var passiveProbe = Object.defineProperty({}, "passive", {
                 get: function () {
                     LISTENER_NO_PASSIVE = {passive: false};
-                    LISTENER_PASSIVE = {passive: true};
                     return false;
                 }
             });
@@ -2248,22 +2246,18 @@
         this._onTouchEnd = this.onTouchEnd.bind(this);
         this._onTouchPinch = this.onTouchPinch.bind(this);
         this._onNotesBackdrop = this.onNotesBackdrop.bind(this);
-        this._onNotesFrame = this.scheduleNotesFrame.bind(this);
         this._hasPointer = typeof window !== "undefined" && typeof window.PointerEvent === "function";
         this._viewport = typeof window !== "undefined" ? window.visualViewport : null;
         this._mouseTracking = false;
         this._usingTouch = false;
         this._lastTap = null;
         this._lastActivate = null;
-        this._notesFrameScheduled = false;
         this.buildDom();
         this.applyTheme();
         this.applyChrome();
         window.addEventListener("resize", this._onResize);
-        window.addEventListener("scroll", this._onNotesFrame, LISTENER_PASSIVE);
         if (this._viewport) {
             this._viewport.addEventListener("resize", this._onResize);
-            this._viewport.addEventListener("scroll", this._onNotesFrame, LISTENER_PASSIVE);
         }
         if (this.options.text) {
             this.loadText(this.options.text);
@@ -2503,7 +2497,7 @@
                 this.toolbar = document.createElement("div");
                 this.toolbar.className = "mmd-viewer__toolbar";
                 this.toolbar.addEventListener("click", this._onToolbar);
-                this.main.insertBefore(this.toolbar, this.stage);
+                this.main.insertBefore(this.toolbar, this.stageWrap);
             }
             this.fillToolbar();
             this.toolbar.hidden = false;
@@ -2526,7 +2520,7 @@
                 this.notesFrame = document.createElement("div");
                 this.notesFrame.className = "mmd-viewer__notes-frame";
                 this.notesFrame.hidden = true;
-                this.stage.appendChild(this.notesFrame);
+                this.stageWrap.appendChild(this.notesFrame);
             }
             if (!this.notesBackdrop) {
                 this.notesBackdrop = document.createElement("div");
@@ -2584,37 +2578,6 @@
         return viewportMatches(PORTRAIT_QUERY) ? "sheet" : "side";
     };
 
-    Viewer.prototype.visibleBox = function (host) {
-        var rect = host.getBoundingClientRect();
-        var view = this._viewport;
-        var viewWidth = view ? view.width : window.innerWidth;
-        var viewHeight = view ? view.height : window.innerHeight;
-        var top = Math.max(rect.top, 0);
-        var left = Math.max(rect.left, 0);
-        var right = Math.min(rect.right, viewWidth);
-        var bottom = Math.min(rect.bottom, viewHeight);
-        return {
-            top: top - rect.top,
-            left: left - rect.left,
-            width: Math.max(0, right - left),
-            height: Math.max(0, bottom - top)
-        };
-    };
-
-    Viewer.prototype.scheduleNotesFrame = function () {
-        if (this._notesFrameScheduled || this.destroyed || !this.notesVisible || !this.notesFrame) {
-            return;
-        }
-        this._notesFrameScheduled = true;
-        var self = this;
-        requestAnimationFrame(function () {
-            self._notesFrameScheduled = false;
-            if (!self.destroyed) {
-                self.syncNotesFrame();
-            }
-        });
-    };
-
     Viewer.prototype.syncNotesFrame = function () {
         if (!this.notes || !this.notesFrame || !this.stage) {
             return;
@@ -2630,24 +2593,20 @@
         if (this.notes.parentNode !== this.notesFrame) {
             this.notesFrame.appendChild(this.notes);
         }
-        if (!this.notesVisible || this.options.notes === false) {
-            this.notesFrame.hidden = true;
-            return;
-        }
-        var box = this.visibleBox(this.stage);
-        if (box.width < 16 || box.height < 16) {
-            this.notesFrame.hidden = true;
-            return;
-        }
-        this.notesFrame.hidden = false;
+        this.notesFrame.hidden = !this.notesVisible || this.options.notes === false;
         this.notesFrame.classList.toggle("is-modal", placement === "modal");
         this.notesFrame.classList.toggle("is-sheet", placement === "sheet");
         this.notesFrame.classList.toggle("is-side", placement === "side");
-        var style = this.notesFrame.style;
-        style.top = box.top + "px";
-        style.left = box.left + "px";
-        style.width = box.width + "px";
-        style.height = box.height + "px";
+    };
+
+    Viewer.prototype.isNotesUi = function (node) {
+        if (!node) {
+            return false;
+        }
+        if (this.notesFrame && this.notesFrame.contains(node)) {
+            return true;
+        }
+        return !!(this.notes && this.notes.contains(node));
     };
 
     Viewer.prototype.setNotesVisible = function (visible) {
@@ -2710,11 +2669,14 @@
         this.zoomLabel = null;
         this.main = document.createElement("div");
         this.main.className = "mmd-viewer__main";
+        this.stageWrap = document.createElement("div");
+        this.stageWrap.className = "mmd-viewer__stage-wrap";
         this.stage = document.createElement("div");
         this.stage.className = "mmd-viewer__stage";
         this.svg = svgEl("svg", {xmlns: SVG_NS});
         this.stage.appendChild(this.svg);
-        this.main.appendChild(this.stage);
+        this.stageWrap.appendChild(this.stage);
+        this.main.appendChild(this.stageWrap);
         this.element.appendChild(this.main);
         this.bindStageInput();
         this.element.addEventListener("keydown", this._onKey);
@@ -2799,10 +2761,8 @@
         }
         this.trackWindowMouse(false);
         window.removeEventListener("resize", this._onResize);
-        window.removeEventListener("scroll", this._onNotesFrame, LISTENER_PASSIVE);
         if (this._viewport) {
             this._viewport.removeEventListener("resize", this._onResize);
-            this._viewport.removeEventListener("scroll", this._onNotesFrame, LISTENER_PASSIVE);
         }
         this.element.removeEventListener("keydown", this._onKey);
         this.element.classList.remove("mmd-viewer", "is-static", "is-selectable");
@@ -2914,7 +2874,6 @@
 
     Viewer.prototype.onResize = function () {
         this.applyView();
-        this.scheduleNotesFrame();
     };
 
     Viewer.prototype.render = function () {
@@ -3326,7 +3285,7 @@
     };
 
     Viewer.prototype.onMouseDown = function (event) {
-        if (event.button) {
+        if (event.button || this.isNotesUi(event.target)) {
             return;
         }
         this._usingTouch = false;
@@ -3344,6 +3303,9 @@
     };
 
     Viewer.prototype.onTouchStart = function (event) {
+        if (this.isNotesUi(event.target)) {
+            return;
+        }
         event.preventDefault();
         this._usingTouch = true;
         var i;
@@ -3353,6 +3315,9 @@
     };
 
     Viewer.prototype.onTouchMove = function (event) {
+        if (!this.drag && !this.pinch && this.isNotesUi(event.target)) {
+            return;
+        }
         event.preventDefault();
         var i;
         for (i = 0; i < event.changedTouches.length; i++) {
@@ -3361,6 +3326,9 @@
     };
 
     Viewer.prototype.onTouchEnd = function (event) {
+        if (!this.drag && !this.pinch && this.isNotesUi(event.target)) {
+            return;
+        }
         event.preventDefault();
         var i;
         for (i = 0; i < event.changedTouches.length; i++) {
@@ -3392,6 +3360,9 @@
     };
 
     Viewer.prototype.onTouchPinch = function (event) {
+        if (!this.pinch && this.isNotesUi(event.target)) {
+            return;
+        }
         var touches = event.touches;
         if (event.type === "touchend" || event.type === "touchcancel") {
             if (!touches || touches.length < 2) {
@@ -3425,6 +3396,9 @@
     };
 
     Viewer.prototype.onPointerDown = function (event) {
+        if (this.isNotesUi(event.target)) {
+            return;
+        }
         if (event.pointerType) {
             this._usingTouch = event.pointerType === "touch";
         }
@@ -3518,7 +3492,7 @@
     };
 
     Viewer.prototype.onWheel = function (event) {
-        if (this.options.wheelZoom === false) {
+        if (this.isNotesUi(event.target) || this.options.wheelZoom === false) {
             return;
         }
         event.preventDefault();
@@ -3527,6 +3501,9 @@
     };
 
     Viewer.prototype.onDoubleClick = function (event) {
+        if (this.isNotesUi(event.target)) {
+            return;
+        }
         var hit = this.topicFromEvent(event);
         if (!hit || !hit.topic) {
             hit = this.selected() ? {topic: this.selected()} : null;
