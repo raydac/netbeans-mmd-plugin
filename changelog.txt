@@ -1,3 +1,7 @@
+__1.8.1 (SNAPSHOT)__
+
+- WEB: pinch-zoom keeps the point between the fingers fixed instead of scaling the map from its origin. The topic notes dialog stays inside the part of the map that is on screen, including while the page scrolls and while the Android browser chrome shows or hides. Toolbar and keyboard zoom use the center of the map
+
 __1.8.0 (19-oct-2026)__
 
 - NB:  File | New File lists NB Mind Map under Other again when the plugin is built on JDK 23 or newer. Those JDKs skip annotation processing unless it is requested, so the installed module never registered the file type

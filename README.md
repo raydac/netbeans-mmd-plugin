@@ -14,6 +14,10 @@ Initially I developed a plugin for NetBeans IDE then the IntellijIDEA plugin was
 
 # Changelog
 
+__1.8.1 (SNAPSHOT)__
+
+- WEB: pinch-zoom stays under the fingers, and the topic notes stay in the visible part of the map on a phone
+
 __1.8.0 (19-oct-2026)__
 
 - NB:  File | New File lists NB Mind Map under Other when the plugin is built on JDK 23+

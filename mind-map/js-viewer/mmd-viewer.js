@@ -29,11 +29,15 @@
     var ICON_SIZE = 16;
     var EMOTICON_SIZE = 32;
     var LISTENER_NO_PASSIVE = false;
+    var LISTENER_PASSIVE = false;
+    var NARROW_QUERY = "(max-width: 720px)";
+    var PORTRAIT_QUERY = "(orientation: portrait)";
     if (typeof window !== "undefined") {
         try {
             var passiveProbe = Object.defineProperty({}, "passive", {
                 get: function () {
                     LISTENER_NO_PASSIVE = {passive: false};
+                    LISTENER_PASSIVE = {passive: true};
                     return false;
                 }
             });
@@ -333,6 +337,24 @@
         var dx = left.x - right.x;
         var dy = left.y - right.y;
         return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    function pointerMidpoint(points) {
+        return {
+            clientX: (points[0].x + points[1].x) / 2,
+            clientY: (points[0].y + points[1].y) / 2
+        };
+    }
+
+    function touchPoints(touches) {
+        return [
+            {x: touches[0].clientX, y: touches[0].clientY},
+            {x: touches[1].clientX, y: touches[1].clientY}
+        ];
+    }
+
+    function viewportMatches(query) {
+        return typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia(query).matches;
     }
 
     function nextFrame(fn) {
@@ -2224,19 +2246,24 @@
         this._onTouchStart = this.onTouchStart.bind(this);
         this._onTouchMove = this.onTouchMove.bind(this);
         this._onTouchEnd = this.onTouchEnd.bind(this);
+        this._onTouchPinch = this.onTouchPinch.bind(this);
         this._onNotesBackdrop = this.onNotesBackdrop.bind(this);
+        this._onNotesFrame = this.scheduleNotesFrame.bind(this);
         this._hasPointer = typeof window !== "undefined" && typeof window.PointerEvent === "function";
         this._viewport = typeof window !== "undefined" ? window.visualViewport : null;
         this._mouseTracking = false;
         this._usingTouch = false;
         this._lastTap = null;
         this._lastActivate = null;
+        this._notesFrameScheduled = false;
         this.buildDom();
         this.applyTheme();
         this.applyChrome();
         window.addEventListener("resize", this._onResize);
+        window.addEventListener("scroll", this._onNotesFrame, LISTENER_PASSIVE);
         if (this._viewport) {
             this._viewport.addEventListener("resize", this._onResize);
+            this._viewport.addEventListener("scroll", this._onNotesFrame, LISTENER_PASSIVE);
         }
         if (this.options.text) {
             this.loadText(this.options.text);
@@ -2495,12 +2522,18 @@
             this.hintEl.hidden = true;
         }
         if (options.notes) {
+            if (!this.notesFrame) {
+                this.notesFrame = document.createElement("div");
+                this.notesFrame.className = "mmd-viewer__notes-frame";
+                this.notesFrame.hidden = true;
+                this.stage.appendChild(this.notesFrame);
+            }
             if (!this.notesBackdrop) {
                 this.notesBackdrop = document.createElement("div");
                 this.notesBackdrop.className = "mmd-viewer__notes-backdrop";
                 this.notesBackdrop.hidden = true;
                 this.notesBackdrop.addEventListener("click", this._onNotesBackdrop);
-                this.element.appendChild(this.notesBackdrop);
+                this.notesFrame.appendChild(this.notesBackdrop);
             }
             if (!this.notes) {
                 this.notes = document.createElement("aside");
@@ -2531,6 +2564,90 @@
         if (this.notesBackdrop) {
             this.notesBackdrop.hidden = !(show && layout === "modal");
         }
+        this.syncNotesFrame();
+    };
+
+    Viewer.prototype.notesPlacement = function () {
+        var layout = this.options.notesLayout || "auto";
+        if (layout === "modal") {
+            return "modal";
+        }
+        if (layout === "portrait") {
+            return "sheet";
+        }
+        if (layout === "landscape") {
+            return viewportMatches(NARROW_QUERY) ? "side" : "column";
+        }
+        if (!viewportMatches(NARROW_QUERY)) {
+            return "column";
+        }
+        return viewportMatches(PORTRAIT_QUERY) ? "sheet" : "side";
+    };
+
+    Viewer.prototype.visibleBox = function (host) {
+        var rect = host.getBoundingClientRect();
+        var view = this._viewport;
+        var viewWidth = view ? view.width : window.innerWidth;
+        var viewHeight = view ? view.height : window.innerHeight;
+        var top = Math.max(rect.top, 0);
+        var left = Math.max(rect.left, 0);
+        var right = Math.min(rect.right, viewWidth);
+        var bottom = Math.min(rect.bottom, viewHeight);
+        return {
+            top: top - rect.top,
+            left: left - rect.left,
+            width: Math.max(0, right - left),
+            height: Math.max(0, bottom - top)
+        };
+    };
+
+    Viewer.prototype.scheduleNotesFrame = function () {
+        if (this._notesFrameScheduled || this.destroyed || !this.notesVisible || !this.notesFrame) {
+            return;
+        }
+        this._notesFrameScheduled = true;
+        var self = this;
+        requestAnimationFrame(function () {
+            self._notesFrameScheduled = false;
+            if (!self.destroyed) {
+                self.syncNotesFrame();
+            }
+        });
+    };
+
+    Viewer.prototype.syncNotesFrame = function () {
+        if (!this.notes || !this.notesFrame || !this.stage) {
+            return;
+        }
+        var placement = this.notesPlacement();
+        if (placement === "column") {
+            if (this.notes.parentNode !== this.element) {
+                this.element.appendChild(this.notes);
+            }
+            this.notesFrame.hidden = true;
+            return;
+        }
+        if (this.notes.parentNode !== this.notesFrame) {
+            this.notesFrame.appendChild(this.notes);
+        }
+        if (!this.notesVisible || this.options.notes === false) {
+            this.notesFrame.hidden = true;
+            return;
+        }
+        var box = this.visibleBox(this.stage);
+        if (box.width < 16 || box.height < 16) {
+            this.notesFrame.hidden = true;
+            return;
+        }
+        this.notesFrame.hidden = false;
+        this.notesFrame.classList.toggle("is-modal", placement === "modal");
+        this.notesFrame.classList.toggle("is-sheet", placement === "sheet");
+        this.notesFrame.classList.toggle("is-side", placement === "side");
+        var style = this.notesFrame.style;
+        style.top = box.top + "px";
+        style.left = box.left + "px";
+        style.width = box.width + "px";
+        style.height = box.height + "px";
     };
 
     Viewer.prototype.setNotesVisible = function (visible) {
@@ -2588,6 +2705,7 @@
         this.element.tabIndex = 0;
         this.toolbar = null;
         this.notes = null;
+        this.notesFrame = null;
         this.notesBackdrop = null;
         this.zoomLabel = null;
         this.main = document.createElement("div");
@@ -2620,6 +2738,10 @@
         }
         stage.addEventListener("wheel", this._onWheel, LISTENER_NO_PASSIVE);
         stage.addEventListener("dblclick", this._onDoubleClick);
+        stage.addEventListener("touchstart", this._onTouchPinch, LISTENER_NO_PASSIVE);
+        stage.addEventListener("touchmove", this._onTouchPinch, LISTENER_NO_PASSIVE);
+        stage.addEventListener("touchend", this._onTouchPinch, LISTENER_NO_PASSIVE);
+        stage.addEventListener("touchcancel", this._onTouchPinch, LISTENER_NO_PASSIVE);
     };
 
     Viewer.prototype.fetchAtlas = function () {
@@ -2677,8 +2799,10 @@
         }
         this.trackWindowMouse(false);
         window.removeEventListener("resize", this._onResize);
+        window.removeEventListener("scroll", this._onNotesFrame, LISTENER_PASSIVE);
         if (this._viewport) {
             this._viewport.removeEventListener("resize", this._onResize);
+            this._viewport.removeEventListener("scroll", this._onNotesFrame, LISTENER_PASSIVE);
         }
         this.element.removeEventListener("keydown", this._onKey);
         this.element.classList.remove("mmd-viewer", "is-static", "is-selectable");
@@ -2728,18 +2852,31 @@
         };
     };
 
-    Viewer.prototype.setView = function (scale, panX, panY, origin) {
+    Viewer.prototype.stageCenter = function () {
+        var rect = this.stage.getBoundingClientRect();
+        return {
+            clientX: rect.left + rect.width / 2,
+            clientY: rect.top + rect.height / 2
+        };
+    };
+
+    Viewer.prototype.anchorView = function (scale, anchor, origin) {
         var next = clamp(scale, this.cfg.minScale, this.cfg.maxScale);
-        if (origin) {
-            var world = this.worldPoint(origin.clientX, origin.clientY);
-            this.scale = next;
-            this.panX = origin.clientX - this.stage.getBoundingClientRect().left - world.x * this.scale;
-            this.panY = origin.clientY - this.stage.getBoundingClientRect().top - world.y * this.scale;
-        } else {
-            this.scale = next;
-            this.panX = panX;
-            this.panY = panY;
+        var rect = this.stage.getBoundingClientRect();
+        this.scale = next;
+        this.panX = origin.clientX - rect.left - anchor.x * next;
+        this.panY = origin.clientY - rect.top - anchor.y * next;
+        this.applyView();
+    };
+
+    Viewer.prototype.setView = function (scale, panX, panY, origin) {
+        if (origin && origin.clientX != null && origin.clientY != null) {
+            this.anchorView(scale, this.worldPoint(origin.clientX, origin.clientY), origin);
+            return;
         }
+        this.scale = clamp(scale, this.cfg.minScale, this.cfg.maxScale);
+        this.panX = panX;
+        this.panY = panY;
         this.applyView();
     };
 
@@ -2771,12 +2908,13 @@
     };
 
     Viewer.prototype.zoomBy = function (factor, origin) {
-        this.setView(this.scale * factor, this.panX, this.panY, origin);
+        this.setView(this.scale * factor, this.panX, this.panY, origin || this.stageCenter());
         return this;
     };
 
     Viewer.prototype.onResize = function () {
         this.applyView();
+        this.scheduleNotesFrame();
     };
 
     Viewer.prototype.render = function () {
@@ -3230,6 +3368,49 @@
         }
     };
 
+    Viewer.prototype.beginPinch = function (points) {
+        var mid = pointerMidpoint(points);
+        this.drag = null;
+        this.pinch = {
+            distance: pointDistance(points[0], points[1]),
+            scale: this.scale,
+            anchor: this.worldPoint(mid.clientX, mid.clientY)
+        };
+    };
+
+    Viewer.prototype.movePinch = function (points) {
+        if (!this.pinch || !this.pinch.anchor || !this.pinch.distance) {
+            this.beginPinch(points);
+            return;
+        }
+        var distance = pointDistance(points[0], points[1]);
+        this.anchorView(
+            this.pinch.scale * (distance / this.pinch.distance),
+            this.pinch.anchor,
+            pointerMidpoint(points)
+        );
+    };
+
+    Viewer.prototype.onTouchPinch = function (event) {
+        var touches = event.touches;
+        if (event.type === "touchend" || event.type === "touchcancel") {
+            if (!touches || touches.length < 2) {
+                this.pinch = null;
+            }
+            return;
+        }
+        if (!touches || touches.length < 2 || this.options.pinchZoom === false) {
+            return;
+        }
+        event.preventDefault();
+        var points = touchPoints(touches);
+        if (event.type === "touchstart" || !this.pinch || !this.pinch.anchor) {
+            this.beginPinch(points);
+            return;
+        }
+        this.movePinch(points);
+    };
+
     Viewer.prototype.noteSecondClick = function (hit) {
         if (!hit || !hit.topic) {
             return;
@@ -3255,12 +3436,10 @@
         }
         this.pointers.set(event.pointerId, {x: event.clientX, y: event.clientY});
         if (this.pointers.size === 2 && this.options.pinchZoom !== false) {
-            var pts = mapValues(this.pointers);
-            this.pinch = {
-                distance: pointDistance(pts[0], pts[1]),
-                scale: this.scale
-            };
             this.drag = null;
+            if (event.pointerType !== "touch") {
+                this.beginPinch(mapValues(this.pointers));
+            }
             return;
         }
         this.drag = {
@@ -3277,12 +3456,11 @@
         if (this.pointers.has(event.pointerId)) {
             this.pointers.set(event.pointerId, {x: event.clientX, y: event.clientY});
         }
+        if (this._usingTouch && this.pinch) {
+            return;
+        }
         if (this.pinch && this.pointers.size === 2) {
-            var pts = mapValues(this.pointers);
-            var distance = pointDistance(pts[0], pts[1]);
-            if (this.pinch.distance) {
-                this.setView(this.pinch.scale * (distance / this.pinch.distance), this.panX, this.panY);
-            }
+            this.movePinch(mapValues(this.pointers));
             return;
         }
         if (!this.drag) {
@@ -3310,7 +3488,7 @@
 
     Viewer.prototype.onPointerUp = function (event) {
         this.pointers.delete(event.pointerId);
-        if (this.pointers.size < 2) {
+        if (this.pointers.size < 2 && event.pointerType !== "touch") {
             this.pinch = null;
         }
         if (!this.drag) {
