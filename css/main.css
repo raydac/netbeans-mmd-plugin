@@ -198,6 +198,7 @@ body {
 
 #site-map {
     height: 78vh;
+    height: 78svh;
     min-height: 520px;
     border: 3px solid #c8e3ff;
     border-radius: 4px;
@@ -220,6 +221,13 @@ body {
 @media (max-width: 720px) {
     #site-map {
         height: 70vh;
-        min-height: 420px;
+        height: 70svh;
+        min-height: 280px;
+    }
+}
+
+@media (max-height: 640px) {
+    #site-map {
+        min-height: 0;
     }
 }
