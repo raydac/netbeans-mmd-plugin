@@ -16,7 +16,8 @@ Initially I developed a plugin for NetBeans IDE then the IntellijIDEA plugin was
 
 __1.8.1 (SNAPSHOT)__
 
-- WEB: pinch-zoom stays under the fingers, and the topic notes stay in the visible part of the map on a phone
+- WEB: pinch-zoom stays under the fingers. Topic notes open as a dialog centered on the map, scroll with the page, and close with the X
+- IJ:  Opening Settings no longer reports a missing display name for the mind-map options page
 
 __1.8.0 (19-oct-2026)__
 

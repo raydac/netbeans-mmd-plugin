@@ -14,7 +14,7 @@
     <change-notes><![CDATA[
         <p>1.8.1 (SNAPSHOT)</p>
         <ul>
-            <li></li>
+            <li>Opening Settings no longer reports that the mind-map options page has no display name</li>
         </ul>
         <p>1.8.0 (19-oct-2026)</p>
         <ul>
@@ -304,7 +304,9 @@
         <internalFileTemplate name="SciaReto Mind Map"/>
         <facetType implementation="com.igormaznitsa.ideamindmap.facet.MindMapFacetType"/>
         <framework.detector implementation="com.igormaznitsa.ideamindmap.facet.MindMapFacetDetector"/>
-        <applicationConfigurable instance="com.igormaznitsa.ideamindmap.settings.MindMapSettingsComponent"/>
+        <applicationConfigurable
+                instance="com.igormaznitsa.ideamindmap.settings.MindMapSettingsComponent"
+                displayName="SciaReto Mind Map"/>
         <annotator language="NBMindMap"
                    implementationClass="com.igormaznitsa.ideamindmap.lang.highlighter.MMAnnotator"/>
         <lang.syntaxHighlighterFactory language="NBMindMap"
