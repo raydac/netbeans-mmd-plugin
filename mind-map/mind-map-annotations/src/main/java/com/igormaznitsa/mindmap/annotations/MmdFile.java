@@ -46,6 +46,9 @@ public @interface MmdFile {
 
   /**
    * Folder to generate the file.
+   *
+   * @return folder path, {@link #MACROS_SRC_CLASS_FOLDER} when left as the default
+   * @see #fileName()
    */
   String folder() default MACROS_SRC_CLASS_FOLDER;
 

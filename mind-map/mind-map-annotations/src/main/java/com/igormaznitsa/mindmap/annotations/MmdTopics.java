@@ -38,5 +38,10 @@ import java.lang.annotation.Target;
     ElementType.LOCAL_VARIABLE
 })
 public @interface MmdTopics {
+  /**
+   * Collected topic markers.
+   *
+   * @return topic annotations, empty when none are declared
+   */
   MmdTopic[] value() default {};
 }

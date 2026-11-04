@@ -31,5 +31,10 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE})
 @Inherited
 public @interface MmdFiles {
+  /**
+   * Collected file descriptors.
+   *
+   * @return file descriptors, empty when none are declared
+   */
   MmdFile[] value() default {};
 }

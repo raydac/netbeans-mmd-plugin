@@ -50,7 +50,7 @@ public @interface MmdFileRef {
   String uid() default "";
 
   /**
-   * Target class which should be marked ether by {@link MmdFile} or {@link @MmdFiles} annotation. First found one in class hierarchy will be used.
+   * Target class which should be marked either by {@link MmdFile} or {@link MmdFiles}. First found one in class hierarchy will be used.
    * <b>Keep in mind that if provided {@link MmdFileRef#uid()} attribute then UID has higher priority</b>.
    *
    * @return a class to be used as target to search target mmd file.
